@@ -32,21 +32,30 @@
 - [ ] TMDB client (movie details fetch + Redis cache)
 - [ ] Pair engine - Phase 1 (rule-based from phase1_pairs.json, reorder by seed movie)
 - [ ] AI pair engine - Phase 2-3 (Claude API + pair_picker.txt prompt)
-- [ ] Sequencing router (GET /pair, POST /pick, POST /skip, GET /progress)
+- [ ] Sequencing router (GET /pair, POST /pick, POST /skip, GET /progress, POST /seed-movie)
 - [ ] Quadrant calculator (compute quadrant vector from Phase 1 picks)
-- [ ] Sequencing store (Zustand: currentPair, round, phase, liveTags)
-- [ ] Sequencing page (two movie cards, phase indicator, progress bar, live tag cloud)
-- [ ] Sequencing components (MovieCard, SwipePair, PhaseIndicator, LiveTagCloud, SkipActions)
-- [ ] TMDB search UI (autocomplete for seed movie input)
-- [ ] Animations (card selection, phase transition, tag cloud)
+- [ ] Sequencing store (Zustand: currentPair, round, phase, liveTags, optimistic updates)
+- [ ] TMDB search UI (autocomplete for seed movie input - pre-sequencing step)
+- [ ] Sequencing page (split-screen A/B, VS neon divider, phase indicator, progress bar)
+- [ ] MovieCard (tarot-style flip entrance, hover background color extraction)
+- [ ] SwipePair (drag up=select, drag down=skip via Framer Motion drag)
+- [ ] PhaseIndicator + LiveTagCloud + SkipActions
+- [ ] Liquid DNA tube animation (Canvas/WebGL: colored liquid fills tube per selection)
+- [ ] Sound effects (punch hole sound on selection)
+- [ ] Dynamic background color shift (genre-based: thriller=purple, comedy=yellow)
+- [ ] Server Components for initial movie data fetch (Next.js 15 RSC)
 - [ ] Tests: pair engine, TMDB client, pick/skip flow
 
 ## Phase 4: DNA Builder + Result
 - [ ] DNA builder service (tag vector computation, archetype assignment)
 - [ ] AI personality service (Claude API + personality.txt prompt)
 - [ ] DNA router (POST /dna/build, GET /dna/result)
-- [ ] DNA result page (loading animation, archetype, tags, radar, AI reading)
-- [ ] DNA components (ArchetypeCard, TagCloud, GenreRadar, AIReading)
+- [ ] DNA result page (loading animation, archetype, tags, AI reading)
+- [ ] ArchetypeCard + TagCloud
+- [ ] SVG Radar chart (5 dimensions: logic, emotion, visual, narrative, depth)
+- [ ] Three.js star nebula (each dot=movie, selected movies form constellation lines)
+- [ ] Atmosphere effects (dark films=smoke particles, musicals=dancing light dots)
+- [ ] AIReading (typewriter animation via Framer Motion)
 - [ ] Tests: tag vector math, archetype matching, DNA build endpoint
 
 ## Phase 5: Matching + Invite
@@ -57,7 +66,9 @@
 - [ ] Matches router (GET /matches, POST /invite, GET /invites, POST /respond)
 - [ ] Match store (Zustand: matches, invites, sendInvite, respond)
 - [ ] Matches page (grid of match cards sorted by similarity)
-- [ ] Matching components (MatchList, TicketCard, TearRitual, TheaterCard)
+- [ ] TicketCard (clip-path punch holes, scan lines, holographic laser hover, 3D tilt, flip to back)
+- [ ] TearRitual (drag gesture to tear ticket from perforated line, reveals match)
+- [ ] MatchList + TheaterCard
 - [ ] Ticket invite page (/ticket/[inviteId] - deep link from email)
 - [ ] Tests: matcher query, preference filtering, invite flow
 
