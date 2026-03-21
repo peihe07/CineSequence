@@ -47,16 +47,16 @@
 - [x] Tests: pair engine, TMDB client, pick/skip flow
 
 ## Phase 4: DNA Builder + Result
-- [ ] DNA builder service (tag vector computation, archetype assignment)
-- [ ] AI personality service (Claude API + personality.txt prompt)
-- [ ] DNA router (POST /dna/build, GET /dna/result)
-- [ ] DNA result page (loading animation, archetype, tags, AI reading)
-- [ ] ArchetypeCard + TagCloud
-- [ ] SVG Radar chart (5 dimensions: logic, emotion, visual, narrative, depth)
-- [ ] Three.js star nebula (each dot=movie, selected movies form constellation lines)
-- [ ] Atmosphere effects (dark films=smoke particles, musicals=dancing light dots)
-- [ ] AIReading (typewriter animation via Framer Motion)
-- [ ] Tests: tag vector math, archetype matching, DNA build endpoint
+- [x] DNA builder service (tag vector computation, archetype assignment)
+- [x] AI personality service (Claude API + personality.txt prompt)
+- [x] DNA router (POST /dna/build, GET /dna/result)
+- [x] DNA result page (loading animation, archetype, tags, AI reading)
+- [x] ArchetypeCard + TagCloud
+- [x] SVG Radar chart (3 axes: mainstream/independent, rational/emotional, light/dark)
+- [ ] Three.js star nebula (each dot=movie, selected movies form constellation lines) — deferred to Phase 7
+- [ ] Atmosphere effects (dark films=smoke particles, musicals=dancing light dots) — deferred to Phase 7
+- [x] AIReading (typewriter animation via Framer Motion)
+- [x] Tests: tag vector math, archetype matching, DNA build (19 unit tests)
 
 ## Phase 5: Matching + Invite
 - [ ] Matcher service (pgvector cosine similarity >= 0.8 + preference filters)
