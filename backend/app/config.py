@@ -3,7 +3,7 @@ from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
     # Database
-    database_url: str = "postgresql+asyncpg://dev:dev@localhost:5432/movie_dna"
+    database_url: str = "postgresql+asyncpg://dev:dev@localhost:5432/cinesequence"
     redis_url: str = "redis://localhost:6379/0"
 
     # External APIs
@@ -17,7 +17,7 @@ class Settings(BaseSettings):
     magic_link_expiry_minutes: int = 15
 
     # Storage (R2)
-    s3_bucket: str = "movie-dna-assets"
+    s3_bucket: str = "cinesequence"
     s3_endpoint: str = ""
     s3_access_key: str = ""
     s3_secret_key: str = ""
