@@ -29,22 +29,22 @@
 - [ ] UI components (Avatar, ProgressBar) — deferred to when needed
 
 ## Phase 3: Sequencing Engine (Core Feature)
-- [ ] TMDB client (movie details fetch + Redis cache)
-- [ ] Pair engine - Phase 1 (rule-based from phase1_pairs.json, reorder by seed movie)
-- [ ] AI pair engine - Phase 2-3 (Claude API + pair_picker.txt prompt)
-- [ ] Sequencing router (GET /pair, POST /pick, POST /skip, GET /progress, POST /seed-movie)
-- [ ] Quadrant calculator (compute quadrant vector from Phase 1 picks)
-- [ ] Sequencing store (Zustand: currentPair, round, phase, liveTags, optimistic updates)
-- [ ] TMDB search UI (autocomplete for seed movie input - pre-sequencing step)
-- [ ] Sequencing page (split-screen A/B, VS neon divider, phase indicator, progress bar)
-- [ ] MovieCard (tarot-style flip entrance, hover background color extraction)
-- [ ] SwipePair (drag up=select, drag down=skip via Framer Motion drag)
-- [ ] PhaseIndicator + LiveTagCloud + SkipActions
-- [ ] Liquid DNA tube animation (Canvas/WebGL: colored liquid fills tube per selection)
-- [ ] Sound effects (punch hole sound on selection)
-- [ ] Dynamic background color shift (genre-based: thriller=purple, comedy=yellow)
-- [ ] Server Components for initial movie data fetch (Next.js 15 RSC)
-- [ ] Tests: pair engine, TMDB client, pick/skip flow
+- [x] TMDB client (movie details fetch + Redis cache)
+- [x] Pair engine - Phase 1 (rule-based from phase1_pairs.json, reorder by seed movie)
+- [x] AI pair engine - Phase 2-3 (Claude API + pair_picker.txt prompt)
+- [x] Sequencing router (GET /pair, POST /pick, POST /skip, GET /progress, POST /seed-movie)
+- [x] Quadrant calculator (compute quadrant vector from Phase 1 picks)
+- [x] Sequencing store (Zustand: currentPair, round, phase, liveTags, optimistic updates)
+- [x] TMDB search UI (autocomplete for seed movie input - pre-sequencing step)
+- [x] Sequencing page (split-screen A/B, VS neon divider, phase indicator, progress bar)
+- [x] MovieCard (tarot-style flip entrance, hover background color extraction)
+- [x] SwipePair (Framer Motion enter/exit transitions)
+- [x] PhaseIndicator + LiveTagCloud + SkipActions
+- [ ] Liquid DNA tube animation (Canvas/WebGL) — deferred to Phase 7 polish
+- [ ] Sound effects (punch hole sound) — deferred to Phase 7 polish
+- [x] Dynamic background color shift (genre-based: thriller=purple, comedy=yellow)
+- [ ] Server Components for initial movie data fetch (Next.js 15 RSC) — deferred to Phase 7
+- [x] Tests: pair engine, TMDB client, pick/skip flow
 
 ## Phase 4: DNA Builder + Result
 - [ ] DNA builder service (tag vector computation, archetype assignment)
