@@ -15,17 +15,18 @@
 - [x] Seed script (load groups_seed.json into DB)
 
 ## Phase 2: Authentication
-- [ ] Auth utilities (magic link token + JWT creation/verification)
-- [ ] Email service (send magic link via Resend, console fallback in dev)
-- [ ] Auth router (POST /auth/register, /auth/verify, /auth/login)
-- [ ] Auth dependency (get_current_user from Bearer token)
-- [ ] Frontend API client (fetch wrapper with JWT)
-- [ ] Auth store (Zustand: user, token, register, verify, login, logout)
-- [ ] Register page (form: email, name, gender, region + zod validation)
-- [ ] Verify page (read token from URL, store JWT, redirect)
-- [ ] Login page (email input, send magic link)
-- [ ] UI components (Button, Input, Avatar, ProgressBar)
-- [ ] Tests: backend auth flow + frontend form validation
+- [x] Auth utilities (magic link token + JWT creation/verification)
+- [x] Email service (send magic link via Resend, console fallback in dev)
+- [x] Auth router (POST /auth/register, /auth/verify, /auth/login)
+- [x] Auth dependency (get_current_user from Bearer token)
+- [x] Frontend API client (fetch wrapper with JWT)
+- [x] Auth store (Zustand: user, token, register, verify, login, logout)
+- [x] Register page (form: email, name, gender, region + validation)
+- [x] Verify page (read token from URL, store JWT, redirect)
+- [x] Login page (email input, send magic link)
+- [x] UI components (Button, Input)
+- [x] Tests: backend auth flow (unit + integration)
+- [ ] UI components (Avatar, ProgressBar) — deferred to when needed
 
 ## Phase 3: Sequencing Engine (Core Feature)
 - [ ] TMDB client (movie details fetch + Redis cache)
