@@ -1,10 +1,10 @@
-"""AI personality service: Claude API generates personality reading from DNA data."""
+"""AI personality service: Gemini API generates personality reading from DNA data."""
 
 import json
 import logging
 from pathlib import Path
 
-import anthropic
+from google import genai
 
 from app.config import settings
 
@@ -56,7 +56,7 @@ async def generate_personality(
     quadrant_scores: dict,
     archetype_id: str,
 ) -> dict | None:
-    """Call Claude API to generate personality reading.
+    """Call Gemini API to generate personality reading.
 
     Returns dict with: personality_reading, hidden_traits,
     conversation_style, ideal_movie_date.
@@ -67,18 +67,21 @@ async def generate_personality(
     )
 
     try:
-        client = anthropic.AsyncAnthropic(api_key=settings.anthropic_api_key)
-        message = await client.messages.create(
-            model="claude-sonnet-4-20250514",
-            max_tokens=800,
-            system=SYSTEM_PROMPT,
-            messages=[{"role": "user", "content": context}],
+        client = genai.Client(api_key=settings.gemini_api_key)
+        response = await client.aio.models.generate_content(
+            model="gemini-2.0-flash",
+            contents=f"{SYSTEM_PROMPT}\n\n---\n\n{context}",
+            config={
+                "response_mime_type": "application/json",
+                "temperature": 0.9,
+                "max_output_tokens": 800,
+            },
         )
-    except anthropic.APIError:
-        logger.exception("Claude API error for personality generation")
+    except Exception:
+        logger.exception("Gemini API error for personality generation")
         return None
 
-    response_text = message.content[0].text.strip()
+    response_text = response.text.strip()
 
     # Extract JSON from potential markdown code block
     if "```" in response_text:

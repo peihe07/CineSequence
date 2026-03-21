@@ -1,10 +1,10 @@
-"""Phase 2-3 AI pair engine: Claude API generates adaptive movie pairs."""
+"""Phase 2-3 AI pair engine: Gemini API generates adaptive movie pairs."""
 
 import json
 import logging
 from pathlib import Path
 
-import anthropic
+from google import genai
 
 from app.config import settings
 from app.services.tmdb_client import get_movie
@@ -14,9 +14,6 @@ logger = logging.getLogger(__name__)
 PROMPT_FILE = Path(__file__).resolve().parent.parent / "data" / "prompts" / "pair_picker.txt"
 SYSTEM_PROMPT = PROMPT_FILE.read_text(encoding="utf-8")
 
-REDIS_PREFETCH_PREFIX = "prefetch:pair:"
-PREFETCH_TTL = 600  # 10 minutes
-
 
 def _build_user_context(
     phase: int,
@@ -24,7 +21,7 @@ def _build_user_context(
     picks: list[dict],
     quadrant_scores: dict,
 ) -> str:
-    """Build the context string for Claude from user's pick history."""
+    """Build the context string from user's pick history."""
     chosen_movies = []
     skipped_movies = []
     tag_freq: dict[str, int] = {}
@@ -40,7 +37,6 @@ def _build_user_context(
         else:
             skipped_movies.append(movie_info)
 
-        # Accumulate tags from test dimensions
         dim = pick.get("test_dimension")
         if dim:
             tag_freq[dim] = tag_freq.get(dim, 0) + 1
@@ -71,23 +67,25 @@ async def get_ai_pair(
     picks: list[dict],
     quadrant_scores: dict,
 ) -> dict | None:
-    """Call Claude API to generate the next movie pair for Phase 2 or 3."""
+    """Call Gemini API to generate the next movie pair for Phase 2 or 3."""
     user_context = _build_user_context(phase, round_number, picks, quadrant_scores)
 
     try:
-        client = anthropic.AsyncAnthropic(api_key=settings.anthropic_api_key)
-        message = await client.messages.create(
-            model="claude-sonnet-4-20250514",
-            max_tokens=500,
-            system=SYSTEM_PROMPT,
-            messages=[{"role": "user", "content": user_context}],
+        client = genai.Client(api_key=settings.gemini_api_key)
+        response = await client.aio.models.generate_content(
+            model="gemini-2.0-flash",
+            contents=f"{SYSTEM_PROMPT}\n\n---\n\n{user_context}",
+            config={
+                "response_mime_type": "application/json",
+                "temperature": 0.8,
+                "max_output_tokens": 500,
+            },
         )
-    except anthropic.APIError:
-        logger.exception("Claude API error for round %s", round_number)
+    except Exception:
+        logger.exception("Gemini API error for round %s", round_number)
         return None
 
-    # Parse the JSON response
-    response_text = message.content[0].text.strip()
+    response_text = response.text.strip()
 
     # Extract JSON from potential markdown code block
     if "```" in response_text:
@@ -98,7 +96,7 @@ async def get_ai_pair(
     try:
         result = json.loads(response_text)
     except json.JSONDecodeError:
-        logger.error("Failed to parse Claude response: %s", response_text[:200])
+        logger.error("Failed to parse Gemini response: %s", response_text[:200])
         return None
 
     # Validate tmdb_ids exist
@@ -106,14 +104,14 @@ async def get_ai_pair(
     movie_b_id = result.get("movie_b", {}).get("tmdb_id")
 
     if not movie_a_id or not movie_b_id:
-        logger.error("Claude returned missing tmdb_ids: %s", result)
+        logger.error("Gemini returned missing tmdb_ids: %s", result)
         return None
 
     movie_a = await get_movie(movie_a_id)
     movie_b = await get_movie(movie_b_id)
 
     if not movie_a or not movie_b:
-        logger.warning("TMDB validation failed for pair (%s, %s), retrying", movie_a_id, movie_b_id)
+        logger.warning("TMDB validation failed for pair (%s, %s)", movie_a_id, movie_b_id)
         return None
 
     return {
