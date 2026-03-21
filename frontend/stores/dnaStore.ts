@@ -1,0 +1,75 @@
+import { create } from 'zustand'
+import { api } from '@/lib/api'
+
+interface ArchetypeInfo {
+  id: string
+  name: string
+  name_en: string
+  icon: string
+  description: string
+}
+
+interface QuadrantScores {
+  mainstream_independent: number
+  rational_emotional: number
+  light_dark: number
+}
+
+interface DnaResult {
+  archetype: ArchetypeInfo
+  tag_vector: number[]
+  tag_labels: Record<string, number>
+  genre_vector: Record<string, number>
+  quadrant_scores: QuadrantScores
+  personality_reading: string | null
+  hidden_traits: string[]
+  conversation_style: string | null
+  ideal_movie_date: string | null
+  ticket_style: string
+}
+
+interface DnaState {
+  result: DnaResult | null
+  isBuilding: boolean
+  isLoading: boolean
+  error: string | null
+
+  buildDna: () => Promise<void>
+  fetchResult: () => Promise<void>
+}
+
+export const useDnaStore = create<DnaState>((set, get) => ({
+  result: null,
+  isBuilding: false,
+  isLoading: false,
+  error: null,
+
+  buildDna: async () => {
+    set({ isBuilding: true, error: null })
+    try {
+      const res = await api<{ status: string }>('/dna/build', { method: 'POST' })
+      set({ isBuilding: false })
+      if (res.status === 'ready') {
+        get().fetchResult()
+      }
+    } catch (err) {
+      set({
+        isBuilding: false,
+        error: err instanceof Error ? err.message : 'Failed to build DNA',
+      })
+    }
+  },
+
+  fetchResult: async () => {
+    set({ isLoading: true, error: null })
+    try {
+      const result = await api<DnaResult>('/dna/result')
+      set({ result, isLoading: false })
+    } catch (err) {
+      set({
+        isLoading: false,
+        error: err instanceof Error ? err.message : 'Failed to fetch DNA result',
+      })
+    }
+  },
+}))
