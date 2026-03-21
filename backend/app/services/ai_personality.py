@@ -69,12 +69,13 @@ async def generate_personality(
     try:
         client = genai.Client(api_key=settings.gemini_api_key)
         response = await client.aio.models.generate_content(
-            model="gemini-2.0-flash",
+            model="gemini-2.5-flash",
             contents=f"{SYSTEM_PROMPT}\n\n---\n\n{context}",
             config={
                 "response_mime_type": "application/json",
                 "temperature": 0.9,
-                "max_output_tokens": 800,
+                "max_output_tokens": 2048,
+                "thinking_config": {"thinking_budget": 0},
             },
         )
     except Exception:

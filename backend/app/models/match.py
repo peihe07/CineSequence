@@ -52,5 +52,5 @@ class Match(Base):
     )
 
     # Relationships
-    user_a: Mapped["User"] = relationship(foreign_keys=[user_a_id])
-    user_b: Mapped["User"] = relationship(foreign_keys=[user_b_id])
+    user_a: Mapped["User"] = relationship(foreign_keys=[user_a_id], lazy="selectin")
+    user_b: Mapped["User"] = relationship(foreign_keys=[user_b_id], lazy="selectin")

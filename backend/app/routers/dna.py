@@ -165,7 +165,7 @@ async def get_dna_result(
 
     session = await get_or_create_session(db, user.id)
     archetype_info = _get_archetype_info(profile.archetype_id)
-    tag_vector = list(profile.tag_vector) if profile.tag_vector else []
+    tag_vector = list(profile.tag_vector) if profile.tag_vector is not None else []
     tag_labels = get_tag_labels(tag_vector)
 
     return DnaResultResponse(

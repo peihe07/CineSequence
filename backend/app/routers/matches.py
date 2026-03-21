@@ -53,7 +53,7 @@ def _match_to_out(match, user_id: uuid.UUID) -> MatchOut:
     )
 
 
-@router.get("/matches")
+@router.get("")
 async def list_matches(
     user: Annotated[User, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
@@ -63,7 +63,7 @@ async def list_matches(
     return [_match_to_out(m, user.id) for m in matches]
 
 
-@router.post("/matches/discover")
+@router.post("/discover")
 async def discover_matches(
     user: Annotated[User, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
@@ -79,7 +79,7 @@ async def discover_matches(
     return [_match_to_out(m, user.id) for m in new_matches]
 
 
-@router.post("/matches/invite")
+@router.post("/invite")
 async def invite_match(
     body: InviteRequest,
     user: Annotated[User, Depends(get_current_user)],
@@ -96,7 +96,7 @@ async def invite_match(
     return _match_to_out(match, user.id)
 
 
-@router.post("/matches/respond")
+@router.post("/respond")
 async def respond_match(
     body: RespondRequest,
     user: Annotated[User, Depends(get_current_user)],

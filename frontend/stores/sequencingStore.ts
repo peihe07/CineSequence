@@ -102,6 +102,7 @@ export const useSequencingStore = create<SequencingState>((set, get) => ({
           chosen_tmdb_id: tmdbId,
           pick_mode: pickMode,
           response_time_ms: responseTimeMs,
+          test_dimension: currentPair?.test_dimension ?? null,
         }),
       })
       set({ progress, isLoading: false, ambientColor: null })
@@ -115,11 +116,15 @@ export const useSequencingStore = create<SequencingState>((set, get) => ({
   },
 
   skip: async (responseTimeMs) => {
+    const { currentPair } = get()
     set({ isLoading: true })
     try {
       const progress = await api<Progress>('/sequencing/skip', {
         method: 'POST',
-        body: JSON.stringify({ response_time_ms: responseTimeMs }),
+        body: JSON.stringify({
+          response_time_ms: responseTimeMs,
+          test_dimension: currentPair?.test_dimension ?? null,
+        }),
       })
       set({ progress, isLoading: false, ambientColor: null })
 

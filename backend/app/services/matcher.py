@@ -275,16 +275,16 @@ def _compute_shared_tags(
 
 def _compute_shared_genres(
     profile_a: DnaProfile, profile_b: DnaProfile, min_freq: float = 0.15
-) -> list[int]:
+) -> list[str]:
     """Find genres both profiles watch frequently."""
     genres_a = profile_a.genre_vector or {}
     genres_b = profile_b.genre_vector or {}
 
     shared = []
-    for genre_id in genres_a:
-        if genre_id in genres_b:
-            if genres_a[genre_id] >= min_freq and genres_b[genre_id] >= min_freq:
-                shared.append(int(genre_id))
+    for genre_key in genres_a:
+        if genre_key in genres_b:
+            if genres_a[genre_key] >= min_freq and genres_b[genre_key] >= min_freq:
+                shared.append(genre_key)
 
     return shared
 
@@ -298,7 +298,7 @@ GENRE_NAMES = {
 }
 
 
-def _generate_ice_breakers(shared_tags: list[str], shared_genres: list[int]) -> list[str]:
+def _generate_ice_breakers(shared_tags: list[str], shared_genres: list[str]) -> list[str]:
     """Generate conversation starters based on shared tastes."""
     breakers = []
 
@@ -311,8 +311,7 @@ def _generate_ice_breakers(shared_tags: list[str], shared_genres: list[int]) -> 
         breakers.append(f"「{tag_zh}」是你們的共同語言，聊聊近期印象深刻的作品。")
 
     if shared_genres:
-        genre_name = GENRE_NAMES.get(shared_genres[0], "Film")
-        breakers.append(f"你們都關注 {genre_name} 類型，適合交換推薦片單。")
+        breakers.append(f"你們都關注「{shared_genres[0]}」類型，適合交換推薦片單。")
 
     if not breakers:
         breakers.append("你們的觀影光譜有所交集，不妨從各自的年度片單開始。")

@@ -26,10 +26,12 @@ class PickRequest(BaseModel):
     chosen_tmdb_id: int
     pick_mode: PickMode
     response_time_ms: int | None = None
+    test_dimension: str | None = None
 
 
 class SkipRequest(BaseModel):
     response_time_ms: int | None = None
+    test_dimension: str | None = None
 
 
 class ProgressResponse(BaseModel):

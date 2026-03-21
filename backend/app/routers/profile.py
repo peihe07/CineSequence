@@ -68,7 +68,7 @@ def _user_to_profile(user: User) -> ProfileOut:
     )
 
 
-@router.get("/profile")
+@router.get("")
 async def get_profile(
     user: Annotated[User, Depends(get_current_user)],
 ):
@@ -76,7 +76,7 @@ async def get_profile(
     return _user_to_profile(user)
 
 
-@router.patch("/profile")
+@router.patch("")
 async def update_profile(
     body: ProfileUpdate,
     user: Annotated[User, Depends(get_current_user)],

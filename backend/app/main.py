@@ -1,9 +1,14 @@
+import logging
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
+
+# Configure app-level logging so services (email, matcher, etc.) output INFO
+logging.basicConfig(level=logging.INFO)
+logging.getLogger("app").setLevel(logging.INFO)
 from app.routers import auth, dna, groups, matches, profile, sequencing
 
 

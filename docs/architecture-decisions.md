@@ -71,7 +71,7 @@ LIMIT 50;
 - DNA personality reading is the "wow factor" — worth the API cost
 - Prefetch strategy: while user views current pair, backend requests next pair from Gemini
 
-**Cost estimate**: ~20 Gemini API calls per user (7 Phase 2-3 pairs + 8 Phase 3 pairs + 1 DNA reading + prefetch buffer).
+**Cost estimate**: See ADR-014 for detailed token/cost analysis.
 
 ---
 
@@ -177,3 +177,70 @@ server restarts and lacks retry/scheduling capabilities.
 - Seasonal retest lets users refresh their DNA profile as taste evolves
 - SequencingSession model tracks session state (round count, extension status)
 - DNA profiles are versioned — retest creates a new version, old versions remain accessible via `/dna/history`
+
+---
+
+## ADR-014: Gemini API token budget and cost analysis
+
+**Decision**: Use Gemini 2.5 Flash for all AI features. Budget ~$0.005 USD per user.
+
+### API call points (2 total)
+
+| Call site | When | Model | max_output_tokens |
+|-----------|------|-------|-------------------|
+| `ai_pair_engine.get_ai_pair()` | Phase 2-3, once per round | gemini-2.5-flash | 500 |
+| `ai_personality.generate_personality()` | DNA build, once | gemini-2.5-flash | 800 |
+
+Note: `ice_breaker.txt` prompt exists but ice breakers are currently rule-based (no API call).
+
+### Calls per user
+
+| Scenario | Pair generation | Personality | Total calls |
+|----------|----------------|-------------|-------------|
+| Standard 20 rounds | 15 (rounds 6-20) | 1 | **16** |
+| Extension +5 rounds | 20 (rounds 6-25) | 1 | **21** |
+| Seasonal retest | +15 to +20 | +1 | +16 to +21 |
+
+### Token estimate per call
+
+**ai_pair_engine (per call, average across rounds):**
+- System prompt (pair_picker.txt): ~730 tokens
+- User context (picks, quadrant, seen_ids): ~100 tokens (round 6) to ~500 tokens (round 20), avg ~300
+- **Input avg: ~1,030 tokens/call**
+- **Output avg: ~150 tokens/call** (max 500, actual JSON response ~150)
+
+**ai_personality (single call):**
+- System prompt (personality.txt): ~580 tokens
+- User context (all picks + tag_vector + genre_vector + quadrant): ~830 tokens
+- **Input: ~1,410 tokens**
+- **Output: ~500 tokens** (max 800, actual ~500 for 150-250 word Chinese reading)
+
+### Per-user token totals
+
+| Scenario | Input tokens | Output tokens | Total tokens |
+|----------|-------------|---------------|--------------|
+| Standard 20 rounds | ~16,860 | ~2,750 | **~19,610** |
+| Extension 25 rounds | ~22,010 | ~3,550 | **~25,560** |
+| Retest (additional) | +16,860 to +22,010 | +2,750 to +3,550 | +19,610 to +25,560 |
+
+### Cost per user (Gemini 2.5 Flash pricing, as of 2026-03)
+
+| | Rate | Standard 20 | Extension 25 |
+|--|------|-------------|--------------|
+| Input | $0.15 / 1M tokens | $0.0025 | $0.0033 |
+| Output | $0.60 / 1M tokens | $0.0017 | $0.0021 |
+| **Total** | | **~$0.004** | **~$0.005** |
+
+### Scale projections
+
+| Users | Standard cost | With 20% extension | With 10% retest |
+|-------|-------------|---------------------|-----------------|
+| 1,000 | $4.0 | $4.4 | $4.8 |
+| 10,000 | $40 | $44 | $48 |
+| 100,000 | $400 | $440 | $480 |
+
+### Optimization notes
+- Phase 1 (rounds 1-5) is fully rule-based — zero API cost
+- User context grows linearly per round; capping `picks[-10:]` keeps input bounded
+- `response_mime_type: "application/json"` reduces wasted output tokens
+- If ice breakers are upgraded to AI-generated, add ~1 call per match (~500 input + 100 output tokens)

@@ -231,7 +231,7 @@ async def submit_pick(
         pair_id = None
         movie_a_tmdb_id = body.chosen_tmdb_id
         movie_b_tmdb_id = 0
-        test_dimension = None
+        test_dimension = body.test_dimension
 
     if phase == 1 and body.chosen_tmdb_id not in (movie_a_tmdb_id, movie_b_tmdb_id):
         raise HTTPException(status_code=400, detail="Chosen movie is not in the current pair")
@@ -296,6 +296,12 @@ async def skip_pair(
         movie_a_tmdb_id = 0
         movie_b_tmdb_id = 0
 
+    # Determine test_dimension
+    if phase == 1:
+        skip_dimension = pair.get("dimension")
+    else:
+        skip_dimension = body.test_dimension
+
     pick = Pick(
         user_id=user.id,
         session_id=session.id,
@@ -306,6 +312,7 @@ async def skip_pair(
         movie_b_tmdb_id=movie_b_tmdb_id,
         chosen_tmdb_id=None,
         pick_mode=None,
+        test_dimension=skip_dimension,
         response_time_ms=body.response_time_ms,
     )
     db.add(pick)

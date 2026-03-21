@@ -157,7 +157,7 @@ GET    /dna/history                # List all DNA versions
 
 ### Matching (`/matches`)
 ```
-GET    /matches/matches            # Get user's matches
+GET    /matches                    # Get user's matches
 POST   /matches/discover           # Run matching algorithm
 POST   /matches/invite             # Send invite to match
 POST   /matches/respond            # Accept/decline invite
@@ -165,8 +165,8 @@ POST   /matches/respond            # Accept/decline invite
 
 ### Profile (`/profile`)
 ```
-GET    /profile/profile            # Get user profile
-PATCH  /profile/profile            # Update profile
+GET    /profile                    # Get user profile
+PATCH  /profile                    # Update profile
 ```
 
 ### Groups (`/groups`) — Not yet implemented

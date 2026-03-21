@@ -11,8 +11,13 @@ from app.services.tmdb_client import get_movie
 
 logger = logging.getLogger(__name__)
 
-PROMPT_FILE = Path(__file__).resolve().parent.parent / "data" / "prompts" / "pair_picker.txt"
+DATA_DIR = Path(__file__).resolve().parent.parent / "data"
+PROMPT_FILE = DATA_DIR / "prompts" / "pair_picker.txt"
 SYSTEM_PROMPT = PROMPT_FILE.read_text(encoding="utf-8")
+
+# Valid tag keys for test_dimension validation
+with open(DATA_DIR / "tag_taxonomy.json") as _f:
+    _VALID_TAGS = set(json.load(_f)["tags"].keys())
 
 
 def _build_user_context(
@@ -73,12 +78,13 @@ async def get_ai_pair(
     try:
         client = genai.Client(api_key=settings.gemini_api_key)
         response = await client.aio.models.generate_content(
-            model="gemini-2.0-flash",
+            model="gemini-2.5-flash",
             contents=f"{SYSTEM_PROMPT}\n\n---\n\n{user_context}",
             config={
                 "response_mime_type": "application/json",
                 "temperature": 0.8,
-                "max_output_tokens": 500,
+                "max_output_tokens": 1024,
+                "thinking_config": {"thinking_budget": 0},
             },
         )
     except Exception:
@@ -114,10 +120,16 @@ async def get_ai_pair(
         logger.warning("TMDB validation failed for pair (%s, %s)", movie_a_id, movie_b_id)
         return None
 
+    # Validate test_dimension is a known tag key
+    test_dim = result.get("test_dimension", "")
+    if test_dim not in _VALID_TAGS:
+        logger.warning("Gemini returned invalid test_dimension '%s', discarding", test_dim)
+        test_dim = ""
+
     return {
         "movie_a_tmdb_id": movie_a_id,
         "movie_b_tmdb_id": movie_b_id,
         "movie_a": movie_a,
         "movie_b": movie_b,
-        "test_dimension": result.get("test_dimension", ""),
+        "test_dimension": test_dim,
     }
