@@ -1,0 +1,248 @@
+.container {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  padding: 4rem 2rem;
+}
+
+.content {
+  width: 100%;
+  max-width: 640px;
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.title {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.discoverBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.6rem 1.2rem;
+  background: var(--foreground);
+  color: var(--background);
+  border: none;
+  font-size: 0.8rem;
+  font-family: inherit;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.discoverBtn:hover {
+  opacity: 0.85;
+}
+
+.discoverBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Loading */
+.loading {
+  display: flex;
+  justify-content: center;
+  padding: 4rem 0;
+  color: var(--muted);
+}
+
+/* Empty state */
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 4rem 0;
+  color: var(--muted);
+  text-align: center;
+}
+
+.emptyHint {
+  font-size: 0.8rem;
+  color: var(--muted-light);
+}
+
+/* Grid */
+.grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Match card */
+.card {
+  padding: 1.5rem;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.partnerInfo {
+  display: flex;
+  align-items: baseline;
+  gap: 0.8rem;
+}
+
+.partnerName {
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.similarity {
+  font-size: 0.75rem;
+  color: var(--accent);
+  font-weight: 500;
+}
+
+.status {
+  font-size: 0.65rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.6rem;
+  border: 1px solid var(--border);
+}
+
+.discovered {
+  color: var(--muted);
+}
+
+.invited {
+  color: var(--accent);
+  border-color: rgba(192, 98, 35, 0.2);
+}
+
+.accepted {
+  color: #2d8659;
+  border-color: rgba(45, 134, 89, 0.2);
+}
+
+.declined {
+  color: var(--muted-light);
+}
+
+/* Tags */
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.tag {
+  padding: 0.15rem 0.5rem;
+  font-size: 0.65rem;
+  color: var(--accent);
+  background: var(--accent-light);
+  border: 1px solid rgba(192, 98, 35, 0.12);
+}
+
+/* Ice breaker */
+.iceBreaker {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.iceBreaker i {
+  color: var(--accent);
+  margin-top: 0.1rem;
+  flex-shrink: 0;
+}
+
+/* Card actions */
+.cardActions {
+  display: flex;
+  align-items: center;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--border);
+}
+
+.inviteBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.5rem 1rem;
+  background: var(--foreground);
+  color: var(--background);
+  border: none;
+  font-size: 0.75rem;
+  font-family: inherit;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.inviteBtn:hover {
+  opacity: 0.85;
+}
+
+.respondBtns {
+  display: flex;
+  gap: 0.6rem;
+}
+
+.acceptBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.5rem 1rem;
+  background: var(--foreground);
+  color: var(--background);
+  border: none;
+  font-size: 0.75rem;
+  font-family: inherit;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.acceptBtn:hover {
+  opacity: 0.85;
+}
+
+.declineBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.5rem 1rem;
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  font-size: 0.75rem;
+  font-family: inherit;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+
+.declineBtn:hover {
+  border-color: var(--border-dark);
+}
+
+.acceptedLabel {
+  font-size: 0.8rem;
+  color: #2d8659;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}

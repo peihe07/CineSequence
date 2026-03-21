@@ -15,6 +15,7 @@
   --card-shadow-hover: 0 4px 12px rgba(68, 81, 75, 0.07);
   --error: #b33a3a;
   --font-sans: var(--font-inconsolata), 'Inconsolata', monospace;
+  --font-display: var(--font-silkscreen), 'Silkscreen', cursive;
 }
 
 *,
