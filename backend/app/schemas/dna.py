@@ -26,6 +26,8 @@ class DnaResultResponse(BaseModel):
     conversation_style: str | None = None
     ideal_movie_date: str | None = None
     ticket_style: str
+    version: int = 1
+    can_extend: bool = False
 
     model_config = {"from_attributes": True}
 
@@ -33,3 +35,12 @@ class DnaResultResponse(BaseModel):
 class DnaBuildResponse(BaseModel):
     status: str = "building"
     message: str = "DNA analysis in progress"
+
+
+class DnaHistorySummary(BaseModel):
+    version: int
+    archetype: ArchetypeInfo
+    ticket_style: str
+    created_at: str
+
+    model_config = {"from_attributes": True}

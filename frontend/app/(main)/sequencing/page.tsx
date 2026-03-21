@@ -41,10 +41,10 @@ export default function SequencingPage() {
     roundStartTime.current = Date.now()
   }, [currentPair])
 
-  // Redirect to DNA result when completed
+  // Redirect to complete page when done
   useEffect(() => {
     if (progress?.completed || currentPair?.completed) {
-      router.push('/dna')
+      router.push('/sequencing/complete')
     }
   }, [progress?.completed, currentPair?.completed, router])
 
@@ -74,7 +74,7 @@ export default function SequencingPage() {
       <div className={styles.ambientGlow} />
 
       <div className={styles.header}>
-        <PhaseIndicator phase={phase} round={roundNumber} totalRounds={20} />
+        <PhaseIndicator phase={phase} round={roundNumber} totalRounds={progress?.total_rounds ?? 20} />
       </div>
 
       <div className={styles.arena}>

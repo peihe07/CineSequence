@@ -26,6 +26,17 @@ interface Progress {
   total_rounds: number
   completed: boolean
   seed_movie_tmdb_id: number | null
+  can_extend: boolean
+  extension_batches: number
+  max_extension_batches: number
+  session_version: number
+  is_extending: boolean
+}
+
+interface ExtendResponse {
+  total_rounds: number
+  extension_batches: number
+  max_extension_batches: number
 }
 
 interface SequencingState {
@@ -34,7 +45,6 @@ interface SequencingState {
   liveTags: string[]
   isLoading: boolean
   error: string | null
-  // Dynamic background color extracted from hovered movie poster
   ambientColor: string | null
 
   fetchPair: () => Promise<void>
@@ -42,6 +52,8 @@ interface SequencingState {
   submitPick: (tmdbId: number, pickMode: 'watched' | 'attracted', responseTimeMs?: number) => Promise<void>
   skip: (responseTimeMs?: number) => Promise<void>
   setSeedMovie: (tmdbId: number) => Promise<void>
+  extendSequencing: () => Promise<void>
+  startRetest: () => Promise<void>
   setAmbientColor: (color: string | null) => void
   addLiveTag: (tag: string) => void
 }
@@ -76,7 +88,6 @@ export const useSequencingStore = create<SequencingState>((set, get) => ({
   submitPick: async (tmdbId, pickMode, responseTimeMs) => {
     const { currentPair } = get()
 
-    // Optimistic: add test dimension as live tag
     if (currentPair?.test_dimension) {
       set((state) => ({
         liveTags: [...state.liveTags, currentPair.test_dimension!],
@@ -95,7 +106,6 @@ export const useSequencingStore = create<SequencingState>((set, get) => ({
       })
       set({ progress, isLoading: false, ambientColor: null })
 
-      // Auto-fetch next pair if not completed
       if (!progress.completed) {
         get().fetchPair()
       }
@@ -131,6 +141,44 @@ export const useSequencingStore = create<SequencingState>((set, get) => ({
       set({ isLoading: false })
     } catch (err) {
       set({ isLoading: false, error: err instanceof Error ? err.message : 'Failed to set seed movie' })
+    }
+  },
+
+  extendSequencing: async () => {
+    set({ isLoading: true, error: null })
+    try {
+      const res = await api<ExtendResponse>('/sequencing/extend', { method: 'POST' })
+      set((state) => ({
+        isLoading: false,
+        progress: state.progress
+          ? {
+              ...state.progress,
+              total_rounds: res.total_rounds,
+              extension_batches: res.extension_batches,
+              max_extension_batches: res.max_extension_batches,
+              completed: false,
+              can_extend: false,
+              is_extending: true,
+            }
+          : null,
+      }))
+    } catch (err) {
+      set({ isLoading: false, error: err instanceof Error ? err.message : 'Failed to extend' })
+    }
+  },
+
+  startRetest: async () => {
+    set({ isLoading: true, error: null })
+    try {
+      await api('/sequencing/retest', { method: 'POST' })
+      set({
+        isLoading: false,
+        currentPair: null,
+        progress: null,
+        liveTags: [],
+      })
+    } catch (err) {
+      set({ isLoading: false, error: err instanceof Error ? err.message : 'Failed to start retest' })
     }
   },
 

@@ -2,7 +2,7 @@ import enum
 import uuid
 from datetime import datetime
 
-from sqlalchemy import Boolean, DateTime, Enum, Integer, String, func
+from sqlalchemy import Boolean, DateTime, Enum, ForeignKey, Integer, String, func
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -53,6 +53,9 @@ class User(Base):
         Enum(SequencingStatus), default=SequencingStatus.not_started
     )
     seed_movie_tmdb_id: Mapped[int | None] = mapped_column(Integer)
+    active_session_id: Mapped[uuid.UUID | None] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("sequencing_sessions.id", use_alter=True), nullable=True
+    )
 
     # Auth
     magic_link_token: Mapped[str | None] = mapped_column(String(500))
@@ -68,6 +71,21 @@ class User(Base):
 
     # Relationships
     picks: Mapped[list["Pick"]] = relationship(back_populates="user", lazy="selectin")
-    dna_profile: Mapped["DnaProfile | None"] = relationship(
-        back_populates="user", lazy="selectin", uselist=False
+    dna_profiles: Mapped[list["DnaProfile"]] = relationship(
+        back_populates="user", lazy="selectin"
     )
+    sessions: Mapped[list["SequencingSession"]] = relationship(
+        back_populates="user", lazy="selectin",
+        foreign_keys="SequencingSession.user_id",
+    )
+    active_session: Mapped["SequencingSession | None"] = relationship(
+        foreign_keys=[active_session_id], lazy="selectin", uselist=False,
+    )
+
+    @property
+    def dna_profile(self) -> "DnaProfile | None":
+        """Get the currently active DNA profile."""
+        for p in self.dna_profiles:
+            if p.is_active:
+                return p
+        return None

@@ -38,6 +38,12 @@ class ProgressResponse(BaseModel):
     total_rounds: int = 20
     completed: bool = False
     seed_movie_tmdb_id: int | None = None
+    # Extension fields
+    can_extend: bool = False
+    extension_batches: int = 0
+    max_extension_batches: int = 3
+    session_version: int = 1
+    is_extending: bool = False
 
 
 class SeedMovieRequest(BaseModel):
@@ -50,3 +56,14 @@ class MovieSearchResult(BaseModel):
     title_zh: str | None = None
     poster_url: str | None = None
     year: int | None = None
+
+
+class ExtendResponse(BaseModel):
+    total_rounds: int
+    extension_batches: int
+    max_extension_batches: int
+
+
+class RetestResponse(BaseModel):
+    version: int
+    message: str = "New sequencing session started"

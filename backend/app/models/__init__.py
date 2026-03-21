@@ -6,6 +6,7 @@ class Base(DeclarativeBase):
 
 
 # Import all models so Alembic can detect them
+from app.models.sequencing_session import SequencingSession  # noqa: E402, F401
 from app.models.user import User  # noqa: E402, F401
 from app.models.pick import Pick  # noqa: E402, F401
 from app.models.dna_profile import DnaProfile  # noqa: E402, F401

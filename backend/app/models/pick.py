@@ -23,6 +23,9 @@ class Pick(Base):
     user_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), index=True
     )
+    session_id: Mapped[uuid.UUID | None] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("sequencing_sessions.id", ondelete="CASCADE"), index=True
+    )
     round_number: Mapped[int] = mapped_column(Integer, nullable=False)
     phase: Mapped[int] = mapped_column(Integer, nullable=False)
 
@@ -43,3 +46,4 @@ class Pick(Base):
 
     # Relationships
     user: Mapped["User"] = relationship(back_populates="picks")
+    session: Mapped["SequencingSession | None"] = relationship(back_populates="picks")

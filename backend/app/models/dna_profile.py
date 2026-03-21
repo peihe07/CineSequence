@@ -2,7 +2,7 @@ import uuid
 from datetime import datetime
 
 from pgvector.sqlalchemy import Vector
-from sqlalchemy import DateTime, ForeignKey, String, Text, func
+from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, String, Text, func
 from sqlalchemy.dialects.postgresql import JSON, UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -19,8 +19,14 @@ class DnaProfile(Base):
         UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
     )
     user_id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), unique=True, index=True
+        UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), index=True
     )
+    session_id: Mapped[uuid.UUID | None] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("sequencing_sessions.id", ondelete="CASCADE"),
+        unique=True, index=True
+    )
+    version: Mapped[int] = mapped_column(Integer, default=1)
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True)
 
     # Core DNA data
     archetype_id: Mapped[str] = mapped_column(String(50), nullable=False)
@@ -46,4 +52,5 @@ class DnaProfile(Base):
     )
 
     # Relationships
-    user: Mapped["User"] = relationship(back_populates="dna_profile")
+    user: Mapped["User"] = relationship(back_populates="dna_profiles")
+    session: Mapped["SequencingSession | None"] = relationship(back_populates="dna_profile")
