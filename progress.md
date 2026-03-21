@@ -11,8 +11,8 @@
 - [x] DNA schemas (DnaResultResponse, DnaBuildResponse, ArchetypeInfo, QuadrantScores)
 - [x] Match schemas (MatchResponse, InviteRequest, InviteResponse, RespondRequest)
 - [x] Profile schemas (ProfileResponse, ProfileUpdateRequest)
-- [ ] Alembic initial migration (create all tables + pgvector extension)
-- [ ] Seed script (load groups_seed.json into DB)
+- [x] Alembic initial migration (create all tables + pgvector extension + HNSW index)
+- [x] Seed script (load groups_seed.json into DB)
 
 ## Phase 2: Authentication
 - [ ] Auth utilities (magic link token + JWT creation/verification)
