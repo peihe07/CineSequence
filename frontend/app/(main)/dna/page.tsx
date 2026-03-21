@@ -4,6 +4,7 @@ import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { useDnaStore } from '@/stores/dnaStore'
+import { useI18n } from '@/lib/i18n'
 import ArchetypeCard from '@/components/dna/ArchetypeCard'
 import TagCloud from '@/components/dna/TagCloud'
 import RadarChart from '@/components/dna/RadarChart'
@@ -13,6 +14,7 @@ import styles from './page.module.css'
 
 export default function DnaResultPage() {
   const router = useRouter()
+  const { t } = useI18n()
   const { result, isBuilding, isLoading, error, buildDna, fetchResult } = useDnaStore()
 
   useEffect(() => {
@@ -39,7 +41,7 @@ export default function DnaResultPage() {
             animate={{ opacity: [0.5, 1, 0.5] }}
             transition={{ duration: 2, repeat: Infinity }}
           >
-            Analyzing your cinematic DNA...
+            {t('dna.analyzing')}
           </motion.p>
         </div>
       </main>
@@ -53,7 +55,7 @@ export default function DnaResultPage() {
           <i className="ri-error-warning-line" style={{ fontSize: '2rem' }} />
           <p>{error}</p>
           <Button variant="secondary" onClick={() => buildDna()}>
-            Retry
+            {t('dna.retry')}
           </Button>
         </div>
       </main>
@@ -77,7 +79,7 @@ export default function DnaResultPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
           >
-            Your Cine DNA
+            {t('dna.title')}
           </motion.h1>
         </div>
 
@@ -101,7 +103,7 @@ export default function DnaResultPage() {
             size="lg"
             onClick={() => router.push('/matches')}
           >
-            <i className="ri-group-line" /> Find Your Matches
+            <i className="ri-group-line" /> {t('dna.findMatches')}
           </Button>
         </div>
       </motion.div>

@@ -1,22 +1,17 @@
 'use client'
 
-import { type FormEvent, useState } from 'react'
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Button from '@/components/ui/Button'
 import Input from '@/components/ui/Input'
 import { useAuthStore } from '@/stores/authStore'
+import { useI18n } from '@/lib/i18n'
 import styles from './page.module.css'
-
-const GENDERS = [
-  { value: 'male', label: 'Male' },
-  { value: 'female', label: 'Female' },
-  { value: 'other', label: 'Other' },
-  { value: 'prefer_not_to_say', label: 'Prefer not to say' },
-]
 
 export default function RegisterPage() {
   const router = useRouter()
   const { register, isLoading, error, clearError } = useAuthStore()
+  const { t } = useI18n()
   const [sent, setSent] = useState(false)
 
   const [form, setForm] = useState({
@@ -28,16 +23,24 @@ export default function RegisterPage() {
 
   const [errors, setErrors] = useState<Record<string, string>>({})
 
+  // Gender options derived from i18n keys so labels are always locale-aware
+  const GENDERS = [
+    { value: 'male', label: t('register.genderMale') },
+    { value: 'female', label: t('register.genderFemale') },
+    { value: 'other', label: t('register.genderOther') },
+    { value: 'prefer_not_to_say', label: t('register.genderSkip') },
+  ]
+
   function validate(): boolean {
     const errs: Record<string, string> = {}
-    if (!form.email.includes('@')) errs.email = 'Please enter a valid email'
-    if (!form.name.trim()) errs.name = 'Name is required'
-    if (!form.gender) errs.gender = 'Please select a gender'
+    if (!form.email.includes('@')) errs.email = t('auth.invalidEmail')
+    if (!form.name.trim()) errs.name = t('register.nameRequired')
+    if (!form.gender) errs.gender = t('register.genderRequired')
     setErrors(errs)
     return Object.keys(errs).length === 0
   }
 
-  async function handleSubmit(e: FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     clearError()
     if (!validate()) return
@@ -55,12 +58,12 @@ export default function RegisterPage() {
       <main className={styles.container}>
         <div className={styles.card}>
           <i className="ri-mail-check-line ri-3x" />
-          <h1 className={styles.title}>Check your email</h1>
+          <h1 className={styles.title}>{t('auth.checkEmail')}</h1>
           <p className={styles.subtitle}>
-            We sent a sign-in link to <strong>{form.email}</strong>
+            {t('auth.checkEmailSent', { email: form.email })}
           </p>
           <Button variant="ghost" onClick={() => router.push('/login')}>
-            Back to login
+            {t('auth.backToLogin')}
           </Button>
         </div>
       </main>
@@ -70,11 +73,11 @@ export default function RegisterPage() {
   return (
     <main className={styles.container}>
       <form className={styles.card} onSubmit={handleSubmit}>
-        <h1 className={styles.title}>Create your account</h1>
-        <p className={styles.subtitle}>Start your Cine Sequence</p>
+        <h1 className={styles.title}>{t('register.title')}</h1>
+        <p className={styles.subtitle}>{t('register.subtitle')}</p>
 
         <Input
-          label="Email"
+          label={t('auth.emailPlaceholder')}
           type="email"
           placeholder="you@example.com"
           value={form.email}
@@ -83,15 +86,15 @@ export default function RegisterPage() {
         />
 
         <Input
-          label="Name"
-          placeholder="How should we call you?"
+          label={t('register.name')}
+          placeholder={t('register.namePlaceholder')}
           value={form.name}
           onChange={(e) => setForm({ ...form, name: e.target.value })}
           error={errors.name}
         />
 
         <div className={styles.field}>
-          <label className={styles.label}>Gender</label>
+          <label className={styles.label}>{t('register.gender')}</label>
           <div className={styles.genderGrid}>
             {GENDERS.map((g) => (
               <button
@@ -110,13 +113,13 @@ export default function RegisterPage() {
         {error && <p className={styles.error}>{error}</p>}
 
         <Button type="submit" size="lg" loading={isLoading}>
-          Sign up
+          {t('register.submit')}
         </Button>
 
         <p className={styles.footer}>
-          Already have an account?{' '}
+          {t('auth.hasAccount')}{' '}
           <a href="/login" className={styles.link}>
-            Sign in
+            {t('auth.signIn')}
           </a>
         </p>
       </form>

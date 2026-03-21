@@ -5,10 +5,12 @@ import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { useSequencingStore } from '@/stores/sequencingStore'
 import { useDnaStore } from '@/stores/dnaStore'
+import { useI18n } from '@/lib/i18n'
 import styles from './page.module.css'
 
 export default function SequencingCompletePage() {
   const router = useRouter()
+  const { t } = useI18n()
   const { progress, fetchProgress, extendSequencing } = useSequencingStore()
   const { buildDna } = useDnaStore()
 
@@ -30,6 +32,7 @@ export default function SequencingCompletePage() {
   const maxBatches = progress?.max_extension_batches ?? 3
   const canExtend = progress?.can_extend ?? false
   const totalRounds = progress?.total_rounds ?? 20
+  const remaining = maxBatches - extensionBatches
 
   return (
     <div className={styles.container}>
@@ -43,44 +46,43 @@ export default function SequencingCompletePage() {
           <i className="ri-dna-line ri-3x" />
         </div>
 
-        <h1 className={styles.title}>Sequencing Complete</h1>
+        <h1 className={styles.title}>{t('complete.title')}</h1>
         <p className={styles.subtitle}>
-          {totalRounds} rounds completed — your cinematic DNA is ready to be decoded.
+          {t('complete.subtitle', { total: totalRounds })}
         </p>
 
         <div className={styles.stats}>
           <div className={styles.stat}>
             <span className={styles.statValue}>{totalRounds}</span>
-            <span className={styles.statLabel}>ROUNDS</span>
+            <span className={styles.statLabel}>{t('complete.rounds')}</span>
           </div>
           <div className={styles.stat}>
             <span className={styles.statValue}>{extensionBatches}/{maxBatches}</span>
-            <span className={styles.statLabel}>EXTENSIONS</span>
+            <span className={styles.statLabel}>{t('complete.extensions')}</span>
           </div>
         </div>
 
         <div className={styles.actions}>
           <button className={styles.primaryBtn} onClick={handleViewDna}>
-            <i className="ri-eye-line" /> View My DNA
+            <i className="ri-eye-line" /> {t('complete.viewDna')}
           </button>
 
           {canExtend && (
             <button className={styles.secondaryBtn} onClick={handleExtend}>
-              <i className="ri-add-line" /> Refine DNA (+5 rounds)
+              <i className="ri-add-line" /> {t('complete.extend')}
             </button>
           )}
         </div>
 
         {canExtend && (
           <p className={styles.hint}>
-            Want more accuracy? Add 5 more rounds to refine your DNA profile.
-            {maxBatches - extensionBatches} extensions remaining.
+            {t('complete.extendHint', { remaining })}
           </p>
         )}
 
         {!canExtend && extensionBatches > 0 && (
           <p className={styles.hint}>
-            Maximum extensions reached. Your DNA is as refined as it gets!
+            {t('complete.maxReached')}
           </p>
         )}
       </motion.div>

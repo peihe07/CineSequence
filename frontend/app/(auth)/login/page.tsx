@@ -1,24 +1,26 @@
 'use client'
 
-import { type FormEvent, useState } from 'react'
+import { useState } from 'react'
 import Button from '@/components/ui/Button'
 import Input from '@/components/ui/Input'
 import { useAuthStore } from '@/stores/authStore'
+import { useI18n } from '@/lib/i18n'
 import styles from './page.module.css'
 
 export default function LoginPage() {
   const { login, isLoading, error, clearError } = useAuthStore()
+  const { t } = useI18n()
   const [email, setEmail] = useState('')
   const [sent, setSent] = useState(false)
   const [emailError, setEmailError] = useState('')
 
-  async function handleSubmit(e: FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     clearError()
     setEmailError('')
 
     if (!email.includes('@')) {
-      setEmailError('Please enter a valid email')
+      setEmailError(t('auth.invalidEmail'))
       return
     }
 
@@ -35,12 +37,12 @@ export default function LoginPage() {
       <main className={styles.container}>
         <div className={styles.card}>
           <i className="ri-mail-check-line ri-3x" />
-          <h1 className={styles.title}>Check your email</h1>
+          <h1 className={styles.title}>{t('auth.checkEmail')}</h1>
           <p className={styles.subtitle}>
-            We sent a sign-in link to <strong>{email}</strong>
+            {t('auth.checkEmailSent', { email })}
           </p>
           <Button variant="ghost" onClick={() => setSent(false)}>
-            Try a different email
+            {t('auth.tryOther')}
           </Button>
         </div>
       </main>
@@ -50,12 +52,12 @@ export default function LoginPage() {
   return (
     <main className={styles.container}>
       <form className={styles.card} onSubmit={handleSubmit}>
-        <h1 className={styles.title}>Sign in</h1>
-        <p className={styles.subtitle}>Enter your email to receive a magic link</p>
+        <h1 className={styles.title}>{t('auth.signIn')}</h1>
+        <p className={styles.subtitle}>{t('auth.subtitle')}</p>
 
         <Input
           type="email"
-          placeholder="you@example.com"
+          placeholder={t('auth.emailPlaceholder')}
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           error={emailError}
@@ -64,13 +66,13 @@ export default function LoginPage() {
         {error && <p className={styles.error}>{error}</p>}
 
         <Button type="submit" size="lg" loading={isLoading}>
-          Send magic link
+          {isLoading ? t('auth.sending') : t('auth.sendLink')}
         </Button>
 
         <p className={styles.footer}>
-          Don&apos;t have an account?{' '}
+          {t('auth.noAccount')}{' '}
           <a href="/register" className={styles.link}>
-            Sign up
+            {t('auth.signUp')}
           </a>
         </p>
       </form>

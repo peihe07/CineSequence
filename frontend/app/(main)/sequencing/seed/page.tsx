@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { api } from '@/lib/api'
 import { useSequencingStore } from '@/stores/sequencingStore'
+import { useI18n } from '@/lib/i18n'
 import Button from '@/components/ui/Button'
 import styles from './page.module.css'
 
@@ -18,6 +19,7 @@ interface SearchResult {
 
 export default function SeedMoviePage() {
   const router = useRouter()
+  const { t, locale } = useI18n()
   const [query, setQuery] = useState('')
   const [results, setResults] = useState<SearchResult[]>([])
   const [selected, setSelected] = useState<SearchResult | null>(null)
@@ -52,7 +54,8 @@ export default function SeedMoviePage() {
 
   function handleSelect(movie: SearchResult) {
     setSelected(movie)
-    setQuery(movie.title_zh || movie.title_en)
+    // Prefer locale-appropriate title in the search input
+    setQuery(locale === 'zh' && movie.title_zh ? movie.title_zh : movie.title_en)
     setResults([])
   }
 
@@ -76,10 +79,8 @@ export default function SeedMoviePage() {
       <div className={styles.content}>
         <div className={styles.header}>
           <i className="ri-film-line" style={{ fontSize: '2rem' }} />
-          <h1 className={styles.title}>Choose Your Seed Movie</h1>
-          <p className={styles.subtitle}>
-            Pick a movie that best represents your taste. This helps us calibrate your first few rounds.
-          </p>
+          <h1 className={styles.title}>{t('seed.title')}</h1>
+          <p className={styles.subtitle}>{t('seed.subtitle')}</p>
         </div>
 
         <div className={styles.searchArea}>
@@ -88,7 +89,7 @@ export default function SeedMoviePage() {
             <input
               className={styles.searchInput}
               type="text"
-              placeholder="Search for a movie..."
+              placeholder={t('seed.placeholder')}
               value={query}
               onChange={(e) => {
                 setQuery(e.target.value)
@@ -127,7 +128,7 @@ export default function SeedMoviePage() {
                       )}
                       <div className={styles.movieInfo}>
                         <span className={styles.movieTitle}>
-                          {movie.title_zh || movie.title_en}
+                          {locale === 'zh' && movie.title_zh ? movie.title_zh : movie.title_en}
                         </span>
                         <span className={styles.movieMeta}>
                           {movie.title_zh && movie.title_en !== movie.title_zh && (
@@ -159,7 +160,7 @@ export default function SeedMoviePage() {
             )}
             <div className={styles.selectedInfo}>
               <span className={styles.selectedTitle}>
-                {selected.title_zh || selected.title_en}
+                {locale === 'zh' && selected.title_zh ? selected.title_zh : selected.title_en}
               </span>
               {selected.year && (
                 <span className={styles.selectedYear}>{selected.year}</span>
@@ -176,10 +177,10 @@ export default function SeedMoviePage() {
             disabled={!selected}
             loading={isSubmitting}
           >
-            <i className="ri-dna-line" /> Start Sequencing
+            <i className="ri-dna-line" /> {t('seed.confirm')}
           </Button>
           <Button variant="ghost" size="sm" onClick={handleSkipSeed}>
-            Skip this step
+            {t('seed.skip')}
           </Button>
         </div>
       </div>
