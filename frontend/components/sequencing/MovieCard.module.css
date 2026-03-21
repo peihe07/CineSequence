@@ -1,21 +1,16 @@
 .card {
   display: flex;
   flex-direction: column;
-  width: 280px;
-  background: var(--glass-bg);
-  backdrop-filter: blur(var(--glass-blur));
-  -webkit-backdrop-filter: blur(var(--glass-blur));
-  border: 1px solid var(--glass-border);
-  border-radius: 20px;
-  box-shadow: var(--glass-shadow);
+  width: 260px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
   overflow: hidden;
   cursor: pointer;
-  perspective: 1000px;
-  transition: box-shadow 0.3s ease;
+  transition: box-shadow 0.2s ease;
 }
 
 .card:hover {
-  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.5);
+  box-shadow: var(--card-shadow-hover);
 }
 
 .poster {
@@ -32,7 +27,7 @@
 }
 
 .card:hover .posterImage {
-  transform: scale(1.03);
+  transform: scale(1.02);
 }
 
 .posterPlaceholder {
@@ -41,30 +36,30 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255, 255, 255, 0.03);
-  color: var(--muted);
+  background: var(--background-alt);
+  color: var(--muted-light);
 }
 
 .info {
   padding: 1rem;
   display: flex;
   flex-direction: column;
-  gap: 0.3rem;
+  gap: 0.25rem;
 }
 
 .title {
-  font-size: 1rem;
+  font-size: 0.9rem;
   font-weight: 600;
   line-height: 1.3;
 }
 
 .titleEn {
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   color: var(--muted);
 }
 
 .year {
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   color: var(--muted);
 }
 
@@ -72,23 +67,23 @@
   display: flex;
   gap: 0.3rem;
   flex-wrap: wrap;
-  margin-top: 0.3rem;
+  margin-top: 0.4rem;
 }
 
 .genre {
-  font-size: 0.65rem;
-  padding: 0.2rem 0.5rem;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid var(--glass-border);
-  border-radius: 20px;
+  font-size: 0.6rem;
+  padding: 0.15rem 0.5rem;
+  background: transparent;
+  border: 1px solid var(--border);
   color: var(--muted);
+  letter-spacing: 0.02em;
 }
 
 .pickModeToggle {
   display: flex;
   gap: 0.5rem;
   padding: 0.8rem 1rem;
-  border-top: 1px solid var(--glass-border);
+  border-top: 1px solid var(--border);
 }
 
 .modeBtn {
@@ -98,21 +93,21 @@
   justify-content: center;
   gap: 0.3rem;
   padding: 0.4rem;
-  font-size: 0.75rem;
+  font-size: 0.7rem;
+  font-family: inherit;
   background: transparent;
   color: var(--muted);
-  border: 1px solid var(--glass-border);
-  border-radius: 8px;
+  border: 1px solid var(--border);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
 }
 
 .modeBtn:hover {
-  background: rgba(255, 255, 255, 0.04);
+  border-color: var(--border-dark);
+  color: var(--foreground);
 }
 
 .modeActive {
   color: var(--foreground);
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.15);
+  border-color: var(--foreground);
 }

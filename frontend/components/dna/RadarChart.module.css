@@ -2,20 +2,22 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1.2rem;
+  gap: 1.5rem;
 }
 
 .title {
-  font-size: 0.85rem;
-  font-weight: 600;
+  font-size: 0.7rem;
+  font-weight: 500;
   color: var(--muted);
   display: flex;
   align-items: center;
   gap: 0.4rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .svg {
-  max-width: 240px;
+  max-width: 220px;
 }
 
 .labels {
@@ -23,7 +25,7 @@
   flex-direction: column;
   gap: 0.6rem;
   width: 100%;
-  max-width: 300px;
+  max-width: 280px;
 }
 
 .labelRow {
@@ -34,24 +36,21 @@
 
 .labelA,
 .labelB {
-  font-size: 0.7rem;
+  font-size: 0.65rem;
   color: var(--muted);
-  width: 36px;
+  width: 32px;
   text-align: center;
   flex-shrink: 0;
 }
 
 .bar {
   flex: 1;
-  height: 4px;
-  background: rgba(255, 255, 255, 0.06);
-  border-radius: 2px;
+  height: 2px;
+  background: var(--border);
   overflow: hidden;
 }
 
 .barFill {
   height: 100%;
   background: var(--accent);
-  border-radius: 2px;
-  box-shadow: 0 0 6px var(--accent-glow);
 }

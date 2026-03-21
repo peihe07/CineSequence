@@ -1,17 +1,17 @@
 .container {
   min-height: 100vh;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
-  padding: 2rem;
+  padding: 4rem 2rem;
 }
 
 .content {
   width: 100%;
-  max-width: 560px;
+  max-width: 520px;
   display: flex;
   flex-direction: column;
-  gap: 2.5rem;
+  gap: 3rem;
   align-items: center;
   padding-bottom: 4rem;
 }
@@ -21,16 +21,16 @@
 }
 
 .title {
-  font-size: 1.8rem;
-  font-weight: 700;
-  letter-spacing: -0.03em;
+  font-size: 1.6rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
 }
 
 /* Grid for radar + tags */
 .grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 2rem;
+  gap: 2.5rem;
   width: 100%;
 }
 
@@ -46,6 +46,7 @@
   flex-direction: column;
   align-items: center;
   gap: 1.5rem;
+  padding-top: 30vh;
 }
 
 .dnaHelix {
@@ -53,8 +54,9 @@
 }
 
 .loadingText {
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   color: var(--muted);
+  letter-spacing: 0.02em;
 }
 
 /* Error */
@@ -64,6 +66,7 @@
   align-items: center;
   gap: 1rem;
   color: var(--muted);
+  padding-top: 30vh;
 }
 
 /* Actions */

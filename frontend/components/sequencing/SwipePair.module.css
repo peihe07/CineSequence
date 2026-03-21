@@ -1,13 +1,13 @@
 .pairContainer {
   display: flex;
   align-items: center;
-  gap: 2rem;
+  gap: 3rem;
 }
 
 @media (max-width: 768px) {
   .pairContainer {
     flex-direction: column;
-    gap: 1rem;
+    gap: 1.5rem;
   }
 }
 
@@ -19,29 +19,13 @@
 }
 
 .vs {
-  font-size: 1.5rem;
-  font-weight: 800;
-  letter-spacing: 0.1em;
-  color: var(--foreground);
-  text-shadow: 0 0 20px var(--accent-glow);
-  animation: neonPulse 2s ease-in-out infinite;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  color: var(--muted);
   z-index: 1;
 }
 
 .vsGlow {
-  position: absolute;
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
-  animation: neonPulse 2s ease-in-out infinite;
-}
-
-@keyframes neonPulse {
-  0%, 100% {
-    opacity: 0.5;
-  }
-  50% {
-    opacity: 1;
-  }
+  display: none;
 }

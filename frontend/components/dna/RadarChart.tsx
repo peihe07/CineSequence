@@ -66,7 +66,7 @@ export default function RadarChart({ scores }: RadarChartProps) {
               key={scale}
               points={ringStr}
               fill="none"
-              stroke="rgba(255,255,255,0.06)"
+              stroke="rgba(68,81,75,0.1)"
               strokeWidth={1}
             />
           )
@@ -83,7 +83,7 @@ export default function RadarChart({ scores }: RadarChartProps) {
               y1={CENTER}
               x2={x}
               y2={y}
-              stroke="rgba(255,255,255,0.08)"
+              stroke="rgba(68,81,75,0.08)"
               strokeWidth={1}
             />
           )
@@ -92,7 +92,7 @@ export default function RadarChart({ scores }: RadarChartProps) {
         {/* Data polygon */}
         <motion.polygon
           points={polygonStr}
-          fill="rgba(229, 9, 20, 0.15)"
+          fill="rgba(192, 98, 35, 0.1)"
           stroke="var(--accent)"
           strokeWidth={2}
           initial={{ opacity: 0 }}

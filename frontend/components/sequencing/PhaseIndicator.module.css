@@ -1,13 +1,13 @@
 .container {
   display: flex;
   flex-direction: column;
-  gap: 0.8rem;
+  gap: 1rem;
   align-items: center;
 }
 
 .phases {
   display: flex;
-  gap: 1.5rem;
+  gap: 2rem;
 }
 
 .phase {
@@ -23,54 +23,51 @@
 }
 
 .phaseDone {
-  opacity: 0.6;
+  opacity: 0.5;
 }
 
 .phaseNum {
-  width: 24px;
-  height: 24px;
+  width: 22px;
+  height: 22px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.7rem;
-  font-weight: 700;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid var(--glass-border);
+  font-size: 0.65rem;
+  font-weight: 600;
+  border: 1px solid var(--border);
 }
 
 .phaseActive .phaseNum {
-  background: var(--accent);
-  border-color: transparent;
-  box-shadow: 0 0 12px var(--accent-glow);
+  background: var(--foreground);
+  color: #fff;
+  border-color: var(--foreground);
 }
 
 .phaseDone .phaseNum {
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--background-alt);
 }
 
 .phaseLabel {
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   font-weight: 500;
+  letter-spacing: 0.02em;
 }
 
 .progressTrack {
   width: 100%;
   max-width: 400px;
-  height: 3px;
-  background: rgba(255, 255, 255, 0.06);
-  border-radius: 2px;
+  height: 1px;
+  background: var(--border);
   overflow: hidden;
 }
 
 .progressFill {
   height: 100%;
-  background: var(--accent);
-  border-radius: 2px;
-  box-shadow: 0 0 8px var(--accent-glow);
+  background: var(--foreground);
 }
 
 .roundLabel {
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   color: var(--muted);
+  letter-spacing: 0.05em;
 }

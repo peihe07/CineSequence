@@ -5,39 +5,38 @@
 }
 
 .label {
-  font-size: 0.85rem;
+  font-size: 0.7rem;
   font-weight: 500;
   color: var(--muted);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .input {
-  padding: 0.7rem 1rem;
-  background: rgba(255, 255, 255, 0.04);
+  padding: 0.7rem 0;
+  background: transparent;
   color: var(--foreground);
-  border: 1px solid var(--glass-border);
-  border-radius: 10px;
+  border: none;
+  border-bottom: 1px solid var(--border);
   font-size: 0.9rem;
+  font-family: inherit;
   outline: none;
-  transition: all 0.2s ease;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  transition: border-color 0.2s ease;
 }
 
 .input:focus {
-  border-color: rgba(229, 9, 20, 0.5);
-  box-shadow: 0 0 16px var(--accent-glow);
+  border-bottom-color: var(--accent);
 }
 
 .input::placeholder {
-  color: var(--muted);
-  opacity: 0.5;
+  color: var(--muted-light);
 }
 
 .inputError {
-  border-color: rgba(229, 9, 20, 0.5);
+  border-bottom-color: var(--error);
 }
 
 .error {
   font-size: 0.8rem;
-  color: var(--accent);
+  color: var(--error);
 }
