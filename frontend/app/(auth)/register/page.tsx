@@ -71,7 +71,7 @@ export default function RegisterPage() {
     <main className={styles.container}>
       <form className={styles.card} onSubmit={handleSubmit}>
         <h1 className={styles.title}>Create your account</h1>
-        <p className={styles.subtitle}>Start discovering your Movie DNA</p>
+        <p className={styles.subtitle}>Start your Cine Sequence</p>
 
         <Input
           label="Email"

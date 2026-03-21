@@ -1,6 +1,6 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
 
-const TOKEN_KEY = 'movie_dna_token'
+const TOKEN_KEY = 'cine_sequence_token'
 
 export function getToken(): string | null {
   if (typeof window === 'undefined') return null

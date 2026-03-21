@@ -1,7 +1,7 @@
 [project]
-name = "movie-dna-api"
+name = "cine-sequence-api"
 version = "0.1.0"
-description = "Movie DNA Sequencing — Backend API"
+description = "Cine Sequence — Backend API"
 requires-python = ">=3.12"
 
 [tool.ruff]

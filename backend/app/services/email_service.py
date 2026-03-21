@@ -26,13 +26,13 @@ async def send_magic_link(email: str, token: str) -> None:
 
     _init_resend()
     resend.Emails.send({
-        "from": "Movie DNA <noreply@moviedna.app>",
+        "from": "Cine Sequence <noreply@cinesequence.app>",
         "to": [email],
-        "subject": "Your Movie DNA login link",
+        "subject": "Your Cine Sequence login link",
         "html": (
-            f"<h2>Welcome to Movie DNA</h2>"
+            f"<h2>Welcome to Cine Sequence</h2>"
             f"<p>Click the link below to sign in:</p>"
-            f'<p><a href="{verify_url}">Sign in to Movie DNA</a></p>'
+            f'<p><a href="{verify_url}">Sign in to Cine Sequence</a></p>'
             f"<p>This link expires in {settings.magic_link_expiry_minutes} minutes.</p>"
         ),
     })

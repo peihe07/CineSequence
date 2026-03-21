@@ -15,7 +15,7 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title="Movie DNA Sequencing API",
+    title="Cine Sequence API",
     version="0.1.0",
     lifespan=lifespan,
 )

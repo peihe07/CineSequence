@@ -6,8 +6,8 @@ import './globals.css'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Movie DNA',
-  description: 'Movie-taste-based social matching',
+  title: 'Cine Sequence',
+  description: 'Decode your cinematic DNA through movie choices',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

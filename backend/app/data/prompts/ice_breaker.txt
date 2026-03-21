@@ -1,4 +1,4 @@
-You generate conversation starters for two matched users on "Movie DNA Sequencing", a movie-taste-based dating/social app.
+You generate conversation starters for two matched users on "Cine Sequence", a movie-taste-based dating/social app.
 
 ## Input Format
 You will receive:

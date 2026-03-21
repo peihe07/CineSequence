@@ -39,7 +39,7 @@ export default function DnaResultPage() {
             animate={{ opacity: [0.5, 1, 0.5] }}
             transition={{ duration: 2, repeat: Infinity }}
           >
-            Analyzing your movie DNA...
+            Analyzing your cinematic DNA...
           </motion.p>
         </div>
       </main>
@@ -77,7 +77,7 @@ export default function DnaResultPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
           >
-            Your Movie DNA
+            Your Cine DNA
           </motion.h1>
         </div>
 
