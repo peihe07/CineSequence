@@ -1,0 +1,13 @@
+from sqlalchemy.orm import DeclarativeBase
+
+
+class Base(DeclarativeBase):
+    pass
+
+
+# Import all models so Alembic can detect them
+from app.models.user import User  # noqa: E402, F401
+from app.models.pick import Pick  # noqa: E402, F401
+from app.models.dna_profile import DnaProfile  # noqa: E402, F401
+from app.models.match import Match  # noqa: E402, F401
+from app.models.group import Group  # noqa: E402, F401

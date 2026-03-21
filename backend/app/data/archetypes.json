@@ -1,0 +1,62 @@
+[
+  {
+    "id": "time_traveler",
+    "name": "時空旅人",
+    "name_en": "Time Traveler",
+    "icon": "ri-hourglass-line",
+    "description": "在現實中傾向邏輯分析，但內心深處相信宇宙有更大的秩序。你追求的不是答案，而是更好的問題。",
+    "match_tags": ["mindfuck", "timeTravel", "philosophical", "existential"],
+    "match_genres": [878, 9648, 53],
+    "ticket_style": "scifi"
+  },
+  {
+    "id": "dark_poet",
+    "name": "黑暗詩人",
+    "name_en": "Dark Poet",
+    "icon": "ri-quill-pen-line",
+    "description": "你享受在灰色地帶游走，對人性的複雜性著迷。別人眼中的反派，在你看來可能只是說了真話的人。",
+    "match_tags": ["darkTone", "antiHero", "psychoThriller", "cult", "violentAesthetic"],
+    "match_genres": [80, 53, 27],
+    "ticket_style": "noir"
+  },
+  {
+    "id": "emotional_sponge",
+    "name": "情緒海綿",
+    "name_en": "Emotional Sponge",
+    "icon": "ri-bubble-chart-line",
+    "description": "你看電影是為了感受。一個好的哭點比任何特效都值錢，你相信共感是連結人類最強大的力量。",
+    "match_tags": ["tearjerker", "uplifting", "romanticCore", "comingOfAge"],
+    "match_genres": [18, 10749, 10402],
+    "ticket_style": "classic"
+  },
+  {
+    "id": "chaos_theorist",
+    "name": "混沌理論家",
+    "name_en": "Chaos Theorist",
+    "icon": "ri-dice-line",
+    "description": "你被那些打破敘事規則的作品吸引。越不按牌理出牌，你越興奮。藝術的意義在於挑戰。",
+    "match_tags": ["experimental", "absurdist", "cult", "mindfuck", "satirical"],
+    "match_genres": [878, 14, 16],
+    "ticket_style": "indie"
+  },
+  {
+    "id": "quiet_observer",
+    "name": "靜默觀察者",
+    "name_en": "Quiet Observer",
+    "icon": "ri-search-line",
+    "description": "你偏好用對白和細節堆疊的故事。爆炸和追逐沒辦法打動你，但一句精準的台詞可以讓你反覆咀嚼三天。",
+    "match_tags": ["dialogue", "slowburn", "socialCritique", "existential", "satirical"],
+    "match_genres": [18, 99, 36],
+    "ticket_style": "indie"
+  },
+  {
+    "id": "adrenaline_junkie",
+    "name": "腎上腺素獵人",
+    "name_en": "Adrenaline Junkie",
+    "icon": "ri-flashlight-line",
+    "description": "電影對你來說是一場感官之旅。你追求視覺的極致、節奏的快感，以及那種讓你屏住呼吸的瞬間。",
+    "match_tags": ["visualFeast", "survival", "revenge", "ensemble", "nostalgic"],
+    "match_genres": [28, 12, 10752],
+    "ticket_style": "action"
+  }
+]

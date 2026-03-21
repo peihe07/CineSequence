@@ -1,0 +1,58 @@
+[
+  {
+    "id": "p1_01",
+    "label": "硬核英雄 vs 階級寓言",
+    "dimension": "mainstream_vs_independent",
+    "movie_a": { "tmdb_id": 155, "title_en": "The Dark Knight", "title_zh": "黑暗騎士" },
+    "movie_b": { "tmdb_id": 496243, "title_en": "Parasite", "title_zh": "寄生上流" }
+  },
+  {
+    "id": "p1_02",
+    "label": "燒腦科幻 vs 浪漫歌舞",
+    "dimension": "rational_vs_emotional",
+    "movie_a": { "tmdb_id": 27205, "title_en": "Inception", "title_zh": "全面啟動" },
+    "movie_b": { "tmdb_id": 313369, "title_en": "La La Land", "title_zh": "乘夢飛翔" }
+  },
+  {
+    "id": "p1_03",
+    "label": "經典史詩 vs 反體制暴力",
+    "dimension": "light_vs_dark",
+    "movie_a": { "tmdb_id": 120, "title_en": "The Lord of the Rings: The Fellowship of the Ring", "title_zh": "魔戒首部曲" },
+    "movie_b": { "tmdb_id": 550, "title_en": "Fight Club", "title_zh": "鬥陣俱樂部" }
+  },
+  {
+    "id": "p1_04",
+    "label": "硬科幻壯闘 vs 純愛私語",
+    "dimension": "rational_vs_emotional",
+    "movie_a": { "tmdb_id": 157336, "title_en": "Interstellar", "title_zh": "星際效應" },
+    "movie_b": { "tmdb_id": 398818, "title_en": "Call Me by Your Name", "title_zh": "乘風之名" }
+  },
+  {
+    "id": "p1_05",
+    "label": "腎上腺素狂飆 vs 慢熱對白",
+    "dimension": "fast_vs_slow",
+    "movie_a": { "tmdb_id": 76341, "title_en": "Mad Max: Fury Road", "title_zh": "乘風嘯" },
+    "movie_b": { "tmdb_id": 4935, "title_en": "Before Sunrise", "title_zh": "乘夢再續" }
+  },
+  {
+    "id": "p1_06",
+    "label": "溫馨冒險 vs 日式奇幻",
+    "dimension": "western_vs_eastern",
+    "movie_a": { "tmdb_id": 862, "title_en": "Toy Story", "title_zh": "玩具總動員" },
+    "movie_b": { "tmdb_id": 129, "title_en": "Spirited Away", "title_zh": "乘風回憶" }
+  },
+  {
+    "id": "p1_07",
+    "label": "漫威宇宙 vs 監獄救贖",
+    "dimension": "spectacle_vs_intimate",
+    "movie_a": { "tmdb_id": 299536, "title_en": "Avengers: Infinity War", "title_zh": "復仇者聯盟3" },
+    "movie_b": { "tmdb_id": 278, "title_en": "The Shawshank Redemption", "title_zh": "乘勝翻盤" }
+  },
+  {
+    "id": "p1_08",
+    "label": "勵志拳擊 vs 存在主義喜劇",
+    "dimension": "straightforward_vs_meta",
+    "movie_a": { "tmdb_id": 1366, "title_en": "Rocky", "title_zh": "乘風再起" },
+    "movie_b": { "tmdb_id": 37165, "title_en": "The Truman Show", "title_zh": "乘夢而行" }
+  }
+]

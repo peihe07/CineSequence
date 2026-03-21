@@ -1,0 +1,56 @@
+[
+  {
+    "id": "mobius_loop",
+    "name": "莫比烏斯環",
+    "subtitle": "燒腦片永動機",
+    "icon": "ri-tornado-line",
+    "primary_tags": ["mindfuck", "twist", "timeTravel", "philosophical"],
+    "is_hidden": false,
+    "min_members_to_activate": 20
+  },
+  {
+    "id": "midnight_cult",
+    "name": "午夜邪典院",
+    "subtitle": "只在凌晨放映",
+    "icon": "ri-candle-line",
+    "primary_tags": ["cult", "darkTone", "experimental", "violentAesthetic", "absurdist"],
+    "is_hidden": true,
+    "min_members_to_activate": 10
+  },
+  {
+    "id": "tissue_room",
+    "name": "手帕預備室",
+    "subtitle": "進場請備面紙",
+    "icon": "ri-emotion-sad-line",
+    "primary_tags": ["tearjerker", "uplifting", "comingOfAge", "romanticCore"],
+    "is_hidden": false,
+    "min_members_to_activate": 20
+  },
+  {
+    "id": "adrenaline_factory",
+    "name": "腎上腺素工廠",
+    "subtitle": "安全帶繫好",
+    "icon": "ri-bomb-line",
+    "primary_tags": ["visualFeast", "survival", "revenge", "ensemble"],
+    "is_hidden": false,
+    "min_members_to_activate": 20
+  },
+  {
+    "id": "cafe_screening",
+    "name": "咖啡廳放映會",
+    "subtitle": "慢慢來比較快",
+    "icon": "ri-cup-line",
+    "primary_tags": ["dialogue", "slowburn", "satirical", "socialCritique", "existential"],
+    "is_hidden": false,
+    "min_members_to_activate": 15
+  },
+  {
+    "id": "abyss_gazer",
+    "name": "深淵凝視者",
+    "subtitle": "凝視深淵 深淵回望",
+    "icon": "ri-ghost-line",
+    "primary_tags": ["darkTone", "psychoThriller", "twist", "mindfuck"],
+    "is_hidden": true,
+    "min_members_to_activate": 10
+  }
+]

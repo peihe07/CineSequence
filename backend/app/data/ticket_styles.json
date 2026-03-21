@@ -1,0 +1,42 @@
+{
+  "scifi": {
+    "label": "數位電子票",
+    "background": "#0a0a1a",
+    "accent": "#2EC4B6",
+    "text_color": "#e0f7fa",
+    "font": "monospace",
+    "description": "Neon circuit lines, digital aesthetic. For sci-fi/mindfuck lovers."
+  },
+  "noir": {
+    "label": "午夜限定票",
+    "background": "#0d0d0d",
+    "accent": "#E63946",
+    "text_color": "#f1f1f1",
+    "font": "serif",
+    "description": "Dark, moody, high-contrast. For thriller/cult/dark tone lovers."
+  },
+  "classic": {
+    "label": "復古牛皮紙票",
+    "background": "#3d2b1f",
+    "accent": "#DDA15E",
+    "text_color": "#fefae0",
+    "font": "serif",
+    "description": "Warm kraft paper texture. For classic film / romance / drama lovers."
+  },
+  "indie": {
+    "label": "獨立放映票",
+    "background": "#2d2d2d",
+    "accent": "#BC6C25",
+    "text_color": "#ede0d4",
+    "font": "sans-serif",
+    "description": "Minimal, understated. For indie / arthouse / slow-burn lovers."
+  },
+  "action": {
+    "label": "IMAX 特映票",
+    "background": "#1a0a0a",
+    "accent": "#E63946",
+    "text_color": "#ffffff",
+    "font": "sans-serif",
+    "description": "Bold, energetic. For action / survival / visual feast lovers."
+  }
+}
