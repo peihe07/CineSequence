@@ -11,27 +11,30 @@
 }
 
 .input {
-  padding: 0.6rem 0.8rem;
-  background: var(--background);
+  padding: 0.7rem 1rem;
+  background: rgba(255, 255, 255, 0.04);
   color: var(--foreground);
-  border: 1px solid var(--border);
-  border-radius: 8px;
+  border: 1px solid var(--glass-border);
+  border-radius: 10px;
   font-size: 0.9rem;
   outline: none;
-  transition: border-color 0.15s;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
 .input:focus {
-  border-color: var(--accent);
+  border-color: rgba(229, 9, 20, 0.5);
+  box-shadow: 0 0 16px var(--accent-glow);
 }
 
 .input::placeholder {
   color: var(--muted);
-  opacity: 0.6;
+  opacity: 0.5;
 }
 
 .inputError {
-  border-color: var(--accent);
+  border-color: rgba(229, 9, 20, 0.5);
 }
 
 .error {

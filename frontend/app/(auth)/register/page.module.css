@@ -12,9 +12,13 @@
   gap: 1.2rem;
   width: 100%;
   max-width: 400px;
-  padding: 2rem;
-  border: 1px solid var(--border);
-  border-radius: 12px;
+  padding: 2.5rem;
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  box-shadow: var(--glass-shadow);
   text-align: center;
 }
 
@@ -48,23 +52,25 @@
 }
 
 .genderOption {
-  padding: 0.5rem;
-  background: transparent;
+  padding: 0.6rem;
+  background: rgba(255, 255, 255, 0.03);
   color: var(--foreground);
-  border: 1px solid var(--border);
-  border-radius: 8px;
+  border: 1px solid var(--glass-border);
+  border-radius: 10px;
   font-size: 0.85rem;
   cursor: pointer;
-  transition: border-color 0.15s;
+  transition: all 0.2s ease;
 }
 
 .genderOption:hover {
-  border-color: var(--muted);
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.15);
 }
 
 .genderActive {
-  border-color: var(--accent);
-  background: rgba(229, 9, 20, 0.1);
+  border-color: rgba(229, 9, 20, 0.5);
+  background: rgba(229, 9, 20, 0.08);
+  box-shadow: 0 0 12px var(--accent-glow);
 }
 
 .error {
