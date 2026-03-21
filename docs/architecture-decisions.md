@@ -1,4 +1,4 @@
-# Architecture Decision Records
+# Cine Sequence — Architecture Decision Records
 
 ## ADR-001: Monorepo with flat structure
 
@@ -63,15 +63,15 @@ LIMIT 50;
 
 ## ADR-005: Hybrid AI strategy for sequencing
 
-**Decision**: Phase 1 rule-based, Phase 2-3 Claude API, DNA result Claude API.
+**Decision**: Phase 1 rule-based, Phase 2-3 Gemini API, DNA result Gemini API.
 
 **Rationale**:
 - Phase 1 needs to be fast and deterministic — pre-curated pairs avoid API latency
 - Phase 2-3 benefit from AI flexibility to probe nuanced taste dimensions
 - DNA personality reading is the "wow factor" — worth the API cost
-- Prefetch strategy: while user views current pair, backend requests next pair from Claude
+- Prefetch strategy: while user views current pair, backend requests next pair from Gemini
 
-**Cost estimate**: ~20 Claude API calls per user (7 Phase 2-3 pairs + 8 Phase 3 pairs + 1 DNA reading + prefetch buffer). At Sonnet pricing (~$3/M input tokens), roughly $0.01-0.02 per user sequencing session.
+**Cost estimate**: ~20 Gemini API calls per user (7 Phase 2-3 pairs + 8 Phase 3 pairs + 1 DNA reading + prefetch buffer).
 
 ---
 
@@ -123,3 +123,57 @@ server restarts and lacks retry/scheduling capabilities.
 - Standard CSS with scoped class names — no utility class bloat in JSX
 - Lower learning curve, better readability for component-scoped styles
 - Sufficient for project scope without needing a design system framework
+
+---
+
+## ADR-010: Lightweight i18n over next-intl/i18next
+
+**Decision**: Use a custom React Context-based i18n system instead of next-intl or react-i18next.
+
+**Rationale**:
+- Only two locales (zh-TW, en) — full i18n frameworks are overkill
+- Simple `t(key, vars?)` function with `{{var}}` interpolation
+- localStorage persistence for locale preference
+- No routing changes needed (no `/en/`, `/zh/` path prefixes)
+- Entire dictionary fits in a single file (`lib/i18n.tsx`)
+
+**Trade-off**: No SSR locale detection, no pluralization rules. Acceptable for a bilingual app with simple string interpolation needs.
+
+---
+
+## ADR-011: Self-hosted Chinese font
+
+**Decision**: Self-host jf Open Huninn (粉圓體) via `next/font/local` instead of using Google Fonts for Chinese text.
+
+**Rationale**:
+- jf Open Huninn is not available on Google Fonts
+- `next/font/local` provides the same optimization (preload, font-display: swap)
+- SIL OFL-1.1 license allows free redistribution
+- Font stack: jf Open Huninn (Chinese) → Inconsolata (English body) → Silkscreen (display/logo)
+
+**Trade-off**: 4.8MB TTF added to the repository. Acceptable for a font that covers all CJK characters needed.
+
+---
+
+## ADR-012: Fire-and-forget email notifications
+
+**Decision**: Email notifications (invite, match accepted) are sent asynchronously and failures do not block the main flow.
+
+**Rationale**:
+- Core matching/invite flow must not fail due to email provider issues
+- Email sends wrapped in `try/except` with `logger.exception()` — silent degradation
+- `asyncio.run_in_executor` prevents blocking the event loop with sync Resend SDK
+- All user-supplied content is HTML-escaped before interpolation (XSS prevention)
+- Dev mode logs email content to console instead of sending
+
+---
+
+## ADR-013: Extension and seasonal retest
+
+**Decision**: Support extending sequencing sessions (+5 rounds) and seasonal retest (fresh session).
+
+**Rationale**:
+- Extension allows users who want finer profiling to continue beyond 20 rounds
+- Seasonal retest lets users refresh their DNA profile as taste evolves
+- SequencingSession model tracks session state (round count, extension status)
+- DNA profiles are versioned — retest creates a new version, old versions remain accessible via `/dna/history`
