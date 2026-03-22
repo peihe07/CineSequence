@@ -63,6 +63,7 @@ class TestRegisterEndpoint:
             "name": "Test User",
             "gender": "other",
             "region": "TW",
+            "agreed_to_terms": True,
         })
         assert response.status_code == 201
         data = response.json()
@@ -77,6 +78,7 @@ class TestRegisterEndpoint:
             "email": "dup@test.com",
             "name": "User A",
             "gender": "male",
+            "agreed_to_terms": True,
         }
         first = await client.post("/auth/register", json=payload)
         assert first.status_code == 201
@@ -100,6 +102,7 @@ class TestVerifyEndpoint:
             "email": "verify@test.com",
             "name": "Verifier",
             "gender": "female",
+            "agreed_to_terms": True,
         })
 
         result = await db_session.execute(
@@ -123,6 +126,7 @@ class TestVerifyEndpoint:
             "email": "reused@test.com",
             "name": "Reuse",
             "gender": "female",
+            "agreed_to_terms": True,
         })
         result = await db_session.execute(
             select(User).where(User.email == "reused@test.com")
@@ -143,6 +147,7 @@ class TestVerifyEndpoint:
             "email": "superseded@test.com",
             "name": "Superseded",
             "gender": "female",
+            "agreed_to_terms": True,
         })
         result = await db_session.execute(
             select(User).where(User.email == "superseded@test.com")
@@ -178,6 +183,7 @@ class TestLoginEndpoint:
             "email": "login@test.com",
             "name": "Login User",
             "gender": "male",
+            "agreed_to_terms": True,
         })
         mock_send.reset_mock()
 
@@ -238,6 +244,7 @@ class TestSessionEndpoints:
             "name": "Magic Link",
             "gender": "other",
             "region": "TW",
+            "agreed_to_terms": True,
         })
 
         result = await db_session.execute(
@@ -273,6 +280,7 @@ class TestProtectedEndpoint:
             "email": "auth@test.com",
             "name": "Auth User",
             "gender": "other",
+            "agreed_to_terms": True,
         })
         result = await db_session.execute(
             select(User).where(User.email == "auth@test.com")

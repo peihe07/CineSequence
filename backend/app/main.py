@@ -85,6 +85,10 @@ app.add_middleware(
 )
 
 app.include_router(auth.router, prefix="/auth", tags=["auth"])
+if settings.environment != "production":
+    from app.routers import dev_auth
+
+    app.include_router(dev_auth.router, prefix="/auth/dev", tags=["auth-dev"])
 app.include_router(sequencing.router, prefix="/sequencing", tags=["sequencing"])
 app.include_router(dna.router, prefix="/dna", tags=["dna"])
 app.include_router(matches.router, prefix="/matches", tags=["matches"])
