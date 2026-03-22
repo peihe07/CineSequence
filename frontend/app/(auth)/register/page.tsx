@@ -4,9 +4,12 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Button from '@/components/ui/Button'
 import Input from '@/components/ui/Input'
+import type { RegisterRequest } from '@/lib/auth-types'
 import { useAuthStore } from '@/stores/authStore'
 import { useI18n } from '@/lib/i18n'
 import styles from './page.module.css'
+
+type RegisterFormState = Omit<RegisterRequest, 'birth_year'>
 
 export default function RegisterPage() {
   const router = useRouter()
@@ -14,7 +17,7 @@ export default function RegisterPage() {
   const { t } = useI18n()
   const [sent, setSent] = useState(false)
 
-  const [form, setForm] = useState({
+  const [form, setForm] = useState<RegisterFormState>({
     email: '',
     name: '',
     gender: '',

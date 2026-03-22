@@ -32,7 +32,7 @@ vi.mock('@/lib/api', () => ({
 
 import { useAuthStore } from '@/stores/authStore'
 
-describe('authStore.fetchProfile', () => {
+describe('authStore', () => {
   beforeEach(() => {
     apiMock.mockReset()
     clearTokenMock.mockReset()
@@ -47,7 +47,7 @@ describe('authStore.fetchProfile', () => {
     })
   })
 
-  it('clears the token on 401 responses', async () => {
+  it('clears the token on 401 responses during fetchProfile', async () => {
     apiMock.mockRejectedValue(new MockApiError(401, 'Unauthorized'))
 
     await useAuthStore.getState().fetchProfile()
@@ -56,7 +56,7 @@ describe('authStore.fetchProfile', () => {
     expect(useAuthStore.getState().isAuthenticated).toBe(false)
   })
 
-  it('does not clear the token on non-auth failures', async () => {
+  it('does not clear the token on non-auth failures during fetchProfile', async () => {
     useAuthStore.setState({
       user: { id: 'u1', email: 'u@test.com', name: 'User', gender: 'other', region: 'TW', avatar_url: null, sequencing_status: 'completed' },
       isAuthenticated: true,
@@ -71,5 +71,23 @@ describe('authStore.fetchProfile', () => {
     expect(useAuthStore.getState().isAuthenticated).toBe(true)
     expect(useAuthStore.getState().user?.email).toBe('u@test.com')
     expect(useAuthStore.getState().isLoading).toBe(false)
+  })
+
+  it('calls backend logout and clears auth state', async () => {
+    useAuthStore.setState({
+      user: { id: 'u1', email: 'u@test.com', name: 'User', gender: 'other', region: 'TW', avatar_url: null, sequencing_status: 'completed' },
+      isAuthenticated: true,
+      isLoading: false,
+      error: 'old error',
+    })
+    apiMock.mockResolvedValue(undefined)
+
+    await useAuthStore.getState().logout()
+
+    expect(apiMock).toHaveBeenCalledWith('/auth/logout', { method: 'POST' })
+    expect(clearTokenMock).toHaveBeenCalledTimes(1)
+    expect(useAuthStore.getState().user).toBeNull()
+    expect(useAuthStore.getState().isAuthenticated).toBe(false)
+    expect(useAuthStore.getState().error).toBeNull()
   })
 })

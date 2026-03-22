@@ -4,6 +4,7 @@ import { useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { useGroupStore } from '@/stores/groupStore'
 import { useI18n } from '@/lib/i18n'
+import FlowGuard from '@/components/guards/FlowGuard'
 import styles from './page.module.css'
 
 const TAG_ZH: Record<string, string> = {
@@ -112,6 +113,14 @@ function GroupCard({ group, onJoin, onLeave }: {
 }
 
 export default function TheatersPage() {
+  return (
+    <FlowGuard require="dna">
+      <TheatersContent />
+    </FlowGuard>
+  )
+}
+
+function TheatersContent() {
   const { t } = useI18n()
   const { groups, isLoading, fetchGroups, autoAssign, joinGroup, leaveGroup } = useGroupStore()
 

@@ -69,16 +69,38 @@ const translations: Record<Locale, Record<string, string>> = {
     'common.cancel': '取消',
 
     // Landing
-    'landing.subtitle': '二十道電影選擇，解碼你的觀影基因，找到與你頻率相近的人。',
     'landing.start': '開始解碼',
     'landing.login': '登入',
-    'landing.howTitle': 'How It Works',
-    'landing.step1Title': '序列分析',
-    'landing.step1Desc': '20 輪電影二選一，系統從你的選擇中萃取觀影偏好。',
-    'landing.step2Title': 'DNA 生成',
-    'landing.step2Desc': 'AI 分析你的品味標籤、原型與隱藏特質，生成專屬觀影 DNA。',
-    'landing.step3Title': '品味配對',
-    'landing.step3Desc': '根據 DNA 向量餘弦相似度，找到與你觀影頻率最接近的人。',
+    'landing.termLine1': '正在初始化 CINE SEQUENCE...',
+    'landing.termLine2': '載入觀影偏好分析模組...',
+    'landing.termLine3': '校準品味向量空間...',
+    'landing.termLine4': '偵測到未知的觀影 DNA 序列。',
+    'landing.termLine5': '是否開始解碼？',
+    'landing.termHint': '按下 [Y] 或點擊開始',
+
+    // Error boundary
+    'error.title': '發生了一些問題',
+    'error.description': '頁面遇到錯誤，請嘗試重新載入。',
+    'error.retry': '重試',
+    'error.backHome': '回到首頁',
+
+    // Not found
+    'notFound.title': '找不到頁面',
+    'notFound.description': '你尋找的頁面不存在，或已被移除。',
+    'notFound.backHome': '回到首頁',
+
+    // Flow guard
+    'guard.needSequencing': '請先完成序列分析',
+    'guard.needDna': '請先生成你的觀影 DNA',
+
+    // Toast
+    'toast.inviteSent': '已發送邀請',
+    'toast.inviteFailed': '邀請發送失敗',
+    'toast.groupJoined': '已加入放映廳',
+    'toast.groupLeft': '已離開放映廳',
+    'toast.profileSaved': '個人資料已儲存',
+    'toast.avatarUploaded': '頭像已更新',
+    'toast.prefsSaved': '偏好設定已儲存',
 
     // Nav
     'nav.sequencing': '序列',
@@ -291,16 +313,38 @@ const translations: Record<Locale, Record<string, string>> = {
     'common.cancel': 'Cancel',
 
     // Landing
-    'landing.subtitle': 'Twenty movie choices. Decode your cinematic DNA. Find someone on the same wavelength.',
     'landing.start': 'Start Decoding',
     'landing.login': 'Sign in',
-    'landing.howTitle': 'How It Works',
-    'landing.step1Title': 'Sequencing',
-    'landing.step1Desc': '20 rounds of A/B movie picks. The system extracts your viewing preferences from each choice.',
-    'landing.step2Title': 'DNA Analysis',
-    'landing.step2Desc': 'AI analyzes your taste tags, archetype, and hidden traits to generate your unique cinematic DNA.',
-    'landing.step3Title': 'Taste Matching',
-    'landing.step3Desc': 'Cosine similarity on DNA vectors finds people whose cinematic frequency matches yours.',
+    'landing.termLine1': 'INITIALIZING CINE SEQUENCE...',
+    'landing.termLine2': 'LOADING CINEMATIC PREFERENCE ANALYSIS MODULE...',
+    'landing.termLine3': 'CALIBRATING TASTE VECTOR SPACE...',
+    'landing.termLine4': 'UNKNOWN CINEMATIC DNA STRAND DETECTED.',
+    'landing.termLine5': 'BEGIN SEQUENCING?',
+    'landing.termHint': 'PRESS [Y] OR CLICK TO START',
+
+    // Error boundary
+    'error.title': 'Something went wrong',
+    'error.description': 'The page encountered an error. Please try reloading.',
+    'error.retry': 'Retry',
+    'error.backHome': 'Back to home',
+
+    // Not found
+    'notFound.title': 'Page not found',
+    'notFound.description': 'The page you are looking for does not exist or has been removed.',
+    'notFound.backHome': 'Back to home',
+
+    // Flow guard
+    'guard.needSequencing': 'Please complete sequencing first',
+    'guard.needDna': 'Please generate your cinematic DNA first',
+
+    // Toast
+    'toast.inviteSent': 'Invite sent',
+    'toast.inviteFailed': 'Failed to send invite',
+    'toast.groupJoined': 'Joined theater',
+    'toast.groupLeft': 'Left theater',
+    'toast.profileSaved': 'Profile saved',
+    'toast.avatarUploaded': 'Avatar updated',
+    'toast.prefsSaved': 'Preferences saved',
 
     // Nav
     'nav.sequencing': 'Sequence',

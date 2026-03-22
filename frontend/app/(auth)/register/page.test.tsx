@@ -1,0 +1,112 @@
+import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+
+const { pushMock, registerMock, clearErrorMock } = vi.hoisted(() => ({
+  pushMock: vi.fn(),
+  registerMock: vi.fn(),
+  clearErrorMock: vi.fn(),
+}))
+
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({ push: pushMock }),
+}))
+
+vi.mock('@/stores/authStore', () => ({
+  useAuthStore: () => ({
+    register: registerMock,
+    isLoading: false,
+    error: null,
+    clearError: clearErrorMock,
+  }),
+}))
+
+vi.mock('@/lib/i18n', () => ({
+  useI18n: () => ({
+    t: (key: string, vars?: Record<string, string>) => {
+      if (key === 'auth.checkEmailSent' && vars?.email) {
+        return `sent:${vars.email}`
+      }
+      const dict: Record<string, string> = {
+        'register.title': 'Create your account',
+        'register.subtitle': 'Start your Cine Sequence',
+        'auth.emailPlaceholder': 'Enter your email',
+        'register.name': 'Display name',
+        'register.namePlaceholder': 'What should we call you',
+        'register.gender': 'Gender',
+        'register.genderMale': 'Male',
+        'register.genderFemale': 'Female',
+        'register.genderOther': 'Other',
+        'register.genderSkip': 'Prefer not to say',
+        'register.submit': 'Sign up',
+        'auth.invalidEmail': 'Invalid email',
+        'register.nameRequired': 'Name is required',
+        'register.genderRequired': 'Gender is required',
+        'register.consentRequired': 'Consent is required',
+        'register.agreePrefix': 'I agree to the',
+        'register.privacyLink': 'privacy policy',
+        'auth.hasAccount': 'Already have an account?',
+        'auth.signIn': 'Sign in',
+        'auth.checkEmail': 'Check your inbox',
+        'auth.backToLogin': 'Back to login',
+      }
+      return dict[key] ?? key
+    },
+  }),
+}))
+
+import RegisterPage from './page'
+
+describe('RegisterPage', () => {
+  beforeEach(() => {
+    pushMock.mockReset()
+    registerMock.mockReset()
+    clearErrorMock.mockReset()
+  })
+
+  afterEach(() => {
+    cleanup()
+  })
+
+  it('requires consent before submitting', async () => {
+    render(<RegisterPage />)
+
+    fireEvent.change(screen.getByLabelText('Enter your email'), {
+      target: { value: 'user@example.com' },
+    })
+    fireEvent.change(screen.getByLabelText('Display name'), {
+      target: { value: 'User' },
+    })
+    fireEvent.click(screen.getByRole('button', { name: 'Male' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Sign up' }))
+
+    expect(registerMock).not.toHaveBeenCalled()
+    expect(await screen.findByText('Consent is required')).toBeTruthy()
+  })
+
+  it('submits when consent is checked', async () => {
+    registerMock.mockResolvedValue(undefined)
+
+    render(<RegisterPage />)
+
+    fireEvent.change(screen.getByLabelText('Enter your email'), {
+      target: { value: 'user@example.com' },
+    })
+    fireEvent.change(screen.getByLabelText('Display name'), {
+      target: { value: 'User' },
+    })
+    fireEvent.click(screen.getByRole('button', { name: 'Male' }))
+    fireEvent.click(screen.getByRole('checkbox'))
+    fireEvent.click(screen.getByRole('button', { name: 'Sign up' }))
+
+    await waitFor(() => {
+      expect(registerMock).toHaveBeenCalledWith({
+        email: 'user@example.com',
+        name: 'User',
+        gender: 'male',
+        region: 'TW',
+        agreed_to_terms: true,
+      })
+    })
+    expect(await screen.findByText('sent:user@example.com')).toBeTruthy()
+  })
+})

@@ -1,83 +1,123 @@
 'use client'
 
+import { useEffect, useState, useCallback } from 'react'
 import Link from 'next/link'
-import { motion } from 'framer-motion'
+import { useRouter } from 'next/navigation'
 import { useI18n } from '@/lib/i18n'
 import styles from './page.module.css'
 
-const fadeUp = {
-  initial: { opacity: 0, y: 20 },
-  animate: { opacity: 1, y: 0 },
+interface TermLine {
+  key: string
+  type: 'normal' | 'highlight' | 'prompt'
+  delay: number
 }
 
+const LINES: TermLine[] = [
+  { key: 'landing.termLine1', type: 'normal', delay: 0 },
+  { key: 'landing.termLine2', type: 'normal', delay: 800 },
+  { key: 'landing.termLine3', type: 'normal', delay: 1600 },
+  { key: 'landing.termLine4', type: 'highlight', delay: 2800 },
+  { key: 'landing.termLine5', type: 'prompt', delay: 3800 },
+]
+
 export default function Home() {
-  const { t, locale } = useI18n()
-  const isEnglish = locale === 'en'
+  const { t } = useI18n()
+  const router = useRouter()
+  const [visibleCount, setVisibleCount] = useState(0)
+  const [responded, setResponded] = useState(false)
+  const allLinesVisible = visibleCount >= LINES.length
+
+  // Sequentially reveal lines
+  useEffect(() => {
+    const timers: ReturnType<typeof setTimeout>[] = []
+    LINES.forEach((line, i) => {
+      timers.push(setTimeout(() => setVisibleCount(i + 1), line.delay))
+    })
+    return () => timers.forEach(clearTimeout)
+  }, [])
+
+  // Keyboard listener: press Y to start
+  const handleKey = useCallback((e: KeyboardEvent) => {
+    if (!allLinesVisible || responded) return
+    if (e.key === 'y' || e.key === 'Y') {
+      setResponded(true)
+      setTimeout(() => router.push('/register'), 600)
+    }
+  }, [allLinesVisible, responded, router])
+
+  useEffect(() => {
+    window.addEventListener('keydown', handleKey)
+    return () => window.removeEventListener('keydown', handleKey)
+  }, [handleKey])
 
   return (
     <main className={styles.main}>
-      <section className={styles.hero}>
-        <motion.h1
-          className={`${styles.title} ${styles.titleEn}`}
-          {...fadeUp}
-          transition={{ duration: 0.6 }}
-        >
-          Cine Sequence
-        </motion.h1>
-        <motion.p
-          className={styles.subtitle}
-          {...fadeUp}
-          transition={{ duration: 0.6, delay: 0.15 }}
-        >
-          {t('landing.subtitle')}
-        </motion.p>
-        <motion.div
-          className={styles.cta}
-          {...fadeUp}
-          transition={{ duration: 0.6, delay: 0.3 }}
-        >
-          <Link href="/register" className={styles.ctaPrimary}>
-            <i className="ri-dna-line" />
-            {t('landing.start')}
-          </Link>
-          <Link href="/login" className={styles.ctaSecondary}>
-            {t('landing.login')}
-          </Link>
-        </motion.div>
-      </section>
-
-      <div className={styles.divider} />
-
-      <section className={styles.section}>
-        <h2 className={`${styles.sectionTitle} ${isEnglish ? styles.sectionTitleEn : ''}`}>
-          {t('landing.howTitle')}
-        </h2>
-        <div className={styles.steps}>
-          <motion.div className={styles.step} {...fadeUp} transition={{ duration: 0.5, delay: 0.1 }}>
-            <i className={`ri-film-line ${styles.stepIcon}`} />
-            <span className={`${styles.stepNumber} ${styles.stepNumberEn}`}>01</span>
-            <span className={styles.stepTitle}>{t('landing.step1Title')}</span>
-            <span className={styles.stepDesc}>{t('landing.step1Desc')}</span>
-          </motion.div>
-
-          <motion.div className={styles.step} {...fadeUp} transition={{ duration: 0.5, delay: 0.2 }}>
-            <i className={`ri-dna-line ${styles.stepIcon}`} />
-            <span className={`${styles.stepNumber} ${styles.stepNumberEn}`}>02</span>
-            <span className={styles.stepTitle}>{t('landing.step2Title')}</span>
-            <span className={styles.stepDesc}>{t('landing.step2Desc')}</span>
-          </motion.div>
-
-          <motion.div className={styles.step} {...fadeUp} transition={{ duration: 0.5, delay: 0.3 }}>
-            <i className={`ri-hearts-line ${styles.stepIcon}`} />
-            <span className={`${styles.stepNumber} ${styles.stepNumberEn}`}>03</span>
-            <span className={styles.stepTitle}>{t('landing.step3Title')}</span>
-            <span className={styles.stepDesc}>{t('landing.step3Desc')}</span>
-          </motion.div>
+      <div className={styles.terminal}>
+        {/* Title bar */}
+        <div className={styles.titleBar}>
+          <span className={styles.dot} />
+          <span className={styles.dot} />
+          <span className={styles.dot} />
+          <span className={styles.titleText}>CINE_SEQUENCE v1.0</span>
         </div>
-      </section>
+
+        {/* Terminal body */}
+        <div className={styles.body}>
+          {LINES.slice(0, visibleCount).map((line, i) => {
+            if (line.type === 'prompt') {
+              return (
+                <div key={i}>
+                  <div
+                    className={styles.prompt}
+                    style={{ animationDelay: '0ms' }}
+                  >
+                    <span className={styles.linePrefix}>&gt;</span>
+                    {t(line.key)}
+                    {!responded && <span className={styles.cursor} />}
+                  </div>
+                  {responded && (
+                    <div className={styles.response}>
+                      <span className={styles.linePrefix}>&gt;</span>
+                      Y
+                    </div>
+                  )}
+                </div>
+              )
+            }
+            return (
+              <div
+                key={i}
+                className={`${styles.line} ${line.type === 'highlight' ? styles.lineHighlight : ''}`}
+                style={{ animationDelay: '0ms' }}
+              >
+                <span className={styles.linePrefix}>&gt;</span>
+                {t(line.key)}
+              </div>
+            )
+          })}
+        </div>
+
+        {/* CTA buttons — appear after all lines */}
+        {allLinesVisible && !responded && (
+          <div
+            className={styles.ctaArea}
+            style={{ animationDelay: '400ms' }}
+          >
+            <div className={styles.ctaRow}>
+              <Link href="/register" className={styles.ctaPrimary}>
+                {t('landing.start')}
+              </Link>
+              <Link href="/login" className={styles.ctaSecondary}>
+                {t('landing.login')}
+              </Link>
+            </div>
+            <span className={styles.hint}>{t('landing.termHint')}</span>
+          </div>
+        )}
+      </div>
 
       <footer className={styles.footer}>
-        Cine Sequence &copy; {new Date().getFullYear()}
+        CINE SEQUENCE &copy; {new Date().getFullYear()}
       </footer>
     </main>
   )

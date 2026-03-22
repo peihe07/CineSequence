@@ -1,15 +1,12 @@
 import { create } from 'zustand'
 import { ApiError, api, clearToken } from '@/lib/api'
-
-interface User {
-  id: string
-  email: string
-  name: string
-  gender: string
-  region: string
-  avatar_url: string | null
-  sequencing_status: string
-}
+import type {
+  LoginRequest,
+  RegisterRequest,
+  User,
+  VerifyRequest,
+  VerifyResponse,
+} from '@/lib/auth-types'
 
 interface AuthState {
   user: User | null
@@ -17,14 +14,7 @@ interface AuthState {
   isLoading: boolean
   error: string | null
 
-  register: (data: {
-    email: string
-    name: string
-    gender: string
-    region?: string
-    birth_year?: number
-    agreed_to_terms: boolean
-  }) => Promise<void>
+  register: (data: RegisterRequest) => Promise<void>
 
   login: (email: string) => Promise<void>
   verify: (token: string) => Promise<void>
@@ -57,9 +47,10 @@ export const useAuthStore = create<AuthState>((set) => ({
   login: async (email) => {
     set({ isLoading: true, error: null })
     try {
+      const payload: LoginRequest = { email }
       await api('/auth/login', {
         method: 'POST',
-        body: JSON.stringify({ email }),
+        body: JSON.stringify(payload),
       })
       set({ isLoading: false })
     } catch (err) {
@@ -72,9 +63,10 @@ export const useAuthStore = create<AuthState>((set) => ({
   verify: async (token) => {
     set({ isLoading: true, error: null })
     try {
-      await api<{ access_token: string }>('/auth/verify', {
+      const payload: VerifyRequest = { token }
+      await api<VerifyResponse>('/auth/verify', {
         method: 'POST',
-        body: JSON.stringify({ token }),
+        body: JSON.stringify(payload),
       })
       set({ isAuthenticated: true, isLoading: false })
     } catch (err) {

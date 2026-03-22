@@ -7,6 +7,7 @@ import { useMatchStore, MatchItem } from '@/stores/matchStore'
 import { api } from '@/lib/api'
 import { useI18n } from '@/lib/i18n'
 import TearRitual from '@/components/match/TearRitual'
+import FlowGuard from '@/components/guards/FlowGuard'
 import styles from './page.module.css'
 
 interface MatchPrefs {
@@ -306,14 +307,16 @@ function MatchesContent() {
 
 export default function MatchesPage() {
   return (
-    <Suspense fallback={
-      <div className={styles.container}>
-        <div className={styles.loading}>
-          <i className="ri-loader-4-line ri-spin ri-2x" />
+    <FlowGuard require="dna">
+      <Suspense fallback={
+        <div className={styles.container}>
+          <div className={styles.loading}>
+            <i className="ri-loader-4-line ri-spin ri-2x" />
+          </div>
         </div>
-      </div>
-    }>
-      <MatchesContent />
-    </Suspense>
+      }>
+        <MatchesContent />
+      </Suspense>
+    </FlowGuard>
   )
 }

@@ -11,9 +11,18 @@ import TagCloud from '@/components/dna/TagCloud'
 import RadarChart from '@/components/dna/RadarChart'
 import AIReading from '@/components/dna/AIReading'
 import Button from '@/components/ui/Button'
+import FlowGuard from '@/components/guards/FlowGuard'
 import styles from './page.module.css'
 
 export default function DnaResultPage() {
+  return (
+    <FlowGuard require="sequencing">
+      <DnaResultContent />
+    </FlowGuard>
+  )
+}
+
+function DnaResultContent() {
   const router = useRouter()
   const { t } = useI18n()
   const { result, isBuilding, isLoading, error, buildDna, fetchResult } = useDnaStore()
