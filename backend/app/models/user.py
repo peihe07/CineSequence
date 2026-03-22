@@ -57,6 +57,9 @@ class User(Base):
         UUID(as_uuid=True), ForeignKey("sequencing_sessions.id", use_alter=True), nullable=True
     )
 
+    # Admin
+    is_admin: Mapped[bool] = mapped_column(Boolean, default=False)
+
     # Consent
     agreed_to_terms_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 

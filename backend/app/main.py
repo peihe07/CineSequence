@@ -97,6 +97,9 @@ app.include_router(matches.router, prefix="/matches", tags=["matches"])
 app.include_router(groups.router, prefix="/groups", tags=["groups"])
 app.include_router(profile.router, prefix="/profile", tags=["profile"])
 
+from app.routers import admin
+app.include_router(admin.router, prefix="/admin", tags=["admin"])
+
 # Dev mode: serve locally saved files (avatars, tickets) as static assets
 if settings.environment == "development":
     import os
