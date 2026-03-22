@@ -27,6 +27,7 @@ export default function SequencingPage() {
     error,
     ambientColor,
     fetchPair,
+    rerollPair,
     fetchProgress,
     submitPick,
     skip,
@@ -73,6 +74,10 @@ export default function SequencingPage() {
 
   function handleSkip() {
     skip(getResponseTime())
+  }
+
+  function handleReroll() {
+    void rerollPair()
   }
 
   const roundNumber = progress?.round_number ?? currentPair?.round_number ?? 1
@@ -129,7 +134,7 @@ export default function SequencingPage() {
 
       <div className={styles.footer}>
         <LiveTagCloud tags={liveTags} />
-        <SkipActions onSkip={handleSkip} disabled={isLoading} />
+        <SkipActions onSkip={handleSkip} onReroll={handleReroll} disabled={isLoading} />
       </div>
     </main>
   )

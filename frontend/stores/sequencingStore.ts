@@ -43,11 +43,13 @@ interface SequencingState {
   currentPair: Pair | null
   progress: Progress | null
   liveTags: string[]
+  rerollExcludedTmdbIds: number[]
   isLoading: boolean
   error: string | null
   ambientColor: string | null
 
   fetchPair: () => Promise<Pair>
+  rerollPair: () => Promise<void>
   fetchProgress: () => Promise<Progress>
   submitPick: (tmdbId: number, pickMode: 'watched' | 'attracted', responseTimeMs?: number) => Promise<void>
   skip: (responseTimeMs?: number) => Promise<void>
@@ -62,18 +64,46 @@ export const useSequencingStore = create<SequencingState>((set, get) => ({
   currentPair: null,
   progress: null,
   liveTags: [],
+  rerollExcludedTmdbIds: [],
   isLoading: false,
   error: null,
   ambientColor: null,
 
   fetchPair: async () => {
-    set({ isLoading: true, error: null })
+    set({ currentPair: null, rerollExcludedTmdbIds: [], isLoading: true, error: null })
     try {
       const pair = await api<Pair>('/sequencing/pair')
       set({ currentPair: pair, isLoading: false })
       return pair
     } catch (err) {
       set({ isLoading: false, error: err instanceof Error ? err.message : 'Failed to fetch pair' })
+      throw err
+    }
+  },
+
+  rerollPair: async () => {
+    const { currentPair, rerollExcludedTmdbIds } = get()
+    if (!currentPair) return
+
+    const nextExcludedIds = Array.from(new Set([
+      ...rerollExcludedTmdbIds,
+      currentPair.movie_a.tmdb_id,
+      currentPair.movie_b.tmdb_id,
+    ]))
+
+    set({ currentPair: null, isLoading: true, error: null, rerollExcludedTmdbIds: nextExcludedIds })
+    try {
+      const pair = await api<Pair>('/sequencing/reroll', {
+        method: 'POST',
+        body: JSON.stringify({ exclude_tmdb_ids: nextExcludedIds }),
+      })
+      set({ currentPair: pair, isLoading: false })
+    } catch (err) {
+      set({
+        currentPair,
+        isLoading: false,
+        error: err instanceof Error ? err.message : 'Failed to reroll pair',
+      })
       throw err
     }
   },
@@ -100,7 +130,7 @@ export const useSequencingStore = create<SequencingState>((set, get) => ({
       }))
     }
 
-    set({ isLoading: true })
+    set({ currentPair: null, rerollExcludedTmdbIds: [], isLoading: true })
     try {
       const progress = await api<Progress>('/sequencing/pick', {
         method: 'POST',
@@ -123,7 +153,7 @@ export const useSequencingStore = create<SequencingState>((set, get) => ({
 
   skip: async (responseTimeMs) => {
     const { currentPair } = get()
-    set({ isLoading: true })
+    set({ currentPair: null, rerollExcludedTmdbIds: [], isLoading: true })
     try {
       const progress = await api<Progress>('/sequencing/skip', {
         method: 'POST',
@@ -188,6 +218,7 @@ export const useSequencingStore = create<SequencingState>((set, get) => ({
         currentPair: null,
         progress: null,
         liveTags: [],
+        rerollExcludedTmdbIds: [],
       })
     } catch (err) {
       set({ isLoading: false, error: err instanceof Error ? err.message : 'Failed to start retest' })

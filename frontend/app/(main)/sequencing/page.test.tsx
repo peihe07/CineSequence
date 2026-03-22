@@ -6,6 +6,7 @@ const {
   sequencingState,
   fetchProgressMock,
   fetchPairMock,
+  rerollPairMock,
   submitPickMock,
   skipMock,
 } = vi.hoisted(() => ({
@@ -26,6 +27,7 @@ const {
   },
   fetchProgressMock: vi.fn(),
   fetchPairMock: vi.fn(),
+  rerollPairMock: vi.fn(),
   submitPickMock: vi.fn(),
   skipMock: vi.fn(),
 }))
@@ -40,6 +42,7 @@ vi.mock('@/stores/sequencingStore', () => ({
       ...sequencingState,
       fetchProgress: fetchProgressMock,
       fetchPair: fetchPairMock,
+      rerollPair: rerollPairMock,
       submitPick: submitPickMock,
       skip: skipMock,
     }),
@@ -66,8 +69,11 @@ vi.mock('@/components/sequencing/LiveTagCloud', () => ({
 }))
 
 vi.mock('@/components/sequencing/SkipActions', () => ({
-  default: ({ onSkip }: { onSkip: () => void }) => (
-    <button type="button" onClick={onSkip}>SkipActions</button>
+  default: ({ onSkip, onReroll }: { onSkip: () => void; onReroll: () => void }) => (
+    <>
+      <button type="button" onClick={onReroll}>RerollActions</button>
+      <button type="button" onClick={onSkip}>SkipActions</button>
+    </>
   ),
 }))
 
@@ -94,6 +100,7 @@ describe('SequencingPage', () => {
     pushMock.mockReset()
     fetchProgressMock.mockReset()
     fetchPairMock.mockReset()
+    rerollPairMock.mockReset()
     submitPickMock.mockReset()
     skipMock.mockReset()
     sequencingState.currentPair = null
