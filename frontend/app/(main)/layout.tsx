@@ -5,8 +5,8 @@ import { useRouter } from 'next/navigation'
 import Button from '@/components/ui/Button'
 import { useI18n } from '@/lib/i18n'
 import { useAuthStore } from '@/stores/authStore'
+import Header from '@/components/ui/Header'
 import NavBar from '@/components/ui/NavBar'
-import MuteToggle from '@/components/ui/MuteToggle'
 
 export default function MainLayout({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, isLoading, fetchProfile } = useAuthStore()
@@ -73,7 +73,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
 
   return (
     <>
-      <MuteToggle />
+      <Header />
       <main>{children}</main>
       <NavBar />
     </>

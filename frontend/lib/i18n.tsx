@@ -130,6 +130,7 @@ const translations: Record<Locale, Record<string, string>> = {
     'nav.matches': '配對',
     'nav.theaters': '放映廳',
     'nav.profile': '檔案',
+    'nav.admin': '管理',
 
     // Auth
     'auth.signIn': '登入',
@@ -396,6 +397,7 @@ const translations: Record<Locale, Record<string, string>> = {
     'nav.matches': 'Matches',
     'nav.theaters': 'Theaters',
     'nav.profile': 'Profile',
+    'nav.admin': 'Admin',
 
     // Auth
     'auth.signIn': 'Sign in',

@@ -1,23 +1,19 @@
 .toggle {
-  position: fixed;
-  top: 1rem;
-  right: 1rem;
-  z-index: 50;
   width: 36px;
   height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--card-bg);
-  border: 1px solid var(--border);
+  background: transparent;
+  border: none;
   border-radius: 8px;
   color: var(--muted);
   font-size: 1rem;
   cursor: pointer;
-  transition: color 0.15s ease, border-color 0.15s ease;
+  transition: color 0.15s ease, background 0.15s ease;
 }
 
 .toggle:hover {
   color: var(--foreground);
-  border-color: var(--border-dark);
+  background: rgba(68, 81, 75, 0.06);
 }
