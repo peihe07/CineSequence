@@ -19,6 +19,7 @@ interface MatchState {
   error: string | null
 
   fetchMatches: () => Promise<void>
+  fetchMatch: (matchId: string) => Promise<MatchItem | null>
   discoverMatches: () => Promise<void>
   sendInvite: (matchId: string) => Promise<void>
   respondToInvite: (matchId: string, accept: boolean) => Promise<void>
@@ -40,6 +41,15 @@ export const useMatchStore = create<MatchState>((set, get) => ({
         isLoading: false,
         error: err instanceof Error ? err.message : 'Failed to fetch matches',
       })
+    }
+  },
+
+  fetchMatch: async (matchId: string) => {
+    try {
+      const match = await api<MatchItem>(`/matches/${matchId}`)
+      return match
+    } catch {
+      return null
     }
   },
 
