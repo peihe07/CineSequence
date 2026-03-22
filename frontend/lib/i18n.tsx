@@ -72,6 +72,7 @@ const translations: Record<Locale, Record<string, string>> = {
     'nav.sequencing': '序列',
     'nav.dna': 'DNA',
     'nav.matches': '配對',
+    'nav.theaters': '放映廳',
     'nav.profile': '檔案',
 
     // Auth
@@ -169,6 +170,17 @@ const translations: Record<Locale, Record<string, string>> = {
     'matches.decline': '婉拒',
     'matches.matched': '已配對',
 
+    // Theaters (Groups)
+    'theaters.title': 'Theaters',
+    'theaters.autoAssign': 'DNA 配組',
+    'theaters.empty': '尚未加入任何放映廳',
+    'theaters.emptyHint': '點擊「DNA 配組」，系統會根據你的觀影 DNA 自動分配',
+    'theaters.join': '加入',
+    'theaters.leave': '離開',
+    'theaters.hidden': '隱藏',
+    'theaters.active': '已啟用',
+    'theaters.inactive': '未達門檻',
+
     // Profile
     'profile.title': '個人檔案',
     'profile.edit': '編輯',
@@ -214,6 +226,7 @@ const translations: Record<Locale, Record<string, string>> = {
     'nav.sequencing': 'Sequence',
     'nav.dna': 'DNA',
     'nav.matches': 'Matches',
+    'nav.theaters': 'Theaters',
     'nav.profile': 'Profile',
 
     // Auth
@@ -310,6 +323,17 @@ const translations: Record<Locale, Record<string, string>> = {
     'matches.accept': 'Accept',
     'matches.decline': 'Decline',
     'matches.matched': 'Matched',
+
+    // Theaters (Groups)
+    'theaters.title': 'Theaters',
+    'theaters.autoAssign': 'DNA Assign',
+    'theaters.empty': 'No theaters joined yet',
+    'theaters.emptyHint': 'Click "DNA Assign" to auto-join theaters based on your cinematic DNA',
+    'theaters.join': 'Join',
+    'theaters.leave': 'Leave',
+    'theaters.hidden': 'Hidden',
+    'theaters.active': 'Active',
+    'theaters.inactive': 'Not yet active',
 
     // Profile
     'profile.title': 'Profile',

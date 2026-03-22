@@ -1,1 +1,219 @@
-# TODO: implement group_engine service
+"""Group engine: auto-assign users to groups based on DNA tag affinity."""
+
+import json
+import logging
+import uuid
+from pathlib import Path
+
+from sqlalchemy import select, func, delete
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.models.dna_profile import DnaProfile
+from app.models.group import Group, group_members
+from app.models.user import User
+
+logger = logging.getLogger(__name__)
+
+# Load tag taxonomy for index mapping
+_data_dir = Path(__file__).parent.parent / "data"
+_taxonomy = json.loads((_data_dir / "tag_taxonomy.json").read_text())
+TAG_KEYS = list(_taxonomy["tags"].keys())
+TAG_INDEX = {key: i for i, key in enumerate(TAG_KEYS)}
+
+# Minimum affinity score to auto-assign a user to a group
+AUTO_ASSIGN_THRESHOLD = 0.2
+
+
+def compute_group_affinity(tag_vector: list[float], primary_tags: list[str]) -> float:
+    """Compute affinity score between a user's tag_vector and a group's primary_tags.
+
+    Returns average tag_vector value for the group's primary_tags.
+    Higher = stronger match.
+    """
+    if not primary_tags or not tag_vector:
+        return 0.0
+
+    total = 0.0
+    count = 0
+    for tag in primary_tags:
+        idx = TAG_INDEX.get(tag)
+        if idx is not None and idx < len(tag_vector):
+            total += tag_vector[idx]
+            count += 1
+
+    return total / count if count > 0 else 0.0
+
+
+async def auto_assign_groups(
+    db: AsyncSession,
+    user: User,
+) -> list[Group]:
+    """Auto-assign user to groups based on their DNA tag_vector affinity.
+
+    Clears existing memberships and re-assigns based on current DNA profile.
+    Returns list of groups the user was assigned to.
+    """
+    profile = user.dna_profile
+    if not profile or profile.tag_vector is None:
+        return []
+
+    tag_vector = list(profile.tag_vector)
+
+    # Fetch all groups
+    result = await db.execute(select(Group))
+    all_groups = list(result.scalars().all())
+
+    # Clear existing memberships for this user
+    await db.execute(
+        delete(group_members).where(group_members.c.user_id == user.id)
+    )
+
+    assigned = []
+    for group in all_groups:
+        affinity = compute_group_affinity(tag_vector, group.primary_tags or [])
+        if affinity >= AUTO_ASSIGN_THRESHOLD:
+            await db.execute(
+                group_members.insert().values(user_id=user.id, group_id=group.id)
+            )
+            assigned.append(group)
+
+    # Update member counts for all groups
+    for group in all_groups:
+        count_q = select(func.count()).select_from(group_members).where(
+            group_members.c.group_id == group.id
+        )
+        count_result = await db.execute(count_q)
+        new_count = count_result.scalar() or 0
+        group.member_count = new_count
+        # Auto-activate when threshold reached
+        if new_count >= group.min_members_to_activate:
+            group.is_active = True
+
+    await db.commit()
+    return assigned
+
+
+async def get_user_groups(
+    db: AsyncSession,
+    user_id: uuid.UUID,
+) -> list[Group]:
+    """Get all groups that a user belongs to."""
+    q = (
+        select(Group)
+        .join(group_members, group_members.c.group_id == Group.id)
+        .where(group_members.c.user_id == user_id)
+    )
+    result = await db.execute(q)
+    return list(result.scalars().all())
+
+
+async def list_visible_groups(
+    db: AsyncSession,
+    user_id: uuid.UUID | None = None,
+) -> list[dict]:
+    """List all non-hidden groups with membership status for a user.
+
+    Hidden groups only appear if the user is already a member.
+    """
+    result = await db.execute(select(Group))
+    all_groups = list(result.scalars().all())
+
+    # Get user's current group IDs
+    user_group_ids: set[str] = set()
+    if user_id:
+        member_q = select(group_members.c.group_id).where(
+            group_members.c.user_id == user_id
+        )
+        member_result = await db.execute(member_q)
+        user_group_ids = {row[0] for row in member_result}
+
+    groups_out = []
+    for group in all_groups:
+        is_member = group.id in user_group_ids
+        # Hidden groups only visible to members
+        if group.is_hidden and not is_member:
+            continue
+        groups_out.append({
+            "id": group.id,
+            "name": group.name,
+            "subtitle": group.subtitle,
+            "icon": group.icon,
+            "primary_tags": group.primary_tags or [],
+            "is_hidden": group.is_hidden,
+            "member_count": group.member_count,
+            "is_active": group.is_active,
+            "is_member": is_member,
+        })
+
+    return groups_out
+
+
+async def join_group(
+    db: AsyncSession,
+    user_id: uuid.UUID,
+    group_id: str,
+) -> Group:
+    """Manually join a group."""
+    result = await db.execute(select(Group).where(Group.id == group_id))
+    group = result.scalar_one_or_none()
+    if not group:
+        raise ValueError("Group not found")
+
+    # Check if already a member
+    check = await db.execute(
+        select(group_members).where(
+            group_members.c.user_id == user_id,
+            group_members.c.group_id == group_id,
+        )
+    )
+    if check.first():
+        raise ValueError("Already a member")
+
+    await db.execute(
+        group_members.insert().values(user_id=user_id, group_id=group_id)
+    )
+
+    # Update member count
+    count_q = select(func.count()).select_from(group_members).where(
+        group_members.c.group_id == group_id
+    )
+    count_result = await db.execute(count_q)
+    group.member_count = count_result.scalar() or 0
+    if group.member_count >= group.min_members_to_activate:
+        group.is_active = True
+
+    await db.commit()
+    await db.refresh(group)
+    return group
+
+
+async def leave_group(
+    db: AsyncSession,
+    user_id: uuid.UUID,
+    group_id: str,
+) -> Group:
+    """Leave a group."""
+    result = await db.execute(select(Group).where(Group.id == group_id))
+    group = result.scalar_one_or_none()
+    if not group:
+        raise ValueError("Group not found")
+
+    deleted = await db.execute(
+        delete(group_members).where(
+            group_members.c.user_id == user_id,
+            group_members.c.group_id == group_id,
+        )
+    )
+    if deleted.rowcount == 0:
+        raise ValueError("Not a member")
+
+    # Update member count
+    count_q = select(func.count()).select_from(group_members).where(
+        group_members.c.group_id == group_id
+    )
+    count_result = await db.execute(count_q)
+    group.member_count = count_result.scalar() or 0
+
+    await db.commit()
+    await db.refresh(group)
+    return group

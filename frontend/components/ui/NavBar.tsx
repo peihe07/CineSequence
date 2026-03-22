@@ -9,6 +9,7 @@ const NAV_ITEMS = [
   { href: '/sequencing', icon: 'ri-film-line', labelKey: 'nav.sequencing' },
   { href: '/dna', icon: 'ri-dna-line', labelKey: 'nav.dna' },
   { href: '/matches', icon: 'ri-hearts-line', labelKey: 'nav.matches' },
+  { href: '/theaters', icon: 'ri-movie-2-line', labelKey: 'nav.theaters' },
   { href: '/profile', icon: 'ri-user-line', labelKey: 'nav.profile' },
 ]
 

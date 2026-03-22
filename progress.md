@@ -11,10 +11,10 @@
 | Phase 3: Sequencing Engine | Done | 85% |
 | Phase 4: DNA Builder + Result | Done | 80% |
 | Phase 5: Matching + Invite | Partial | 75% |
-| Phase 6: Groups + Profile | Partial | 40% |
+| Phase 6: Groups + Profile | Partial | 80% |
 | Phase 7: Polish + Infrastructure | In progress | 40% |
 | Cross-cutting | Done | 95% |
-| **Overall** | | **~60%** |
+| **Overall** | | **~65%** |
 
 ---
 
@@ -101,10 +101,11 @@
 ## Phase 6: Groups + Profile (in progress)
 - [x] Profile router (GET /profile, PATCH /profile)
 - [x] Profile page (basic CRUD with i18n)
+- [x] Group engine (auto-assign by DNA tag affinity, hidden group filtering, activation threshold)
+- [x] Groups router (GET /groups, POST /auto-assign, POST /:id/join, POST /:id/leave, GET /:id)
+- [x] Group store (Zustand: fetchGroups, autoAssign, joinGroup, leaveGroup)
+- [x] Theaters page (group list with join/leave, auto-assign button, i18n)
 - [ ] Profile: avatar upload (R2 integration)
-- [ ] Group engine (auto-assign by DNA tags, hidden group discovery, activation)
-- [ ] Groups router (GET /groups, POST /groups/:id/join, GET /groups/:id)
-- [ ] Theaters pages (group list + group detail)
 - [ ] Tests: group assignment, activation threshold, profile CRUD
 
 ## Phase 7: Polish + Infrastructure (in progress)
