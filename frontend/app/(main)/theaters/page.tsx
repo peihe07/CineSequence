@@ -1,10 +1,11 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { useGroupStore } from '@/stores/groupStore'
 import { useI18n } from '@/lib/i18n'
 import FlowGuard from '@/components/guards/FlowGuard'
+import ConfirmDialog from '@/components/ui/ConfirmDialog'
 import styles from './page.module.css'
 
 const TAG_ZH: Record<string, string> = {
@@ -123,6 +124,7 @@ export default function TheatersPage() {
 function TheatersContent() {
   const { t } = useI18n()
   const { groups, isLoading, fetchGroups, autoAssign, joinGroup, leaveGroup } = useGroupStore()
+  const [leaveTarget, setLeaveTarget] = useState<string | null>(null)
 
   useEffect(() => {
     fetchGroups()
@@ -154,6 +156,15 @@ function TheatersContent() {
             <i className="ri-film-line ri-3x" />
             <p>{t('theaters.empty')}</p>
             <p className={styles.emptyHint}>{t('theaters.emptyHint')}</p>
+            <button
+              className={styles.assignBtn}
+              onClick={autoAssign}
+              disabled={isLoading}
+              style={{ marginTop: '0.5rem' }}
+            >
+              <i className="ri-magic-line" />
+              {t('theaters.autoAssign')}
+            </button>
           </div>
         )}
 
@@ -163,11 +174,21 @@ function TheatersContent() {
               key={group.id}
               group={group}
               onJoin={() => joinGroup(group.id)}
-              onLeave={() => leaveGroup(group.id)}
+              onLeave={() => setLeaveTarget(group.id)}
             />
           ))}
         </div>
       </div>
+
+      <ConfirmDialog
+        open={leaveTarget !== null}
+        message={t('confirm.leaveGroup')}
+        onConfirm={() => {
+          if (leaveTarget) leaveGroup(leaveTarget)
+          setLeaveTarget(null)
+        }}
+        onCancel={() => setLeaveTarget(null)}
+      />
     </div>
   )
 }

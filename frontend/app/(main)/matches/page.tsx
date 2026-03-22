@@ -286,6 +286,15 @@ function MatchesContent() {
             <i className="ri-group-line ri-3x" />
             <p>{t('matches.empty')}</p>
             <p className={styles.emptyHint}>{t('matches.emptyHint')}</p>
+            <button
+              className={styles.discoverBtn}
+              onClick={discoverMatches}
+              disabled={isDiscovering}
+              style={{ marginTop: '0.5rem' }}
+            >
+              <i className="ri-compass-discover-line" />
+              {isDiscovering ? t('matches.discovering') : t('matches.discover')}
+            </button>
           </div>
         )}
 

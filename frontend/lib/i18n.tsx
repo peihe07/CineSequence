@@ -68,6 +68,17 @@ const translations: Record<Locale, Record<string, string>> = {
     'common.confirm': '確認',
     'common.cancel': '取消',
 
+    // Onboarding
+    'onboarding.title': '歡迎來到序列分析',
+    'onboarding.step1': '每輪你會看到兩部電影，選擇更吸引你的那一部。',
+    'onboarding.step2': '系統會從你的選擇中萃取觀影偏好，20 輪後生成你的 DNA。',
+    'onboarding.step3': '不確定的話可以跳過，不會影響最終結果。',
+    'onboarding.start': '開始',
+
+    // Confirm dialogs
+    'confirm.logout': '確定要登出嗎？',
+    'confirm.leaveGroup': '確定要離開這個放映廳嗎？',
+
     // Landing
     'landing.start': '開始解碼',
     'landing.login': '登入',
@@ -311,6 +322,17 @@ const translations: Record<Locale, Record<string, string>> = {
     'common.back': 'Back',
     'common.confirm': 'Confirm',
     'common.cancel': 'Cancel',
+
+    // Onboarding
+    'onboarding.title': 'Welcome to Sequencing',
+    'onboarding.step1': 'Each round shows two films. Pick the one that draws you in more.',
+    'onboarding.step2': 'The system extracts your viewing preferences across 20 rounds to generate your DNA.',
+    'onboarding.step3': 'Not sure? Skip it. It won\'t affect your final result.',
+    'onboarding.start': 'Begin',
+
+    // Confirm dialogs
+    'confirm.logout': 'Are you sure you want to sign out?',
+    'confirm.leaveGroup': 'Are you sure you want to leave this theater?',
 
     // Landing
     'landing.start': 'Start Decoding',

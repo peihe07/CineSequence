@@ -9,6 +9,7 @@ import LiquidTube from '@/components/sequencing/LiquidTube'
 import PhaseIndicator from '@/components/sequencing/PhaseIndicator'
 import LiveTagCloud from '@/components/sequencing/LiveTagCloud'
 import SkipActions from '@/components/sequencing/SkipActions'
+import OnboardingOverlay from '@/components/sequencing/OnboardingOverlay'
 import styles from './page.module.css'
 
 export default function SequencingPage() {
@@ -71,6 +72,8 @@ export default function SequencingPage() {
         '--ambient-color': ambientColor || 'transparent',
       } as React.CSSProperties}
     >
+      <OnboardingOverlay />
+
       {/* Ambient background glow */}
       <div className={styles.ambientGlow} />
 

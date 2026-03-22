@@ -11,6 +11,7 @@ import ProfileHeader from '@/components/profile/ProfileHeader'
 import ProfilePreferencesCard from '@/components/profile/ProfilePreferencesCard'
 import ProfileSequencingCard from '@/components/profile/ProfileSequencingCard'
 import type { Profile } from '@/components/profile/types'
+import ConfirmDialog from '@/components/ui/ConfirmDialog'
 import styles from './page.module.css'
 
 export default function ProfilePage() {
@@ -23,6 +24,7 @@ export default function ProfilePage() {
   const [editName, setEditName] = useState('')
   const [saving, setSaving] = useState(false)
   const [isLoggingOut, setIsLoggingOut] = useState(false)
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
   const [uploadingAvatar, setUploadingAvatar] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
@@ -97,6 +99,7 @@ export default function ProfilePage() {
   }
 
   const handleLogout = async () => {
+    setShowLogoutConfirm(false)
     setIsLoggingOut(true)
     try {
       await logout()
@@ -137,7 +140,7 @@ export default function ProfilePage() {
           logoutLabel={t('profile.logout')}
           loggingOutLabel={t('profile.loggingOut')}
           isLoggingOut={isLoggingOut}
-          onLogout={handleLogout}
+          onLogout={async () => setShowLogoutConfirm(true)}
         />
 
         <ProfileBasicsCard
@@ -182,6 +185,13 @@ export default function ProfilePage() {
           getStatusLabel={getStatusLabel}
         />
       </motion.div>
+
+      <ConfirmDialog
+        open={showLogoutConfirm}
+        message={t('confirm.logout')}
+        onConfirm={handleLogout}
+        onCancel={() => setShowLogoutConfirm(false)}
+      />
     </div>
   )
 }
