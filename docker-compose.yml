@@ -53,6 +53,47 @@ services:
       redis:
         condition: service_healthy
 
+  # ---- Celery Worker ----
+  celery-worker:
+    container_name: cinesequence-celery-dev
+    build:
+      context: .
+      dockerfile: docker/backend/Dockerfile
+      target: dev
+    command: celery -A app.tasks.celery_app worker --loglevel=info --concurrency=2
+    volumes:
+      - ./backend:/app
+    env_file:
+      - .env
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://dev:dev@postgres:5432/cinesequence
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/1
+      - CELERY_RESULT_BACKEND=redis://redis:6379/2
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  celery-beat:
+    container_name: cinesequence-beat-dev
+    build:
+      context: .
+      dockerfile: docker/backend/Dockerfile
+      target: dev
+    command: celery -A app.tasks.celery_app beat --loglevel=info
+    volumes:
+      - ./backend:/app
+    env_file:
+      - .env
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/1
+      - CELERY_RESULT_BACKEND=redis://redis:6379/2
+    depends_on:
+      redis:
+        condition: service_healthy
+
   # ---- Frontend ----
   frontend:
     container_name: cinesequence-frontend-dev

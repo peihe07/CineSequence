@@ -12,9 +12,9 @@
 | Phase 4: DNA Builder + Result | Done | 80% |
 | Phase 5: Matching + Invite | Partial | 90% |
 | Phase 6: Groups + Profile | Partial | 80% |
-| Phase 7: Polish + Infrastructure | In progress | 40% |
+| Phase 7: Polish + Infrastructure | In progress | 50% |
 | Cross-cutting | Done | 95% |
-| **Overall** | | **~70%** |
+| **Overall** | | **~75%** |
 
 ---
 
@@ -150,11 +150,12 @@
 - [x] Route guard: (main) layout redirects unauthenticated users to /login ✓
 - [x] Nav bar: bottom tab navigation (Sequence, DNA, Matches, Profile) with i18n ✓
 
-### 7b: Celery Async Tasks
-- [ ] Celery app configuration (Redis broker/backend, autodiscovery)
-- [ ] DNA tasks (async DNA build + AI reading, trigger matching on completion)
-- [ ] Match tasks (async find_matches, periodic batch_rematch via Celery beat)
-- [ ] Email tasks (move inline email to Celery workers)
+### 7b: Celery Async Tasks ✓
+- [x] Celery app configuration (Redis broker/backend, autodiscovery, beat schedule)
+- [x] DNA tasks (async DNA build + AI reading, trigger matching on completion)
+- [x] Match tasks (async find_matches, periodic batch_rematch daily at 3 AM UTC)
+- [x] Email tasks (send_invite_email_task, send_accepted_email_task with retry)
+- [x] Docker compose: celery-worker + celery-beat services
 
 ### 7c: UX Polish
 - [ ] Landing page (hero, how it works, CTA)
