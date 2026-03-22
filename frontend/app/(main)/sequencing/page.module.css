@@ -45,3 +45,24 @@
   gap: 1.5rem;
   padding-top: 2rem;
 }
+
+/* Mobile */
+@media (max-width: 640px) {
+  .container {
+    padding: 1rem;
+  }
+
+  .ambientGlow {
+    width: 300px;
+    height: 300px;
+  }
+
+  .header {
+    padding-bottom: 1rem;
+  }
+
+  .footer {
+    gap: 1rem;
+    padding-top: 1rem;
+  }
+}

@@ -35,9 +35,21 @@
   width: 100%;
 }
 
-@media (max-width: 600px) {
+@media (max-width: 640px) {
+  .container {
+    padding: 2rem 1rem;
+  }
+
+  .title {
+    font-size: 1.3rem;
+  }
+
   .grid {
     grid-template-columns: 1fr;
+  }
+
+  .content {
+    gap: 2rem;
   }
 }
 

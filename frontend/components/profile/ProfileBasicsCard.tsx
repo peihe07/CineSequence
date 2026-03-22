@@ -100,7 +100,7 @@ export default function ProfileBasicsCard({
         ) : (
           <div className={styles.valueRow}>
             <span className={styles.value}>{profile.name}</span>
-            <button className={styles.editBtn} onClick={onEditStart}>
+            <button className={styles.editBtn} onClick={onEditStart} aria-label="Edit name">
               <i className="ri-pencil-line" />
             </button>
           </div>

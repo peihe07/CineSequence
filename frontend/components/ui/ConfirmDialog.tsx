@@ -27,6 +27,9 @@ export default function ConfirmDialog({ open, message, onConfirm, onCancel }: Co
         >
           <motion.div
             className={styles.dialog}
+            role="dialog"
+            aria-modal="true"
+            aria-label={message}
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}

@@ -6,6 +6,7 @@ import { motion } from 'framer-motion'
 import { useMatchStore, MatchItem } from '@/stores/matchStore'
 import { api } from '@/lib/api'
 import { useI18n } from '@/lib/i18n'
+import { getTagLabel } from '@/lib/tagLabels'
 import TearRitual from '@/components/match/TearRitual'
 import FlowGuard from '@/components/guards/FlowGuard'
 import styles from './page.module.css'
@@ -17,30 +18,6 @@ interface MatchPrefs {
   pure_taste_match: boolean
 }
 
-const TAG_ZH: Record<string, string> = {
-  twist: '反轉結局', mindfuck: '燒腦', slowburn: '慢熱', ensemble: '群戲',
-  solo: '獨角戲', visualFeast: '視覺饗宴', dialogue: '對白精彩', tearjerker: '催淚',
-  darkTone: '黑暗', uplifting: '正能量', philosophical: '哲學思辨', satirical: '社會諷刺',
-  nostalgic: '懷舊', experimental: '實驗性', cult: '邪典', comingOfAge: '成長故事',
-  revenge: '復仇', heist: '精密計畫', survival: '生存掙扎', timeTravel: '時空穿越',
-  dystopia: '反烏托邦', trueStory: '真實事件', nonEnglish: '非英語',
-  existential: '存在主義', antiHero: '反英雄', romanticCore: '浪漫內核',
-  violentAesthetic: '暴力美學', socialCritique: '社會批判', psychoThriller: '心理驚悚',
-  absurdist: '荒誕',
-}
-
-const TAG_EN: Record<string, string> = {
-  twist: 'Plot twist', mindfuck: 'Mind-bending', slowburn: 'Slow burn', ensemble: 'Ensemble',
-  solo: 'Solo act', visualFeast: 'Visual feast', dialogue: 'Sharp dialogue', tearjerker: 'Tearjerker',
-  darkTone: 'Dark', uplifting: 'Uplifting', philosophical: 'Philosophical', satirical: 'Satirical',
-  nostalgic: 'Nostalgic', experimental: 'Experimental', cult: 'Cult', comingOfAge: 'Coming of age',
-  revenge: 'Revenge', heist: 'Heist', survival: 'Survival', timeTravel: 'Time travel',
-  dystopia: 'Dystopia', trueStory: 'True story', nonEnglish: 'Non-English',
-  existential: 'Existential', antiHero: 'Anti-hero', romanticCore: 'Romantic',
-  violentAesthetic: 'Violent aesthetic', socialCritique: 'Social critique', psychoThriller: 'Psychological',
-  absurdist: 'Absurdist',
-}
-
 function MatchCard({ match, onInvite, onRespond, highlighted }: {
   match: MatchItem
   onInvite: () => void
@@ -49,7 +26,6 @@ function MatchCard({ match, onInvite, onRespond, highlighted }: {
 }) {
   const { t, locale } = useI18n()
   const pct = Math.round(match.similarity_score * 100)
-  const tagMap = locale === 'zh' ? TAG_ZH : TAG_EN
 
   return (
     <motion.div
@@ -73,7 +49,7 @@ function MatchCard({ match, onInvite, onRespond, highlighted }: {
         <div className={styles.tags}>
           {match.shared_tags.slice(0, 5).map((tag) => (
             <span key={tag} className={styles.tag}>
-              {tagMap[tag] || tag}
+              {getTagLabel(tag, locale)}
             </span>
           ))}
         </div>

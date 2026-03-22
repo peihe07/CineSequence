@@ -53,6 +53,30 @@ a {
   text-decoration: none;
 }
 
+/* Focus-visible: keyboard-only outline for accessibility */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Remove default focus ring for mouse/touch users */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Screen-reader only utility */
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 .divider {
   width: 100%;
   height: 1px;

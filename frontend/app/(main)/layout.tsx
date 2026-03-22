@@ -30,7 +30,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
   return (
     <>
       <MuteToggle />
-      {children}
+      <main>{children}</main>
       <NavBar />
     </>
   )

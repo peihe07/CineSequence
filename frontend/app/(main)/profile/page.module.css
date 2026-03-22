@@ -239,3 +239,37 @@
   color: var(--accent);
   border-color: rgba(192, 98, 35, 0.2);
 }
+
+/* Mobile */
+@media (max-width: 640px) {
+  .container {
+    padding: 2rem 1rem;
+  }
+
+  .title {
+    font-size: 1.3rem;
+  }
+
+  .logoutButton {
+    min-height: 44px;
+    padding: 0.5rem 0.85rem;
+  }
+
+  .saveBtn,
+  .cancelBtn {
+    min-height: 44px;
+    padding: 0.5rem 0.8rem;
+  }
+
+  .editBtn {
+    min-height: 44px;
+    min-width: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .card {
+    padding: 1.2rem;
+  }
+}

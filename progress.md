@@ -180,9 +180,9 @@
 - [x] "What's next" guidance on DNA result page (→ go to matches button already existed)
 - [x] Confirmation dialogs (ConfirmDialog: logout, leave group)
 - [x] Empty state CTAs (matches: discover button, theaters: auto-assign button)
-- [ ] Mobile responsive refinements (touch targets, card density, landscape)
-- [ ] Accessibility (aria-labels, focus-visible, keyboard nav, color contrast)
-- [ ] TAG_ZH/TAG_EN deduplication (shared constant instead of repeated in 3 pages)
+- [x] Mobile responsive refinements (640px breakpoints, 44px touch targets, fluid MovieCard, reduced padding)
+- [x] Accessibility (focus-visible, aria-labels, aria-live toasts, dialog roles, semantic main element, srOnly utility)
+- [x] TAG_ZH/TAG_EN deduplication (shared lib/tagLabels.ts, matches + theaters pages use getTagLabel)
 
 ### 7c-3: Terminal Landing Page ✓
 - [x] CRT terminal aesthetic (dark background, amber text, scan lines, flicker)

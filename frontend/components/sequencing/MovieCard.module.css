@@ -133,3 +133,17 @@
   color: var(--foreground);
   border-color: var(--foreground);
 }
+
+/* Mobile: fluid card width */
+@media (max-width: 640px) {
+  .card {
+    width: 100%;
+    max-width: 260px;
+  }
+
+  .modeBtn {
+    min-height: 44px;
+    padding: 0.5rem;
+    font-size: 0.75rem;
+  }
+}

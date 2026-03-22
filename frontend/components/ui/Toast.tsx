@@ -14,7 +14,7 @@ export default function ToastContainer() {
   const { toasts, removeToast } = useToastStore()
 
   return (
-    <div className={styles.container}>
+    <div className={styles.container} role="status" aria-live="polite">
       <AnimatePresence>
         {toasts.map((toast) => (
           <motion.div

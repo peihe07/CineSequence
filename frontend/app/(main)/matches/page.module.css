@@ -381,3 +381,48 @@
   align-items: center;
   gap: 0.3rem;
 }
+
+/* Mobile */
+@media (max-width: 640px) {
+  .container {
+    padding: 2rem 1rem;
+  }
+
+  .title {
+    font-size: 1.3rem;
+  }
+
+  .discoverBtn,
+  .inviteBtn,
+  .acceptBtn,
+  .declineBtn {
+    min-height: 44px;
+    padding: 0.6rem 1rem;
+  }
+
+  .filterOption {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 0.8rem;
+  }
+
+  .filterToggle {
+    min-height: 44px;
+  }
+
+  .ageInput {
+    width: 72px;
+    min-height: 44px;
+    padding: 0.5rem;
+  }
+
+  .card {
+    padding: 1.2rem;
+  }
+
+  .cardHeader {
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+}
