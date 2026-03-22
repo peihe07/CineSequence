@@ -14,7 +14,7 @@
 | Phase 6: Groups + Profile | Done | 95% |
 | Phase 7: Polish + Infrastructure | In progress | 80% |
 | Cross-cutting | Done | 95% |
-| **Overall** | | **~85%** |
+| **Overall** | | **~88%** |
 
 ---
 
@@ -209,15 +209,17 @@
 ---
 
 ## Pending Requirements
-- **隱私政策 / 使用者同意條款** — 註冊時需同意條款。揭露給配對對象：顯示名稱、原型、品味標籤、ice breaker、相似度。不揭露：email、真實姓名、出生年份、性別。未來若加入個人照片/興趣簡介需額外同意。需前後端頁面 + 註冊勾選。
+- ~~**隱私政策 / 使用者同意條款**~~ ✓ 已完成
+  - /privacy 頁面（zh/en，蒐集/揭露/不揭露/儲存/第三方/權利/聯繫）
+  - 註冊 checkbox（agreed_to_terms 必填，連結至 /privacy）
+  - User model 新增 agreed_to_terms_at，Alembic migration
+  - 後端驗證 agreed_to_terms=true 才允許註冊
 
 ## Deferred Decisions
 - **N-V-E-P-S 5-dimension DNA system** — replace current 3-axis model after core flow is complete
 - **Bilingual movie titles** — backend has title_en + title_zh, seed page is locale-aware, other pages TBD
 
 ## Suggested Next Steps
-1. **Phase 5 remaining** — Ticket invite deep link page (/ticket/[inviteId])
-2. **Phase 6 remaining** — Profile avatar upload (R2), profile CRUD tests
-3. **Phase 7d (continue)** — Integration tests (backend API with real DB), frontend component tests
-4. **Pending** — 隱私政策頁面 + 註冊同意勾選
-5. **Phase 7e** — Deploy (Vercel + Railway + CI/CD)
+1. **Phase 7d (continue)** — Integration tests (backend API with real DB), frontend component tests
+2. **Phase 6 remaining** — Profile CRUD tests
+3. **Phase 7e** — Deploy (Vercel + Railway + CI/CD)
