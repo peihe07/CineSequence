@@ -17,7 +17,7 @@
   border: 1px solid var(--terminal-accent-soft);
   box-shadow:
     0 0 40px var(--terminal-accent-glow),
-    inset 0 0 60px rgba(0, 0, 0, 0.3);
+    0 24px 60px rgba(68, 81, 75, 0.08);
   position: relative;
   overflow: hidden;
 }
@@ -31,8 +31,8 @@
     0deg,
     transparent,
     transparent 2px,
-    rgba(0, 0, 0, 0.08) 2px,
-    rgba(0, 0, 0, 0.08) 4px
+    rgba(68, 81, 75, 0.025) 2px,
+    rgba(68, 81, 75, 0.025) 4px
   );
   pointer-events: none;
   z-index: 2;
@@ -45,7 +45,7 @@
   inset: 0;
   background: linear-gradient(
     transparent 50%,
-    color-mix(in srgb, var(--accent) 12%, transparent) 50%
+    color-mix(in srgb, var(--foreground) 8%, transparent) 50%
   );
   background-size: 100% 4px;
   animation: flicker 0.15s infinite;
@@ -64,18 +64,18 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.6rem 1rem;
-  border-bottom: 1px solid color-mix(in srgb, var(--accent) 18%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--foreground) 14%, transparent);
 }
 
 .dot {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: color-mix(in srgb, var(--accent) 30%, transparent);
+  background: color-mix(in srgb, var(--foreground) 24%, transparent);
 }
 
 .dot:first-child {
-  background: color-mix(in srgb, var(--accent) 60%, transparent);
+  background: color-mix(in srgb, var(--foreground) 52%, transparent);
 }
 
 .titleText {
@@ -155,7 +155,7 @@
   font-family: var(--font-sans);
   font-size: 0.85rem;
   line-height: 2;
-  color: #2d8659;
+  color: var(--foreground);
   font-weight: 600;
   opacity: 0;
   animation: lineAppear 0.2s forwards;
@@ -185,8 +185,8 @@
   justify-content: center;
   gap: 0.4rem;
   padding: 0.7rem 1.2rem;
-  background: rgba(192, 98, 35, 0.9);
-  color: var(--terminal-bg);
+  background: var(--foreground);
+  color: var(--background);
   border: none;
   font-family: var(--font-sans);
   font-size: 0.8rem;
@@ -199,7 +199,7 @@
 }
 
 .ctaPrimary:hover {
-  background: var(--accent);
+  background: color-mix(in srgb, var(--foreground) 88%, black);
 }
 
 .ctaSecondary {
@@ -210,8 +210,8 @@
   gap: 0.4rem;
   padding: 0.7rem 1.2rem;
   background: transparent;
-  color: color-mix(in srgb, var(--accent) 60%, transparent);
-  border: 1px solid color-mix(in srgb, var(--accent) 20%, transparent);
+  color: var(--foreground);
+  border: 1px solid color-mix(in srgb, var(--foreground) 18%, transparent);
   font-family: var(--font-sans);
   font-size: 0.8rem;
   letter-spacing: 0.08em;
@@ -222,8 +222,9 @@
 }
 
 .ctaSecondary:hover {
-  color: color-mix(in srgb, var(--accent) 90%, transparent);
-  border-color: color-mix(in srgb, var(--accent) 40%, transparent);
+  color: var(--foreground);
+  border-color: color-mix(in srgb, var(--foreground) 36%, transparent);
+  background: color-mix(in srgb, var(--foreground) 4%, transparent);
 }
 
 .hint {
@@ -239,7 +240,7 @@
   margin-top: 2rem;
   font-family: var(--font-sans);
   font-size: 0.6rem;
-  color: color-mix(in srgb, var(--accent) 15%, transparent);
+  color: color-mix(in srgb, var(--foreground) 18%, transparent);
   letter-spacing: 0.08em;
 }
 
