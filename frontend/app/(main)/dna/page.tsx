@@ -6,6 +6,7 @@ import { motion } from 'framer-motion'
 import { useDnaStore } from '@/stores/dnaStore'
 import { useI18n } from '@/lib/i18n'
 import ArchetypeCard from '@/components/dna/ArchetypeCard'
+import StarNebula from '@/components/dna/StarNebula'
 import TagCloud from '@/components/dna/TagCloud'
 import RadarChart from '@/components/dna/RadarChart'
 import AIReading from '@/components/dna/AIReading'
@@ -82,6 +83,11 @@ export default function DnaResultPage() {
             {t('dna.title')}
           </motion.h1>
         </div>
+
+        <StarNebula
+          genreVector={result.genre_vector}
+          archetypeId={result.archetype.id}
+        />
 
         <ArchetypeCard archetype={result.archetype} />
 
