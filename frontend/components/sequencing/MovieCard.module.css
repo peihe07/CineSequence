@@ -4,8 +4,8 @@
   flex-direction: column;
   width: 260px;
   background: var(--card-bg);
-  border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: var(--card-radius);
+  box-shadow: var(--card-shadow);
   overflow: hidden;
   cursor: pointer;
   transition: box-shadow 0.2s ease, transform 0.2s ease;
@@ -119,9 +119,9 @@
   padding: 0.4rem;
   font-size: 0.7rem;
   font-family: inherit;
-  background: transparent;
+  background: rgba(68, 81, 75, 0.06);
   color: var(--muted);
-  border: 1px solid var(--border);
+  border: none;
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.15s ease;
@@ -129,7 +129,12 @@
 
 .modeBtn:hover {
   color: var(--foreground);
-  border-color: var(--border-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.modeBtn:active {
+  transform: scale(0.95);
 }
 
 .modeActive {

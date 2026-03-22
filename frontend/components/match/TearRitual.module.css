@@ -6,8 +6,8 @@
 .topHalf {
   position: relative;
   background: var(--card-bg);
-  border: 1px solid var(--border);
-  border-radius: 12px 12px 0 0;
+  border-radius: var(--card-radius) var(--card-radius) 0 0;
+  box-shadow: var(--card-shadow);
   overflow: hidden;
 }
 
@@ -59,9 +59,7 @@
 
 .bottomHalf {
   background: var(--card-bg);
-  border: 1px solid var(--border);
-  border-top: none;
-  border-radius: 0 0 12px 12px;
+  border-radius: 0 0 var(--card-radius) var(--card-radius);
   cursor: grab;
   touch-action: none;
 }

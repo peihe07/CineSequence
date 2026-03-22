@@ -28,7 +28,7 @@
 
 .logoutButton {
   padding: 0.45rem 0.85rem;
-  border: 1px solid var(--border);
+  border: none;
   border-radius: 8px;
   background: transparent;
   color: var(--muted);
@@ -40,7 +40,8 @@
 
 .logoutButton:hover {
   color: var(--foreground);
-  border-color: var(--border-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .logoutButton:disabled {
@@ -73,7 +74,7 @@
   width: 80px;
   height: 80px;
   border-radius: 50%;
-  border: 1px solid var(--border);
+  border: none;
   background: var(--background-alt);
   color: var(--muted);
   font-size: 2rem;
@@ -82,11 +83,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: border-color 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .avatarBtn:hover {
-  border-color: var(--accent);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .avatarImg {
@@ -120,8 +122,8 @@
 .card {
   padding: 1.5rem;
   background: var(--card-bg);
-  border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: var(--card-radius);
+  box-shadow: var(--card-shadow);
   display: flex;
   flex-direction: column;
   gap: 1.2rem;
@@ -210,11 +212,19 @@
   font-size: 0.7rem;
   font-family: inherit;
   cursor: pointer;
-  transition: background 0.15s ease;
+  transition: background 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .saveBtn:hover {
   background: var(--accent-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.saveBtn:active,
+.cancelBtn:active,
+.logoutButton:active {
+  transform: scale(0.95);
 }
 
 .saveBtn:disabled {
@@ -225,11 +235,18 @@
   padding: 0.3rem 0.8rem;
   background: transparent;
   color: var(--muted);
-  border: 1px solid var(--border);
+  border: none;
   border-radius: 6px;
   font-size: 0.7rem;
   font-family: inherit;
   cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.cancelBtn:hover {
+  color: var(--foreground);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 /* Status badge */

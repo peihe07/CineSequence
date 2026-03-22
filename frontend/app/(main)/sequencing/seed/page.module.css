@@ -96,8 +96,8 @@
   right: 0;
   list-style: none;
   background: var(--card-bg);
-  border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: var(--card-radius);
+  box-shadow: var(--card-shadow);
   overflow: hidden;
   z-index: 50;
   max-height: 360px;
@@ -171,8 +171,8 @@
   gap: 1rem;
   padding: 1rem;
   width: 100%;
-  border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: var(--card-radius);
+  box-shadow: var(--card-shadow);
   background: var(--card-bg);
 }
 

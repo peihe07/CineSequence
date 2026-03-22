@@ -1,10 +1,11 @@
 import { test, expect } from '@playwright/test'
 
 test.describe('Landing Page', () => {
-  test('should display hero title and subtitle', async ({ page }) => {
+  test('should display current cinematic hero content', async ({ page }) => {
     await page.goto('/')
-    await expect(page.locator('h1')).toContainText('Cine Sequence')
-    await expect(page.locator('p').first()).toBeVisible()
+    await expect(page.locator('h1')).toContainText('UNKNOWN CINEMATIC DNA STRAND DETECTED.')
+    await expect(page.locator('body')).toContainText('Cine')
+    await expect(page.locator('body')).toContainText('Sequence')
   })
 
   test('should have register and login CTA buttons', async ({ page }) => {
@@ -15,10 +16,13 @@ test.describe('Landing Page', () => {
     await expect(loginLink).toBeVisible()
   })
 
-  test('should display how-it-works section with 3 steps', async ({ page }) => {
+  test('should display five panel titles on desktop layout', async ({ page }) => {
     await page.goto('/')
-    const steps = page.locator('[class*="stepTitle"]')
-    await expect(steps).toHaveCount(3)
+    await expect(page.locator('body')).toContainText('Origin')
+    await expect(page.locator('body')).toContainText('Sequence')
+    await expect(page.locator('body')).toContainText('Decode')
+    await expect(page.locator('body')).toContainText('Resonate')
+    await expect(page.locator('body')).toContainText('Reveal')
   })
 
   test('should navigate to register page', async ({ page }) => {

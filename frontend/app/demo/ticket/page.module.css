@@ -25,8 +25,8 @@
   width: 100%;
   padding: 2rem;
   background: var(--card-bg);
-  border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: var(--card-radius);
+  box-shadow: var(--card-shadow);
   display: flex;
   flex-direction: column;
   gap: 1.5rem;

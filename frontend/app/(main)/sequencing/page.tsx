@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { AnimatePresence } from 'framer-motion'
 import Button from '@/components/ui/Button'
 import { useI18n } from '@/lib/i18n'
 import { useSequencingStore } from '@/stores/sequencingStore'
@@ -120,16 +119,14 @@ export default function SequencingPage() {
       </div>
 
       <div className={styles.arena}>
-        <AnimatePresence mode="wait">
-          {currentPair && !currentPair.completed && (
-            <SwipePair
-              key={roundNumber}
-              pair={currentPair}
-              onPick={handlePick}
-              isLoading={isLoading}
-            />
-          )}
-        </AnimatePresence>
+        {currentPair && !currentPair.completed && (
+          <SwipePair
+            key={roundNumber}
+            pair={currentPair}
+            onPick={handlePick}
+            isLoading={isLoading}
+          />
+        )}
       </div>
 
       <div className={styles.footer}>

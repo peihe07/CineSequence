@@ -38,11 +38,13 @@
   font-family: inherit;
   letter-spacing: 0.04em;
   cursor: pointer;
-  transition: background 0.15s ease;
+  transition: background 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .discoverBtn:hover {
   background: var(--accent-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .discoverBtn:disabled {
@@ -82,8 +84,7 @@
   gap: 1rem;
   padding: 1.2rem;
   background: var(--background-alt);
-  border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: var(--card-radius);
   overflow: hidden;
 }
 
@@ -109,8 +110,8 @@
 
 .filterOption {
   padding: 0.35rem 0.8rem;
-  background: transparent;
-  border: 1px solid var(--border);
+  background: rgba(68, 81, 75, 0.06);
+  border: none;
   border-radius: 6px;
   color: var(--muted);
   font-size: 0.75rem;
@@ -120,8 +121,9 @@
 }
 
 .filterOption:hover {
-  border-color: var(--foreground);
   color: var(--foreground);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .filterActive {
@@ -212,8 +214,8 @@
 .card {
   padding: 1.5rem;
   background: var(--card-bg);
-  border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: var(--card-radius);
+  box-shadow: var(--card-shadow);
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -334,11 +336,20 @@
   font-size: 0.75rem;
   font-family: inherit;
   cursor: pointer;
-  transition: background 0.15s ease;
+  transition: background 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .inviteBtn:hover {
   background: var(--accent-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.inviteBtn:active,
+.acceptBtn:active,
+.declineBtn:active,
+.discoverBtn:active {
+  transform: scale(0.95);
 }
 
 .respondBtns {
@@ -358,11 +369,13 @@
   font-size: 0.75rem;
   font-family: inherit;
   cursor: pointer;
-  transition: background 0.15s ease;
+  transition: background 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .acceptBtn:hover {
   background: var(--accent-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .declineBtn {
@@ -372,7 +385,7 @@
   padding: 0.5rem 1rem;
   background: transparent;
   color: var(--muted);
-  border: 1px solid var(--border);
+  border: none;
   border-radius: 8px;
   font-size: 0.75rem;
   font-family: inherit;
@@ -381,8 +394,9 @@
 }
 
 .declineBtn:hover {
-  border-color: var(--border-dark);
   color: var(--foreground);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .acceptedSection {

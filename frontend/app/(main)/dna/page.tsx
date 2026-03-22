@@ -95,12 +95,13 @@ function DnaResultContent() {
           </motion.h1>
         </div>
 
-        <StarNebula
-          genreVector={result.genre_vector}
-          archetypeId={result.archetype.id}
-        />
-
-        <ArchetypeCard archetype={result.archetype} />
+        <div className={styles.topRow}>
+          <StarNebula
+            genreVector={result.genre_vector}
+            archetypeId={result.archetype.id}
+          />
+          <ArchetypeCard archetype={result.archetype} />
+        </div>
 
         <div className={styles.grid}>
           <RadarChart scores={result.quadrant_scores} />

@@ -3,17 +3,17 @@
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  padding: 4rem 2rem;
+  padding: 3rem 2rem;
+  overflow-x: hidden;
 }
 
 .content {
   width: 100%;
-  max-width: 520px;
+  max-width: 960px;
   display: flex;
   flex-direction: column;
   gap: 3rem;
-  align-items: center;
-  padding-bottom: 4rem;
+  padding-bottom: 5rem;
 }
 
 .header {
@@ -26,7 +26,16 @@
   letter-spacing: -0.02em;
 }
 
-/* Grid for radar + tags */
+/* Top row: Nebula + Archetype side by side */
+.topRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2.5rem;
+  align-items: start;
+  width: 100%;
+}
+
+/* Middle row: Radar + Tags side by side */
 .grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -34,13 +43,25 @@
   width: 100%;
 }
 
-@media (max-width: 640px) {
+/* Actions */
+.actions {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+@media (max-width: 768px) {
   .container {
     padding: 2rem 1rem;
   }
 
   .title {
     font-size: 1.3rem;
+  }
+
+  .topRow {
+    grid-template-columns: 1fr;
+    gap: 2rem;
   }
 
   .grid {
@@ -79,11 +100,4 @@
   gap: 1rem;
   color: var(--muted);
   padding-top: 30vh;
-}
-
-/* Actions */
-.actions {
-  display: flex;
-  justify-content: center;
-  width: 100%;
 }

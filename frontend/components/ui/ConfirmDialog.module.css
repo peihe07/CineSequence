@@ -13,8 +13,7 @@
   width: 90%;
   max-width: 340px;
   background: var(--card-bg);
-  border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: var(--card-radius);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
   padding: 1.5rem;
   display: flex;
@@ -46,12 +45,18 @@
 .btnCancel {
   background: transparent;
   color: var(--muted);
-  border: 1px solid var(--border);
+  border: none;
 }
 
 .btnCancel:hover {
-  border-color: var(--border-dark);
   color: var(--foreground);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.btnCancel:active,
+.btnConfirm:active {
+  transform: scale(0.95);
 }
 
 .btnConfirm {
@@ -62,4 +67,6 @@
 
 .btnConfirm:hover {
   background: var(--accent-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }

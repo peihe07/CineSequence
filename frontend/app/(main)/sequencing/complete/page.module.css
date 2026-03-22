@@ -82,11 +82,18 @@
   font-size: 0.85rem;
   font-family: inherit;
   cursor: pointer;
-  transition: background 0.15s ease;
+  transition: background 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .primaryBtn:hover {
   background: var(--accent-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.primaryBtn:active,
+.secondaryBtn:active {
+  transform: scale(0.95);
 }
 
 .secondaryBtn {
@@ -95,9 +102,9 @@
   justify-content: center;
   gap: 0.4rem;
   padding: 0.8rem;
-  background: transparent;
+  background: rgba(68, 81, 75, 0.06);
   color: var(--foreground);
-  border: 1px solid var(--border);
+  border: none;
   border-radius: 8px;
   font-size: 0.85rem;
   font-family: inherit;
@@ -106,8 +113,9 @@
 }
 
 .secondaryBtn:hover {
-  border-color: var(--accent);
   color: var(--accent);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .hint {

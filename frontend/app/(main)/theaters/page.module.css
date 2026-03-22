@@ -38,11 +38,13 @@
   font-family: inherit;
   letter-spacing: 0.04em;
   cursor: pointer;
-  transition: background 0.15s ease;
+  transition: background 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .assignBtn:hover {
   background: var(--accent-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .assignBtn:disabled {
@@ -85,8 +87,8 @@
 .card {
   padding: 1.5rem;
   background: var(--card-bg);
-  border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: var(--card-radius);
+  box-shadow: var(--card-shadow);
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -211,11 +213,19 @@
   font-size: 0.75rem;
   font-family: inherit;
   cursor: pointer;
-  transition: background 0.15s ease;
+  transition: background 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .joinBtn:hover {
   background: var(--accent-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.joinBtn:active,
+.leaveBtn:active,
+.assignBtn:active {
+  transform: scale(0.95);
 }
 
 .leaveBtn {
@@ -225,7 +235,7 @@
   padding: 0.5rem 1rem;
   background: transparent;
   color: var(--muted);
-  border: 1px solid var(--border);
+  border: none;
   border-radius: 8px;
   font-size: 0.75rem;
   font-family: inherit;
@@ -234,8 +244,9 @@
 }
 
 .leaveBtn:hover {
-  border-color: var(--border-dark);
   color: var(--foreground);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .memberLabel {
