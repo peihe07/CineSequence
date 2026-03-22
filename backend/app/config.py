@@ -1,6 +1,7 @@
 import logging
+from typing import Literal
 
-from pydantic import field_validator
+from pydantic import field_validator, model_validator
 from pydantic_settings import BaseSettings
 
 logger = logging.getLogger(__name__)
@@ -43,6 +44,8 @@ class Settings(BaseSettings):
     api_url: str = "http://127.0.0.1:8000"
     environment: str = "development"
     auth_cookie_name: str = "cine_sequence_session"
+    auth_cookie_samesite: Literal["lax", "strict", "none"] = "lax"
+    auth_cookie_secure: bool | None = None
 
     # Celery
     celery_broker_url: str = "redis://localhost:6379/1"
@@ -53,6 +56,18 @@ class Settings(BaseSettings):
 
     # Matching
     match_threshold: float = 0.8  # 80% minimum similarity
+
+    @property
+    def resolved_auth_cookie_secure(self) -> bool:
+        if self.auth_cookie_secure is not None:
+            return self.auth_cookie_secure
+        return self.environment != "development"
+
+    @model_validator(mode="after")
+    def validate_cookie_settings(self):
+        if self.auth_cookie_samesite == "none" and not self.resolved_auth_cookie_secure:
+            raise ValueError("AUTH_COOKIE_SAMESITE=none requires AUTH_COOKIE_SECURE=true")
+        return self
 
     model_config = {"env_file": ".env", "extra": "ignore"}
 

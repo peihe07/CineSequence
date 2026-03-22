@@ -7,25 +7,14 @@ from fastapi import APIRouter, Depends, HTTPException, Response, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.config import settings
 from app.deps import get_db
 from app.models.user import User
-from app.schemas.auth import DevMagicLinkRequest, DevSessionRequest, MagicLinkResponse, TokenResponse
+from app.schemas.auth import TokenResponse
+from app.schemas.dev_auth import DevMagicLinkRequest, DevSessionRequest, MagicLinkResponse
+from app.services.auth_cookies import set_auth_cookie
 from app.services.auth_utils import create_access_token
 
 router = APIRouter()
-
-
-def _set_auth_cookie(response: Response, token: str) -> None:
-    response.set_cookie(
-        key=settings.auth_cookie_name,
-        value=token,
-        httponly=True,
-        secure=settings.environment != "development",
-        samesite="lax",
-        max_age=60 * 60 * 24 * 7,
-        path="/",
-    )
 
 
 @router.post("/session", response_model=TokenResponse)
@@ -50,7 +39,7 @@ async def create_dev_session(
         await db.refresh(user)
 
     access_token = create_access_token(user.id)
-    _set_auth_cookie(response, access_token)
+    set_auth_cookie(response, access_token)
     return TokenResponse(access_token=access_token)
 
 
