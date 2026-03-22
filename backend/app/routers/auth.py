@@ -10,7 +10,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import settings
-from app.deps import get_db
+from app.deps import get_current_user, get_db
 from app.models.user import User
 from app.schemas.auth import (
     LoginRequest,
@@ -19,6 +19,7 @@ from app.schemas.auth import (
     UserResponse,
     VerifyRequest,
 )
+from app.security import validate_csrf_origin
 from app.services.auth_cookies import clear_auth_cookie, set_auth_cookie
 from app.services.auth_utils import create_access_token, create_magic_link_token, verify_magic_link_token
 from app.services.email_service import send_magic_link
@@ -35,6 +36,7 @@ async def register(
     db: Annotated[AsyncSession, Depends(get_db)],
 ):
     """Register a new user and send a magic link email."""
+    validate_csrf_origin(request)
     if not body.agreed_to_terms:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -80,6 +82,7 @@ async def login(
     db: Annotated[AsyncSession, Depends(get_db)],
 ):
     """Send a magic link to an existing user."""
+    validate_csrf_origin(request)
     result = await db.execute(select(User).where(User.email == body.email))
     user = result.scalar_one_or_none()
     # Always return same message to prevent user enumeration
@@ -102,6 +105,7 @@ async def verify(
     db: Annotated[AsyncSession, Depends(get_db)],
 ):
     """Verify a magic link token and return a JWT access token."""
+    validate_csrf_origin(request)
     email = verify_magic_link_token(body.token)
     if not email:
         raise HTTPException(
@@ -135,12 +139,22 @@ async def verify(
     user.magic_link_expires_at = None
     await db.commit()
 
-    access_token = create_access_token(user.id)
+    access_token = create_access_token(user.id, user.auth_version)
     set_auth_cookie(response, access_token)
     return TokenResponse(access_token=access_token)
 
 
 @router.post("/logout", status_code=status.HTTP_204_NO_CONTENT)
-async def logout(response: Response):
+async def logout(
+    request: Request,
+    response: Response,
+    user: Annotated[User, Depends(get_current_user)],
+    db: Annotated[AsyncSession, Depends(get_db)],
+):
     """Clear the session cookie."""
+    validate_csrf_origin(request)
+    # Bump token version so previously issued JWTs are no longer valid.
+    # Cookie clearing alone is not enough if a token has already leaked.
+    user.auth_version += 1
+    await db.commit()
     clear_auth_cookie(response)

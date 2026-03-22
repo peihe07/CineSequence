@@ -1,6 +1,5 @@
 import logging
 from contextlib import asynccontextmanager
-from urllib.parse import urlsplit, urlunsplit
 
 from fastapi import FastAPI, HTTPException, Request, status
 from fastapi.middleware.cors import CORSMiddleware
@@ -13,6 +12,7 @@ from starlette.middleware.base import BaseHTTPMiddleware
 
 from app.config import settings
 from app.deps import engine
+from app.security import build_allowed_origins
 
 # Configure app-level logging so services (email, matcher, etc.) output INFO
 logging.basicConfig(level=logging.INFO)
@@ -41,24 +41,6 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
             )
         return response
 
-
-def _build_allowed_origins(frontend_url: str) -> list[str]:
-    """Accept both localhost and 127.0.0.1 for local dev credentials flows."""
-    origins = {frontend_url}
-    parsed = urlsplit(frontend_url)
-
-    if parsed.hostname == "localhost":
-        origins.add(
-            urlunsplit((parsed.scheme, f"127.0.0.1:{parsed.port}", parsed.path, "", ""))
-        )
-    elif parsed.hostname == "127.0.0.1":
-        origins.add(
-            urlunsplit((parsed.scheme, f"localhost:{parsed.port}", parsed.path, "", ""))
-        )
-
-    return sorted(origins)
-
-
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup: init DB pool, Redis connection
@@ -80,14 +62,14 @@ app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 app.add_middleware(SecurityHeadersMiddleware)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=_build_allowed_origins(settings.frontend_url),
+    allow_origins=build_allowed_origins(settings.frontend_url),
     allow_credentials=True,
     allow_methods=["GET", "POST", "PATCH", "DELETE"],
     allow_headers=["Authorization", "Content-Type"],
 )
 
 app.include_router(auth.router, prefix="/auth", tags=["auth"])
-if settings.environment != "production":
+if settings.environment in {"development", "test"}:
     from app.routers import dev_auth
 
     app.include_router(dev_auth.router, prefix="/auth/dev", tags=["auth-dev"])

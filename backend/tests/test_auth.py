@@ -43,9 +43,9 @@ class TestMagicLinkToken:
 class TestAccessToken:
     def test_create_and_decode(self):
         user_id = uuid.uuid4()
-        token = create_access_token(user_id)
+        token = create_access_token(user_id, auth_version=1)
         decoded = decode_access_token(token)
-        assert decoded == user_id
+        assert decoded == (user_id, 1)
 
     def test_invalid_token_returns_none(self):
         assert decode_access_token("garbage") is None
@@ -199,6 +199,14 @@ class TestLoginEndpoint:
             "message": "If this email is registered, a magic link has been sent."
         }
 
+    async def test_login_rejects_untrusted_origin(self, client: AsyncClient):
+        response = await client.post(
+            "/auth/login",
+            json={"email": "unknown@test.com"},
+            headers={"Origin": "https://evil.example"},
+        )
+        assert response.status_code == 403
+
 
 @pytest.mark.asyncio
 class TestSessionEndpoints:
@@ -233,6 +241,25 @@ class TestSessionEndpoints:
         assert response.status_code == 204
 
         profile = await client.get("/profile")
+        assert profile.status_code == 401
+
+    async def test_logout_revokes_existing_access_token(self, client: AsyncClient):
+        session = await client.post("/auth/dev/session", json={
+            "email": "revoke@test.com",
+            "name": "Revoke User",
+            "gender": "other",
+            "region": "TW",
+        })
+        assert session.status_code == 200
+        access_token = session.json()["access_token"]
+
+        response = await client.post("/auth/logout")
+        assert response.status_code == 204
+
+        profile = await client.get(
+            "/profile",
+            headers={"Authorization": f"Bearer {access_token}"},
+        )
         assert profile.status_code == 401
 
     @patch("app.routers.auth.send_magic_link", new_callable=AsyncMock)

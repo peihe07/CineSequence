@@ -64,6 +64,7 @@ class User(Base):
     agreed_to_terms_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
     # Auth
+    auth_version: Mapped[int] = mapped_column(Integer, default=1, nullable=False)
     magic_link_token: Mapped[str | None] = mapped_column(String(500))
     magic_link_expires_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 

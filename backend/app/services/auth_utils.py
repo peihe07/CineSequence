@@ -35,26 +35,28 @@ def verify_magic_link_token(token: str) -> str | None:
         return None
 
 
-def create_access_token(user_id: uuid.UUID) -> str:
+def create_access_token(user_id: uuid.UUID, auth_version: int) -> str:
     """Create a JWT access token for authenticated requests."""
     expires = datetime.now(timezone.utc) + timedelta(days=ACCESS_TOKEN_EXPIRE_DAYS)
     payload = {
         "sub": str(user_id),
         "exp": expires,
         "type": "access",
+        "ver": auth_version,
     }
     return jwt.encode(payload, settings.jwt_secret, algorithm=ALGORITHM)
 
 
-def decode_access_token(token: str) -> uuid.UUID | None:
-    """Decode JWT access token. Returns user_id if valid, None otherwise."""
+def decode_access_token(token: str) -> tuple[uuid.UUID, int] | None:
+    """Decode JWT access token. Returns (user_id, auth_version) if valid, None otherwise."""
     try:
         payload = jwt.decode(token, settings.jwt_secret, algorithms=[ALGORITHM])
         if payload.get("type") != "access":
             return None
         user_id_str = payload.get("sub")
-        if not user_id_str:
+        auth_version = payload.get("ver")
+        if not user_id_str or not isinstance(auth_version, int):
             return None
-        return uuid.UUID(user_id_str)
+        return uuid.UUID(user_id_str), auth_version
     except (JWTError, ValueError):
         return None

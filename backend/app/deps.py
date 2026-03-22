@@ -2,12 +2,13 @@ from collections.abc import AsyncGenerator
 from typing import Annotated
 
 import redis.asyncio as aioredis
-from fastapi import Cookie, Depends, HTTPException, status
+from fastapi import Cookie, Depends, HTTPException, Request, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
 from app.config import settings
+from app.security import validate_csrf_origin
 
 engine = create_async_engine(settings.database_url, echo=settings.environment == "development")
 async_session = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
@@ -27,6 +28,7 @@ async def get_redis() -> aioredis.Redis:
 
 
 async def get_current_user(
+    request: Request,
     credentials: Annotated[HTTPAuthorizationCredentials | None, Depends(security)],
     db: Annotated[AsyncSession, Depends(get_db)],
     session_token: Annotated[str | None, Cookie(alias=settings.auth_cookie_name)] = None,
@@ -42,12 +44,16 @@ async def get_current_user(
             detail="Invalid or expired token",
         )
 
-    user_id = decode_access_token(raw_token)
-    if user_id is None:
+    if session_token is not None and request.method in {"POST", "PATCH", "PUT", "DELETE"}:
+        validate_csrf_origin(request)
+
+    decoded = decode_access_token(raw_token)
+    if decoded is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid or expired token",
         )
+    user_id, token_auth_version = decoded
 
     result = await db.execute(select(User).where(User.id == user_id))
     user = result.scalar_one_or_none()
@@ -55,6 +61,11 @@ async def get_current_user(
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="User not found",
+        )
+    if user.auth_version != token_auth_version:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid or expired token",
         )
 
     return user

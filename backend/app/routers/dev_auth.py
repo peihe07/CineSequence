@@ -38,7 +38,7 @@ async def create_dev_session(
         await db.commit()
         await db.refresh(user)
 
-    access_token = create_access_token(user.id)
+    access_token = create_access_token(user.id, user.auth_version)
     set_auth_cookie(response, access_token)
     return TokenResponse(access_token=access_token)
 

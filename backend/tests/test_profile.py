@@ -25,7 +25,7 @@ async def create_user(db: AsyncSession, email: str = "profile@test.com") -> User
 
 
 def auth_headers(user: User) -> dict:
-    token = create_access_token(user.id)
+    token = create_access_token(user.id, user.auth_version)
     return {"Authorization": f"Bearer {token}"}
 
 
@@ -152,6 +152,19 @@ class TestAvatarUpload:
         )
         assert response.status_code == 400
         assert "2 MB" in response.json()["detail"]
+
+    async def test_upload_rejects_mismatched_file_signature(
+        self, client: AsyncClient, db_session: AsyncSession
+    ):
+        user = await create_user(db_session)
+        fake_png = b"not-a-real-png"
+        response = await client.post(
+            "/profile/avatar",
+            headers=auth_headers(user),
+            files={"file": ("avatar.png", io.BytesIO(fake_png), "image/png")},
+        )
+        assert response.status_code == 400
+        assert "declared image type" in response.json()["detail"]
 
     async def test_upload_unauthenticated(self, client: AsyncClient):
         response = await client.post(

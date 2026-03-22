@@ -35,7 +35,7 @@ async def create_user(
 
 
 def auth_headers(user: User) -> dict:
-    token = create_access_token(user.id)
+    token = create_access_token(user.id, user.auth_version)
     return {"Authorization": f"Bearer {token}"}
 
 

@@ -21,6 +21,16 @@ AVATAR_ALLOWED_TYPES = {"image/jpeg", "image/png", "image/webp"}
 router = APIRouter()
 
 
+def _matches_avatar_signature(data: bytes, content_type: str) -> bool:
+    if content_type == "image/jpeg":
+        return data.startswith(b"\xff\xd8\xff")
+    if content_type == "image/png":
+        return data.startswith(b"\x89PNG\r\n\x1a\n")
+    if content_type == "image/webp":
+        return len(data) >= 12 and data[:4] == b"RIFF" and data[8:12] == b"WEBP"
+    return False
+
+
 class ProfileOut(BaseModel):
     id: uuid.UUID
     email: str
@@ -131,6 +141,11 @@ async def upload_avatar(
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="File size must be under 2 MB",
+        )
+    if not _matches_avatar_signature(data, file.content_type):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Uploaded file content does not match its declared image type",
         )
 
     ext = {"image/jpeg": "jpg", "image/png": "png", "image/webp": "webp"}[file.content_type]

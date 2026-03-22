@@ -30,14 +30,16 @@ async def auth_user(db_session):
     """Create a test user and return (user, auth_headers)."""
     user = User(
         email="test@example.com",
-        display_name="Test User",
+        name="Test User",
+        gender="other",
+        region="TW",
         sequencing_status=SequencingStatus.not_started,
     )
     db_session.add(user)
     await db_session.commit()
     await db_session.refresh(user)
 
-    token = create_access_token(str(user.id))
+    token = create_access_token(user.id, user.auth_version)
     headers = {"Authorization": f"Bearer {token}"}
     return user, headers
 
@@ -58,7 +60,7 @@ class TestProgress:
     @pytest.mark.asyncio
     async def test_unauthenticated(self, client):
         response = await client.get("/sequencing/progress")
-        assert response.status_code == 403
+        assert response.status_code == 401
 
 
 class TestSeedMovie:

@@ -3,6 +3,9 @@ from unittest.mock import AsyncMock, patch
 import pytest
 from httpx import AsyncClient
 
+from app.config import Settings
+from app.security import build_allowed_origins, validate_csrf_origin
+
 
 @pytest.mark.asyncio
 class TestHealthEndpoints:
@@ -30,3 +33,24 @@ class TestHealthEndpoints:
 
         assert response.status_code == 503
         assert response.json() == {"detail": "Database not ready"}
+
+
+class TestSecuritySettings:
+    def test_build_allowed_origins_accepts_localhost_aliases(self):
+        assert build_allowed_origins("http://127.0.0.1:3000") == [
+            "http://127.0.0.1:3000",
+            "http://localhost:3000",
+        ]
+
+    def test_production_rejects_default_secrets(self):
+        with pytest.raises(ValueError):
+            Settings(environment="production")
+
+    def test_csrf_origin_rejects_untrusted_origin(self):
+        class DummyRequest:
+            headers = {"origin": "https://evil.example"}
+
+        with pytest.raises(Exception) as exc_info:
+            validate_csrf_origin(DummyRequest())  # type: ignore[arg-type]
+
+        assert exc_info.value.status_code == 403

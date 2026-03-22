@@ -65,6 +65,12 @@ class Settings(BaseSettings):
 
     @model_validator(mode="after")
     def validate_cookie_settings(self):
+        if self.environment == "production":
+            for field_name in ("jwt_secret", "magic_link_secret"):
+                if "change-me" in getattr(self, field_name):
+                    raise ValueError(
+                        f"{field_name.upper()} must be set to a non-default value in production"
+                    )
         if self.auth_cookie_samesite == "none" and not self.resolved_auth_cookie_secure:
             raise ValueError("AUTH_COOKIE_SAMESITE=none requires AUTH_COOKIE_SECURE=true")
         return self
