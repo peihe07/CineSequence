@@ -1,6 +1,6 @@
 'use client'
 
-import { useI18n, Locale } from '@/lib/i18n'
+import { useI18n } from '@/lib/i18n'
 import styles from './LocaleToggle.module.css'
 
 export default function LocaleToggle() {
