@@ -1,357 +1,246 @@
 .main {
   display: flex;
   flex-direction: column;
-  align-items: center;
   min-height: 100vh;
-  padding: 0;
   overflow-x: hidden;
 }
 
-/* ─── Hero section ─── */
+/* ─── Hero ─── */
 .hero {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  min-height: 100vh;
-  padding: 2rem;
-  background: var(--background);
-}
-
-/* Terminal window */
-.terminal {
-  width: 100%;
-  max-width: 640px;
-  background: var(--card-bg);
-  border: 1px solid var(--border);
-  border-radius: 12px;
   position: relative;
+  width: 100%;
+  height: 100vh;
+  min-height: 560px;
   overflow: hidden;
 }
 
-/* Title bar */
-.titleBar {
+/* ─── Panel strip (fills entire hero) ─── */
+.panelStrip {
+  position: absolute;
+  inset: 0;
   display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1rem;
-  border-bottom: 1px solid var(--border);
 }
 
-.dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--border);
+.panel {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
 }
 
-.dot:first-child {
-  background: var(--border-dark);
+.panel:last-child {
+  border-right: none;
 }
 
-.titleText {
-  font-family: var(--font-mono);
-  font-size: 0.65rem;
-  color: var(--muted-light);
-  letter-spacing: 0.1em;
-  margin-left: 0.5rem;
+/* Per-panel cinematic backgrounds */
+.panel[data-index='0'] {
+  background:
+    repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(255,255,255,0.012) 3px, rgba(255,255,255,0.012) 4px),
+    linear-gradient(160deg, #14100c 0%, #221810 60%, #14100c 100%);
+}
+.panel[data-index='1'] {
+  background:
+    repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(255,255,255,0.012) 3px, rgba(255,255,255,0.012) 4px),
+    linear-gradient(160deg, #0c1014 0%, #121820 60%, #0c1014 100%);
+}
+.panel[data-index='2'] {
+  background:
+    repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(255,255,255,0.012) 3px, rgba(255,255,255,0.012) 4px),
+    linear-gradient(160deg, #080c14 0%, #0e1426 60%, #080c14 100%);
+}
+.panel[data-index='3'] {
+  background:
+    repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(255,255,255,0.012) 3px, rgba(255,255,255,0.012) 4px),
+    linear-gradient(160deg, #14100a 0%, #241a0e 60%, #14100a 100%);
+}
+.panel[data-index='4'] {
+  background:
+    repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(255,255,255,0.012) 3px, rgba(255,255,255,0.012) 4px),
+    linear-gradient(160deg, #0c1008 0%, #16200e 60%, #0c1008 100%);
 }
 
-/* Terminal body */
-.body {
-  padding: 1.5rem;
-  min-height: 280px;
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-}
-
-/* Terminal lines */
-.line {
-  font-family: var(--font-mono);
-  font-size: 0.85rem;
-  line-height: 2;
-  color: var(--muted);
-  white-space: pre-wrap;
-  opacity: 0;
-  animation: lineAppear 0.3s forwards;
-}
-
-.linePrefix {
-  color: var(--accent);
-  margin-right: 0.5rem;
+/* Large faint step number in each panel */
+.panelBgNum {
+  position: absolute;
+  bottom: -0.1em;
+  left: 0.05em;
+  font-size: clamp(6rem, 12vw, 14rem);
+  font-weight: 700;
+  line-height: 1;
+  color: rgba(255, 255, 255, 0.05);
+  letter-spacing: -0.04em;
   user-select: none;
+  pointer-events: none;
 }
 
-@keyframes lineAppear {
-  to { opacity: 1; }
-}
-
-.lineHighlight {
-  color: var(--foreground);
-  font-weight: 500;
-}
-
-.prompt {
-  font-family: var(--font-mono);
-  font-size: 0.85rem;
-  line-height: 2;
-  color: var(--foreground);
-  font-weight: 600;
-  opacity: 0;
-  animation: lineAppear 0.3s forwards;
-  display: flex;
-  align-items: center;
-  gap: 0;
-}
-
-.cursor {
-  display: inline-block;
-  width: 8px;
-  height: 1.1em;
-  background: var(--accent);
-  margin-left: 0.3rem;
-  animation: blink 1s step-end infinite;
-}
-
-@keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0; }
-}
-
-.response {
-  font-family: var(--font-mono);
-  font-size: 0.85rem;
-  line-height: 2;
-  color: var(--foreground);
-  font-weight: 600;
-  opacity: 0;
-  animation: lineAppear 0.2s forwards;
-}
-
-/* CTA area */
-.ctaArea {
+/* Step label at bottom of each panel */
+.panelLabel {
+  position: absolute;
+  bottom: 2rem;
+  left: 1.25rem;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 1rem;
-  padding: 1rem 1.5rem 1.5rem;
-  opacity: 0;
-  animation: lineAppear 0.4s forwards;
+  gap: 0.3rem;
 }
 
-.ctaRow {
-  display: flex;
-  gap: 0.8rem;
-  width: 100%;
-}
-
-.ctaPrimary {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.75rem 1.2rem;
-  background: var(--accent);
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  font-size: 0.8rem;
+.panelLabelNum {
+  font-size: 0.55rem;
+  letter-spacing: 0.14em;
+  color: rgba(255, 255, 255, 0.35);
   font-weight: 600;
-  letter-spacing: 0.08em;
-  cursor: pointer;
-  transition: background 0.15s ease;
-  text-decoration: none;
   text-transform: uppercase;
 }
 
-.ctaPrimary:hover {
-  background: var(--accent-hover);
+.panelLabelTitle {
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.55);
+  line-height: 1.4;
+  max-width: 10ch;
 }
 
-.ctaSecondary {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.75rem 1.2rem;
-  background: transparent;
-  color: var(--muted);
-  border: 1px solid var(--border-dark);
-  border-radius: 8px;
-  font-size: 0.8rem;
-  letter-spacing: 0.08em;
-  cursor: pointer;
-  transition: all 0.15s ease;
-  text-decoration: none;
-  text-transform: uppercase;
+/* ─── Hero overlay (text + CTA) ─── */
+
+/* Gradient to ensure left-side text readability */
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to right,
+    rgba(0, 0, 0, 0.55) 0%,
+    rgba(0, 0, 0, 0.2) 40%,
+    rgba(0, 0, 0, 0) 70%
+  );
+  z-index: 1;
+  pointer-events: none;
 }
 
-.ctaSecondary:hover {
-  color: var(--foreground);
-  border-color: var(--accent);
-}
-
-.hint {
-  font-family: var(--font-mono);
-  font-size: 0.65rem;
-  color: var(--muted-light);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-
-/* ─── Flow section ─── */
-.flowSection {
-  width: 100%;
-  max-width: 520px;
-  padding: 4rem 2rem 3rem;
-  margin: 0 auto;
-}
-
-.flowTitle {
-  font-size: 0.75rem;
-  font-weight: 500;
-  color: var(--muted);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  margin-bottom: 2.5rem;
-  text-align: center;
-}
-
-.flowTimeline {
+.heroOverlay {
+  position: relative;
+  z-index: 2;
+  height: 100%;
   display: flex;
   flex-direction: column;
-  gap: 0;
-}
-
-.flowStep {
-  display: flex;
-  gap: 1.5rem;
-  align-items: flex-start;
-}
-
-.stepLeft {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  flex-shrink: 0;
-  width: 32px;
-}
-
-.stepNum {
-  display: flex;
-  align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
-  background: var(--accent-light);
-  border-radius: 50%;
-  font-size: 0.7rem;
-  font-weight: 600;
-  color: var(--accent);
-  flex-shrink: 0;
+  padding: 0 4rem;
+  max-width: 600px;
+  gap: 1.25rem;
 }
 
-.stepConnector {
-  width: 1px;
-  flex: 1;
-  min-height: 100%;
-  background: var(--border);
-}
-
-.stepCard {
-  flex: 1;
-  padding: 0.4rem 0 2rem;
-}
-
-.stepHeader {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin-bottom: 0.35rem;
-}
-
-.stepHeader i {
-  font-size: 1rem;
-  color: var(--accent);
-}
-
-.stepTitle {
-  font-size: 0.95rem;
-  font-weight: 600;
-}
-
-.stepDesc {
-  font-size: 0.85rem;
-  line-height: 1.6;
-  color: var(--muted);
+.heroEyebrow {
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.4);
   margin: 0;
 }
 
-/* ─── Bottom CTA ─── */
-.bottomCta {
-  display: flex;
-  justify-content: center;
-  padding: 0 2rem 5rem;
-  width: 100%;
-  max-width: 520px;
-  margin: 0 auto;
+.heroHeadline {
+  font-size: clamp(1.5rem, 3.5vw, 2.4rem);
+  font-weight: 600;
+  line-height: 1.2;
+  color: rgba(255, 255, 255, 0.92);
+  margin: 0;
+  letter-spacing: -0.01em;
 }
 
-.bottomCta .ctaPrimary {
-  max-width: 280px;
-  width: 100%;
+.heroCta {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+/* ─── Shared CTA buttons ─── */
+.ctaPrimary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.7rem 1.5rem;
+  background: #c06223;
+  color: #fff;
+  border: none;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.ctaPrimary:hover {
+  background: #a35420;
+}
+
+.ctaSecondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.7rem 1.5rem;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.ctaSecondary:hover {
+  color: rgba(255, 255, 255, 0.9);
+  border-color: rgba(255, 255, 255, 0.5);
 }
 
 /* ─── Footer ─── */
 .footer {
   padding: 2rem;
-  font-size: 0.65rem;
+  font-size: 0.6rem;
   color: var(--muted-light);
   letter-spacing: 0.06em;
-}
-
-/* ─── Reduced motion ─── */
-@media (prefers-reduced-motion: reduce) {
-  .cursor {
-    animation: none;
-    opacity: 1;
-  }
-  .line, .prompt, .response, .ctaArea {
-    animation: none;
-    opacity: 1;
-  }
+  border-top: 1px solid var(--border);
+  text-align: center;
+  background: var(--background);
 }
 
 /* ─── Mobile ─── */
-@media (max-width: 640px) {
+@media (max-width: 768px) {
+  /* On mobile: hide individual panels, use a single dark bg */
+  .panelStrip {
+    display: none;
+  }
+
   .hero {
-    padding: 1.5rem;
-    min-height: 90vh;
+    background:
+      repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(255,255,255,0.012) 3px, rgba(255,255,255,0.012) 4px),
+      linear-gradient(160deg, #0e0c0a 0%, #1a1410 50%, #0e0c0a 100%);
   }
 
-  .body {
-    padding: 1rem;
-    min-height: 240px;
+  .hero::before {
+    background: rgba(0, 0, 0, 0.3);
   }
 
-  .line, .prompt, .response {
-    font-size: 0.75rem;
+  .heroOverlay {
+    padding: 0 1.75rem;
+    max-width: 100%;
+    justify-content: flex-end;
+    padding-bottom: 3.5rem;
   }
 
-  .flowSection {
-    padding: 3rem 1.5rem 2rem;
+  .heroHeadline {
+    font-size: 1.4rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .heroCta {
+    flex-direction: column;
   }
 
-  .flowStep {
-    gap: 1rem;
-  }
-
-  .stepTitle {
-    font-size: 0.9rem;
-  }
-
-  .stepDesc {
-    font-size: 0.8rem;
+  .ctaPrimary,
+  .ctaSecondary {
+    width: 100%;
+    justify-content: center;
   }
 }
