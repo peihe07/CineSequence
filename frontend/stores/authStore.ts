@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { ApiError, api, clearToken, getToken, setToken } from '@/lib/api'
+import { ApiError, api, clearToken } from '@/lib/api'
 
 interface User {
   id: string
@@ -28,13 +28,13 @@ interface AuthState {
   login: (email: string) => Promise<void>
   verify: (token: string) => Promise<void>
   fetchProfile: () => Promise<void>
-  logout: () => void
+  logout: () => Promise<void>
   clearError: () => void
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
   user: null,
-  isAuthenticated: !!getToken(),
+  isAuthenticated: false,
   isLoading: false,
   error: null,
 
@@ -71,11 +71,10 @@ export const useAuthStore = create<AuthState>((set) => ({
   verify: async (token) => {
     set({ isLoading: true, error: null })
     try {
-      const { access_token } = await api<{ access_token: string }>('/auth/verify', {
+      await api<{ access_token: string }>('/auth/verify', {
         method: 'POST',
         body: JSON.stringify({ token }),
       })
-      setToken(access_token)
       set({ isAuthenticated: true, isLoading: false })
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Verification failed'
@@ -100,7 +99,12 @@ export const useAuthStore = create<AuthState>((set) => ({
     }
   },
 
-  logout: () => {
+  logout: async () => {
+    try {
+      await api('/auth/logout', { method: 'POST' })
+    } catch {
+      // Best effort: local state should still reset.
+    }
     clearToken()
     set({ user: null, isAuthenticated: false, error: null })
   },

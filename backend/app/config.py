@@ -42,6 +42,7 @@ class Settings(BaseSettings):
     frontend_url: str = "http://127.0.0.1:3000"
     api_url: str = "http://127.0.0.1:8000"
     environment: str = "development"
+    auth_cookie_name: str = "cine_sequence_session"
 
     # Celery
     celery_broker_url: str = "redis://localhost:6379/1"

@@ -3,12 +3,13 @@
 from datetime import datetime, timezone
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, Request, status
+from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.config import settings
 from app.deps import get_db
 from app.models.user import User
 from app.schemas.auth import LoginRequest, RegisterRequest, TokenResponse, UserResponse, VerifyRequest
@@ -17,6 +18,28 @@ from app.services.email_service import send_magic_link
 
 router = APIRouter()
 limiter = Limiter(key_func=get_remote_address)
+
+
+def _set_auth_cookie(response: Response, token: str) -> None:
+    response.set_cookie(
+        key=settings.auth_cookie_name,
+        value=token,
+        httponly=True,
+        secure=settings.environment != "development",
+        samesite="lax",
+        max_age=60 * 60 * 24 * 7,
+        path="/",
+    )
+
+
+def _clear_auth_cookie(response: Response) -> None:
+    response.delete_cookie(
+        key=settings.auth_cookie_name,
+        path="/",
+        httponly=True,
+        secure=settings.environment != "development",
+        samesite="lax",
+    )
 
 
 @router.post("/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
@@ -82,6 +105,7 @@ async def login(
 @limiter.limit("10/minute")
 async def verify(
     request: Request,
+    response: Response,
     body: VerifyRequest,
     db: Annotated[AsyncSession, Depends(get_db)],
 ):
@@ -120,4 +144,11 @@ async def verify(
     await db.commit()
 
     access_token = create_access_token(user.id)
+    _set_auth_cookie(response, access_token)
     return TokenResponse(access_token=access_token)
+
+
+@router.post("/logout", status_code=status.HTTP_204_NO_CONTENT)
+async def logout(response: Response):
+    """Clear the session cookie."""
+    _clear_auth_cookie(response)

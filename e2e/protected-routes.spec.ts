@@ -9,10 +9,6 @@ test.describe('Protected Routes (unauthenticated)', () => {
 
   for (const route of protectedRoutes) {
     test(`${route} should not render protected content when not authenticated`, async ({ page }) => {
-      // Ensure no stored token
-      await page.goto('/')
-      await page.evaluate(() => localStorage.removeItem('cine_sequence_token'))
-
       // Navigate to protected route
       await page.goto(route, { waitUntil: 'networkidle' })
 

@@ -5,7 +5,8 @@
 
 import { Page } from '@playwright/test'
 
-const API_URL = 'http://localhost:8000'
+const API_URL = 'http://127.0.0.1:8000'
+const AUTH_COOKIE_NAME = 'cine_sequence_session'
 
 /**
  * Generate a magic link token for a given email via backend API.
@@ -45,33 +46,25 @@ export async function getMagicLinkToken(email: string): Promise<string> {
 }
 
 /**
- * Login by directly setting the JWT token in localStorage.
- * Generates a fresh JWT via the backend Python helper.
+ * Login by directly setting the session cookie in the browser context.
  */
 export async function loginAsTestUser(page: Page, userId: string): Promise<void> {
-  // Generate a fresh JWT by calling the backend
-  const resp = await fetch(`${API_URL}/auth/login`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email: 'test-e2e@example.com' }),
-  })
-
-  // Since we can't get the token from the response (it's sent via email),
-  // we'll inject the token directly into localStorage
-  await page.goto('/')
-  await page.evaluate((uid) => {
-    // Create a minimal JWT for testing — this won't work for API calls
-    // but will allow us to test the UI flow
-    localStorage.setItem('cine_sequence_token', 'test-token')
-  }, userId)
+  void userId
+  throw new Error('loginAsTestUser is not implemented for cookie-based auth')
 }
 
 /**
- * Set auth token in localStorage to bypass login flow.
+ * Set auth session cookie to bypass login flow when a valid token is available.
  */
 export async function setAuthToken(page: Page, token: string): Promise<void> {
-  await page.goto('/')
-  await page.evaluate((t) => {
-    localStorage.setItem('cine_sequence_token', t)
-  }, token)
+  await page.context().addCookies([
+    {
+      name: AUTH_COOKIE_NAME,
+      value: token,
+      domain: '127.0.0.1',
+      path: '/',
+      httpOnly: true,
+      sameSite: 'Lax',
+    },
+  ])
 }
