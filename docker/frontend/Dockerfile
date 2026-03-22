@@ -18,6 +18,11 @@ CMD ["npm", "run", "dev"]
 # ---- Production ----
 FROM base AS prod
 
+ARG NEXT_PUBLIC_API_URL=http://127.0.0.1:8000
+ARG ENVIRONMENT=production
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+ENV ENVIRONMENT=$ENVIRONMENT
+
 RUN npm run build
 
 EXPOSE 3000

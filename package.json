@@ -6,7 +6,7 @@
     "dev:backend": "cd backend && alembic upgrade head && uvicorn app.main:app --reload",
     "smoke:backend": "sh scripts/backend-smoke.sh",
     "docker:dev": "docker compose up --build",
-    "docker:prod": "docker compose -f docker-compose.prod.yml up --build -d"
+    "docker:prod": "docker compose --env-file .env.production -f docker-compose.prod.yml up --build -d"
   },
   "version": "1.0.0",
   "description": "A movie-taste-based social matching platform. Users go through a 20-round binary movie selection process (\"sequencing\") that builds a multi-dimensional taste profile (\"Movie DNA\"), then get matched with people who share similar cinematic preferences.",

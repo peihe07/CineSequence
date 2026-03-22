@@ -12,9 +12,9 @@
 | Phase 4: DNA Builder + Result | Done | 80% |
 | Phase 5: Matching + Invite | Done | 100% |
 | Phase 6: Groups + Profile | Done | 95% |
-| Phase 7: Polish + Infrastructure | In progress | 80% |
+| Phase 7: Polish + Infrastructure | In progress | 75% |
 | Cross-cutting | Done | 95% |
-| **Overall** | | **~88%** |
+| **Overall** | | **~85%** |
 
 ---
 
@@ -170,6 +170,20 @@
 - [x] Card flip animation (rotateY 180° entrance, cardBack face, spring physics, staggered delay)
 - [x] Tear gesture for ticket reveal (TearRitual: drag-to-tear, perforation line, gap animation, hint arrow)
 
+### 7c-2: UX Gaps (identified 2026-03-22)
+- [ ] Global error boundary (app/error.tsx, app/(main)/error.tsx)
+- [ ] Global 404 page (app/not-found.tsx)
+- [ ] Global loading state (app/loading.tsx)
+- [ ] Toast/notification system (operation success/failure feedback)
+- [ ] Flow-dependent route guards (no DNA → block /matches, no sequencing → block /dna)
+- [ ] Onboarding overlay for first-time users (sequencing tutorial, tear gesture hint)
+- [ ] "What's next" guidance on DNA result page (→ go to matches)
+- [ ] Confirmation dialogs (logout, leave group)
+- [ ] Empty state CTAs (matches: "click discover", theaters: "click auto-assign")
+- [ ] Mobile responsive refinements (touch targets, card density, landscape)
+- [ ] Accessibility (aria-labels, focus-visible, keyboard nav, color contrast)
+- [ ] TAG_ZH/TAG_EN deduplication (shared constant instead of repeated in 3 pages)
+
 ### 7d: Testing + Security (in progress)
 - [x] E2E tests: 17 passing (landing page 6, auth 5, protected routes 6)
 - [x] Security review completed (15 findings: 2 CRITICAL, 5 HIGH, 5 MEDIUM, 3 LOW)
@@ -186,7 +200,18 @@
 - [ ] Integration tests (backend API with real DB)
 - [ ] Frontend component tests (Vitest + Testing Library)
 
-### 7e: Deploy
+### 7e: Admin Dashboard + Monitoring
+- [ ] Admin role field on User model + Alembic migration
+- [ ] Admin auth middleware (require admin role)
+- [ ] GET /admin/stats endpoint (user count, DNA count, match count, invite/accept rates)
+- [ ] GET /admin/stats/daily endpoint (daily registration, DNA builds, matches over time)
+- [ ] GET /admin/api-usage endpoint (Gemini calls, TMDB queries, Resend emails)
+- [ ] Prometheus metrics endpoint (/metrics — request latency, error rate, Celery queue depth)
+- [ ] Grafana dashboard config (API health, user funnel, external API usage)
+- [ ] Frontend /admin page (stats overview, daily charts, API usage)
+- [ ] Docker compose: Prometheus + Grafana services
+
+### 7f: Deploy
 - [ ] Vercel (frontend) configuration
 - [ ] Railway (backend + PostgreSQL + Redis) configuration
 - [ ] CI/CD pipeline (GitHub Actions: lint, test, build, deploy)
@@ -220,6 +245,7 @@
 - **Bilingual movie titles** — backend has title_en + title_zh, seed page is locale-aware, other pages TBD
 
 ## Suggested Next Steps
-1. **Phase 7d (continue)** — Integration tests (backend API with real DB), frontend component tests
-2. **Phase 6 remaining** — Profile CRUD tests
-3. **Phase 7e** — Deploy (Vercel + Railway + CI/CD)
+1. **Phase 7e** — Admin dashboard + Prometheus + Grafana monitoring
+2. **Phase 7c-2** — UX gaps (error boundaries, toast, onboarding, mobile)
+3. **Phase 7d (continue)** — Integration tests, frontend component tests
+4. **Phase 7f** — Deploy (Vercel + Railway + CI/CD)

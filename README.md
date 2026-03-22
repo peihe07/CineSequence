@@ -67,18 +67,33 @@ After the backend is up, you can run a minimal smoke check:
 npm run smoke:backend
 ```
 
-This verifies both `/health` and a basic auth endpoint response, which is enough to catch
-common startup and schema-drift failures early.
+This verifies `/health`, `/readiness`, and a basic auth endpoint response, which is enough
+to catch common startup and schema-drift failures early.
 
 ### Production
 
 ```bash
-docker compose -f docker-compose.prod.yml up --build -d
+cp .env.production.example .env.production
+npm run docker:prod
 ```
+
+For production Docker deploys, the frontend build now reads `NEXT_PUBLIC_API_URL` from
+`.env.production` at image build time. Do not rely on runtime-only env injection for
+Next.js public variables.
 
 ### Environment Variables
 
 Copy `.env.example` to `.env` and fill in your API keys.
+
+For cookie auth in production:
+
+- Same-site deployments can keep `AUTH_COOKIE_SAMESITE=lax`
+- Cross-site deployments must use `AUTH_COOKIE_SAMESITE=none`
+- `AUTH_COOKIE_SAMESITE=none` requires `AUTH_COOKIE_SECURE=true`
+
+If your frontend and API are on different sites, do not rely on the default cookie policy.
+
+See `docs/deployment-checklist.md` for the full production checklist.
 
 ## Project Structure
 
