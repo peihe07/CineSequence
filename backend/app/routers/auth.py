@@ -13,10 +13,7 @@ from app.config import settings
 from app.deps import get_db
 from app.models.user import User
 from app.schemas.auth import (
-    DevMagicLinkRequest,
-    DevSessionRequest,
     LoginRequest,
-    MagicLinkResponse,
     RegisterRequest,
     TokenResponse,
     UserResponse,
@@ -59,6 +56,12 @@ async def register(
     db: Annotated[AsyncSession, Depends(get_db)],
 ):
     """Register a new user and send a magic link email."""
+    if not body.agreed_to_terms:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="You must agree to the privacy policy",
+        )
+
     # Check if email already exists
     result = await db.execute(select(User).where(User.email == body.email))
     existing = result.scalar_one_or_none()
@@ -73,6 +76,7 @@ async def register(
         gender=body.gender,
         region=body.region,
         birth_year=body.birth_year,
+        agreed_to_terms_at=datetime.now(timezone.utc),
     )
     db.add(user)
     await db.commit()
@@ -161,57 +165,3 @@ async def verify(
 async def logout(response: Response):
     """Clear the session cookie."""
     _clear_auth_cookie(response)
-
-
-@router.post("/dev/session", response_model=TokenResponse)
-async def create_dev_session(
-    body: DevSessionRequest,
-    response: Response,
-    db: Annotated[AsyncSession, Depends(get_db)],
-):
-    """Create a session for local E2E/dev flows. Disabled in production."""
-    if settings.environment == "production":
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Not found")
-
-    result = await db.execute(select(User).where(User.email == body.email))
-    user = result.scalar_one_or_none()
-    if user is None:
-        user = User(
-            email=body.email,
-            name=body.name,
-            gender=body.gender,
-            region=body.region,
-            birth_year=body.birth_year,
-        )
-        db.add(user)
-        await db.commit()
-        await db.refresh(user)
-
-    access_token = create_access_token(user.id)
-    _set_auth_cookie(response, access_token)
-    return TokenResponse(access_token=access_token)
-
-
-@router.post("/dev/magic-link", response_model=MagicLinkResponse)
-async def get_dev_magic_link(
-    body: DevMagicLinkRequest,
-    db: Annotated[AsyncSession, Depends(get_db)],
-):
-    """Return the active magic-link token for local E2E/dev flows. Disabled in production."""
-    if settings.environment == "production":
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Not found")
-
-    result = await db.execute(select(User).where(User.email == body.email))
-    user = result.scalar_one_or_none()
-    if user is None or user.magic_link_token is None or user.magic_link_expires_at is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Magic link not found",
-        )
-    if user.magic_link_expires_at <= datetime.now(timezone.utc):
-        raise HTTPException(
-            status_code=status.HTTP_410_GONE,
-            detail="Magic link expired",
-        )
-
-    return MagicLinkResponse(token=user.magic_link_token)

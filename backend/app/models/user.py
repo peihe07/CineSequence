@@ -57,6 +57,9 @@ class User(Base):
         UUID(as_uuid=True), ForeignKey("sequencing_sessions.id", use_alter=True), nullable=True
     )
 
+    # Consent
+    agreed_to_terms_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+
     # Auth
     magic_link_token: Mapped[str | None] = mapped_column(String(500))
     magic_link_expires_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))

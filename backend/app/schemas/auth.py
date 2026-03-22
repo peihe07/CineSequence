@@ -11,6 +11,7 @@ class RegisterRequest(BaseModel):
     gender: Gender
     region: str = Field("TW", min_length=1, max_length=10)
     birth_year: int | None = Field(None, ge=1900, le=2026)
+    agreed_to_terms: bool = Field(..., description="User must agree to privacy policy")
 
 
 class LoginRequest(BaseModel):

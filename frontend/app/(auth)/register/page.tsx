@@ -19,6 +19,7 @@ export default function RegisterPage() {
     name: '',
     gender: '',
     region: 'TW',
+    agreed_to_terms: false,
   })
 
   const [errors, setErrors] = useState<Record<string, string>>({})
@@ -36,6 +37,7 @@ export default function RegisterPage() {
     if (!form.email.includes('@')) errs.email = t('auth.invalidEmail')
     if (!form.name.trim()) errs.name = t('register.nameRequired')
     if (!form.gender) errs.gender = t('register.genderRequired')
+    if (!form.agreed_to_terms) errs.consent = t('register.consentRequired')
     setErrors(errs)
     return Object.keys(errs).length === 0
   }
@@ -109,6 +111,22 @@ export default function RegisterPage() {
           </div>
           {errors.gender && <span className={styles.error}>{errors.gender}</span>}
         </div>
+
+        <label className={styles.consent}>
+          <input
+            type="checkbox"
+            checked={form.agreed_to_terms}
+            onChange={(e) => setForm({ ...form, agreed_to_terms: e.target.checked })}
+            className={styles.checkbox}
+          />
+          <span>
+            {t('register.agreePrefix')}{' '}
+            <a href="/privacy" target="_blank" rel="noopener noreferrer" className={styles.link}>
+              {t('register.privacyLink')}
+            </a>
+          </span>
+        </label>
+        {errors.consent && <span className={styles.error}>{errors.consent}</span>}
 
         {error && <p className={styles.error}>{error}</p>}
 
