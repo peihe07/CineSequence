@@ -21,11 +21,25 @@ from app.schemas.auth import (
 )
 from app.security import validate_csrf_origin
 from app.services.auth_cookies import clear_auth_cookie, set_auth_cookie
-from app.services.auth_utils import create_access_token, create_magic_link_token, verify_magic_link_token
+from app.services.auth_utils import (
+    create_access_token,
+    create_magic_link_token,
+    email_has_admin_access,
+    verify_magic_link_token,
+)
 from app.services.email_service import send_magic_link
 
 router = APIRouter()
 limiter = Limiter(key_func=get_remote_address)
+
+
+def sync_admin_flag(user: User) -> bool:
+    """Sync admin status from the configured allowlist."""
+    should_be_admin = email_has_admin_access(user.email)
+    if user.is_admin != should_be_admin:
+        user.is_admin = should_be_admin
+        return True
+    return False
 
 
 @router.post("/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
@@ -57,6 +71,7 @@ async def register(
         gender=body.gender,
         region=body.region,
         birth_year=body.birth_year,
+        is_admin=email_has_admin_access(body.email),
         agreed_to_terms_at=datetime.now(timezone.utc),
     )
     db.add(user)
@@ -87,6 +102,8 @@ async def login(
     user = result.scalar_one_or_none()
     # Always return same message to prevent user enumeration
     if user:
+        if sync_admin_flag(user):
+            await db.flush()
         token, expires_at = create_magic_link_token(body.email)
         user.magic_link_token = token
         user.magic_link_expires_at = expires_at
@@ -133,6 +150,8 @@ async def verify(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid or expired magic link",
         )
+
+    sync_admin_flag(user)
 
     # Invalidate the magic link token after use
     user.magic_link_token = None

@@ -43,6 +43,7 @@ class Settings(BaseSettings):
     frontend_url: str = "http://127.0.0.1:3000"
     api_url: str = "http://127.0.0.1:8000"
     environment: str = "development"
+    admin_emails: str = ""
     auth_cookie_name: str = "cine_sequence_session"
     auth_cookie_samesite: Literal["lax", "strict", "none"] = "lax"
     auth_cookie_secure: bool | None = None
@@ -62,6 +63,14 @@ class Settings(BaseSettings):
         if self.auth_cookie_secure is not None:
             return self.auth_cookie_secure
         return self.environment != "development"
+
+    @property
+    def admin_email_set(self) -> set[str]:
+        return {
+            email.strip().lower()
+            for email in self.admin_emails.split(",")
+            if email.strip()
+        }
 
     @model_validator(mode="after")
     def validate_cookie_settings(self):

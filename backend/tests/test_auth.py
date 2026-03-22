@@ -9,6 +9,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.user import User
+from app.config import settings
 from app.services.auth_utils import (
     create_access_token,
     create_magic_link_token,
@@ -89,6 +90,29 @@ class TestRegisterEndpoint:
         assert data["email"] == payload["email"]
         assert data["name"] == payload["name"]
         assert mock_send.await_count == 1
+
+    @patch("app.routers.auth.send_magic_link", new_callable=AsyncMock)
+    async def test_register_grants_admin_for_allowlisted_email(
+        self, mock_send, client: AsyncClient, db_session: AsyncSession
+    ):
+        original = settings.admin_emails
+        settings.admin_emails = "y45076@gmail.com"
+        try:
+            response = await client.post("/auth/register", json={
+                "email": "y45076@gmail.com",
+                "name": "Admin User",
+                "gender": "other",
+                "region": "TW",
+                "agreed_to_terms": True,
+            })
+            assert response.status_code == 201
+
+            result = await db_session.execute(
+                select(User).where(User.email == "y45076@gmail.com")
+            )
+            assert result.scalar_one().is_admin is True
+        finally:
+            settings.admin_emails = original
 
 
 @pytest.mark.asyncio
@@ -199,6 +223,38 @@ class TestLoginEndpoint:
             "message": "If this email is registered, a magic link has been sent."
         }
 
+    @patch("app.routers.auth.send_magic_link", new_callable=AsyncMock)
+    async def test_login_syncs_admin_for_allowlisted_existing_user(
+        self, mock_send, client: AsyncClient, db_session: AsyncSession
+    ):
+        await client.post("/auth/register", json={
+            "email": "y45076@gmail.com",
+            "name": "Admin User",
+            "gender": "other",
+            "region": "TW",
+            "agreed_to_terms": True,
+        })
+
+        result = await db_session.execute(
+            select(User).where(User.email == "y45076@gmail.com")
+        )
+        user = result.scalar_one()
+        user.is_admin = False
+        await db_session.commit()
+
+        original = settings.admin_emails
+        settings.admin_emails = "y45076@gmail.com"
+        try:
+            response = await client.post("/auth/login", json={"email": "y45076@gmail.com"})
+            assert response.status_code == 200
+
+            result = await db_session.execute(
+                select(User).where(User.email == "y45076@gmail.com")
+            )
+            assert result.scalar_one().is_admin is True
+        finally:
+            settings.admin_emails = original
+
     async def test_login_rejects_untrusted_origin(self, client: AsyncClient):
         response = await client.post(
             "/auth/login",
@@ -290,6 +346,27 @@ class TestSessionEndpoints:
             "email": "missing@test.com",
         })
         assert response.status_code == 404
+
+    async def test_dev_session_grants_admin_for_allowlisted_email(
+        self, client: AsyncClient, db_session: AsyncSession
+    ):
+        original = settings.admin_emails
+        settings.admin_emails = "y45076@gmail.com"
+        try:
+            response = await client.post("/auth/dev/session", json={
+                "email": "y45076@gmail.com",
+                "name": "Admin User",
+                "gender": "other",
+                "region": "TW",
+            })
+            assert response.status_code == 200
+
+            result = await db_session.execute(
+                select(User).where(User.email == "y45076@gmail.com")
+            )
+            assert result.scalar_one().is_admin is True
+        finally:
+            settings.admin_emails = original
 
 
 @pytest.mark.asyncio

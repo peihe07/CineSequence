@@ -12,7 +12,7 @@ from app.models.user import User
 from app.schemas.auth import TokenResponse
 from app.schemas.dev_auth import DevMagicLinkRequest, DevSessionRequest, MagicLinkResponse
 from app.services.auth_cookies import set_auth_cookie
-from app.services.auth_utils import create_access_token
+from app.services.auth_utils import create_access_token, email_has_admin_access
 
 router = APIRouter()
 
@@ -33,8 +33,13 @@ async def create_dev_session(
             gender=body.gender,
             region=body.region,
             birth_year=body.birth_year,
+            is_admin=email_has_admin_access(body.email),
         )
         db.add(user)
+        await db.commit()
+        await db.refresh(user)
+    elif user.is_admin != email_has_admin_access(user.email):
+        user.is_admin = email_has_admin_access(user.email)
         await db.commit()
         await db.refresh(user)
 

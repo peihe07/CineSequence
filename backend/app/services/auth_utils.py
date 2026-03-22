@@ -11,6 +11,11 @@ ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_DAYS = 7
 
 
+def email_has_admin_access(email: str) -> bool:
+    """Return whether the email is in the configured admin allowlist."""
+    return email.strip().lower() in settings.admin_email_set
+
+
 def create_magic_link_token(email: str) -> tuple[str, datetime]:
     """Create a signed magic link token. Returns (token, expires_at)."""
     expires_at = datetime.now(timezone.utc) + timedelta(minutes=settings.magic_link_expiry_minutes)
