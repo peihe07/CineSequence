@@ -17,6 +17,7 @@ def create_magic_link_token(email: str) -> tuple[str, datetime]:
     payload = {
         "sub": email,
         "exp": expires_at,
+        "jti": str(uuid.uuid4()),
         "type": "magic_link",
     }
     token = jwt.encode(payload, settings.magic_link_secret, algorithm=ALGORITHM)

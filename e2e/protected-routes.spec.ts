@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test'
+import { loginAsTestUser } from './helpers'
 
 test.describe('Protected Routes (unauthenticated)', () => {
   // In dev mode, AuthGuard relies on client-side useEffect for redirect.
@@ -37,5 +38,16 @@ test.describe('Auth edge cases', () => {
     await page.waitForTimeout(3000)
     const body = await page.textContent('body')
     expect(body).toBeTruthy()
+  })
+})
+
+test.describe('Protected Routes (authenticated)', () => {
+  test('profile page renders when session cookie is present', async ({ page }) => {
+    await loginAsTestUser(page, 'profile-cookie')
+
+    await page.goto('/profile', { waitUntil: 'networkidle' })
+
+    await expect(page).not.toHaveURL(/\/login/)
+    await expect(page.locator('body')).toContainText('test-e2e-profile-cookie@example.com')
   })
 })

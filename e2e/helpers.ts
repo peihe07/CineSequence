@@ -8,53 +8,48 @@ import { Page } from '@playwright/test'
 const API_URL = 'http://127.0.0.1:8000'
 const AUTH_COOKIE_NAME = 'cine_sequence_session'
 
-/**
- * Generate a magic link token for a given email via backend API.
- * Uses the backend directly to bypass email delivery.
- */
 export async function getMagicLinkToken(email: string): Promise<string> {
-  // Register the user first (idempotent — 409 if exists)
-  await fetch(`${API_URL}/auth/register`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, name: 'E2E User', gender: 'other' }),
-  })
-
-  // Request login to generate magic link (logged in backend console)
-  await fetch(`${API_URL}/auth/login`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email }),
-  })
-
-  // Generate token directly via the backend Python helper
-  const resp = await fetch(`${API_URL}/auth/login`, {
+  const resp = await fetch(`${API_URL}/auth/dev/magic-link`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email }),
   })
 
   if (!resp.ok) {
-    throw new Error(`Login request failed: ${resp.status}`)
+    throw new Error(`Magic link lookup failed: ${resp.status}`)
   }
 
-  // We need to get the token from backend logs or generate it directly.
-  // For E2E, we'll use the verify endpoint with a token generated server-side.
-  // Since we can't easily get the token from logs, we'll use a helper endpoint
-  // or inject the token directly via localStorage.
-  return ''
+  const data = (await resp.json()) as { token: string }
+  return data.token
 }
 
 /**
- * Login by directly setting the session cookie in the browser context.
+ * Login by creating a dev session server-side and injecting the same cookie
+ * into the Playwright browser context.
  */
 export async function loginAsTestUser(page: Page, userId: string): Promise<void> {
-  void userId
-  throw new Error('loginAsTestUser is not implemented for cookie-based auth')
+  const email = `test-e2e-${userId}@example.com`
+  const resp = await fetch(`${API_URL}/auth/dev/session`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      email,
+      name: 'E2E User',
+      gender: 'other',
+      region: 'TW',
+    }),
+  })
+
+  if (!resp.ok) {
+    throw new Error(`Dev session request failed: ${resp.status}`)
+  }
+
+  const data = (await resp.json()) as { access_token: string }
+  await setAuthToken(page, data.access_token)
 }
 
 /**
- * Set auth session cookie to bypass login flow when a valid token is available.
+ * Set auth session cookie to bypass the interactive magic-link flow in E2E.
  */
 export async function setAuthToken(page: Page, token: string): Promise<void> {
   await page.context().addCookies([

@@ -26,6 +26,11 @@ class TestMagicLinkToken:
         email = verify_magic_link_token(token)
         assert email == "test@example.com"
 
+    def test_reissued_tokens_are_unique(self):
+        first, _ = create_magic_link_token("test@example.com")
+        second, _ = create_magic_link_token("test@example.com")
+        assert first != second
+
     def test_invalid_token_returns_none(self):
         assert verify_magic_link_token("garbage") is None
 
@@ -73,9 +78,15 @@ class TestRegisterEndpoint:
             "name": "User A",
             "gender": "male",
         }
-        await client.post("/auth/register", json=payload)
+        first = await client.post("/auth/register", json=payload)
+        assert first.status_code == 201
+
         response = await client.post("/auth/register", json={**payload, "name": "User B"})
-        assert response.status_code == 409
+        assert response.status_code == 201
+        data = response.json()
+        assert data["email"] == payload["email"]
+        assert data["name"] == payload["name"]
+        assert mock_send.await_count == 1
 
 
 @pytest.mark.asyncio
@@ -101,6 +112,8 @@ class TestVerifyEndpoint:
         data = response.json()
         assert "access_token" in data
         assert data["token_type"] == "bearer"
+        cookie = response.cookies.get("cine_sequence_session")
+        assert cookie == data["access_token"]
 
     @patch("app.routers.auth.send_magic_link", new_callable=AsyncMock)
     async def test_verify_rejects_reused_token(
@@ -175,6 +188,73 @@ class TestLoginEndpoint:
 
     async def test_login_unknown_email(self, client: AsyncClient):
         response = await client.post("/auth/login", json={"email": "unknown@test.com"})
+        assert response.status_code == 200
+        assert response.json() == {
+            "message": "If this email is registered, a magic link has been sent."
+        }
+
+
+@pytest.mark.asyncio
+class TestSessionEndpoints:
+    async def test_dev_session_sets_cookie_and_allows_profile_access(
+        self, client: AsyncClient
+    ):
+        response = await client.post("/auth/dev/session", json={
+            "email": "cookie-session@test.com",
+            "name": "Cookie Session",
+            "gender": "other",
+            "region": "TW",
+        })
+        assert response.status_code == 200
+        data = response.json()
+        assert "access_token" in data
+        assert response.cookies.get("cine_sequence_session") == data["access_token"]
+
+        profile = await client.get("/profile")
+        assert profile.status_code == 200
+        assert profile.json()["email"] == "cookie-session@test.com"
+
+    async def test_logout_clears_cookie(self, client: AsyncClient):
+        session = await client.post("/auth/dev/session", json={
+            "email": "logout@test.com",
+            "name": "Logout User",
+            "gender": "other",
+            "region": "TW",
+        })
+        assert session.status_code == 200
+
+        response = await client.post("/auth/logout")
+        assert response.status_code == 204
+
+        profile = await client.get("/profile")
+        assert profile.status_code == 401
+
+    @patch("app.routers.auth.send_magic_link", new_callable=AsyncMock)
+    async def test_dev_magic_link_returns_current_token(
+        self, mock_send, client: AsyncClient, db_session: AsyncSession
+    ):
+        await client.post("/auth/register", json={
+            "email": "magic-link@test.com",
+            "name": "Magic Link",
+            "gender": "other",
+            "region": "TW",
+        })
+
+        result = await db_session.execute(
+            select(User).where(User.email == "magic-link@test.com")
+        )
+        token = result.scalar_one().magic_link_token
+
+        response = await client.post("/auth/dev/magic-link", json={
+            "email": "magic-link@test.com",
+        })
+        assert response.status_code == 200
+        assert response.json() == {"token": token}
+
+    async def test_dev_magic_link_404_without_pending_token(self, client: AsyncClient):
+        response = await client.post("/auth/dev/magic-link", json={
+            "email": "missing@test.com",
+        })
         assert response.status_code == 404
 
 
@@ -182,7 +262,7 @@ class TestLoginEndpoint:
 class TestProtectedEndpoint:
     async def test_no_token_returns_403(self, client: AsyncClient):
         response = await client.get("/profile")
-        assert response.status_code == 403
+        assert response.status_code == 401
 
     @patch("app.routers.auth.send_magic_link", new_callable=AsyncMock)
     async def test_valid_token_succeeds(
@@ -205,6 +285,5 @@ class TestProtectedEndpoint:
             "/profile",
             headers={"Authorization": f"Bearer {access_token}"},
         )
-        # Profile router is still a stub, but it should NOT be 401/403
-        assert response.status_code != 401
-        assert response.status_code != 403
+        assert response.status_code == 200
+        assert response.json()["email"] == "auth@test.com"
