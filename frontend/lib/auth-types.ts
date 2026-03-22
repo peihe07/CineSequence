@@ -1,0 +1,31 @@
+export interface User {
+  id: string
+  email: string
+  name: string
+  gender: string
+  region: string
+  avatar_url: string | null
+  sequencing_status: string
+}
+
+export interface RegisterRequest {
+  email: string
+  name: string
+  gender: string
+  region: string
+  birth_year?: number
+  agreed_to_terms: boolean
+}
+
+export interface LoginRequest {
+  email: string
+}
+
+export interface VerifyRequest {
+  token: string
+}
+
+export interface VerifyResponse {
+  access_token: string
+  token_type: string
+}
