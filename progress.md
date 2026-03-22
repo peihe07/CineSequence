@@ -107,7 +107,10 @@
 - [x] Group store (Zustand: fetchGroups, autoAssign, joinGroup, leaveGroup)
 - [x] Theaters page (group list with join/leave, auto-assign button, i18n)
 - [ ] Profile: avatar upload (R2 integration)
-- [ ] Tests: group assignment, activation threshold, profile CRUD
+- [x] Tests: group affinity computation + threshold boundaries (12 unit tests)
+- [x] Tests: ticket image generation across 5 style palettes (12 unit tests)
+- [ ] Tests: profile CRUD
+- [ ] Profile: avatar upload (R2 integration)
 
 ## Phase 7: Polish + Infrastructure (in progress)
 
