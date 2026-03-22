@@ -1,12 +1,20 @@
 'use client'
 
-import { Suspense, useEffect } from 'react'
+import { Suspense, useCallback, useEffect, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { useMatchStore, MatchItem } from '@/stores/matchStore'
+import { api } from '@/lib/api'
 import { useI18n } from '@/lib/i18n'
-import TicketCard from '@/components/match/TicketCard'
+import TearRitual from '@/components/match/TearRitual'
 import styles from './page.module.css'
+
+interface MatchPrefs {
+  match_gender_pref: string | null
+  match_age_min: number | null
+  match_age_max: number | null
+  pure_taste_match: boolean
+}
 
 const TAG_ZH: Record<string, string> = {
   twist: '反轉結局', mindfuck: '燒腦', slowburn: '慢熱', ensemble: '群戲',
@@ -95,18 +103,108 @@ function MatchCard({ match, onInvite, onRespond, highlighted }: {
         )}
         {match.status === 'accepted' && (
           <div className={styles.acceptedSection}>
-            <TicketCard
+            <TearRitual
               ticketImageUrl={match.ticket_image_url}
               partnerName={match.partner_name}
               similarityScore={match.similarity_score}
             />
-            <span className={styles.acceptedLabel}>
-              <i className="ri-heart-line" /> {t('matches.matched')}
-            </span>
           </div>
         )}
       </div>
     </motion.div>
+  )
+}
+
+function MatchFilter({ prefs, onChange }: {
+  prefs: MatchPrefs
+  onChange: (updated: Partial<MatchPrefs>) => void
+}) {
+  const { t } = useI18n()
+  const [open, setOpen] = useState(false)
+
+  const GENDER_OPTIONS = [
+    { value: '', label: t('matches.prefAny') },
+    { value: 'female', label: t('matches.prefFemale') },
+    { value: 'male', label: t('matches.prefMale') },
+    { value: 'other', label: t('matches.prefOther') },
+  ]
+
+  return (
+    <div className={styles.filterBar}>
+      <button
+        className={styles.filterToggle}
+        onClick={() => setOpen(!open)}
+      >
+        <i className="ri-filter-3-line" />
+        {t('matches.filterLabel')}
+        <i className={open ? 'ri-arrow-up-s-line' : 'ri-arrow-down-s-line'} />
+      </button>
+
+      {open && (
+        <motion.div
+          className={styles.filterPanel}
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: 'auto' }}
+          transition={{ duration: 0.2 }}
+        >
+          <div className={styles.filterRow}>
+            <span className={styles.filterLabel}>{t('matches.prefGender')}</span>
+            <div className={styles.filterOptions}>
+              {GENDER_OPTIONS.map((opt) => (
+                <button
+                  key={opt.value}
+                  className={`${styles.filterOption} ${
+                    (prefs.match_gender_pref || '') === opt.value ? styles.filterActive : ''
+                  }`}
+                  onClick={() => onChange({ match_gender_pref: opt.value || null })}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className={styles.filterRow}>
+            <span className={styles.filterLabel}>{t('matches.prefAge')}</span>
+            <div className={styles.ageInputs}>
+              <input
+                type="number"
+                className={styles.ageInput}
+                placeholder="18"
+                value={prefs.match_age_min ?? ''}
+                onChange={(e) => onChange({
+                  match_age_min: e.target.value ? Number(e.target.value) : null,
+                })}
+                min={18}
+                max={99}
+              />
+              <span className={styles.ageDash}>—</span>
+              <input
+                type="number"
+                className={styles.ageInput}
+                placeholder="99"
+                value={prefs.match_age_max ?? ''}
+                onChange={(e) => onChange({
+                  match_age_max: e.target.value ? Number(e.target.value) : null,
+                })}
+                min={18}
+                max={99}
+              />
+            </div>
+          </div>
+
+          <label className={styles.filterCheck}>
+            <input
+              type="checkbox"
+              checked={prefs.pure_taste_match}
+              onChange={(e) => onChange({ pure_taste_match: e.target.checked })}
+            />
+            <span>{t('matches.pureTaste')}</span>
+          </label>
+          <p className={styles.filterHint}>{t('matches.pureTasteHint')}</p>
+        </motion.div>
+      )}
+    </div>
   )
 }
 
@@ -118,9 +216,35 @@ function MatchesContent() {
     fetchMatches, discoverMatches, sendInvite, respondToInvite,
   } = useMatchStore()
 
+  const [prefs, setPrefs] = useState<MatchPrefs>({
+    match_gender_pref: null,
+    match_age_min: null,
+    match_age_max: null,
+    pure_taste_match: false,
+  })
+
   useEffect(() => {
     fetchMatches()
+    // Load current preferences from profile
+    api<MatchPrefs & Record<string, unknown>>('/profile').then((p) => {
+      setPrefs({
+        match_gender_pref: p.match_gender_pref,
+        match_age_min: p.match_age_min,
+        match_age_max: p.match_age_max,
+        pure_taste_match: p.pure_taste_match,
+      })
+    })
   }, [fetchMatches])
+
+  const savePrefs = useCallback((updated: Partial<MatchPrefs>) => {
+    const next = { ...prefs, ...updated }
+    setPrefs(next)
+    // Persist to profile (fire-and-forget)
+    api('/profile', {
+      method: 'PATCH',
+      body: JSON.stringify(updated),
+    })
+  }, [prefs])
 
   const respondId = searchParams.get('respond')
   const matchId = searchParams.get('match')
@@ -147,6 +271,8 @@ function MatchesContent() {
             {isDiscovering ? t('matches.discovering') : t('matches.discover')}
           </button>
         </div>
+
+        <MatchFilter prefs={prefs} onChange={savePrefs} />
 
         {isLoading && (
           <div className={styles.loading}>

@@ -50,7 +50,6 @@ cd backend
 python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
-alembic upgrade head
 uvicorn app.main:app --reload
 
 # Frontend
@@ -58,6 +57,18 @@ cd frontend
 npm install
 npm run dev
 ```
+
+The Docker backend startup path and `npm run dev:backend` now run `alembic upgrade head`
+before booting the API, so local schema drift is caught automatically.
+
+After the backend is up, you can run a minimal smoke check:
+
+```bash
+npm run smoke:backend
+```
+
+This verifies both `/health` and a basic auth endpoint response, which is enough to catch
+common startup and schema-drift failures early.
 
 ### Production
 

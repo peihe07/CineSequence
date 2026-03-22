@@ -11,6 +11,8 @@ COPY backend/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY backend/ .
+COPY docker/backend/start-backend.sh /usr/local/bin/start-backend.sh
+RUN chmod +x /usr/local/bin/start-backend.sh
 
 # ---- Development ----
 FROM base AS dev
@@ -19,7 +21,7 @@ RUN pip install --no-cache-dir watchfiles
 
 EXPOSE 8000
 
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+CMD ["start-backend.sh", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
 
 # ---- Production ----
 FROM base AS prod
@@ -28,4 +30,4 @@ RUN pip install --no-cache-dir gunicorn
 
 EXPOSE 8000
 
-CMD ["gunicorn", "app.main:app", "-w", "4", "-k", "uvicorn.workers.UvicornWorker", "--bind", "0.0.0.0:8000"]
+CMD ["start-backend.sh", "gunicorn", "app.main:app", "-w", "4", "-k", "uvicorn.workers.UvicornWorker", "--bind", "0.0.0.0:8000"]

@@ -3,7 +3,8 @@
   "private": true,
   "scripts": {
     "dev:frontend": "cd frontend && npm run dev",
-    "dev:backend": "cd backend && uvicorn app.main:app --reload",
+    "dev:backend": "cd backend && alembic upgrade head && uvicorn app.main:app --reload",
+    "smoke:backend": "sh scripts/backend-smoke.sh",
     "docker:dev": "docker compose up --build",
     "docker:prod": "docker compose -f docker-compose.prod.yml up --build -d"
   },

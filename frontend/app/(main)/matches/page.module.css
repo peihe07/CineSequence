@@ -20,7 +20,7 @@
 }
 
 .title {
-  font-family: var(--font-display);
+  font-family: var(--font-huninn), 'jf-openhuninn-2.1', sans-serif;
   font-size: 1.6rem;
   font-weight: 600;
   letter-spacing: -0.02em;
@@ -48,6 +48,129 @@
 .discoverBtn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+/* Filter bar */
+.filterBar {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.filterToggle {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 0;
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-family: inherit;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.filterToggle:hover {
+  color: var(--foreground);
+}
+
+.filterPanel {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.2rem;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+
+.filterRow {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.filterLabel {
+  font-size: 0.65rem;
+  font-weight: 500;
+  color: var(--muted);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.filterOptions {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.filterOption {
+  padding: 0.35rem 0.8rem;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.filterOption:hover {
+  border-color: var(--foreground);
+  color: var(--foreground);
+}
+
+.filterActive {
+  border-color: var(--foreground);
+  color: var(--foreground);
+}
+
+.ageInputs {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.ageInput {
+  width: 64px;
+  padding: 0.35rem 0.5rem;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--foreground);
+  font-size: 0.8rem;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.ageInput:focus {
+  border-color: var(--foreground);
+}
+
+.ageDash {
+  color: var(--muted-light);
+  font-size: 0.8rem;
+}
+
+.filterCheck {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.filterCheck input {
+  accent-color: var(--foreground);
+}
+
+.filterHint {
+  font-size: 0.7rem;
+  color: var(--muted-light);
+  margin-top: -0.5rem;
 }
 
 /* Loading */
