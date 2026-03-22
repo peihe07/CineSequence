@@ -1,8 +1,11 @@
 """Authentication router: register, verify (magic link), login."""
 
+from datetime import datetime, timezone
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
+from slowapi import Limiter
+from slowapi.util import get_remote_address
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -13,10 +16,13 @@ from app.services.auth_utils import create_access_token, create_magic_link_token
 from app.services.email_service import send_magic_link
 
 router = APIRouter()
+limiter = Limiter(key_func=get_remote_address)
 
 
 @router.post("/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
+@limiter.limit("5/minute")
 async def register(
+    request: Request,
     body: RegisterRequest,
     db: Annotated[AsyncSession, Depends(get_db)],
 ):
@@ -25,10 +31,8 @@ async def register(
     result = await db.execute(select(User).where(User.email == body.email))
     existing = result.scalar_one_or_none()
     if existing:
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail="Email already registered",
-        )
+        # Return generic message to prevent user enumeration
+        return existing
 
     # Create user
     user = User(
@@ -54,31 +58,30 @@ async def register(
 
 
 @router.post("/login")
+@limiter.limit("5/minute")
 async def login(
+    request: Request,
     body: LoginRequest,
     db: Annotated[AsyncSession, Depends(get_db)],
 ):
     """Send a magic link to an existing user."""
     result = await db.execute(select(User).where(User.email == body.email))
     user = result.scalar_one_or_none()
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Email not found",
-        )
+    # Always return same message to prevent user enumeration
+    if user:
+        token, expires_at = create_magic_link_token(body.email)
+        user.magic_link_token = token
+        user.magic_link_expires_at = expires_at
+        await db.commit()
+        await send_magic_link(body.email, token)
 
-    token, expires_at = create_magic_link_token(body.email)
-    user.magic_link_token = token
-    user.magic_link_expires_at = expires_at
-    await db.commit()
-
-    await send_magic_link(body.email, token)
-
-    return {"message": "Magic link sent to your email"}
+    return {"message": "If this email is registered, a magic link has been sent."}
 
 
 @router.post("/verify", response_model=TokenResponse)
+@limiter.limit("10/minute")
 async def verify(
+    request: Request,
     body: VerifyRequest,
     db: Annotated[AsyncSession, Depends(get_db)],
 ):
@@ -96,6 +99,19 @@ async def verify(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="User not found",
+        )
+    if user.magic_link_token != body.token:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid or expired magic link",
+        )
+    if (
+        user.magic_link_expires_at is None
+        or user.magic_link_expires_at <= datetime.now(timezone.utc)
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid or expired magic link",
         )
 
     # Invalidate the magic link token after use

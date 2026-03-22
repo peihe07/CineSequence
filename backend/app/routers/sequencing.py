@@ -126,6 +126,7 @@ async def set_seed_movie(
 @router.get("/search")
 async def search_tmdb_movies(
     q: Annotated[str, Query(min_length=1, max_length=100)],
+    _user: Annotated[User, Depends(get_current_user)],
 ):
     """Search TMDB movies for seed movie autocomplete."""
     results = await search_movies(q)

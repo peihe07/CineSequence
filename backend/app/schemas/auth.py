@@ -1,16 +1,16 @@
 import uuid
 
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field
 
 from app.models.user import Gender
 
 
 class RegisterRequest(BaseModel):
     email: EmailStr
-    name: str
+    name: str = Field(..., min_length=1, max_length=100)
     gender: Gender
-    region: str = "TW"
-    birth_year: int | None = None
+    region: str = Field("TW", min_length=1, max_length=10)
+    birth_year: int | None = Field(None, ge=1900, le=2026)
 
 
 class LoginRequest(BaseModel):

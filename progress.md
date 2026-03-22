@@ -12,9 +12,9 @@
 | Phase 4: DNA Builder + Result | Done | 80% |
 | Phase 5: Matching + Invite | Partial | 90% |
 | Phase 6: Groups + Profile | Partial | 80% |
-| Phase 7: Polish + Infrastructure | In progress | 50% |
+| Phase 7: Polish + Infrastructure | In progress | 70% |
 | Cross-cutting | Done | 95% |
-| **Overall** | | **~75%** |
+| **Overall** | | **~80%** |
 
 ---
 
@@ -165,9 +165,19 @@
 - [ ] Card flip animation refinement
 - [ ] Tear gesture for ticket reveal
 
-### 7d: Testing + Security
-- [ ] E2E tests (Playwright: full user flow register → match)
-- [ ] Security review (rate limiting, CSRF, input validation audit)
+### 7d: Testing + Security (in progress)
+- [x] E2E tests: 17 passing (landing page 6, auth 5, protected routes 6)
+- [x] Security review completed (15 findings: 2 CRITICAL, 5 HIGH, 5 MEDIUM, 3 LOW)
+- [x] Fix: secret validation in config.py (warn if default jwt/magic_link secrets)
+- [x] Fix: rate limiting via slowapi (auth: 5/min, verify: 10/min, global: 60/min)
+- [x] Fix: security headers (X-Content-Type-Options, X-Frame-Options, Referrer-Policy, HSTS in prod)
+- [x] Fix: user enumeration prevented (register returns existing user, login always same message)
+- [x] Fix: search endpoint requires authentication
+- [x] Fix: profile update field allowlist (prevent mass assignment)
+- [x] Fix: input length validation on RegisterRequest (name, region, birth_year)
+- [x] Fix: CORS allow_credentials=False (Bearer token auth, no cookies needed)
+- [x] Fix: production error handler hides internal details
+- [x] Fix: docs endpoint disabled in production
 - [ ] Integration tests (backend API with real DB)
 - [ ] Frontend component tests (Vitest + Testing Library)
 
