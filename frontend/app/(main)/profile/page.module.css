@@ -29,7 +29,8 @@
 
 .logoutButton {
   padding: 0.45rem 0.85rem;
-  border: 1px solid var(--border);
+  border: 1px dashed var(--border);
+  border-radius: 4px;
   background: transparent;
   color: var(--muted);
   font-size: 0.75rem;
@@ -40,7 +41,7 @@
 
 .logoutButton:hover {
   color: var(--foreground);
-  border-color: var(--foreground);
+  border-color: var(--border-dark);
 }
 
 .logoutButton:disabled {
@@ -116,11 +117,21 @@
   display: none;
 }
 
-/* Card */
+/* Card — manuscript paper */
 .card {
   padding: 1.5rem;
-  background: var(--card-bg);
-  border: 1px solid var(--border);
+  background: var(--paper);
+  background-image:
+    repeating-linear-gradient(
+      transparent,
+      transparent 1.65rem,
+      var(--paper-line) 1.65rem,
+      var(--paper-line) calc(1.65rem + 1px)
+    );
+  background-position-y: 0.4rem;
+  border: none;
+  border-left: 3px solid var(--accent);
+  box-shadow: var(--card-shadow);
   display: flex;
   flex-direction: column;
   gap: 1.2rem;
@@ -197,17 +208,24 @@
 
 .saveBtn {
   padding: 0.3rem 0.8rem;
-  background: var(--foreground);
-  color: var(--background);
-  border: none;
+  background: var(--key-bg);
+  color: var(--ink);
+  border: 1px solid var(--border-dark);
+  border-radius: 4px;
+  box-shadow: var(--key-shadow);
   font-size: 0.7rem;
   font-family: inherit;
   cursor: pointer;
-  transition: opacity 0.2s ease;
+  transition: box-shadow 0.1s ease, transform 0.1s ease;
 }
 
 .saveBtn:hover {
-  opacity: 0.85;
+  background: var(--background-alt);
+}
+
+.saveBtn:active {
+  box-shadow: var(--key-shadow-pressed);
+  transform: translateY(2px);
 }
 
 .saveBtn:disabled {
@@ -218,7 +236,8 @@
   padding: 0.3rem 0.8rem;
   background: transparent;
   color: var(--muted);
-  border: 1px solid var(--border);
+  border: 1px dashed var(--border);
+  border-radius: 4px;
   font-size: 0.7rem;
   font-family: inherit;
   cursor: pointer;

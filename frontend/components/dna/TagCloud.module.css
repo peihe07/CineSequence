@@ -28,8 +28,10 @@
   padding: 0.3rem 0.75rem;
   font-size: calc(0.7rem * var(--tag-scale, 1));
   font-weight: 500;
-  color: var(--foreground);
+  color: var(--redpen);
   background: transparent;
-  border: 1px solid var(--border);
+  border: none;
+  border-bottom: 1.5px solid rgba(192, 98, 35, 0.35);
+  font-style: italic;
   white-space: nowrap;
 }

@@ -3,11 +3,13 @@
   display: flex;
   flex-direction: column;
   width: 260px;
-  background: var(--card-bg);
-  border: 1px solid var(--border);
+  background: var(--paper);
+  border: none;
+  border-left: 3px solid var(--accent);
+  box-shadow: var(--card-shadow);
   overflow: hidden;
   cursor: pointer;
-  transition: box-shadow 0.2s ease;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
   transform-style: preserve-3d;
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
@@ -33,6 +35,7 @@
 
 .card:hover {
   box-shadow: var(--card-shadow-hover);
+  transform: translateY(-2px);
 }
 
 .poster {
@@ -96,7 +99,8 @@
   font-size: 0.6rem;
   padding: 0.15rem 0.5rem;
   background: transparent;
-  border: 1px solid var(--border);
+  border: none;
+  border-bottom: 1px solid var(--border);
   color: var(--muted);
   letter-spacing: 0.02em;
 }
@@ -117,21 +121,29 @@
   padding: 0.4rem;
   font-size: 0.7rem;
   font-family: inherit;
-  background: transparent;
+  background: var(--key-bg);
   color: var(--muted);
-  border: 1px solid var(--border);
+  border: 1px solid var(--border-dark);
+  border-radius: 4px;
+  box-shadow: var(--key-shadow);
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: box-shadow 0.1s ease, transform 0.1s ease, color 0.15s ease;
 }
 
 .modeBtn:hover {
-  border-color: var(--border-dark);
   color: var(--foreground);
 }
 
+.modeBtn:active {
+  box-shadow: var(--key-shadow-pressed);
+  transform: translateY(2px);
+}
+
 .modeActive {
-  color: var(--foreground);
-  border-color: var(--foreground);
+  color: var(--ink);
+  background: var(--background-alt);
+  box-shadow: var(--key-shadow-pressed);
+  transform: translateY(1px);
 }
 
 /* Mobile: fluid card width */

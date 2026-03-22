@@ -5,16 +5,16 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
+  background: rgba(68, 81, 75, 0.25);
 }
 
 .dialog {
   width: 90%;
   max-width: 340px;
-  background: var(--card-bg);
-  border: 1px solid var(--border);
+  background: var(--paper);
+  border: none;
+  border-left: 3px solid var(--accent);
+  box-shadow: 3px 3px 12px rgba(68, 81, 75, 0.15);
   padding: 1.5rem;
   display: flex;
   flex-direction: column;
@@ -44,19 +44,28 @@
 .btnCancel {
   background: transparent;
   color: var(--muted);
-  border: 1px solid var(--border);
+  border: 1px dashed var(--border);
+  border-radius: 4px;
 }
 
 .btnCancel:hover {
   border-color: var(--border-dark);
+  color: var(--foreground);
 }
 
 .btnConfirm {
-  background: var(--foreground);
-  color: var(--background);
-  border: none;
+  background: var(--key-bg);
+  color: var(--ink);
+  border: 1px solid var(--border-dark);
+  border-radius: 4px;
+  box-shadow: var(--key-shadow);
 }
 
 .btnConfirm:hover {
-  opacity: 0.85;
+  background: var(--background-alt);
+}
+
+.btnConfirm:active {
+  box-shadow: var(--key-shadow-pressed);
+  transform: translateY(2px);
 }

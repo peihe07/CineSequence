@@ -49,24 +49,31 @@
 
 .genderOption {
   padding: 0.6rem;
-  background: transparent;
+  background: var(--key-bg);
   color: var(--muted);
-  border: 1px solid var(--border);
-  border-radius: 0;
+  border: 1px solid var(--border-dark);
+  border-radius: 4px;
+  box-shadow: var(--key-shadow);
   font-size: 0.8rem;
   font-family: inherit;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: box-shadow 0.1s ease, transform 0.1s ease, color 0.15s ease;
 }
 
 .genderOption:hover {
-  border-color: var(--foreground);
   color: var(--foreground);
 }
 
+.genderOption:active {
+  box-shadow: var(--key-shadow-pressed);
+  transform: translateY(2px);
+}
+
 .genderActive {
-  border-color: var(--foreground);
-  color: var(--foreground);
+  color: var(--ink);
+  background: var(--background-alt);
+  box-shadow: var(--key-shadow-pressed);
+  transform: translateY(1px);
 }
 
 /* Consent checkbox */
