@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1200" fill="none">
+  <rect width="800" height="1200" fill="url(#bg3)"/>
+  <!-- DNA double helix -->
+  <!-- Left strand -->
+  <path d="M320 80 C320 160, 480 200, 480 280 C480 360, 320 400, 320 480 C320 560, 480 600, 480 680 C480 760, 320 800, 320 880 C320 960, 480 1000, 480 1080"
+        stroke="url(#strandL)" stroke-width="3" fill="none" opacity=".5"/>
+  <!-- Right strand -->
+  <path d="M480 80 C480 160, 320 200, 320 280 C320 360, 480 400, 480 480 C480 560, 320 600, 320 680 C320 760, 480 800, 480 880 C480 960, 320 1000, 320 1080"
+        stroke="url(#strandR)" stroke-width="3" fill="none" opacity=".5"/>
+  <!-- Base pairs (rungs) -->
+  <g opacity=".3">
+    <line x1="340" y1="140" x2="460" y2="140" stroke="#8090FF" stroke-width="2" stroke-linecap="round"/>
+    <line x1="320" y1="220" x2="480" y2="220" stroke="#A0B0FF" stroke-width="2" stroke-linecap="round"/>
+    <line x1="345" y1="300" x2="455" y2="300" stroke="#7080E0" stroke-width="2" stroke-linecap="round"/>
+    <line x1="370" y1="380" x2="430" y2="380" stroke="#9098FF" stroke-width="2" stroke-linecap="round"/>
+    <line x1="340" y1="460" x2="460" y2="460" stroke="#8088F0" stroke-width="2" stroke-linecap="round"/>
+    <line x1="320" y1="540" x2="480" y2="540" stroke="#A0A8FF" stroke-width="2" stroke-linecap="round"/>
+    <line x1="345" y1="620" x2="455" y2="620" stroke="#7880E8" stroke-width="2" stroke-linecap="round"/>
+    <line x1="370" y1="700" x2="430" y2="700" stroke="#8890F8" stroke-width="2" stroke-linecap="round"/>
+    <line x1="340" y1="780" x2="460" y2="780" stroke="#8088F0" stroke-width="2" stroke-linecap="round"/>
+    <line x1="320" y1="860" x2="480" y2="860" stroke="#9098FF" stroke-width="2" stroke-linecap="round"/>
+    <line x1="345" y1="940" x2="455" y2="940" stroke="#7080E0" stroke-width="2" stroke-linecap="round"/>
+    <line x1="370" y1="1020" x2="430" y2="1020" stroke="#8890F8" stroke-width="2" stroke-linecap="round"/>
+  </g>
+  <!-- Glow nodes at intersections -->
+  <circle cx="400" cy="180" r="8" fill="url(#nodeG3)" opacity=".6"/>
+  <circle cx="400" cy="340" r="6" fill="url(#nodeG3)" opacity=".4"/>
+  <circle cx="400" cy="500" r="10" fill="url(#nodeG3)" opacity=".7"/>
+  <circle cx="400" cy="660" r="6" fill="url(#nodeG3)" opacity=".4"/>
+  <circle cx="400" cy="820" r="8" fill="url(#nodeG3)" opacity=".6"/>
+  <circle cx="400" cy="980" r="6" fill="url(#nodeG3)" opacity=".3"/>
+  <!-- Data readout lines -->
+  <g opacity=".08">
+    <line x1="560" y1="300" x2="700" y2="300" stroke="#A0B0FF" stroke-width="1.5"/>
+    <line x1="580" y1="320" x2="680" y2="320" stroke="#A0B0FF" stroke-width="1"/>
+    <line x1="560" y1="500" x2="720" y2="500" stroke="#A0B0FF" stroke-width="1.5"/>
+    <line x1="580" y1="520" x2="660" y2="520" stroke="#A0B0FF" stroke-width="1"/>
+    <line x1="560" y1="700" x2="690" y2="700" stroke="#A0B0FF" stroke-width="1.5"/>
+    <line x1="580" y1="720" x2="650" y2="720" stroke="#A0B0FF" stroke-width="1"/>
+  </g>
+  <!-- Ambient glow -->
+  <ellipse cx="400" cy="500" rx="200" ry="400" fill="url(#ambientG3)" opacity=".12"/>
+  <defs>
+    <linearGradient id="bg3" x1="0" y1="0" x2="800" y2="1200" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#060A18"/>
+      <stop offset=".35" stop-color="#101840"/>
+      <stop offset=".7" stop-color="#0A1230"/>
+      <stop offset="1" stop-color="#040814"/>
+    </linearGradient>
+    <linearGradient id="strandL" x1="320" y1="80" x2="480" y2="1080" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#C0C8FF" stop-opacity="0"/>
+      <stop offset=".2" stop-color="#8090FF"/>
+      <stop offset=".5" stop-color="#A0B0FF"/>
+      <stop offset=".8" stop-color="#6070E0"/>
+      <stop offset="1" stop-color="#6070E0" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="strandR" x1="480" y1="80" x2="320" y2="1080" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#D0D8FF" stop-opacity="0"/>
+      <stop offset=".2" stop-color="#A0A8FF"/>
+      <stop offset=".5" stop-color="#B8C0FF"/>
+      <stop offset=".8" stop-color="#7880E8"/>
+      <stop offset="1" stop-color="#7880E8" stop-opacity="0"/>
+    </linearGradient>
+    <radialGradient id="nodeG3" cx=".5" cy=".5" r=".5">
+      <stop stop-color="#E0E8FF"/>
+      <stop offset=".5" stop-color="#8090FF" stop-opacity=".5"/>
+      <stop offset="1" stop-color="#4050A0" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="ambientG3" cx="400" cy="500" rx="200" ry="400" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#6070E0" stop-opacity=".3"/>
+      <stop offset="1" stop-color="#6070E0" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+</svg>

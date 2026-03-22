@@ -19,7 +19,7 @@ const I18nContext = createContext<I18nContextValue>({
 const STORAGE_KEY = 'cinesequence-locale'
 
 export function I18nProvider({ children }: { children: React.ReactNode }) {
-  const [locale, setLocaleState] = useState<Locale>('zh')
+  const [locale, setLocaleState] = useState<Locale>('en')
 
   useEffect(() => {
     const saved = localStorage.getItem(STORAGE_KEY) as Locale | null
@@ -89,15 +89,15 @@ const translations: Record<Locale, Record<string, string>> = {
     'landing.termLine5': '是否開始解碼？',
     'landing.termHint': '按下 [Y] 或點擊開始',
     'landing.howTitle': '序列流程',
-    'landing.step1Title': '選擇種子電影',
+    'landing.step1Title': '起源',
     'landing.step1Desc': '選一部代表你品味的電影，作為分析起點。',
-    'landing.step2Title': '20 輪品味測序',
+    'landing.step2Title': '測序',
     'landing.step2Desc': '每輪兩部電影，選擇更吸引你的那部，系統逐步萃取你的偏好。',
-    'landing.step3Title': '生成觀影 DNA',
+    'landing.step3Title': '解碼',
     'landing.step3Desc': 'AI 分析你的選擇模式，生成專屬原型與品味標籤。',
-    'landing.step4Title': '配對志同道合的人',
+    'landing.step4Title': '共鳴',
     'landing.step4Desc': '根據 DNA 相似度，找到與你品味最契合的觀影夥伴。',
-    'landing.step5Title': '撕開你的電影票',
+    'landing.step5Title': '揭曉',
     'landing.step5Desc': '配對成功後，撕開票券揭曉對方資訊與對話方向。',
 
     // Error boundary
@@ -355,15 +355,15 @@ const translations: Record<Locale, Record<string, string>> = {
     'landing.termLine5': 'BEGIN SEQUENCING?',
     'landing.termHint': 'PRESS [Y] OR CLICK TO START',
     'landing.howTitle': 'How It Works',
-    'landing.step1Title': 'Pick a Seed Film',
+    'landing.step1Title': 'Origin',
     'landing.step1Desc': 'Choose one film that represents your taste as a calibration point.',
-    'landing.step2Title': '20 Rounds of Sequencing',
+    'landing.step2Title': 'Sequence',
     'landing.step2Desc': 'Two films each round. Pick the one that draws you in. The system distills your preferences.',
-    'landing.step3Title': 'Generate Your Cine DNA',
+    'landing.step3Title': 'Decode',
     'landing.step3Desc': 'AI analyzes your choice patterns to produce a unique archetype and taste profile.',
-    'landing.step4Title': 'Match with Kindred Spirits',
+    'landing.step4Title': 'Resonate',
     'landing.step4Desc': 'Find people whose cinematic DNA aligns with yours through vector similarity.',
-    'landing.step5Title': 'Tear Open Your Ticket',
+    'landing.step5Title': 'Reveal',
     'landing.step5Desc': 'Once matched, tear the ticket to reveal your partner and conversation starters.',
 
     // Error boundary

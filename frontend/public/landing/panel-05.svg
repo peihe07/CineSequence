@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1200" fill="none">
+  <rect width="800" height="1200" fill="url(#bg5)"/>
+  <!-- Ticket shape — being torn -->
+  <!-- Left half -->
+  <g transform="translate(-12, 0) rotate(-2, 380, 500)">
+    <path d="M160 320 L380 310 L380 390 C370 395, 365 405, 365 415 C365 425, 370 435, 380 440 L380 700 L160 710 Z"
+          fill="url(#ticketL)" stroke="#C0D880" stroke-opacity=".2" stroke-width="1.5"/>
+    <!-- Perforated edge -->
+    <line x1="380" y1="330" x2="380" y2="350" stroke="#A0C060" stroke-opacity=".15" stroke-width="1" stroke-dasharray="4 8"/>
+    <line x1="380" y1="460" x2="380" y2="690" stroke="#A0C060" stroke-opacity=".15" stroke-width="1" stroke-dasharray="4 8"/>
+    <!-- Content lines -->
+    <line x1="200" y1="400" x2="340" y2="398" stroke="#C0D880" stroke-opacity=".15" stroke-width="6" stroke-linecap="round"/>
+    <line x1="200" y1="430" x2="300" y2="429" stroke="#C0D880" stroke-opacity=".1" stroke-width="4" stroke-linecap="round"/>
+    <line x1="200" y1="520" x2="350" y2="518" stroke="#C0D880" stroke-opacity=".08" stroke-width="4" stroke-linecap="round"/>
+    <line x1="200" y1="545" x2="320" y2="544" stroke="#C0D880" stroke-opacity=".06" stroke-width="3" stroke-linecap="round"/>
+  </g>
+  <!-- Right half -->
+  <g transform="translate(12, 0) rotate(2, 420, 500)">
+    <path d="M420 310 L640 320 L640 710 L420 700 L420 440 C430 435, 435 425, 435 415 C435 405, 430 395, 420 390 Z"
+          fill="url(#ticketR)" stroke="#C0D880" stroke-opacity=".2" stroke-width="1.5"/>
+    <!-- Perforated edge -->
+    <line x1="420" y1="330" x2="420" y2="350" stroke="#A0C060" stroke-opacity=".15" stroke-width="1" stroke-dasharray="4 8"/>
+    <line x1="420" y1="460" x2="420" y2="690" stroke="#A0C060" stroke-opacity=".15" stroke-width="1" stroke-dasharray="4 8"/>
+    <!-- Hidden content (revealed) -->
+    <rect x="450" y="380" width="80" height="80" rx="40" fill="url(#avatarGlow)" opacity=".3"/>
+    <circle cx="490" cy="420" r="28" stroke="#D8F0A0" stroke-opacity=".25" stroke-width="1.5" fill="url(#avatarFill)"/>
+    <line x1="450" y1="520" x2="600" y2="518" stroke="#C0D880" stroke-opacity=".12" stroke-width="6" stroke-linecap="round"/>
+    <line x1="450" y1="545" x2="560" y2="544" stroke="#C0D880" stroke-opacity=".08" stroke-width="4" stroke-linecap="round"/>
+    <line x1="450" y1="575" x2="580" y2="574" stroke="#C0D880" stroke-opacity=".06" stroke-width="3" stroke-linecap="round"/>
+  </g>
+  <!-- Tear glow — light coming from the gap -->
+  <ellipse cx="400" cy="510" rx="8" ry="180" fill="url(#tearGlow)" opacity=".25"/>
+  <!-- Floating particles from tear -->
+  <circle cx="398" cy="340" r="2" fill="#E0F8C0" opacity=".3"/>
+  <circle cx="402" cy="420" r="1.5" fill="#D0E8A0" opacity=".25"/>
+  <circle cx="396" cy="560" r="2.5" fill="#E8FFC8" opacity=".2"/>
+  <circle cx="404" cy="640" r="1.8" fill="#D0E8A0" opacity=".15"/>
+  <circle cx="400" cy="700" r="2" fill="#C0D880" opacity=".1"/>
+  <!-- Ambient light -->
+  <ellipse cx="400" cy="500" rx="300" ry="250" fill="url(#ambientG5)" opacity=".08"/>
+  <defs>
+    <linearGradient id="bg5" x1="0" y1="0" x2="800" y2="1200" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#080E06"/>
+      <stop offset=".35" stop-color="#142210"/>
+      <stop offset=".7" stop-color="#0E1A0A"/>
+      <stop offset="1" stop-color="#040804"/>
+    </linearGradient>
+    <linearGradient id="ticketL" x1="160" y1="320" x2="380" y2="710" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#1A2810" stop-opacity=".9"/>
+      <stop offset="1" stop-color="#0E1808" stop-opacity=".7"/>
+    </linearGradient>
+    <linearGradient id="ticketR" x1="420" y1="310" x2="640" y2="710" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#1A2810" stop-opacity=".9"/>
+      <stop offset="1" stop-color="#0E1808" stop-opacity=".7"/>
+    </linearGradient>
+    <linearGradient id="tearGlow" x1="400" y1="320" x2="400" y2="700" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#E8FFC8" stop-opacity="0"/>
+      <stop offset=".3" stop-color="#D0F090"/>
+      <stop offset=".5" stop-color="#E8FFC8"/>
+      <stop offset=".7" stop-color="#D0F090"/>
+      <stop offset="1" stop-color="#E8FFC8" stop-opacity="0"/>
+    </linearGradient>
+    <radialGradient id="avatarGlow" cx=".5" cy=".5" r=".5">
+      <stop stop-color="#D8F0A0" stop-opacity=".4"/>
+      <stop offset="1" stop-color="#A0C060" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="avatarFill" cx=".5" cy=".5" r=".5">
+      <stop stop-color="#1A2810" stop-opacity=".8"/>
+      <stop offset="1" stop-color="#0E1808"/>
+    </radialGradient>
+    <radialGradient id="ambientG5" cx="400" cy="500" rx="300" ry="250" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#A0C060" stop-opacity=".3"/>
+      <stop offset="1" stop-color="#A0C060" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+</svg>

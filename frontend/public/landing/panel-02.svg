@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1200" fill="none">
+  <rect width="800" height="1200" fill="url(#bg2)"/>
+  <!-- Branching paths — choice visualization -->
+  <!-- Main trunk -->
+  <line x1="400" y1="120" x2="400" y2="480" stroke="url(#trunk)" stroke-width="3" opacity=".4"/>
+  <!-- Branch left -->
+  <path d="M400 480 Q340 580 220 700" stroke="url(#branchL)" stroke-width="2.5" fill="none" opacity=".35"/>
+  <path d="M220 700 Q180 760 160 860" stroke="url(#branchL)" stroke-width="2" fill="none" opacity=".25"/>
+  <path d="M220 700 Q240 780 230 880" stroke="#5BA8D8" stroke-width="1.5" fill="none" opacity=".15"/>
+  <!-- Branch right -->
+  <path d="M400 480 Q460 580 580 700" stroke="url(#branchR)" stroke-width="2.5" fill="none" opacity=".35"/>
+  <path d="M580 700 Q620 760 640 860" stroke="url(#branchR)" stroke-width="2" fill="none" opacity=".25"/>
+  <path d="M580 700 Q560 780 570 880" stroke="#5BA8D8" stroke-width="1.5" fill="none" opacity=".15"/>
+  <!-- Decision node -->
+  <circle cx="400" cy="480" r="14" fill="url(#nodeGlow)" opacity=".9"/>
+  <circle cx="400" cy="480" r="6" fill="#E0F4FF"/>
+  <circle cx="400" cy="480" r="32" stroke="#80D0FF" stroke-width="1" opacity=".2"/>
+  <!-- Left film card -->
+  <g transform="translate(140, 620)">
+    <rect width="160" height="220" rx="6" fill="url(#cardL)" stroke="#5BA8D8" stroke-opacity=".2" stroke-width="1"/>
+    <rect x="16" y="16" width="128" height="80" rx="3" fill="#1A3550" opacity=".6"/>
+    <line x1="16" y1="120" x2="100" y2="120" stroke="#5BA8D8" stroke-opacity=".2" stroke-width="8" stroke-linecap="round"/>
+    <line x1="16" y1="142" x2="72" y2="142" stroke="#5BA8D8" stroke-opacity=".12" stroke-width="6" stroke-linecap="round"/>
+    <line x1="16" y1="178" x2="56" y2="178" stroke="#5BA8D8" stroke-opacity=".08" stroke-width="4" stroke-linecap="round"/>
+  </g>
+  <!-- Right film card -->
+  <g transform="translate(500, 620)">
+    <rect width="160" height="220" rx="6" fill="url(#cardR)" stroke="#5BA8D8" stroke-opacity=".2" stroke-width="1"/>
+    <rect x="16" y="16" width="128" height="80" rx="3" fill="#1A3550" opacity=".6"/>
+    <line x1="16" y1="120" x2="108" y2="120" stroke="#5BA8D8" stroke-opacity=".2" stroke-width="8" stroke-linecap="round"/>
+    <line x1="16" y1="142" x2="80" y2="142" stroke="#5BA8D8" stroke-opacity=".12" stroke-width="6" stroke-linecap="round"/>
+    <line x1="16" y1="178" x2="48" y2="178" stroke="#5BA8D8" stroke-opacity=".08" stroke-width="4" stroke-linecap="round"/>
+  </g>
+  <!-- Connector pulse dots -->
+  <circle cx="220" cy="700" r="5" fill="#80D0FF" opacity=".4"/>
+  <circle cx="580" cy="700" r="5" fill="#80D0FF" opacity=".4"/>
+  <!-- Subtle grid background -->
+  <g opacity=".03">
+    <line x1="200" y1="0" x2="200" y2="1200" stroke="#FFF" stroke-width="1"/>
+    <line x1="400" y1="0" x2="400" y2="1200" stroke="#FFF" stroke-width="1"/>
+    <line x1="600" y1="0" x2="600" y2="1200" stroke="#FFF" stroke-width="1"/>
+    <line x1="0" y1="300" x2="800" y2="300" stroke="#FFF" stroke-width="1"/>
+    <line x1="0" y1="600" x2="800" y2="600" stroke="#FFF" stroke-width="1"/>
+    <line x1="0" y1="900" x2="800" y2="900" stroke="#FFF" stroke-width="1"/>
+  </g>
+  <!-- Ambient particles -->
+  <circle cx="320" cy="280" r="2" fill="#80D0FF" opacity=".15"/>
+  <circle cx="520" cy="350" r="1.5" fill="#80D0FF" opacity=".12"/>
+  <circle cx="180" cy="500" r="1.8" fill="#5BA8D8" opacity=".1"/>
+  <circle cx="650" cy="450" r="2.2" fill="#5BA8D8" opacity=".1"/>
+  <defs>
+    <linearGradient id="bg2" x1="0" y1="0" x2="800" y2="1200" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#06101A"/>
+      <stop offset=".4" stop-color="#0E2038"/>
+      <stop offset=".75" stop-color="#0A1828"/>
+      <stop offset="1" stop-color="#040A12"/>
+    </linearGradient>
+    <linearGradient id="trunk" x1="400" y1="120" x2="400" y2="480" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#80D0FF" stop-opacity="0"/>
+      <stop offset=".5" stop-color="#80D0FF"/>
+      <stop offset="1" stop-color="#80D0FF"/>
+    </linearGradient>
+    <linearGradient id="branchL" x1="400" y1="480" x2="160" y2="860" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#80D0FF"/>
+      <stop offset="1" stop-color="#80D0FF" stop-opacity=".1"/>
+    </linearGradient>
+    <linearGradient id="branchR" x1="400" y1="480" x2="640" y2="860" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#80D0FF"/>
+      <stop offset="1" stop-color="#80D0FF" stop-opacity=".1"/>
+    </linearGradient>
+    <radialGradient id="nodeGlow" cx="400" cy="480" r="14" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#E0F4FF"/>
+      <stop offset=".5" stop-color="#60B8E8" stop-opacity=".6"/>
+      <stop offset="1" stop-color="#2080B0" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="cardL" x1="140" y1="620" x2="300" y2="840" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0E1E30"/>
+      <stop offset="1" stop-color="#081420"/>
+    </linearGradient>
+    <linearGradient id="cardR" x1="500" y1="620" x2="660" y2="840" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0E1E30"/>
+      <stop offset="1" stop-color="#081420"/>
+    </linearGradient>
+  </defs>
+</svg>

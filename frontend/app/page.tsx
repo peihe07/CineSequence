@@ -1,42 +1,99 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useI18n } from '@/lib/i18n'
 import styles from './page.module.css'
 
 const PANELS = [
-  { num: '01', titleKey: 'landing.step1Title' },
-  { num: '02', titleKey: 'landing.step2Title' },
-  { num: '03', titleKey: 'landing.step3Title' },
-  { num: '04', titleKey: 'landing.step4Title' },
-  { num: '05', titleKey: 'landing.step5Title' },
+  { titleKey: 'landing.step1Title', descKey: 'landing.step1Desc', icon: 'ri-film-line',       photo: '/landing/panel-01.svg' },
+  { titleKey: 'landing.step2Title', descKey: 'landing.step2Desc', icon: 'ri-git-branch-line', photo: '/landing/panel-02.svg' },
+  { titleKey: 'landing.step3Title', icon: 'ri-dna-line',        photo: '/landing/panel-03.svg' },
+  { titleKey: 'landing.step4Title', icon: 'ri-group-line',      photo: '/landing/panel-04.svg' },
+  { titleKey: 'landing.step5Title', icon: 'ri-ticket-2-line',   photo: '/landing/panel-05.svg' },
 ]
+
+function useTypewriter(text: string, speed = 60, delay = 800) {
+  const [displayed, setDisplayed] = useState('')
+  const [done, setDone] = useState(false)
+
+  useEffect(() => {
+    setDisplayed('')
+    setDone(false)
+
+    const delayTimer = setTimeout(() => {
+      let i = 0
+      const interval = setInterval(() => {
+        i++
+        setDisplayed(text.slice(0, i))
+        if (i >= text.length) {
+          clearInterval(interval)
+          setDone(true)
+        }
+      }, speed)
+      return () => clearInterval(interval)
+    }, delay)
+
+    return () => clearTimeout(delayTimer)
+  }, [text, speed, delay])
+
+  return { displayed, done }
+}
 
 export default function Home() {
   const { t } = useI18n()
+  const headlineText = t('landing.termLine4')
+  const { displayed, done } = useTypewriter(headlineText)
 
   return (
     <main className={styles.main}>
-      {/* Hero — 5 cinematic panels + overlay */}
       <section className={styles.hero}>
-        {/* Panel strip (background) */}
+        {/* Panel strip */}
         <div className={styles.panelStrip}>
           {PANELS.map((panel, i) => (
-            <div key={panel.num} className={styles.panel} data-index={i}>
-              <span className={styles.panelBgNum}>{panel.num}</span>
+            <div key={i} className={styles.panel} data-index={i}>
+              <div
+                className={styles.panelPhoto}
+                style={{ backgroundImage: `url(${panel.photo})` }}
+              />
+              <div className={styles.panelIconWrap}>
+                <i className={`${panel.icon} ${styles.panelIcon}`} />
+              </div>
               <div className={styles.panelLabel}>
-                <span className={styles.panelLabelNum}>{panel.num}</span>
                 <span className={styles.panelLabelTitle}>{t(panel.titleKey)}</span>
+                {panel.descKey && <p className={styles.panelLabelDesc}>{t(panel.descKey)}</p>}
               </div>
             </div>
           ))}
         </div>
 
+        {/* Mobile gallery */}
+        <div className={styles.mobileGallery} aria-hidden="true">
+          <div className={styles.mobileGalleryTrack}>
+            {PANELS.map((panel, i) => (
+              <div key={i} className={styles.mobileCard} data-index={i}>
+                <div
+                  className={styles.mobileCardPhoto}
+                  style={{ backgroundImage: `url(${panel.photo})` }}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Logo */}
+        <Link href="/" className={styles.logo}>
+          <span className={styles.logoMain}>Cine</span>
+          <span className={styles.logoSub}>Sequence</span>
+        </Link>
+
         {/* Text overlay */}
         <div className={styles.heroOverlay}>
-          <p className={styles.heroEyebrow}>CINE SEQUENCE</p>
-          <h1 className={styles.heroHeadline}>{t('landing.termLine4')}</h1>
-          <div className={styles.heroCta}>
+          <h1 className={styles.heroHeadline}>
+            <span>{displayed}</span>
+            <span className={`${styles.cursor} ${done ? styles.cursorBlink : ''}`}>|</span>
+          </h1>
+          <div className={`${styles.heroCta} ${done ? styles.heroCtaVisible : ''}`}>
             <Link href="/register" className={styles.ctaPrimary}>
               {t('landing.start')}
             </Link>
@@ -48,7 +105,14 @@ export default function Home() {
       </section>
 
       <footer className={styles.footer}>
-        CINE SEQUENCE &copy; {new Date().getFullYear()}
+        <span className={styles.footerCopy}>&copy; {new Date().getFullYear()} peihe</span>
+        <span className={styles.footerDot} aria-hidden="true" />
+        <a href="mailto:y450376@gmail.com" className={styles.footerIcon} aria-label="Email">
+          <i className="ri-mail-line" />
+        </a>
+        <a href="https://medium.com/@peihe07" target="_blank" rel="noopener noreferrer" className={styles.footerIcon} aria-label="Blog">
+          <i className="ri-article-line" />
+        </a>
       </footer>
     </main>
   )

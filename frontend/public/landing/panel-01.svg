@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1200" fill="none">
+  <rect width="800" height="1200" fill="url(#bg1)"/>
+  <!-- Film strip sprocket holes -->
+  <g opacity=".08">
+    <rect x="60" y="80" width="40" height="28" rx="4" fill="#FFF"/>
+    <rect x="60" y="180" width="40" height="28" rx="4" fill="#FFF"/>
+    <rect x="60" y="280" width="40" height="28" rx="4" fill="#FFF"/>
+    <rect x="60" y="380" width="40" height="28" rx="4" fill="#FFF"/>
+    <rect x="60" y="480" width="40" height="28" rx="4" fill="#FFF"/>
+    <rect x="60" y="580" width="40" height="28" rx="4" fill="#FFF"/>
+    <rect x="60" y="680" width="40" height="28" rx="4" fill="#FFF"/>
+    <rect x="60" y="780" width="40" height="28" rx="4" fill="#FFF"/>
+    <rect x="700" y="80" width="40" height="28" rx="4" fill="#FFF"/>
+    <rect x="700" y="180" width="40" height="28" rx="4" fill="#FFF"/>
+    <rect x="700" y="280" width="40" height="28" rx="4" fill="#FFF"/>
+    <rect x="700" y="380" width="40" height="28" rx="4" fill="#FFF"/>
+    <rect x="700" y="480" width="40" height="28" rx="4" fill="#FFF"/>
+    <rect x="700" y="580" width="40" height="28" rx="4" fill="#FFF"/>
+    <rect x="700" y="680" width="40" height="28" rx="4" fill="#FFF"/>
+    <rect x="700" y="780" width="40" height="28" rx="4" fill="#FFF"/>
+  </g>
+  <!-- Projector lens — large ring -->
+  <circle cx="400" cy="440" r="220" stroke="url(#ring1)" stroke-width="3" opacity=".35"/>
+  <circle cx="400" cy="440" r="172" stroke="url(#ring1)" stroke-width="2" opacity=".25"/>
+  <circle cx="400" cy="440" r="124" stroke="#F8D9A8" stroke-width="1.5" opacity=".2"/>
+  <!-- Lens flare core -->
+  <circle cx="400" cy="440" r="88" fill="url(#lensCore)"/>
+  <circle cx="400" cy="440" r="48" fill="url(#lensInner)"/>
+  <!-- Light rays from lens -->
+  <line x1="400" y1="440" x2="160" y2="820" stroke="url(#ray1)" stroke-width="80" stroke-linecap="round" opacity=".12"/>
+  <line x1="400" y1="440" x2="640" y2="820" stroke="url(#ray1)" stroke-width="80" stroke-linecap="round" opacity=".12"/>
+  <line x1="400" y1="440" x2="400" y2="880" stroke="url(#ray1)" stroke-width="60" stroke-linecap="round" opacity=".08"/>
+  <!-- Anamorphic flare -->
+  <ellipse cx="400" cy="440" rx="320" ry="3" fill="#FFE8C0" opacity=".18"/>
+  <ellipse cx="400" cy="440" rx="180" ry="1.5" fill="#FFF" opacity=".25"/>
+  <!-- Film frame indicators -->
+  <rect x="150" y="940" width="140" height="95" rx="2" stroke="#C08040" stroke-opacity=".2" stroke-width="1.5" fill="none"/>
+  <rect x="330" y="940" width="140" height="95" rx="2" stroke="#C08040" stroke-opacity=".35" stroke-width="1.5" fill="url(#frameFill)"/>
+  <rect x="510" y="940" width="140" height="95" rx="2" stroke="#C08040" stroke-opacity=".15" stroke-width="1.5" fill="none"/>
+  <defs>
+    <linearGradient id="bg1" x1="0" y1="0" x2="800" y2="1200" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#110C08"/>
+      <stop offset=".35" stop-color="#281A0E"/>
+      <stop offset=".7" stop-color="#1A1008"/>
+      <stop offset="1" stop-color="#090604"/>
+    </linearGradient>
+    <linearGradient id="ring1" x1="180" y1="220" x2="620" y2="660" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F8D9A8"/>
+      <stop offset="1" stop-color="#C08040"/>
+    </linearGradient>
+    <radialGradient id="lensCore" cx="400" cy="440" r="88" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFF3D8" stop-opacity=".6"/>
+      <stop offset=".4" stop-color="#E0A050" stop-opacity=".35"/>
+      <stop offset="1" stop-color="#402010" stop-opacity=".1"/>
+    </radialGradient>
+    <radialGradient id="lensInner" cx="400" cy="440" r="48" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFFBF0" stop-opacity=".8"/>
+      <stop offset=".5" stop-color="#F0C878" stop-opacity=".4"/>
+      <stop offset="1" stop-color="#805020" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="ray1" x1="400" y1="440" x2="400" y2="880" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFE0A0"/>
+      <stop offset="1" stop-color="#FFE0A0" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="frameFill" x1="330" y1="940" x2="470" y2="1035" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#C08040" stop-opacity=".08"/>
+      <stop offset="1" stop-color="#C08040" stop-opacity=".02"/>
+    </linearGradient>
+  </defs>
+</svg>
