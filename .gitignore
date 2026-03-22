@@ -43,3 +43,7 @@ docker-compose.override.yml
 coverage/
 htmlcov/
 .pytest_cache/
+
+# Playwright
+test-results/
+playwright-report/
