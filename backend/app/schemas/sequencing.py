@@ -34,6 +34,10 @@ class SkipRequest(BaseModel):
     test_dimension: str | None = None
 
 
+class RerollRequest(BaseModel):
+    exclude_tmdb_ids: list[int] = []
+
+
 class ProgressResponse(BaseModel):
     round_number: int
     phase: int

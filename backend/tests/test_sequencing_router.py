@@ -138,6 +138,46 @@ class TestPair:
         assert "movie_b" in data
         assert data["completed"] is False
 
+    @pytest.mark.asyncio
+    @patch("app.routers.sequencing.get_movie", new_callable=AsyncMock)
+    async def test_reroll_returns_different_phase1_pair_without_advancing_round(
+        self, mock_get_movie, client, auth_user, db_session
+    ):
+        async def fake_get_movie(tmdb_id: int):
+          return _fake_movie(tmdb_id, f"Movie {tmdb_id}")
+
+        mock_get_movie.side_effect = fake_get_movie
+        user, headers = auth_user
+
+        first = await client.get("/sequencing/pair", headers=headers)
+        assert first.status_code == 200
+        first_data = first.json()
+
+        reroll = await client.post(
+            "/sequencing/reroll",
+            json={
+                "exclude_tmdb_ids": [
+                    first_data["movie_a"]["tmdb_id"],
+                    first_data["movie_b"]["tmdb_id"],
+                ],
+            },
+            headers=headers,
+        )
+        assert reroll.status_code == 200
+        reroll_data = reroll.json()
+        assert reroll_data["round_number"] == 1
+        assert reroll_data["phase"] == 1
+        assert {
+            reroll_data["movie_a"]["tmdb_id"],
+            reroll_data["movie_b"]["tmdb_id"],
+        } != {
+            first_data["movie_a"]["tmdb_id"],
+            first_data["movie_b"]["tmdb_id"],
+        }
+
+        result = await db_session.execute(select(Pick).where(Pick.user_id == user.id))
+        assert result.scalars().all() == []
+
 
 class TestPick:
     """POST /sequencing/pick"""

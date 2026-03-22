@@ -17,12 +17,17 @@ from app.schemas.sequencing import (
     PairResponse,
     PickRequest,
     ProgressResponse,
+    RerollRequest,
     RetestResponse,
     SeedMovieRequest,
     SkipRequest,
 )
 from app.services.ai_pair_engine import get_ai_pair
-from app.services.pair_engine import compute_quadrant_from_picks, get_pair_for_round
+from app.services.pair_engine import (
+    compute_quadrant_from_picks,
+    get_pair_for_round,
+    get_reroll_pair_for_round,
+)
 from app.services.session_service import (
     can_extend,
     complete_base,
@@ -198,6 +203,75 @@ async def get_pair(
             movie_b=await _movie_to_info(result["movie_b"]),
             test_dimension=result.get("test_dimension"),
         )
+
+
+@router.post("/reroll", response_model=PairResponse)
+async def reroll_pair(
+    body: RerollRequest,
+    user: Annotated[User, Depends(get_current_user)],
+    db: Annotated[AsyncSession, Depends(get_db)],
+):
+    """Replace the current pair without consuming the round."""
+    session = await get_or_create_session(db, user.id)
+    picks = await _get_session_picks(db, session.id)
+    round_number = len(picks) + 1
+    phase = _get_phase(round_number)
+
+    if round_number > session.total_rounds:
+        raise HTTPException(status_code=400, detail="Sequencing already completed")
+
+    exclude_tmdb_ids = set(body.exclude_tmdb_ids)
+
+    if phase == 1:
+        seed_genres: list[str] = []
+        if session.seed_movie_tmdb_id:
+            seed_movie = await get_movie(session.seed_movie_tmdb_id)
+            if seed_movie:
+                seed_genres = seed_movie.genres
+
+        used_pair_ids = {pick["pair_id"] for pick in picks if pick.get("pair_id")}
+        pair = get_reroll_pair_for_round(
+            round_number,
+            seed_genres,
+            used_pair_ids=used_pair_ids,
+            exclude_tmdb_ids=exclude_tmdb_ids,
+        )
+        if not pair:
+            raise HTTPException(status_code=409, detail="No alternate pair available")
+
+        movie_a = await get_movie(pair["movie_a"]["tmdb_id"])
+        movie_b = await get_movie(pair["movie_b"]["tmdb_id"])
+
+        if not movie_a or not movie_b:
+            raise HTTPException(status_code=502, detail="Failed to fetch movie data from TMDB")
+
+        return PairResponse(
+            round_number=round_number,
+            phase=phase,
+            movie_a=await _movie_to_info(movie_a),
+            movie_b=await _movie_to_info(movie_b),
+            test_dimension=pair.get("dimension"),
+        )
+
+    quadrant = compute_quadrant_from_picks(picks)
+    result = await get_ai_pair(
+        phase,
+        round_number,
+        picks,
+        quadrant,
+        extra_excluded_tmdb_ids=list(exclude_tmdb_ids),
+    )
+
+    if not result:
+        raise HTTPException(status_code=502, detail="Failed to generate alternate movie pair")
+
+    return PairResponse(
+        round_number=round_number,
+        phase=phase,
+        movie_a=await _movie_to_info(result["movie_a"]),
+        movie_b=await _movie_to_info(result["movie_b"]),
+        test_dimension=result.get("test_dimension"),
+    )
 
 
 @router.post("/pick", response_model=ProgressResponse)

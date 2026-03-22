@@ -71,9 +71,24 @@ async def get_ai_pair(
     round_number: int,
     picks: list[dict],
     quadrant_scores: dict,
+    extra_excluded_tmdb_ids: list[int] | None = None,
 ) -> dict | None:
     """Call Gemini API to generate the next movie pair for Phase 2 or 3."""
-    user_context = _build_user_context(phase, round_number, picks, quadrant_scores)
+    context_picks = list(picks)
+    if extra_excluded_tmdb_ids:
+        context_picks.extend(
+            {
+                "movie_a_tmdb_id": tmdb_id,
+                "movie_b_tmdb_id": None,
+                "chosen_tmdb_id": None,
+                "round_number": round_number,
+                "pick_mode": None,
+                "test_dimension": None,
+            }
+            for tmdb_id in extra_excluded_tmdb_ids
+        )
+
+    user_context = _build_user_context(phase, round_number, context_picks, quadrant_scores)
 
     try:
         client = genai.Client(api_key=settings.gemini_api_key)

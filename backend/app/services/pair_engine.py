@@ -76,6 +76,38 @@ def get_pair_for_round(round_number: int, seed_movie_genres: list[str] | None = 
     raise ValueError(f"Invalid Phase 1 round number: {round_number}")
 
 
+def get_reroll_pair_for_round(
+    round_number: int,
+    seed_movie_genres: list[str] | None = None,
+    used_pair_ids: set[str] | None = None,
+    exclude_tmdb_ids: set[int] | None = None,
+) -> dict | None:
+    """Return an alternate Phase 1 pair for the same round without consuming it."""
+    if not 1 <= round_number <= 5:
+        raise ValueError(f"Invalid Phase 1 round number: {round_number}")
+
+    used_pair_ids = used_pair_ids or set()
+    exclude_tmdb_ids = exclude_tmdb_ids or set()
+    ordered_pairs = sorted(
+        ALL_PAIRS,
+        key=lambda pair: _score_pair_relevance(pair, seed_movie_genres or []),
+        reverse=True,
+    )
+
+    for pair in ordered_pairs:
+        if pair["id"] in used_pair_ids:
+            continue
+        pair_movie_ids = {
+            pair["movie_a"]["tmdb_id"],
+            pair["movie_b"]["tmdb_id"],
+        }
+        if pair_movie_ids & exclude_tmdb_ids:
+            continue
+        return pair
+
+    return None
+
+
 def compute_quadrant_from_picks(picks: list[dict]) -> dict:
     """Compute quadrant scores from Phase 1 picks.
 
