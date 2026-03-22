@@ -12,9 +12,9 @@
 | Phase 4: DNA Builder + Result | Done | 80% |
 | Phase 5: Matching + Invite | Partial | 90% |
 | Phase 6: Groups + Profile | Partial | 80% |
-| Phase 7: Polish + Infrastructure | In progress | 70% |
+| Phase 7: Polish + Infrastructure | In progress | 80% |
 | Cross-cutting | Done | 95% |
-| **Overall** | | **~80%** |
+| **Overall** | | **~85%** |
 
 ---
 
@@ -66,8 +66,8 @@
 - [x] PhaseIndicator + LiveTagCloud + SkipActions
 - [x] Dynamic background color shift (genre-based)
 - [x] Tests: pair engine, TMDB client, pick/skip flow
-- [ ] Liquid DNA tube animation (Canvas/WebGL) → Phase 7
-- [ ] Sound effects (punch hole sound) → Phase 7
+- [x] Liquid DNA tube animation (Canvas 2D) ✓
+- [x] Sound effects (SoundManager + MuteToggle) ✓
 - [ ] Server Components for initial data fetch (Next.js 15 RSC) → Phase 7
 
 ## Phase 4: DNA Builder + Result ✓
@@ -79,7 +79,7 @@
 - [x] SVG Radar chart (3 axes: mainstream/independent, rational/emotional, light/dark)
 - [x] AIReading (typewriter animation via Framer Motion)
 - [x] Tests: tag vector math, archetype matching, DNA build (19 unit tests)
-- [ ] Three.js star nebula (constellation lines) → Phase 7
+- [x] Star nebula (Canvas 2D constellation with archetype colors) ✓
 - [ ] Atmosphere effects (smoke particles, dancing lights) → Phase 7
 
 ## Phase 5: Matching + Invite (in progress)
@@ -96,8 +96,8 @@
 - [x] Ticket generation service (Pillow image, 5 style palettes, punch holes, scan lines)
 - [x] Ticket auto-generated on match accept (saved to R2 or local dev output/)
 - [x] TicketCard component (clip-path punch holes, scan lines, holographic hover, 3D tilt)
-- [ ] TearRitual (drag gesture to tear ticket from perforated line) → Phase 7c
-- [ ] Ticket invite page (/ticket/[inviteId] - deep link from email) → Phase 7c
+- [x] TearRitual (drag gesture to tear ticket from perforated line) ✓
+- [ ] Ticket invite page (/ticket/[inviteId] - deep link from email)
 
 ## Phase 6: Groups + Profile (in progress)
 - [x] Profile router (GET /profile, PATCH /profile)
@@ -163,13 +163,13 @@
 - [x] Email tasks (send_invite_email_task, send_accepted_email_task with retry)
 - [x] Docker compose: celery-worker + celery-beat services
 
-### 7c: UX Polish (in progress)
+### 7c: UX Polish ✓
 - [x] Landing page (hero, how it works 3 steps, CTA, Framer Motion fade-up, i18n)
-- [ ] Liquid DNA tube animation (Canvas/WebGL)
-- [ ] Three.js star nebula (each dot=movie, constellation lines)
-- [ ] Sound effects + atmosphere effects (smoke, dancing lights)
-- [ ] Card flip animation refinement
-- [ ] Tear gesture for ticket reveal
+- [x] Liquid DNA tube animation (Canvas 2D sine wave, genre-colored, round indicator dots)
+- [x] Star nebula (Canvas 2D constellation: radial genre stars, constellation lines, ambient particles, archetype-colored)
+- [x] Sound effects (SoundManager singleton, 6 sounds: pick/skip/flip/tear/complete/match, MuteToggle in layout)
+- [x] Card flip animation (rotateY 180° entrance, cardBack face, spring physics, staggered delay)
+- [x] Tear gesture for ticket reveal (TearRitual: drag-to-tear, perforation line, gap animation, hint arrow)
 
 ### 7d: Testing + Security (in progress)
 - [x] E2E tests: 17 passing (landing page 6, auth 5, protected routes 6)
@@ -217,9 +217,8 @@
 - **Bilingual movie titles** — backend has title_en + title_zh, seed page is locale-aware, other pages TBD
 
 ## Suggested Next Steps
-1. **Phase 7d (continue)** — Integration tests (backend API with real DB), frontend component tests
-2. **Phase 7c** — UX polish (liquid tube, Three.js nebula, tear gesture, sound effects)
-3. **Phase 5 remaining** — TearRitual, ticket invite deep link page
-4. **Phase 6 remaining** — Profile avatar upload (R2), profile CRUD tests
-5. **Pending** — 隱私政策頁面 + 註冊同意勾選
-6. **Phase 7e** — Deploy (Vercel + Railway + CI/CD)
+1. **Phase 5 remaining** — Ticket invite deep link page (/ticket/[inviteId])
+2. **Phase 6 remaining** — Profile avatar upload (R2), profile CRUD tests
+3. **Phase 7d (continue)** — Integration tests (backend API with real DB), frontend component tests
+4. **Pending** — 隱私政策頁面 + 註冊同意勾選
+5. **Phase 7e** — Deploy (Vercel + Railway + CI/CD)

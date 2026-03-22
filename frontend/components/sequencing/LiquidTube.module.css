@@ -1,0 +1,21 @@
+.tube {
+  position: absolute;
+  left: 1rem;
+  top: 0;
+  bottom: 0;
+  width: 40px;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.canvas {
+  width: 100%;
+  height: 100%;
+}
+
+/* Hide on small screens */
+@media (max-width: 768px) {
+  .tube {
+    display: none;
+  }
+}

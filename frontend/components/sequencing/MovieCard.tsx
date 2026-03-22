@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { useSequencingStore } from '@/stores/sequencingStore'
+import { soundManager } from '@/lib/sound'
 import styles from './MovieCard.module.css'
 
 // Genre-to-color mapping for ambient background
@@ -54,15 +55,25 @@ export default function MovieCard({ movie, onPick, side }: MovieCardProps) {
   return (
     <motion.div
       className={styles.card}
-      initial={{ rotateY: 90, opacity: 0 }}
-      animate={{ rotateY: 0, opacity: 1 }}
-      exit={{ scale: 0.8, opacity: 0 }}
-      transition={{ type: 'spring', stiffness: 200, damping: 20, delay: side === 'right' ? 0.1 : 0 }}
+      style={{ transformStyle: 'preserve-3d' }}
+      initial={{ rotateY: 180, y: 30, scale: 0.9, opacity: 0 }}
+      animate={{ rotateY: 0, y: 0, scale: 1, opacity: 1 }}
+      exit={{ y: -30, scale: 0.85, opacity: 0, rotateY: 12 }}
+      transition={{
+        type: 'spring',
+        stiffness: 120,
+        damping: 18,
+        delay: side === 'right' ? 0.12 : 0,
+      }}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       whileHover={{ scale: 1.02, y: -4 }}
-      onClick={() => onPick(pickMode)}
+      onClick={() => { soundManager.play('pick'); onPick(pickMode) }}
     >
+      {/* Card back face (visible during flip) */}
+      <div className={styles.cardBack}>
+        <i className="ri-dna-line" />
+      </div>
       <div className={styles.poster}>
         {movie.poster_url ? (
           <img src={movie.poster_url} alt={movie.title_en} className={styles.posterImage} />

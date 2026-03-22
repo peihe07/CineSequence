@@ -1,0 +1,117 @@
+.wrapper {
+  position: relative;
+  user-select: none;
+}
+
+/* Top half: sealed ticket preview */
+.topHalf {
+  position: relative;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-bottom: none;
+  overflow: hidden;
+}
+
+.sealed {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 2rem 1.5rem;
+  color: var(--foreground);
+}
+
+.sealed i {
+  font-size: 1.8rem;
+  color: var(--accent);
+  opacity: 0.6;
+}
+
+.sealedName {
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.sealedPct {
+  font-size: 0.75rem;
+  color: var(--accent);
+  letter-spacing: 0.05em;
+}
+
+/* Perforated line at the bottom of top half */
+.perforation {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--border-dark) 0px,
+    var(--border-dark) 6px,
+    transparent 6px,
+    transparent 12px
+  );
+}
+
+/* The widening gap during tear */
+.tearGap {
+  overflow: hidden;
+}
+
+/* Bottom half: drag handle (stub) */
+.bottomHalf {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-top: none;
+  cursor: grab;
+  touch-action: none;
+}
+
+.bottomHalf:active {
+  cursor: grabbing;
+}
+
+.stubContent {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 1rem 1.5rem;
+  color: var(--muted);
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+}
+
+.stubContent i {
+  color: var(--accent);
+  opacity: 0.5;
+}
+
+.stubLabel {
+  text-transform: uppercase;
+}
+
+/* Drag hint */
+.hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  margin-top: 0.6rem;
+  color: var(--muted-light);
+  font-size: 0.7rem;
+  pointer-events: none;
+}
+
+.hint i {
+  font-size: 0.9rem;
+}
+
+/* Reduced motion: skip animations */
+@media (prefers-reduced-motion: reduce) {
+  .hint {
+    animation: none;
+  }
+}

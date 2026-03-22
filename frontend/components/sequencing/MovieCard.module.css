@@ -1,4 +1,5 @@
 .card {
+  position: relative;
   display: flex;
   flex-direction: column;
   width: 260px;
@@ -7,6 +8,27 @@
   overflow: hidden;
   cursor: pointer;
   transition: box-shadow 0.2s ease;
+  transform-style: preserve-3d;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+/* Card back — visible during 180° flip entrance */
+.cardBack {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--foreground);
+  color: var(--background);
+  font-size: 3rem;
+  opacity: 0.15;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transform: rotateY(180deg);
+  z-index: 5;
+  pointer-events: none;
 }
 
 .card:hover {
