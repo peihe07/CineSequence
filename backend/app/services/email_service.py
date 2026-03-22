@@ -11,7 +11,7 @@ from app.config import settings
 
 logger = logging.getLogger(__name__)
 
-SENDER = "Cine Sequence <noreply@cinesequence.app>"
+SENDER = "Cine Sequence <noreply@cinesequence.xyz>"
 
 _resend_initialized = False
 
