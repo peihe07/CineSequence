@@ -18,9 +18,7 @@ export default function FlowGuard({ require, children }: FlowGuardProps) {
   const redirected = useRef(false)
   const [checked, setChecked] = useState(false)
 
-  const dnaResult = useDnaStore((s) => s.result)
   const fetchDnaResult = useDnaStore((s) => s.fetchResult)
-  const progress = useSequencingStore((s) => s.progress)
   const fetchProgress = useSequencingStore((s) => s.fetchProgress)
   const addToast = useToastStore((s) => s.addToast)
 
@@ -29,9 +27,15 @@ export default function FlowGuard({ require, children }: FlowGuardProps) {
 
     async function check() {
       if (require === 'sequencing') {
-        // Check if sequencing is completed
-        if (!progress) await fetchProgress()
-        const p = useSequencingStore.getState().progress
+        let p = useSequencingStore.getState().progress
+        if (!p) {
+          try {
+            p = await fetchProgress()
+          } catch {
+            if (!cancelled) setChecked(true)
+            return
+          }
+        }
         if (!cancelled && p && !p.completed && !redirected.current) {
           redirected.current = true
           addToast('info', t('guard.needSequencing'))
@@ -41,9 +45,15 @@ export default function FlowGuard({ require, children }: FlowGuardProps) {
       }
 
       if (require === 'dna') {
-        // Check if DNA is built
-        if (!dnaResult) await fetchDnaResult()
-        const r = useDnaStore.getState().result
+        let r = useDnaStore.getState().result
+        if (!r) {
+          try {
+            r = await fetchDnaResult()
+          } catch {
+            if (!cancelled) setChecked(true)
+            return
+          }
+        }
         if (!cancelled && !r && !redirected.current) {
           redirected.current = true
           addToast('info', t('guard.needDna'))
@@ -57,7 +67,7 @@ export default function FlowGuard({ require, children }: FlowGuardProps) {
 
     check()
     return () => { cancelled = true }
-  }, [require, progress, dnaResult, fetchProgress, fetchDnaResult, router, t, addToast])
+  }, [require, fetchProgress, fetchDnaResult, router, t, addToast])
 
   if (!checked) return null
 

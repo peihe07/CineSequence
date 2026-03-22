@@ -80,15 +80,19 @@ export const useAuthStore = create<AuthState>((set) => ({
     set({ isLoading: true })
     try {
       const user = await api<User>('/profile')
-      set({ user, isAuthenticated: true, isLoading: false })
+      set({ user, isAuthenticated: true, isLoading: false, error: null })
     } catch (err) {
       if (err instanceof ApiError && (err.status === 401 || err.status === 403)) {
-        set({ user: null, isAuthenticated: false, isLoading: false })
+        set({ user: null, isAuthenticated: false, isLoading: false, error: null })
         clearToken()
         return
       }
 
-      set({ isLoading: false })
+      set({
+        isLoading: false,
+        error: err instanceof Error ? err.message : 'Failed to fetch profile',
+      })
+      throw err
     }
   },
 

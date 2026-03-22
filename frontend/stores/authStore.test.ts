@@ -65,12 +65,13 @@ describe('authStore', () => {
     })
     apiMock.mockRejectedValue(new MockApiError(500, 'Server error'))
 
-    await useAuthStore.getState().fetchProfile()
+    await expect(useAuthStore.getState().fetchProfile()).rejects.toThrow('Server error')
 
     expect(clearTokenMock).not.toHaveBeenCalled()
     expect(useAuthStore.getState().isAuthenticated).toBe(true)
     expect(useAuthStore.getState().user?.email).toBe('u@test.com')
     expect(useAuthStore.getState().isLoading).toBe(false)
+    expect(useAuthStore.getState().error).toBe('Server error')
   })
 
   it('calls backend logout and clears auth state', async () => {

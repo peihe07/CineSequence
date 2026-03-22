@@ -47,8 +47,8 @@ interface SequencingState {
   error: string | null
   ambientColor: string | null
 
-  fetchPair: () => Promise<void>
-  fetchProgress: () => Promise<void>
+  fetchPair: () => Promise<Pair>
+  fetchProgress: () => Promise<Progress>
   submitPick: (tmdbId: number, pickMode: 'watched' | 'attracted', responseTimeMs?: number) => Promise<void>
   skip: (responseTimeMs?: number) => Promise<void>
   setSeedMovie: (tmdbId: number) => Promise<void>
@@ -71,17 +71,23 @@ export const useSequencingStore = create<SequencingState>((set, get) => ({
     try {
       const pair = await api<Pair>('/sequencing/pair')
       set({ currentPair: pair, isLoading: false })
+      return pair
     } catch (err) {
       set({ isLoading: false, error: err instanceof Error ? err.message : 'Failed to fetch pair' })
+      throw err
     }
   },
 
   fetchProgress: async () => {
     try {
       const progress = await api<Progress>('/sequencing/progress')
-      set({ progress })
-    } catch {
-      // Silent fail for progress
+      set({ progress, error: null })
+      return progress
+    } catch (err) {
+      set({
+        error: err instanceof Error ? err.message : 'Failed to fetch sequencing progress',
+      })
+      throw err
     }
   },
 
@@ -137,7 +143,7 @@ export const useSequencingStore = create<SequencingState>((set, get) => ({
   },
 
   setSeedMovie: async (tmdbId) => {
-    set({ isLoading: true })
+    set({ isLoading: true, error: null })
     try {
       await api('/sequencing/seed-movie', {
         method: 'POST',
@@ -146,6 +152,7 @@ export const useSequencingStore = create<SequencingState>((set, get) => ({
       set({ isLoading: false })
     } catch (err) {
       set({ isLoading: false, error: err instanceof Error ? err.message : 'Failed to set seed movie' })
+      throw err
     }
   },
 

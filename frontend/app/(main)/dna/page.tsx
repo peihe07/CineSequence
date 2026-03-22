@@ -3,6 +3,7 @@
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
+import { ApiError } from '@/lib/api'
 import { useDnaStore } from '@/stores/dnaStore'
 import { useI18n } from '@/lib/i18n'
 import ArchetypeCard from '@/components/dna/ArchetypeCard'
@@ -28,9 +29,10 @@ function DnaResultContent() {
   const { result, isBuilding, isLoading, error, buildDna, fetchResult } = useDnaStore()
 
   useEffect(() => {
-    // Try to fetch existing result first; if 404, trigger build
-    fetchResult().catch(() => {
-      buildDna()
+    void fetchResult().catch((err) => {
+      if (err instanceof ApiError && err.status === 404) {
+        void buildDna()
+      }
     })
   }, [fetchResult, buildDna])
 

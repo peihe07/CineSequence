@@ -25,24 +25,28 @@ export default function SeedMoviePage() {
   const [selected, setSelected] = useState<SearchResult | null>(null)
   const [isSearching, setIsSearching] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [searchError, setSearchError] = useState<string | null>(null)
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const { setSeedMovie } = useSequencingStore()
+  const { setSeedMovie, error } = useSequencingStore()
 
   const search = useCallback(async (q: string) => {
     if (q.length < 2) {
       setResults([])
+      setSearchError(null)
       return
     }
     setIsSearching(true)
     try {
       const data = await api<SearchResult[]>(`/sequencing/search?q=${encodeURIComponent(q)}`)
       setResults(data)
-    } catch {
+      setSearchError(null)
+    } catch (err) {
       setResults([])
+      setSearchError(err instanceof Error ? err.message : t('common.error'))
     } finally {
       setIsSearching(false)
     }
-  }, [])
+  }, [t])
 
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current)
@@ -99,6 +103,8 @@ export default function SeedMoviePage() {
             />
             {isSearching && <span className={styles.spinner} />}
           </div>
+
+          {searchError && <p className={styles.errorText}>{searchError}</p>}
 
           <AnimatePresence>
             {results.length > 0 && (
@@ -170,6 +176,7 @@ export default function SeedMoviePage() {
         )}
 
         <div className={styles.actions}>
+          {error && <p className={styles.errorText}>{error}</p>}
           <Button
             variant="primary"
             size="lg"

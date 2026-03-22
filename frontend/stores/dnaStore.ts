@@ -35,7 +35,7 @@ interface DnaState {
   error: string | null
 
   buildDna: () => Promise<void>
-  fetchResult: () => Promise<void>
+  fetchResult: () => Promise<DnaResult>
 }
 
 export const useDnaStore = create<DnaState>((set, get) => ({
@@ -65,11 +65,13 @@ export const useDnaStore = create<DnaState>((set, get) => ({
     try {
       const result = await api<DnaResult>('/dna/result')
       set({ result, isLoading: false })
+      return result
     } catch (err) {
       set({
         isLoading: false,
         error: err instanceof Error ? err.message : 'Failed to fetch DNA result',
       })
+      throw err
     }
   },
 }))

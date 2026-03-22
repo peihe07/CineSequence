@@ -1,8 +1,10 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { AnimatePresence } from 'framer-motion'
+import Button from '@/components/ui/Button'
+import { useI18n } from '@/lib/i18n'
 import { useSequencingStore } from '@/stores/sequencingStore'
 import SwipePair from '@/components/sequencing/SwipePair'
 import LiquidTube from '@/components/sequencing/LiquidTube'
@@ -14,12 +16,15 @@ import styles from './page.module.css'
 
 export default function SequencingPage() {
   const router = useRouter()
+  const { t } = useI18n()
   const roundStartTime = useRef<number>(Date.now())
+  const [isBootstrapping, setIsBootstrapping] = useState(true)
   const {
     currentPair,
     progress,
     liveTags,
     isLoading,
+    error,
     ambientColor,
     fetchPair,
     fetchProgress,
@@ -27,17 +32,25 @@ export default function SequencingPage() {
     skip,
   } = useSequencingStore()
 
-  useEffect(() => {
-    fetchProgress().then(() => {
-      const { progress } = useSequencingStore.getState()
-      // Redirect to seed movie page if no seed movie is set and not started yet
+  const bootstrapSequencing = useCallback(async () => {
+    setIsBootstrapping(true)
+    try {
+      const progress = await fetchProgress()
       if (progress && !progress.seed_movie_tmdb_id && progress.round_number === 1) {
         router.push('/sequencing/seed')
         return
       }
-      fetchPair()
-    })
-  }, [fetchProgress, fetchPair, router])
+      await fetchPair()
+    } catch {
+      // Store state already captures the initialization error.
+    } finally {
+      setIsBootstrapping(false)
+    }
+  }, [fetchPair, fetchProgress, router])
+
+  useEffect(() => {
+    void bootstrapSequencing()
+  }, [bootstrapSequencing])
 
   useEffect(() => {
     roundStartTime.current = Date.now()
@@ -64,6 +77,19 @@ export default function SequencingPage() {
 
   const roundNumber = progress?.round_number ?? currentPair?.round_number ?? 1
   const phase = progress?.phase ?? currentPair?.phase ?? 1
+
+  if (error && !currentPair && !isBootstrapping) {
+    return (
+      <main className={styles.container}>
+        <div className={styles.errorState}>
+          <p>{error}</p>
+          <Button variant="secondary" onClick={() => void bootstrapSequencing()}>
+            {t('error.retry')}
+          </Button>
+        </div>
+      </main>
+    )
+  }
 
   return (
     <main

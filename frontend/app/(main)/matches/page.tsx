@@ -189,7 +189,7 @@ function MatchesContent() {
   const searchParams = useSearchParams()
   const { t } = useI18n()
   const {
-    matches, isLoading, isDiscovering,
+    matches, isLoading, isDiscovering, error,
     fetchMatches, discoverMatches, sendInvite, respondToInvite,
   } = useMatchStore()
 
@@ -199,27 +199,40 @@ function MatchesContent() {
     match_age_max: null,
     pure_taste_match: false,
   })
+  const [prefsError, setPrefsError] = useState<string | null>(null)
 
   useEffect(() => {
-    fetchMatches()
-    // Load current preferences from profile
-    api<MatchPrefs & Record<string, unknown>>('/profile').then((p) => {
-      setPrefs({
-        match_gender_pref: p.match_gender_pref,
-        match_age_min: p.match_age_min,
-        match_age_max: p.match_age_max,
-        pure_taste_match: p.pure_taste_match,
-      })
-    })
+    void fetchMatches()
+
+    async function loadPrefs() {
+      try {
+        const p = await api<MatchPrefs & Record<string, unknown>>('/profile')
+        setPrefs({
+          match_gender_pref: p.match_gender_pref,
+          match_age_min: p.match_age_min,
+          match_age_max: p.match_age_max,
+          pure_taste_match: p.pure_taste_match,
+        })
+        setPrefsError(null)
+      } catch (err) {
+        setPrefsError(err instanceof Error ? err.message : 'Failed to load match preferences')
+      }
+    }
+
+    void loadPrefs()
   }, [fetchMatches])
 
   const savePrefs = useCallback((updated: Partial<MatchPrefs>) => {
+    const previous = prefs
     const next = { ...prefs, ...updated }
     setPrefs(next)
-    // Persist to profile (fire-and-forget)
-    api('/profile', {
+    setPrefsError(null)
+    void api('/profile', {
       method: 'PATCH',
       body: JSON.stringify(updated),
+    }).catch((err) => {
+      setPrefs(previous)
+      setPrefsError(err instanceof Error ? err.message : 'Failed to save match preferences')
     })
   }, [prefs])
 
@@ -248,6 +261,10 @@ function MatchesContent() {
             {isDiscovering ? t('matches.discovering') : t('matches.discover')}
           </button>
         </div>
+
+        {(prefsError || error) && (
+          <p className={styles.errorText}>{prefsError || error}</p>
+        )}
 
         <MatchFilter prefs={prefs} onChange={savePrefs} />
 
