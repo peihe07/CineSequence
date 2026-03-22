@@ -12,9 +12,9 @@
 | Phase 4: DNA Builder + Result | Done | 80% |
 | Phase 5: Matching + Invite | Done | 100% |
 | Phase 6: Groups + Profile | Done | 95% |
-| Phase 7: Polish + Infrastructure | In progress | 85% |
+| Phase 7: Polish + Infrastructure | In progress | 90% |
 | Cross-cutting | Done | 95% |
-| **Overall** | | **~90%** |
+| **Overall** | | **~92%** |
 
 ---
 
@@ -109,7 +109,7 @@
 - [x] Profile: avatar upload (POST /profile/avatar, R2 prod / local dev, 2MB limit, JPEG/PNG/WebP)
 - [x] Tests: group affinity computation + threshold boundaries (12 unit tests)
 - [x] Tests: ticket image generation across 5 style palettes (12 unit tests)
-- [ ] Tests: profile CRUD
+- [x] Tests: profile CRUD (12 integration tests)
 
 ## Phase 7: Polish + Infrastructure (in progress)
 
@@ -203,8 +203,9 @@
 - [x] Fix: CORS allow_credentials=False (Bearer token auth, no cookies needed)
 - [x] Fix: production error handler hides internal details
 - [x] Fix: docs endpoint disabled in production
-- [ ] Integration tests (backend API with real DB)
-- [ ] Frontend component tests (Vitest + Testing Library)
+- [x] Integration tests: admin dashboard (10 tests) + profile CRUD (12 tests)
+- [x] Frontend component tests: toast (6), ConfirmDialog (6), FlowGuard (5), Onboarding (4) = 21 tests
+- [x] Fix: email test updated for ticket deep link URL
 
 ### 7e: Admin Dashboard + Monitoring (in progress)
 - [x] Admin role field on User model + Alembic migration
