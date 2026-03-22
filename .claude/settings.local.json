@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "WebFetch(domain:github.com)",
-      "Bash(curl -L -o /Users/peihe/Personal_Projects/movie-dna/frontend/public/fonts/jf-openhuninn-2.1.ttf \"https://github.com/justfont/open-huninn-font/releases/download/v2.1/jf-openhuninn-2.1.ttf\")"
+      "Bash(curl -L -o /Users/peihe/Personal_Projects/movie-dna/frontend/public/fonts/jf-openhuninn-2.1.ttf \"https://github.com/justfont/open-huninn-font/releases/download/v2.1/jf-openhuninn-2.1.ttf\")",
+      "Bash(docker exec:*)"
     ]
   }
 }
