@@ -2,15 +2,17 @@ import logging
 from contextlib import asynccontextmanager
 from urllib.parse import urlsplit, urlunsplit
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, HTTPException, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from slowapi.util import get_remote_address
+from sqlalchemy import text
 from starlette.middleware.base import BaseHTTPMiddleware
 
 from app.config import settings
+from app.deps import engine
 
 # Configure app-level logging so services (email, matcher, etc.) output INFO
 logging.basicConfig(level=logging.INFO)
@@ -111,6 +113,25 @@ if settings.environment == "development":
 @app.get("/health")
 async def health():
     return {"status": "ok"}
+
+
+async def check_database_readiness() -> None:
+    async with engine.connect() as conn:
+        await conn.execute(text("SELECT 1"))
+
+
+@app.get("/readiness")
+async def readiness():
+    try:
+        await check_database_readiness()
+    except Exception:
+        logging.getLogger("app").exception("Readiness check failed")
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Database not ready",
+        )
+
+    return {"status": "ready", "checks": {"database": "ok"}}
 
 
 # Production: hide internal error details

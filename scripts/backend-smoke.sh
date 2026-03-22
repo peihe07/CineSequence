@@ -16,6 +16,23 @@ if [ "$health_body" != '{"status":"ok"}' ]; then
   exit 1
 fi
 
+readiness_code="$(curl -sS -o /tmp/cine-readiness.json -w '%{http_code}' "$API_URL/readiness")"
+if [ "$readiness_code" != "200" ]; then
+  echo "Readiness check failed with status $readiness_code"
+  cat /tmp/cine-readiness.json
+  exit 1
+fi
+
+readiness_body="$(cat /tmp/cine-readiness.json)"
+case "$readiness_body" in
+  *'"status":"ready"'*'"database":"ok"'*)
+    ;;
+  *)
+    echo "Unexpected readiness response: $readiness_body"
+    exit 1
+    ;;
+esac
+
 auth_code="$(curl -sS -o /tmp/cine-auth.json -w '%{http_code}' \
   -H 'Content-Type: application/json' \
   -d '{"email":"smoke-test@example.com"}' \
