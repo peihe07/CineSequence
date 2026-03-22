@@ -39,6 +39,9 @@ export default function LiquidTube({
     canvas.height = rect.height * dpr
     ctx.scale(dpr, dpr)
 
+    const css = getComputedStyle(document.documentElement)
+    const borderDark = css.getPropertyValue('--border-dark').trim() || '#c5c0b7'
+
     const w = rect.width
     const h = rect.height
     const color = liquidColor || DEFAULT_COLOR
@@ -61,7 +64,7 @@ export default function LiquidTube({
       ctx.clearRect(0, 0, w, h)
 
       // Tube outline
-      ctx.strokeStyle = 'var(--border-dark)'
+      ctx.strokeStyle = borderDark
       ctx.lineWidth = 1
       ctx.beginPath()
       ctx.roundRect(tubeX, tubeTop, tubeW, tubeH, 10)
