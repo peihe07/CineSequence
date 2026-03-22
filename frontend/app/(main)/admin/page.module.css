@@ -1,0 +1,218 @@
+.container {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  padding: 4rem 2rem;
+}
+
+.content {
+  width: 100%;
+  max-width: 720px;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.title {
+  font-family: var(--font-sans);
+  font-size: 1.4rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.forbidden {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 4rem 0;
+  color: var(--muted);
+  text-align: center;
+}
+
+/* Stats grid */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 1rem;
+}
+
+.statCard {
+  padding: 1.2rem;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.statValue {
+  font-family: var(--font-sans);
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--foreground);
+  line-height: 1;
+}
+
+.statLabel {
+  font-size: 0.65rem;
+  font-weight: 500;
+  color: var(--muted);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* Section */
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.sectionTitle {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--muted);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* Funnel */
+.funnel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.funnelRow {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.funnelBar {
+  height: 24px;
+  background: var(--accent-light);
+  border-left: 3px solid var(--accent);
+  display: flex;
+  align-items: center;
+  padding: 0 0.6rem;
+  min-width: 40px;
+  transition: width 0.4s ease;
+}
+
+.funnelCount {
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.funnelLabel {
+  font-size: 0.75rem;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+/* Breakdown table */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th,
+.table td {
+  padding: 0.5rem 0.8rem;
+  text-align: left;
+  font-size: 0.8rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.table th {
+  font-size: 0.65rem;
+  font-weight: 500;
+  color: var(--muted);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.table td:last-child {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  text-align: right;
+}
+
+/* Chart placeholder */
+.chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 120px;
+  padding-top: 0.5rem;
+}
+
+.chartBar {
+  flex: 1;
+  background: var(--accent);
+  opacity: 0.7;
+  min-height: 2px;
+  transition: height 0.3s ease;
+}
+
+.chartBar:hover {
+  opacity: 1;
+}
+
+/* Loading */
+.loading {
+  display: flex;
+  justify-content: center;
+  padding: 4rem 0;
+  color: var(--muted);
+}
+
+/* API usage */
+.apiGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.apiCard {
+  padding: 1rem;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.apiCardTitle {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--foreground);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.apiRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+}
+
+.apiRow span:first-child {
+  color: var(--muted);
+}
+
+.apiRow span:last-child {
+  font-family: var(--font-sans);
+  font-weight: 600;
+}
+
+.apiTotal {
+  padding-top: 0.4rem;
+  border-top: 1px solid var(--border);
+  font-weight: 600;
+}
