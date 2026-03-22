@@ -1,0 +1,101 @@
+import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+
+const {
+  replaceMock,
+  fetchProfileMock,
+  authState,
+} = vi.hoisted(() => ({
+  replaceMock: vi.fn(),
+  fetchProfileMock: vi.fn(),
+  authState: {
+    isAuthenticated: false,
+    isLoading: false,
+  },
+}))
+
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({ replace: replaceMock }),
+}))
+
+vi.mock('@/stores/authStore', () => ({
+  useAuthStore: () => ({
+    ...authState,
+    fetchProfile: fetchProfileMock,
+  }),
+}))
+
+vi.mock('@/lib/i18n', () => ({
+  useI18n: () => ({
+    t: (key: string) => {
+      const dict: Record<string, string> = {
+        'common.error': 'Something went wrong',
+        'error.retry': 'Retry',
+      }
+      return dict[key] ?? key
+    },
+  }),
+}))
+
+vi.mock('@/components/ui/NavBar', () => ({
+  default: () => <div>NavBar</div>,
+}))
+
+vi.mock('@/components/ui/MuteToggle', () => ({
+  default: () => <button type="button">Mute</button>,
+}))
+
+import MainLayout from './layout'
+
+describe('MainLayout', () => {
+  beforeEach(() => {
+    replaceMock.mockReset()
+    fetchProfileMock.mockReset()
+    authState.isAuthenticated = false
+    authState.isLoading = false
+  })
+
+  afterEach(() => {
+    cleanup()
+  })
+
+  it('shows a retry state instead of redirecting when the auth check fails', async () => {
+    fetchProfileMock.mockRejectedValue(new Error('Profile unavailable'))
+
+    render(
+      <MainLayout>
+        <p>Protected content</p>
+      </MainLayout>,
+    )
+
+    expect(await screen.findByText('Profile unavailable')).toBeTruthy()
+    expect(replaceMock).not.toHaveBeenCalled()
+    expect(screen.queryByText('Protected content')).toBeNull()
+  })
+
+  it('retries the auth check when retry is clicked', async () => {
+    fetchProfileMock
+      .mockRejectedValueOnce(new Error('Profile unavailable'))
+      .mockImplementationOnce(async () => {
+        authState.isAuthenticated = true
+      })
+
+    const { rerender } = render(
+      <MainLayout>
+        <p>Protected content</p>
+      </MainLayout>,
+    )
+
+    fireEvent.click(await screen.findByRole('button', { name: 'Retry' }))
+    rerender(
+      <MainLayout>
+        <p>Protected content</p>
+      </MainLayout>,
+    )
+
+    await waitFor(() => {
+      expect(screen.getByText('Protected content')).toBeTruthy()
+    })
+    expect(fetchProfileMock.mock.calls.length).toBeGreaterThanOrEqual(2)
+  })
+})
