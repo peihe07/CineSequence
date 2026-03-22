@@ -11,11 +11,12 @@ interface TearRitualProps {
   ticketImageUrl: string | null
   partnerName: string
   similarityScore: number
+  onTear?: () => void
 }
 
 const TEAR_THRESHOLD = 80
 
-export default function TearRitual({ ticketImageUrl, partnerName, similarityScore }: TearRitualProps) {
+export default function TearRitual({ ticketImageUrl, partnerName, similarityScore, onTear }: TearRitualProps) {
   const { t } = useI18n()
   const [isTorn, setIsTorn] = useState(false)
   const [isDragging, setIsDragging] = useState(false)
@@ -35,6 +36,7 @@ export default function TearRitual({ ticketImageUrl, partnerName, similarityScor
     if (info.offset.y > TEAR_THRESHOLD) {
       soundManager.play('tear')
       setIsTorn(true)
+      onTear?.()
     }
     dragY.set(0)
     setIsDragging(false)
