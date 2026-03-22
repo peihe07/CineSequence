@@ -15,3 +15,10 @@
 - Source: Google Fonts (https://fonts.google.com/specimen/Silkscreen)
 - License: SIL Open Font License 1.1 (OFL-1.1)
 - Usage: Logo and display titles
+
+## Gyoza SemiBold
+- Author: Dharmas Foundry
+- Source: https://www.dafont.com/gyoza.font
+- License: Free for personal use (demo); commercial and corporate use require a paid license
+- Commercial license: https://dharmasstudio.com/gyoza
+- Usage: display/title font
