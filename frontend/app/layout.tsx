@@ -4,6 +4,7 @@ import 'remixicon/fonts/remixicon.css'
 import './globals.css'
 import { I18nProvider } from '@/lib/i18n'
 import FloatingLocaleToggle from '@/components/ui/FloatingLocaleToggle'
+import ToastContainer from '@/components/ui/Toast'
 
 const huninn = localFont({
   src: '../public/fonts/jf-openhuninn-2.1.ttf',
@@ -27,6 +28,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className={`${huninn.variable} ${properScript.variable}`}>
         <I18nProvider>
           <FloatingLocaleToggle />
+          <ToastContainer />
           {children}
         </I18nProvider>
       </body>
