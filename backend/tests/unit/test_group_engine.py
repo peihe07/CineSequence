@@ -5,6 +5,7 @@ from app.services.group_engine import (
     TAG_INDEX,
     TAG_KEYS,
     compute_group_affinity,
+    should_activate_group,
 )
 
 
@@ -101,3 +102,11 @@ class TestThresholdBoundary:
         vector[TAG_INDEX["mindfuck"]] = AUTO_ASSIGN_THRESHOLD - 0.01
         score = compute_group_affinity(vector, ["mindfuck"])
         assert score < AUTO_ASSIGN_THRESHOLD
+
+
+class TestShouldActivateGroup:
+    def test_returns_true_at_threshold(self):
+        assert should_activate_group(20, 20) is True
+
+    def test_returns_false_below_threshold(self):
+        assert should_activate_group(19, 20) is False

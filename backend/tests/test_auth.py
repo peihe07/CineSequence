@@ -5,7 +5,10 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 from httpx import AsyncClient
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.models.user import User
 from app.services.auth_utils import (
     create_access_token,
     create_magic_link_token,
@@ -78,7 +81,9 @@ class TestRegisterEndpoint:
 @pytest.mark.asyncio
 class TestVerifyEndpoint:
     @patch("app.routers.auth.send_magic_link", new_callable=AsyncMock)
-    async def test_verify_success(self, mock_send, client: AsyncClient):
+    async def test_verify_success(
+        self, mock_send, client: AsyncClient, db_session: AsyncSession
+    ):
         # Register first
         await client.post("/auth/register", json={
             "email": "verify@test.com",
@@ -86,14 +91,65 @@ class TestVerifyEndpoint:
             "gender": "female",
         })
 
-        # Create a valid token
-        token, _ = create_magic_link_token("verify@test.com")
+        result = await db_session.execute(
+            select(User).where(User.email == "verify@test.com")
+        )
+        token = result.scalar_one().magic_link_token
 
         response = await client.post("/auth/verify", json={"token": token})
         assert response.status_code == 200
         data = response.json()
         assert "access_token" in data
         assert data["token_type"] == "bearer"
+
+    @patch("app.routers.auth.send_magic_link", new_callable=AsyncMock)
+    async def test_verify_rejects_reused_token(
+        self, mock_send, client: AsyncClient, db_session: AsyncSession
+    ):
+        await client.post("/auth/register", json={
+            "email": "reused@test.com",
+            "name": "Reuse",
+            "gender": "female",
+        })
+        result = await db_session.execute(
+            select(User).where(User.email == "reused@test.com")
+        )
+        token = result.scalar_one().magic_link_token
+
+        first = await client.post("/auth/verify", json={"token": token})
+        assert first.status_code == 200
+
+        second = await client.post("/auth/verify", json={"token": token})
+        assert second.status_code == 401
+
+    @patch("app.routers.auth.send_magic_link", new_callable=AsyncMock)
+    async def test_verify_rejects_superseded_token(
+        self, mock_send, client: AsyncClient, db_session: AsyncSession
+    ):
+        await client.post("/auth/register", json={
+            "email": "superseded@test.com",
+            "name": "Superseded",
+            "gender": "female",
+        })
+        result = await db_session.execute(
+            select(User).where(User.email == "superseded@test.com")
+        )
+        old_token = result.scalar_one().magic_link_token
+
+        login_response = await client.post("/auth/login", json={"email": "superseded@test.com"})
+        assert login_response.status_code == 200
+
+        result = await db_session.execute(
+            select(User).where(User.email == "superseded@test.com")
+        )
+        new_token = result.scalar_one().magic_link_token
+        assert new_token != old_token
+
+        old_verify = await client.post("/auth/verify", json={"token": old_token})
+        assert old_verify.status_code == 401
+
+        new_verify = await client.post("/auth/verify", json={"token": new_token})
+        assert new_verify.status_code == 200
 
     async def test_verify_invalid_token(self, client: AsyncClient):
         response = await client.post("/auth/verify", json={"token": "bad-token"})
@@ -129,14 +185,19 @@ class TestProtectedEndpoint:
         assert response.status_code == 403
 
     @patch("app.routers.auth.send_magic_link", new_callable=AsyncMock)
-    async def test_valid_token_succeeds(self, mock_send, client: AsyncClient):
+    async def test_valid_token_succeeds(
+        self, mock_send, client: AsyncClient, db_session: AsyncSession
+    ):
         # Register + verify to get a token
         await client.post("/auth/register", json={
             "email": "auth@test.com",
             "name": "Auth User",
             "gender": "other",
         })
-        token, _ = create_magic_link_token("auth@test.com")
+        result = await db_session.execute(
+            select(User).where(User.email == "auth@test.com")
+        )
+        token = result.scalar_one().magic_link_token
         verify_resp = await client.post("/auth/verify", json={"token": token})
         access_token = verify_resp.json()["access_token"]
 

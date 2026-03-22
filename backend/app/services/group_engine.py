@@ -24,6 +24,11 @@ TAG_INDEX = {key: i for i, key in enumerate(TAG_KEYS)}
 AUTO_ASSIGN_THRESHOLD = 0.2
 
 
+def should_activate_group(member_count: int, min_members_to_activate: int) -> bool:
+    """Return whether a group should be active for the current member count."""
+    return member_count >= min_members_to_activate
+
+
 def compute_group_affinity(tag_vector: list[float], primary_tags: list[str]) -> float:
     """Compute affinity score between a user's tag_vector and a group's primary_tags.
 
@@ -85,9 +90,7 @@ async def auto_assign_groups(
         count_result = await db.execute(count_q)
         new_count = count_result.scalar() or 0
         group.member_count = new_count
-        # Auto-activate when threshold reached
-        if new_count >= group.min_members_to_activate:
-            group.is_active = True
+        group.is_active = should_activate_group(new_count, group.min_members_to_activate)
 
     await db.commit()
     return assigned
@@ -179,8 +182,7 @@ async def join_group(
     )
     count_result = await db.execute(count_q)
     group.member_count = count_result.scalar() or 0
-    if group.member_count >= group.min_members_to_activate:
-        group.is_active = True
+    group.is_active = should_activate_group(group.member_count, group.min_members_to_activate)
 
     await db.commit()
     await db.refresh(group)
@@ -213,6 +215,7 @@ async def leave_group(
     )
     count_result = await db.execute(count_q)
     group.member_count = count_result.scalar() or 0
+    group.is_active = should_activate_group(group.member_count, group.min_members_to_activate)
 
     await db.commit()
     await db.refresh(group)

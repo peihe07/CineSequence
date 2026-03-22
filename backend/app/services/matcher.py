@@ -58,6 +58,7 @@ async def find_matches(
         )
         .join(User, User.id == DnaProfile.user_id)
         .where(DnaProfile.user_id.notin_(exclude_ids))
+        .where(DnaProfile.is_active == True)  # noqa: E712
         .where(User.sequencing_status == "completed")
     )
 
