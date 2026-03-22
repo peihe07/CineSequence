@@ -68,6 +68,12 @@ const translations: Record<Locale, Record<string, string>> = {
     'common.confirm': '確認',
     'common.cancel': '取消',
 
+    // Nav
+    'nav.sequencing': '序列',
+    'nav.dna': 'DNA',
+    'nav.matches': '配對',
+    'nav.profile': '檔案',
+
     // Auth
     'auth.signIn': '登入',
     'auth.signUp': '註冊',
@@ -203,6 +209,12 @@ const translations: Record<Locale, Record<string, string>> = {
     'common.back': 'Back',
     'common.confirm': 'Confirm',
     'common.cancel': 'Cancel',
+
+    // Nav
+    'nav.sequencing': 'Sequence',
+    'nav.dna': 'DNA',
+    'nav.matches': 'Matches',
+    'nav.profile': 'Profile',
 
     // Auth
     'auth.signIn': 'Sign in',

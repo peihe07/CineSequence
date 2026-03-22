@@ -1,6 +1,6 @@
 # Cine Sequence - Development Progress
 
-> Last updated: 2026-03-21
+> Last updated: 2026-03-22
 
 ## Overall Status
 
@@ -12,9 +12,9 @@
 | Phase 4: DNA Builder + Result | Done | 80% |
 | Phase 5: Matching + Invite | Partial | 75% |
 | Phase 6: Groups + Profile | Partial | 40% |
-| Phase 7: Polish + Infrastructure | In progress | 30% |
+| Phase 7: Polish + Infrastructure | In progress | 40% |
 | Cross-cutting | Done | 95% |
-| **Overall** | | **~55%** |
+| **Overall** | | **~60%** |
 
 ---
 
@@ -109,7 +109,7 @@
 
 ## Phase 7: Polish + Infrastructure (in progress)
 
-### 7a: End-to-End Integration (in progress — 2026-03-21)
+### 7a: End-to-End Integration (in progress — 2026-03-22)
 - [x] Docker compose up — all 4 services running (postgres, redis, backend, frontend)
 - [x] Alembic migration at head (ed7b2fe54c0a)
 - [x] Health check: backend /health OK, frontend 200
@@ -135,13 +135,15 @@
 - [x] Matches discover: 2nd user created + DNA built, discover returns match (similarity 0.6933) ✓
 - [x] Fix: matcher _compute_shared_genres ValueError (int cast on Chinese genre strings) → use strings
 - [x] Fix: Match model MissingGreenlet → added lazy="selectin" to user_a/user_b relationships
-- [ ] Matches invite/respond flow (match record exists, ready to test)
+- [x] Matches invite: User A sends invite → status "invited" ✓
+- [x] Matches respond: User B accepts → status "accepted" ✓
+- [x] Full match flow verified: discover → invite → respond (accept) ✓
 - [x] All 9 frontend routes return 200 (/, /login, /register, /verify, /sequencing, /sequencing/seed, /sequencing/complete, /dna, /matches, /profile)
 - [x] Frontend API client uses correct paths (verified all stores + page-level api calls)
 - [x] No frontend build errors or runtime errors
 - [ ] Frontend browser walkthrough (manual test in browser — needs Gemini quota for full flow)
-- [ ] Route guard (redirect unauthenticated users to /login)
-- [ ] Nav bar for authenticated users
+- [x] Route guard: (main) layout redirects unauthenticated users to /login ✓
+- [x] Nav bar: bottom tab navigation (Sequence, DNA, Matches, Profile) with i18n ✓
 
 ### 7b: Celery Async Tasks
 - [ ] Celery app configuration (Redis broker/backend, autodiscovery)
@@ -189,8 +191,7 @@
 - **Bilingual movie titles** — backend has title_en + title_zh, seed page is locale-aware, other pages TBD
 
 ## Suggested Next Steps
-1. **Phase 7a (continue)** — Matches invite/respond flow + frontend browser walkthrough
-2. **Phase 7a (continue)** — Route guard + nav bar
+1. **Phase 7a (continue)** — Frontend browser walkthrough (manual test in browser)
 3. **Phase 5 remaining** — Ticket generation + TicketCard + TearRitual
 4. **Phase 6 remaining** — Groups engine + theaters pages
 5. **Phase 7b** — Celery async tasks
