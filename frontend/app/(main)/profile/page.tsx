@@ -2,35 +2,27 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
+import { useRouter } from 'next/navigation'
 import { api, apiUpload } from '@/lib/api'
 import { useI18n } from '@/lib/i18n'
+import { useAuthStore } from '@/stores/authStore'
+import ProfileBasicsCard from '@/components/profile/ProfileBasicsCard'
+import ProfileHeader from '@/components/profile/ProfileHeader'
+import ProfilePreferencesCard from '@/components/profile/ProfilePreferencesCard'
+import ProfileSequencingCard from '@/components/profile/ProfileSequencingCard'
+import type { Profile } from '@/components/profile/types'
 import styles from './page.module.css'
-
-interface Profile {
-  id: string
-  email: string
-  name: string
-  avatar_url: string | null
-  gender: string
-  birth_year: number | null
-  region: string
-  match_gender_pref: string | null
-  match_age_min: number | null
-  match_age_max: number | null
-  pure_taste_match: boolean
-  sequencing_status: string
-  archetype_id: string | null
-  personality_reading: string | null
-  ticket_style: string | null
-}
 
 export default function ProfilePage() {
   const { t } = useI18n()
+  const router = useRouter()
+  const logout = useAuthStore((state) => state.logout)
   const [profile, setProfile] = useState<Profile | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [isEditing, setIsEditing] = useState(false)
   const [editName, setEditName] = useState('')
   const [saving, setSaving] = useState(false)
+  const [isLoggingOut, setIsLoggingOut] = useState(false)
   const [uploadingAvatar, setUploadingAvatar] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
@@ -104,6 +96,16 @@ export default function ProfilePage() {
     }
   }
 
+  const handleLogout = async () => {
+    setIsLoggingOut(true)
+    try {
+      await logout()
+      router.replace('/login')
+    } finally {
+      setIsLoggingOut(false)
+    }
+  }
+
   if (isLoading) {
     return (
       <div className={styles.container}>
@@ -130,134 +132,55 @@ export default function ProfilePage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
       >
-        <h1 className={styles.title}>{t('profile.title')}</h1>
+        <ProfileHeader
+          title={t('profile.title')}
+          logoutLabel={t('profile.logout')}
+          loggingOutLabel={t('profile.loggingOut')}
+          isLoggingOut={isLoggingOut}
+          onLogout={handleLogout}
+        />
 
-        <div className={styles.card}>
-          <div className={styles.avatarSection}>
-            <button
-              className={styles.avatarBtn}
-              onClick={() => fileInputRef.current?.click()}
-              disabled={uploadingAvatar}
-              aria-label={t('profile.changeAvatar')}
-            >
-              {profile.avatar_url ? (
-                <img src={profile.avatar_url} alt="" className={styles.avatarImg} />
-              ) : (
-                <i className="ri-user-line" />
-              )}
-              <span className={styles.avatarOverlay}>
-                {uploadingAvatar ? (
-                  <i className="ri-loader-4-line ri-spin" />
-                ) : (
-                  <i className="ri-camera-line" />
-                )}
-              </span>
-            </button>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/jpeg,image/png,image/webp"
-              onChange={handleAvatarUpload}
-              className={styles.fileInput}
-            />
-          </div>
+        <ProfileBasicsCard
+          profile={profile}
+          nameLabel={t('profile.name')}
+          emailLabel={t('profile.email')}
+          genderLabel={t('profile.gender')}
+          birthYearLabel={t('profile.birthYear')}
+          regionLabel={t('profile.region')}
+          saveLabel={t('profile.save')}
+          cancelLabel={t('profile.cancel')}
+          changeAvatarLabel={t('profile.changeAvatar')}
+          editName={editName}
+          isEditing={isEditing}
+          saving={saving}
+          uploadingAvatar={uploadingAvatar}
+          fileInputRef={fileInputRef}
+          onAvatarUpload={handleAvatarUpload}
+          onEditNameChange={setEditName}
+          onEditStart={() => setIsEditing(true)}
+          onEditCancel={() => setIsEditing(false)}
+          onSave={handleSave}
+          getGenderLabel={getGenderLabel}
+        />
 
-          <div className={styles.field}>
-            <span className={styles.label}>{t('profile.name')}</span>
-            {isEditing ? (
-              <div className={styles.editRow}>
-                <input
-                  className={styles.editInput}
-                  value={editName}
-                  onChange={(e) => setEditName(e.target.value)}
-                  maxLength={50}
-                />
-                <button className={styles.saveBtn} onClick={handleSave} disabled={saving}>
-                  {saving ? '...' : t('profile.save')}
-                </button>
-                <button className={styles.cancelBtn} onClick={() => setIsEditing(false)}>
-                  {t('profile.cancel')}
-                </button>
-              </div>
-            ) : (
-              <div className={styles.valueRow}>
-                <span className={styles.value}>{profile.name}</span>
-                <button className={styles.editBtn} onClick={() => setIsEditing(true)}>
-                  <i className="ri-pencil-line" />
-                </button>
-              </div>
-            )}
-          </div>
+        <ProfilePreferencesCard
+          profile={profile}
+          title={t('profile.matchPref')}
+          lookingForLabel={t('profile.lookingFor')}
+          ageRangeLabel={t('profile.ageRange')}
+          pureTasteLabel={t('profile.pureTaste')}
+          notSetLabel={t('profile.notSet')}
+          yesLabel={t('profile.yes')}
+          noLabel={t('profile.no')}
+          getPrefLabel={getPrefLabel}
+        />
 
-          <div className={styles.field}>
-            <span className={styles.label}>{t('profile.email')}</span>
-            <span className={styles.value}>{profile.email}</span>
-          </div>
-
-          <div className={styles.field}>
-            <span className={styles.label}>{t('profile.gender')}</span>
-            <span className={styles.value}>{getGenderLabel(profile.gender)}</span>
-          </div>
-
-          {profile.birth_year && (
-            <div className={styles.field}>
-              <span className={styles.label}>{t('profile.birthYear')}</span>
-              <span className={styles.value}>{profile.birth_year}</span>
-            </div>
-          )}
-
-          <div className={styles.field}>
-            <span className={styles.label}>{t('profile.region')}</span>
-            <span className={styles.value}>{profile.region}</span>
-          </div>
-        </div>
-
-        <div className={styles.card}>
-          <h2 className={styles.sectionTitle}>
-            <i className="ri-heart-pulse-line" /> {t('profile.matchPref')}
-          </h2>
-
-          <div className={styles.field}>
-            <span className={styles.label}>{t('profile.lookingFor')}</span>
-            <span className={styles.value}>
-              {profile.match_gender_pref
-                ? getPrefLabel(profile.match_gender_pref)
-                : t('profile.notSet')}
-            </span>
-          </div>
-
-          {(profile.match_age_min || profile.match_age_max) && (
-            <div className={styles.field}>
-              <span className={styles.label}>{t('profile.ageRange')}</span>
-              <span className={styles.value}>
-                {profile.match_age_min || '?'} — {profile.match_age_max || '?'}
-              </span>
-            </div>
-          )}
-
-          <div className={styles.field}>
-            <span className={styles.label}>{t('profile.pureTaste')}</span>
-            <span className={styles.value}>
-              {profile.pure_taste_match ? t('profile.yes') : t('profile.no')}
-            </span>
-          </div>
-        </div>
-
-        <div className={styles.card}>
-          <h2 className={styles.sectionTitle}>
-            <i className="ri-dna-line" /> {t('profile.seqStatus')}
-          </h2>
-          <span className={`${styles.statusBadge} ${profile.sequencing_status === 'completed' ? styles.statusCompleted : ''}`}>
-            {getStatusLabel(profile.sequencing_status)}
-          </span>
-
-          {profile.archetype_id && (
-            <div className={styles.field}>
-              <span className={styles.label}>{t('profile.archetype')}</span>
-              <span className={styles.value}>{profile.archetype_id}</span>
-            </div>
-          )}
-        </div>
+        <ProfileSequencingCard
+          profile={profile}
+          title={t('profile.seqStatus')}
+          archetypeLabel={t('profile.archetype')}
+          getStatusLabel={getStatusLabel}
+        />
       </motion.div>
     </div>
   )

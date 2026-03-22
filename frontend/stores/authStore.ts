@@ -23,6 +23,7 @@ interface AuthState {
     gender: string
     region?: string
     birth_year?: number
+    agreed_to_terms: boolean
   }) => Promise<void>
 
   login: (email: string) => Promise<void>
