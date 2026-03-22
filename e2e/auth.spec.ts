@@ -66,6 +66,7 @@ test.describe('Auth Pages', () => {
     await page.locator('input[type="email"]').fill(email)
     await page.locator('input').nth(1).fill('E2E Register User')
     await page.locator('button[type="button"]').first().click()
+    await page.locator('input[type="checkbox"]').check()
     await page.locator('button[type="submit"]').click()
     await expect(page.locator('body')).toContainText(email, { timeout: 10000 })
 
@@ -74,5 +75,20 @@ test.describe('Auth Pages', () => {
 
     await page.waitForURL(/\/sequencing(\/seed)?$/, { timeout: 15000 })
     await expect(page).not.toHaveURL(/\/login/)
+  })
+
+  test('authenticated user can log out and is redirected back to login', async ({ page }) => {
+    await loginAsTestUser(page, 'logout-flow')
+
+    await page.goto('/profile')
+    await page.getByRole('button', { name: /登出|log out/i }).click()
+
+    await page.waitForURL(/\/login$/, { timeout: 15000 })
+    await expect(page.context().cookies()).resolves.not.toContainEqual(
+      expect.objectContaining({ name: 'cine_sequence_session' }),
+    )
+
+    await page.goto('/profile')
+    await expect(page).toHaveURL(/\/login/)
   })
 })
