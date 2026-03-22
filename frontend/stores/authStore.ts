@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { api, clearToken, getToken, setToken } from '@/lib/api'
+import { ApiError, api, clearToken, getToken, setToken } from '@/lib/api'
 
 interface User {
   id: string
@@ -89,9 +89,14 @@ export const useAuthStore = create<AuthState>((set) => ({
     try {
       const user = await api<User>('/profile')
       set({ user, isAuthenticated: true, isLoading: false })
-    } catch {
-      set({ user: null, isAuthenticated: false, isLoading: false })
-      clearToken()
+    } catch (err) {
+      if (err instanceof ApiError && (err.status === 401 || err.status === 403)) {
+        set({ user: null, isAuthenticated: false, isLoading: false })
+        clearToken()
+        return
+      }
+
+      set({ isLoading: false })
     }
   },
 
