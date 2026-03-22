@@ -143,6 +143,12 @@
 - [x] Matches invite: User A sends invite → status "invited" ✓
 - [x] Matches respond: User B accepts → status "accepted" ✓
 - [x] Full match flow verified: discover → invite → respond (accept) ✓
+- [x] Fix: group activation logic extracted to should_activate_group, applied on join/leave/auto-assign
+- [x] Fix: matcher only discovers active DNA profiles (is_active filter)
+- [x] Fix: auth tests use stored magic_link_token (token reuse + superseded rejection tests)
+- [x] Fix: authStore fetchProfile only clears token on 401/403, not network errors
+- [x] Fix: API URL default changed to 127.0.0.1 (avoid localhost DNS issues)
+- [x] Fix: next.config outputFileTracingRoot for workspace root detection
 - [x] All 9 frontend routes return 200 (/, /login, /register, /verify, /sequencing, /sequencing/seed, /sequencing/complete, /dna, /matches, /profile)
 - [x] Frontend API client uses correct paths (verified all stores + page-level api calls)
 - [x] No frontend build errors or runtime errors
@@ -193,8 +199,9 @@
 ## Cross-cutting (completed) ✓
 - [x] i18n system (React Context, zh/en, localStorage persistence)
 - [x] Locale toggle (pill-shaped 中/EN, floating fixed position)
-- [x] Font stack (jf Open Huninn + Inconsolata + Silkscreen)
-- [x] Font attribution (ATTRIBUTION.md, all OFL-1.1)
+- [x] Font stack: Open Huninn (中文) + ProperScript (EN display) + system monospace (body)
+- [x] Font attribution (ATTRIBUTION.md)
+- [x] Separate zh/en display fonts on landing page (--font-display vs --font-display-en)
 - [x] All page text converted to t() calls
 - [x] Design system (warm palette, glassmorphism, borderless style)
 - [x] Documentation (README, project-structure, architecture-decisions)
@@ -210,10 +217,9 @@
 - **Bilingual movie titles** — backend has title_en + title_zh, seed page is locale-aware, other pages TBD
 
 ## Suggested Next Steps
-1. **Phase 7a (continue)** — Frontend browser walkthrough (manual test in browser)
-3. **Phase 5 remaining** — Ticket generation + TicketCard + TearRitual
-4. **Phase 6 remaining** — Groups engine + theaters pages
-5. **Phase 7b** — Celery async tasks
-6. **Phase 7c** — UX polish (liquid tube, Three.js, sound)
-7. **Phase 7d** — Testing + security
-8. **Phase 7e** — Deploy
+1. **Phase 7d (continue)** — Integration tests (backend API with real DB), frontend component tests
+2. **Phase 7c** — UX polish (liquid tube, Three.js nebula, tear gesture, sound effects)
+3. **Phase 5 remaining** — TearRitual, ticket invite deep link page
+4. **Phase 6 remaining** — Profile avatar upload (R2), profile CRUD tests
+5. **Pending** — 隱私政策頁面 + 註冊同意勾選
+6. **Phase 7e** — Deploy (Vercel + Railway + CI/CD)
