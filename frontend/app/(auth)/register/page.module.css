@@ -15,7 +15,6 @@
 }
 
 .title {
-  font-family: var(--font-huninn), 'jf-openhuninn-2.1', sans-serif;
   font-size: 1.4rem;
   font-weight: 600;
   letter-spacing: -0.01em;
@@ -49,31 +48,25 @@
 
 .genderOption {
   padding: 0.6rem;
-  background: var(--key-bg);
+  background: transparent;
   color: var(--muted);
-  border: 1px solid var(--border-dark);
-  border-radius: 4px;
-  box-shadow: var(--key-shadow);
+  border: 1px solid var(--border);
+  border-radius: 8px;
   font-size: 0.8rem;
   font-family: inherit;
   cursor: pointer;
-  transition: box-shadow 0.1s ease, transform 0.1s ease, color 0.15s ease;
+  transition: all 0.15s ease;
 }
 
 .genderOption:hover {
   color: var(--foreground);
-}
-
-.genderOption:active {
-  box-shadow: var(--key-shadow-pressed);
-  transform: translateY(2px);
+  border-color: var(--border-dark);
 }
 
 .genderActive {
-  color: var(--ink);
-  background: var(--background-alt);
-  box-shadow: var(--key-shadow-pressed);
-  transform: translateY(1px);
+  color: var(--accent);
+  border-color: var(--accent);
+  background: var(--accent-light);
 }
 
 /* Consent checkbox */
@@ -89,7 +82,7 @@
 
 .checkbox {
   margin-top: 0.15rem;
-  accent-color: var(--foreground);
+  accent-color: var(--accent);
   cursor: pointer;
 }
 
@@ -104,6 +97,6 @@
 }
 
 .link {
-  color: var(--foreground);
+  color: var(--accent);
   text-decoration: underline;
 }

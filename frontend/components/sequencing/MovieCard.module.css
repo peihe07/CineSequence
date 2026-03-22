@@ -3,10 +3,9 @@
   display: flex;
   flex-direction: column;
   width: 260px;
-  background: var(--paper);
-  border: none;
-  border-left: 3px solid var(--accent);
-  box-shadow: var(--card-shadow);
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
   overflow: hidden;
   cursor: pointer;
   transition: box-shadow 0.2s ease, transform 0.2s ease;
@@ -15,7 +14,6 @@
   backface-visibility: hidden;
 }
 
-/* Card back — visible during 180° flip entrance */
 .cardBack {
   position: absolute;
   inset: 0;
@@ -98,9 +96,9 @@
 .genre {
   font-size: 0.6rem;
   padding: 0.15rem 0.5rem;
-  background: transparent;
+  background: var(--background-alt);
   border: none;
-  border-bottom: 1px solid var(--border);
+  border-radius: 999px;
   color: var(--muted);
   letter-spacing: 0.02em;
 }
@@ -121,29 +119,23 @@
   padding: 0.4rem;
   font-size: 0.7rem;
   font-family: inherit;
-  background: var(--key-bg);
+  background: transparent;
   color: var(--muted);
-  border: 1px solid var(--border-dark);
-  border-radius: 4px;
-  box-shadow: var(--key-shadow);
+  border: 1px solid var(--border);
+  border-radius: 6px;
   cursor: pointer;
-  transition: box-shadow 0.1s ease, transform 0.1s ease, color 0.15s ease;
+  transition: all 0.15s ease;
 }
 
 .modeBtn:hover {
   color: var(--foreground);
-}
-
-.modeBtn:active {
-  box-shadow: var(--key-shadow-pressed);
-  transform: translateY(2px);
+  border-color: var(--border-dark);
 }
 
 .modeActive {
-  color: var(--ink);
-  background: var(--background-alt);
-  box-shadow: var(--key-shadow-pressed);
-  transform: translateY(1px);
+  color: var(--accent);
+  border-color: var(--accent);
+  background: var(--accent-light);
 }
 
 /* Mobile: fluid card width */

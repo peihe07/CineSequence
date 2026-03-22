@@ -3,13 +3,11 @@
   user-select: none;
 }
 
-/* Top half: sealed ticket preview */
 .topHalf {
   position: relative;
-  background: var(--paper);
-  border: none;
-  border-left: 3px solid var(--accent);
-  box-shadow: var(--card-shadow);
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px 12px 0 0;
   overflow: hidden;
 }
 
@@ -40,7 +38,6 @@
   letter-spacing: 0.05em;
 }
 
-/* Perforated line at the bottom of top half */
 .perforation {
   position: absolute;
   left: 0;
@@ -56,17 +53,15 @@
   );
 }
 
-/* The widening gap during tear */
 .tearGap {
   overflow: hidden;
 }
 
-/* Bottom half: drag handle (stub) */
 .bottomHalf {
-  background: var(--paper);
-  border: none;
-  border-left: 3px solid var(--accent);
-  box-shadow: var(--card-shadow);
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-top: none;
+  border-radius: 0 0 12px 12px;
   cursor: grab;
   touch-action: none;
 }
@@ -96,7 +91,6 @@
   text-transform: uppercase;
 }
 
-/* Drag hint */
 .hint {
   display: flex;
   align-items: center;
@@ -112,7 +106,6 @@
   font-size: 1.1rem;
 }
 
-/* Reduced motion: skip animations */
 @media (prefers-reduced-motion: reduce) {
   .hint {
     animation: none;

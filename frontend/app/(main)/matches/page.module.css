@@ -20,7 +20,6 @@
 }
 
 .title {
-  font-family: var(--font-huninn), 'jf-openhuninn-2.1', sans-serif;
   font-size: 1.6rem;
   font-weight: 600;
   letter-spacing: -0.02em;
@@ -31,25 +30,19 @@
   align-items: center;
   gap: 0.4rem;
   padding: 0.6rem 1.2rem;
-  background: var(--key-bg);
-  color: var(--ink);
-  border: 1px solid var(--border-dark);
-  border-radius: 4px;
-  box-shadow: var(--key-shadow);
+  background: var(--accent);
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
   font-size: 0.8rem;
   font-family: inherit;
   letter-spacing: 0.04em;
   cursor: pointer;
-  transition: box-shadow 0.1s ease, transform 0.1s ease;
+  transition: background 0.15s ease;
 }
 
 .discoverBtn:hover {
-  background: var(--background-alt);
-}
-
-.discoverBtn:active {
-  box-shadow: var(--key-shadow-pressed);
-  transform: translateY(2px);
+  background: var(--accent-hover);
 }
 
 .discoverBtn:disabled {
@@ -88,8 +81,9 @@
   flex-direction: column;
   gap: 1rem;
   padding: 1.2rem;
-  background: var(--paper);
-  border: 1px dashed var(--border-dark);
+  background: var(--background-alt);
+  border: 1px solid var(--border);
+  border-radius: 10px;
   overflow: hidden;
 }
 
@@ -117,6 +111,7 @@
   padding: 0.35rem 0.8rem;
   background: transparent;
   border: 1px solid var(--border);
+  border-radius: 6px;
   color: var(--muted);
   font-size: 0.75rem;
   font-family: inherit;
@@ -130,8 +125,9 @@
 }
 
 .filterActive {
-  border-color: var(--foreground);
-  color: var(--foreground);
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-light);
 }
 
 .ageInputs {
@@ -145,6 +141,7 @@
   padding: 0.35rem 0.5rem;
   background: transparent;
   border: 1px solid var(--border);
+  border-radius: 6px;
   color: var(--foreground);
   font-size: 0.8rem;
   font-family: inherit;
@@ -153,7 +150,7 @@
 }
 
 .ageInput:focus {
-  border-color: var(--foreground);
+  border-color: var(--accent);
 }
 
 .ageDash {
@@ -171,7 +168,7 @@
 }
 
 .filterCheck input {
-  accent-color: var(--foreground);
+  accent-color: var(--accent);
 }
 
 .filterHint {
@@ -208,38 +205,28 @@
 .grid {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1rem;
 }
 
-/* Match card — manuscript paper */
+/* Match card */
 .card {
   padding: 1.5rem;
-  background: var(--paper);
-  background-image:
-    repeating-linear-gradient(
-      transparent,
-      transparent 1.65rem,
-      var(--paper-line) 1.65rem,
-      var(--paper-line) calc(1.65rem + 1px)
-    );
-  background-position-y: 0.4rem;
-  border: none;
-  border-left: 3px solid var(--accent);
-  box-shadow: var(--card-shadow);
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  transition: box-shadow 0.3s ease, transform 0.2s ease;
+  transition: box-shadow 0.2s ease;
 }
 
 .card:hover {
   box-shadow: var(--card-shadow-hover);
-  transform: translateY(-1px);
 }
 
 .highlighted {
-  border-left-width: 5px;
-  box-shadow: 0 0 0 1px var(--accent), var(--card-shadow-hover);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
 }
 
 .cardHeader {
@@ -271,6 +258,7 @@
   letter-spacing: 0.08em;
   text-transform: uppercase;
   padding: 0.2rem 0.6rem;
+  border-radius: 999px;
   border: 1px solid var(--border);
 }
 
@@ -281,11 +269,13 @@
 .invited {
   color: var(--accent);
   border-color: rgba(192, 98, 35, 0.2);
+  background: var(--accent-light);
 }
 
 .accepted {
-  color: #2d8659;
-  border-color: rgba(45, 134, 89, 0.2);
+  color: var(--success);
+  border-color: rgba(5, 150, 105, 0.2);
+  background: rgba(5, 150, 105, 0.06);
 }
 
 .declined {
@@ -296,17 +286,16 @@
 .tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.3rem;
+  gap: 0.4rem;
 }
 
 .tag {
-  padding: 0.15rem 0.5rem;
-  font-size: 0.65rem;
-  color: var(--redpen);
-  background: transparent;
+  padding: 0.2rem 0.6rem;
+  font-size: 0.7rem;
+  color: var(--accent);
+  background: var(--accent-light);
   border: none;
-  border-bottom: 1.5px solid rgba(192, 98, 35, 0.35);
-  font-style: italic;
+  border-radius: 999px;
 }
 
 /* Ice breaker */
@@ -329,8 +318,8 @@
 .cardActions {
   display: flex;
   align-items: center;
-  padding-top: 0.5rem;
-  border-top: 1px dashed var(--border);
+  padding-top: 0.8rem;
+  border-top: 1px solid var(--border);
 }
 
 .inviteBtn {
@@ -338,24 +327,18 @@
   align-items: center;
   gap: 0.3rem;
   padding: 0.5rem 1rem;
-  background: var(--key-bg);
-  color: var(--ink);
-  border: 1px solid var(--border-dark);
-  border-radius: 4px;
-  box-shadow: var(--key-shadow);
+  background: var(--accent);
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
   font-size: 0.75rem;
   font-family: inherit;
   cursor: pointer;
-  transition: box-shadow 0.1s ease, transform 0.1s ease;
+  transition: background 0.15s ease;
 }
 
 .inviteBtn:hover {
-  background: var(--background-alt);
-}
-
-.inviteBtn:active {
-  box-shadow: var(--key-shadow-pressed);
-  transform: translateY(2px);
+  background: var(--accent-hover);
 }
 
 .respondBtns {
@@ -368,24 +351,18 @@
   align-items: center;
   gap: 0.3rem;
   padding: 0.5rem 1rem;
-  background: var(--key-bg);
-  color: var(--ink);
-  border: 1px solid var(--border-dark);
-  border-radius: 4px;
-  box-shadow: var(--key-shadow);
+  background: var(--accent);
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
   font-size: 0.75rem;
   font-family: inherit;
   cursor: pointer;
-  transition: box-shadow 0.1s ease, transform 0.1s ease;
+  transition: background 0.15s ease;
 }
 
 .acceptBtn:hover {
-  background: var(--background-alt);
-}
-
-.acceptBtn:active {
-  box-shadow: var(--key-shadow-pressed);
-  transform: translateY(2px);
+  background: var(--accent-hover);
 }
 
 .declineBtn {
@@ -395,12 +372,12 @@
   padding: 0.5rem 1rem;
   background: transparent;
   color: var(--muted);
-  border: 1px dashed var(--border);
-  border-radius: 4px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
   font-size: 0.75rem;
   font-family: inherit;
   cursor: pointer;
-  transition: border-color 0.2s ease, color 0.2s ease;
+  transition: all 0.15s ease;
 }
 
 .declineBtn:hover {
@@ -416,7 +393,7 @@
 
 .acceptedLabel {
   font-size: 0.8rem;
-  color: #2d8659;
+  color: var(--success);
   display: flex;
   align-items: center;
   gap: 0.3rem;

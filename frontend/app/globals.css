@@ -1,5 +1,4 @@
 :root {
-  /* Custom palette: warm bronze + dark sage + warm cream */
   --background: #f5f3ed;
   --background-alt: #eceae3;
   --foreground: #44514b;
@@ -11,28 +10,13 @@
   --border: #ddd9d0;
   --border-dark: #c5c0b7;
   --card-bg: #faf8f3;
-  --card-shadow: 0 1px 3px rgba(68, 81, 75, 0.06);
-  --card-shadow-hover: 0 3px 8px rgba(68, 81, 75, 0.1);
+  --card-shadow: 0 1px 2px rgba(68, 81, 75, 0.04);
+  --card-shadow-hover: 0 4px 12px rgba(68, 81, 75, 0.08);
   --error: #b33a3a;
-  --terminal-bg: #f5f3ed;
-  --terminal-panel: rgba(255, 252, 246, 0.92);
-  --terminal-accent-soft: rgba(68, 81, 75, 0.14);
-  --terminal-accent-glow: rgba(68, 81, 75, 0.06);
-  --terminal-line: rgba(68, 81, 75, 0.82);
-  --terminal-line-dim: rgba(68, 81, 75, 0.46);
-  --terminal-line-bright: #44514b;
-  --terminal-line-faint: rgba(68, 81, 75, 0.26);
-  /* Typewriter tokens */
-  --paper: #faf8f3;
-  --paper-line: rgba(192, 98, 35, 0.08);
-  --ink: #44514b;
-  --ink-light: rgba(68, 81, 75, 0.6);
-  --redpen: #c06223;
-  --key-bg: #eceae3;
-  --key-shadow: 0 2px 0 #c5c0b7;
-  --key-shadow-pressed: 0 0 0 #c5c0b7;
-  --font-sans: "SFMono-Regular", "IBM Plex Mono", "Cascadia Mono", "Menlo", "Monaco", monospace;
+  --success: #2d8659;
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", Roboto, "Helvetica Neue", sans-serif;
   --font-zh: var(--font-huninn), 'jf-openhuninn-2.1', sans-serif;
+  --font-mono: "SFMono-Regular", "IBM Plex Mono", "Cascadia Mono", "Menlo", monospace;
 }
 
 *,
@@ -44,20 +28,16 @@
 }
 
 body {
-  font-family: var(--font-zh), var(--font-sans);
+  font-family: var(--font-sans);
   background: var(--background);
-  background-image:
-    radial-gradient(circle at 1px 1px, rgba(68, 81, 75, 0.03) 1px, transparent 0);
-  background-size: 24px 24px;
   color: var(--foreground);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  line-height: 1.7;
+  line-height: 1.6;
 }
 
-/* English-only elements (code, labels) keep monospace */
 code, kbd, samp, pre {
-  font-family: var(--font-sans);
+  font-family: var(--font-mono);
 }
 
 a {
@@ -65,18 +45,15 @@ a {
   text-decoration: none;
 }
 
-/* Focus-visible: keyboard-only outline for accessibility */
 :focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
 
-/* Remove default focus ring for mouse/touch users */
 :focus:not(:focus-visible) {
   outline: none;
 }
 
-/* Screen-reader only utility */
 .srOnly {
   position: absolute;
   width: 1px;
@@ -89,16 +66,10 @@ a {
   border: 0;
 }
 
-/* Typewriter dash divider */
 .divider {
   width: 100%;
   border: none;
-  border-top: 1px dashed var(--border-dark);
+  border-top: 1px solid var(--border);
   background: none;
   height: 0;
-}
-
-/* Letterpress page titles */
-h1, h2 {
-  text-shadow: 1px 1px 0 rgba(68, 81, 75, 0.06);
 }

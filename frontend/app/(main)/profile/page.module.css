@@ -21,7 +21,6 @@
 }
 
 .title {
-  font-family: var(--font-huninn), 'jf-openhuninn-2.1', sans-serif;
   font-size: 1.6rem;
   font-weight: 600;
   letter-spacing: -0.02em;
@@ -29,14 +28,14 @@
 
 .logoutButton {
   padding: 0.45rem 0.85rem;
-  border: 1px dashed var(--border);
-  border-radius: 4px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
   background: transparent;
   color: var(--muted);
   font-size: 0.75rem;
   font-family: inherit;
   cursor: pointer;
-  transition: color 0.2s ease, border-color 0.2s ease;
+  transition: all 0.15s ease;
 }
 
 .logoutButton:hover {
@@ -87,7 +86,7 @@
 }
 
 .avatarBtn:hover {
-  border-color: var(--border-dark);
+  border-color: var(--accent);
 }
 
 .avatarImg {
@@ -117,21 +116,12 @@
   display: none;
 }
 
-/* Card — manuscript paper */
+/* Card */
 .card {
   padding: 1.5rem;
-  background: var(--paper);
-  background-image:
-    repeating-linear-gradient(
-      transparent,
-      transparent 1.65rem,
-      var(--paper-line) 1.65rem,
-      var(--paper-line) calc(1.65rem + 1px)
-    );
-  background-position-y: 0.4rem;
-  border: none;
-  border-left: 3px solid var(--accent);
-  box-shadow: var(--card-shadow);
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
   display: flex;
   flex-direction: column;
   gap: 1.2rem;
@@ -196,36 +186,35 @@
 
 .editInput {
   flex: 1;
-  padding: 0.4rem 0;
+  padding: 0.4rem 0.6rem;
   background: transparent;
   color: var(--foreground);
-  border: none;
-  border-bottom: 1px solid var(--accent);
+  border: 1px solid var(--border);
+  border-radius: 6px;
   font-size: 0.9rem;
   font-family: inherit;
   outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.editInput:focus {
+  border-color: var(--accent);
 }
 
 .saveBtn {
   padding: 0.3rem 0.8rem;
-  background: var(--key-bg);
-  color: var(--ink);
-  border: 1px solid var(--border-dark);
-  border-radius: 4px;
-  box-shadow: var(--key-shadow);
+  background: var(--accent);
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
   font-size: 0.7rem;
   font-family: inherit;
   cursor: pointer;
-  transition: box-shadow 0.1s ease, transform 0.1s ease;
+  transition: background 0.15s ease;
 }
 
 .saveBtn:hover {
-  background: var(--background-alt);
-}
-
-.saveBtn:active {
-  box-shadow: var(--key-shadow-pressed);
-  transform: translateY(2px);
+  background: var(--accent-hover);
 }
 
 .saveBtn:disabled {
@@ -236,8 +225,8 @@
   padding: 0.3rem 0.8rem;
   background: transparent;
   color: var(--muted);
-  border: 1px dashed var(--border);
-  border-radius: 4px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
   font-size: 0.7rem;
   font-family: inherit;
   cursor: pointer;
@@ -252,11 +241,13 @@
   letter-spacing: 0.06em;
   color: var(--muted);
   border: 1px solid var(--border);
+  border-radius: 999px;
 }
 
 .statusCompleted {
   color: var(--accent);
   border-color: rgba(192, 98, 35, 0.2);
+  background: var(--accent-light);
 }
 
 /* Mobile */

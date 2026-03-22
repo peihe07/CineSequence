@@ -35,7 +35,6 @@ export default function Home() {
   const [responded, setResponded] = useState(false)
   const allLinesVisible = visibleCount >= LINES.length
 
-  // Sequentially reveal lines
   useEffect(() => {
     const timers: ReturnType<typeof setTimeout>[] = []
     LINES.forEach((line, i) => {
@@ -44,7 +43,6 @@ export default function Home() {
     return () => timers.forEach(clearTimeout)
   }, [])
 
-  // Keyboard listener: press Y to start
   const handleKey = useCallback((e: KeyboardEvent) => {
     if (!allLinesVisible || responded) return
     if (e.key === 'y' || e.key === 'Y') {
@@ -60,7 +58,7 @@ export default function Home() {
 
   return (
     <main className={styles.main}>
-      {/* Terminal hero section */}
+      {/* Terminal hero */}
       <section className={styles.hero}>
         <div className={styles.terminal}>
           <div className={styles.titleBar}>
@@ -118,7 +116,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Flow steps section */}
+      {/* Flow steps */}
       <section className={styles.flowSection}>
         <h2 className={styles.flowTitle}>{t('landing.howTitle')}</h2>
         <div className={styles.flowTimeline}>

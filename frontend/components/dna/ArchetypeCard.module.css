@@ -4,10 +4,9 @@
   align-items: center;
   gap: 1rem;
   padding: 2.5rem 2rem;
-  background: var(--paper);
-  border: none;
-  border-left: 3px solid var(--accent);
-  box-shadow: var(--card-shadow);
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
   text-align: center;
 }
 
@@ -30,7 +29,6 @@
   font-size: 1.5rem;
   font-weight: 600;
   letter-spacing: -0.01em;
-  text-shadow: 1px 1px 0 rgba(68, 81, 75, 0.06);
 }
 
 .nameEn {

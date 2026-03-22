@@ -15,56 +15,18 @@
   width: 100%;
   min-height: 100vh;
   padding: 2rem;
-  background: var(--terminal-bg);
+  background: var(--background);
 }
 
 /* Terminal window */
 .terminal {
   width: 100%;
   max-width: 640px;
-  background: var(--terminal-panel);
-  border: 1px solid var(--terminal-accent-soft);
-  box-shadow:
-    0 0 40px var(--terminal-accent-glow),
-    0 24px 60px rgba(68, 81, 75, 0.08);
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
   position: relative;
   overflow: hidden;
-}
-
-/* CRT scan line overlay */
-.terminal::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: repeating-linear-gradient(
-    0deg,
-    transparent,
-    transparent 2px,
-    rgba(68, 81, 75, 0.025) 2px,
-    rgba(68, 81, 75, 0.025) 4px
-  );
-  pointer-events: none;
-  z-index: 2;
-}
-
-/* CRT flicker */
-.terminal::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    transparent 50%,
-    color-mix(in srgb, var(--foreground) 8%, transparent) 50%
-  );
-  background-size: 100% 4px;
-  animation: flicker 0.15s infinite;
-  pointer-events: none;
-  z-index: 2;
-}
-
-@keyframes flicker {
-  0% { opacity: 0.97; }
-  50% { opacity: 1; }
 }
 
 /* Title bar */
@@ -72,25 +34,25 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.6rem 1rem;
-  border-bottom: 1px solid color-mix(in srgb, var(--foreground) 14%, transparent);
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border);
 }
 
 .dot {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: color-mix(in srgb, var(--foreground) 24%, transparent);
+  background: var(--border);
 }
 
 .dot:first-child {
-  background: color-mix(in srgb, var(--foreground) 52%, transparent);
+  background: var(--border-dark);
 }
 
 .titleText {
-  font-family: var(--font-sans);
+  font-family: var(--font-mono);
   font-size: 0.65rem;
-  color: var(--terminal-line-dim);
+  color: var(--muted-light);
   letter-spacing: 0.1em;
   margin-left: 0.5rem;
 }
@@ -106,17 +68,17 @@
 
 /* Terminal lines */
 .line {
-  font-family: var(--font-sans);
+  font-family: var(--font-mono);
   font-size: 0.85rem;
   line-height: 2;
-  color: var(--terminal-line);
+  color: var(--muted);
   white-space: pre-wrap;
   opacity: 0;
   animation: lineAppear 0.3s forwards;
 }
 
 .linePrefix {
-  color: var(--terminal-line-dim);
+  color: var(--accent);
   margin-right: 0.5rem;
   user-select: none;
 }
@@ -126,15 +88,15 @@
 }
 
 .lineHighlight {
-  color: var(--terminal-line-bright);
+  color: var(--foreground);
   font-weight: 500;
 }
 
 .prompt {
-  font-family: var(--font-sans);
+  font-family: var(--font-mono);
   font-size: 0.85rem;
   line-height: 2;
-  color: var(--terminal-line-bright);
+  color: var(--foreground);
   font-weight: 600;
   opacity: 0;
   animation: lineAppear 0.3s forwards;
@@ -147,7 +109,7 @@
   display: inline-block;
   width: 8px;
   height: 1.1em;
-  background: color-mix(in srgb, var(--accent) 80%, transparent);
+  background: var(--accent);
   margin-left: 0.3rem;
   animation: blink 1s step-end infinite;
 }
@@ -158,7 +120,7 @@
 }
 
 .response {
-  font-family: var(--font-sans);
+  font-family: var(--font-mono);
   font-size: 0.85rem;
   line-height: 2;
   color: var(--foreground);
@@ -167,7 +129,7 @@
   animation: lineAppear 0.2s forwards;
 }
 
-/* CTA area inside terminal */
+/* CTA area */
 .ctaArea {
   display: flex;
   flex-direction: column;
@@ -189,30 +151,22 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.4rem;
   padding: 0.75rem 1.2rem;
-  background: var(--key-bg);
-  color: var(--ink);
+  background: var(--accent);
+  color: #fff;
   border: none;
-  box-shadow: var(--key-shadow);
-  font-family: var(--font-sans);
+  border-radius: 8px;
   font-size: 0.8rem;
   font-weight: 600;
   letter-spacing: 0.08em;
   cursor: pointer;
-  transition: box-shadow 0.1s ease, transform 0.1s ease;
+  transition: background 0.15s ease;
   text-decoration: none;
   text-transform: uppercase;
 }
 
 .ctaPrimary:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 3px 0 #c5c0b7;
-}
-
-.ctaPrimary:active {
-  box-shadow: var(--key-shadow-pressed);
-  transform: translateY(2px);
+  background: var(--accent-hover);
 }
 
 .ctaSecondary {
@@ -220,16 +174,15 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.4rem;
   padding: 0.75rem 1.2rem;
   background: transparent;
-  color: var(--foreground);
-  border: 1px dashed var(--border-dark);
-  font-family: var(--font-sans);
+  color: var(--muted);
+  border: 1px solid var(--border-dark);
+  border-radius: 8px;
   font-size: 0.8rem;
   letter-spacing: 0.08em;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
   text-decoration: none;
   text-transform: uppercase;
 }
@@ -237,13 +190,12 @@
 .ctaSecondary:hover {
   color: var(--foreground);
   border-color: var(--accent);
-  background: color-mix(in srgb, var(--accent) 4%, transparent);
 }
 
 .hint {
-  font-family: var(--font-sans);
+  font-family: var(--font-mono);
   font-size: 0.65rem;
-  color: var(--terminal-line-faint);
+  color: var(--muted-light);
   letter-spacing: 0.1em;
   text-transform: uppercase;
 }
@@ -251,8 +203,8 @@
 /* ─── Flow section ─── */
 .flowSection {
   width: 100%;
-  max-width: 640px;
-  padding: 5rem 2rem 4rem;
+  max-width: 520px;
+  padding: 4rem 2rem 3rem;
   margin: 0 auto;
 }
 
@@ -283,22 +235,20 @@
   flex-direction: column;
   align-items: center;
   flex-shrink: 0;
-  width: 40px;
+  width: 32px;
 }
 
 .stepNum {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
-  background: var(--key-bg);
-  box-shadow: var(--key-shadow);
-  font-family: var(--font-sans);
+  width: 32px;
+  height: 32px;
+  background: var(--accent-light);
+  border-radius: 50%;
   font-size: 0.7rem;
   font-weight: 600;
-  color: var(--ink);
-  letter-spacing: 0.05em;
+  color: var(--accent);
   flex-shrink: 0;
 }
 
@@ -306,48 +256,35 @@
   width: 1px;
   flex: 1;
   min-height: 100%;
-  background: repeating-linear-gradient(
-    180deg,
-    var(--border-dark) 0px,
-    var(--border-dark) 4px,
-    transparent 4px,
-    transparent 8px
-  );
+  background: var(--border);
 }
 
 .stepCard {
   flex: 1;
-  padding: 1.2rem 1.5rem;
-  margin-bottom: 1.5rem;
-  background: var(--paper);
-  border: none;
-  border-left: 3px solid var(--accent);
-  box-shadow: var(--card-shadow);
+  padding: 0.4rem 0 2rem;
 }
 
 .stepHeader {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
-  margin-bottom: 0.5rem;
+  gap: 0.5rem;
+  margin-bottom: 0.35rem;
 }
 
 .stepHeader i {
-  font-size: 1.1rem;
+  font-size: 1rem;
   color: var(--accent);
-  opacity: 0.7;
 }
 
 .stepTitle {
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 600;
-  color: var(--foreground);
 }
 
 .stepDesc {
   font-size: 0.85rem;
   line-height: 1.6;
-  color: var(--ink-light);
+  color: var(--muted);
   margin: 0;
 }
 
@@ -355,30 +292,27 @@
 .bottomCta {
   display: flex;
   justify-content: center;
-  padding: 0 2rem 4rem;
+  padding: 0 2rem 5rem;
   width: 100%;
-  max-width: 640px;
+  max-width: 520px;
   margin: 0 auto;
 }
 
 .bottomCta .ctaPrimary {
   max-width: 280px;
+  width: 100%;
 }
 
 /* ─── Footer ─── */
 .footer {
   padding: 2rem;
-  font-family: var(--font-sans);
-  font-size: 0.6rem;
-  color: color-mix(in srgb, var(--foreground) 18%, transparent);
-  letter-spacing: 0.08em;
+  font-size: 0.65rem;
+  color: var(--muted-light);
+  letter-spacing: 0.06em;
 }
 
 /* ─── Reduced motion ─── */
 @media (prefers-reduced-motion: reduce) {
-  .terminal::after {
-    animation: none;
-  }
   .cursor {
     animation: none;
     opacity: 1;
@@ -406,16 +340,11 @@
   }
 
   .flowSection {
-    padding: 3rem 1.5rem 2.5rem;
+    padding: 3rem 1.5rem 2rem;
   }
 
   .flowStep {
     gap: 1rem;
-  }
-
-  .stepCard {
-    padding: 1rem 1.2rem;
-    margin-bottom: 1.2rem;
   }
 
   .stepTitle {

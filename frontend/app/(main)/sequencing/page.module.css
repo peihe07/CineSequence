@@ -6,7 +6,6 @@
   position: relative;
 }
 
-/* Subtle ambient tint */
 .ambientGlow {
   position: fixed;
   top: 50%;
@@ -15,7 +14,7 @@
   height: 600px;
   transform: translate(-50%, -50%);
   background: radial-gradient(circle, var(--ambient-color) 0%, transparent 70%);
-  opacity: 0.06;
+  opacity: 0.04;
   pointer-events: none;
   transition: background 1.5s ease;
   z-index: 0;
@@ -44,6 +43,16 @@
   align-items: center;
   gap: 1.5rem;
   padding-top: 2rem;
+}
+
+.errorState {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  text-align: center;
 }
 
 /* Mobile */

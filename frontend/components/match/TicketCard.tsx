@@ -17,7 +17,6 @@ export default function TicketCard({ ticketImageUrl, partnerName, similarityScor
   const rotateX = useMotionValue(0)
   const rotateY = useMotionValue(0)
 
-  // 3D tilt effect on mouse move
   const handleMouseMove = (e: React.MouseEvent) => {
     if (!ref.current) return
     const rect = ref.current.getBoundingClientRect()
@@ -50,10 +49,6 @@ export default function TicketCard({ ticketImageUrl, partnerName, similarityScor
       transition={{ duration: 0.5, ease: 'easeOut' }}
     >
       <div className={styles.ticketInner}>
-        <div className={styles.scanLines} />
-        <div className={styles.holographic} />
-        <div className={styles.perforation} />
-
         {ticketImageUrl ? (
           <img
             src={ticketImageUrl}

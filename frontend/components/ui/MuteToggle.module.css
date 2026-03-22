@@ -8,21 +8,16 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--key-bg);
-  border: 1px solid var(--border-dark);
-  border-radius: 4px;
-  box-shadow: var(--key-shadow);
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
   color: var(--muted);
   font-size: 1rem;
   cursor: pointer;
-  transition: color 0.15s ease, box-shadow 0.1s ease, transform 0.1s ease;
+  transition: color 0.15s ease, border-color 0.15s ease;
 }
 
 .toggle:hover {
   color: var(--foreground);
-}
-
-.toggle:active {
-  box-shadow: var(--key-shadow-pressed);
-  transform: translateY(2px);
+  border-color: var(--border-dark);
 }

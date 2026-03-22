@@ -14,17 +14,15 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.6rem 1.2rem;
-  background: var(--paper);
-  border-left: 3px solid var(--border-dark);
-  box-shadow: 2px 2px 6px rgba(68, 81, 75, 0.12);
+  padding: 0.7rem 1.2rem;
+  background: var(--foreground);
+  border-radius: 8px;
   font-size: 0.8rem;
-  font-family: inherit;
-  color: var(--foreground);
+  color: #ffffff;
   cursor: pointer;
   pointer-events: auto;
   white-space: nowrap;
-  transform: rotate(-0.5deg);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .icon {
@@ -33,13 +31,13 @@
 }
 
 .success .icon {
-  color: #2d8659;
+  color: #34d399;
 }
 
 .error .icon {
-  color: var(--error);
+  color: #fca5a5;
 }
 
 .info .icon {
-  color: var(--accent);
+  color: #a78bfa;
 }

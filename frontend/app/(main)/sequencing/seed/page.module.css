@@ -25,7 +25,6 @@
 }
 
 .title {
-  font-family: var(--font-huninn), 'jf-openhuninn-2.1', sans-serif;
   font-size: 1.4rem;
   font-weight: 600;
   letter-spacing: -0.01em;
@@ -98,6 +97,7 @@
   list-style: none;
   background: var(--card-bg);
   border: 1px solid var(--border);
+  border-radius: 10px;
   overflow: hidden;
   z-index: 50;
   max-height: 360px;
@@ -127,6 +127,7 @@
   width: 34px;
   height: 51px;
   object-fit: cover;
+  border-radius: 4px;
 }
 
 .posterPlaceholder {
@@ -136,6 +137,7 @@
   align-items: center;
   justify-content: center;
   background: var(--background-alt);
+  border-radius: 4px;
   color: var(--muted-light);
   font-size: 0.9rem;
 }
@@ -170,6 +172,7 @@
   padding: 1rem;
   width: 100%;
   border: 1px solid var(--border);
+  border-radius: 10px;
   background: var(--card-bg);
 }
 
@@ -177,6 +180,7 @@
   width: 44px;
   height: 66px;
   object-fit: cover;
+  border-radius: 4px;
 }
 
 .selectedInfo {
@@ -202,4 +206,10 @@
   align-items: center;
   gap: 1rem;
   width: 100%;
+}
+
+.errorText {
+  color: var(--error);
+  font-size: 0.95rem;
+  text-align: center;
 }

@@ -21,7 +21,6 @@
 }
 
 .title {
-  font-family: var(--font-huninn), 'jf-openhuninn-2.1', sans-serif;
   font-size: 1.6rem;
   font-weight: 600;
   letter-spacing: -0.02em;
@@ -76,17 +75,18 @@
   justify-content: center;
   gap: 0.4rem;
   padding: 0.8rem;
-  background: var(--foreground);
-  color: var(--background);
+  background: var(--accent);
+  color: #ffffff;
   border: none;
+  border-radius: 8px;
   font-size: 0.85rem;
   font-family: inherit;
   cursor: pointer;
-  transition: opacity 0.2s ease;
+  transition: background 0.15s ease;
 }
 
 .primaryBtn:hover {
-  opacity: 0.85;
+  background: var(--accent-hover);
 }
 
 .secondaryBtn {
@@ -98,10 +98,11 @@
   background: transparent;
   color: var(--foreground);
   border: 1px solid var(--border);
+  border-radius: 8px;
   font-size: 0.85rem;
   font-family: inherit;
   cursor: pointer;
-  transition: border-color 0.2s ease;
+  transition: all 0.15s ease;
 }
 
 .secondaryBtn:hover {

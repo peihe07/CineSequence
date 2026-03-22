@@ -20,6 +20,7 @@
   padding: 2rem;
   background: var(--card-bg);
   border: 1px solid var(--border);
+  border-radius: 12px;
 }
 
 .reading {
@@ -79,5 +80,6 @@
   font-size: 0.7rem;
   color: var(--accent);
   background: var(--accent-light);
-  border: 1px solid rgba(192, 98, 35, 0.12);
+  border: none;
+  border-radius: 999px;
 }

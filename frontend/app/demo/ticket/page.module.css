@@ -15,7 +15,6 @@
 }
 
 .title {
-  font-family: var(--font-huninn), 'jf-openhuninn-2.1', sans-serif;
   font-size: 2rem;
   font-weight: 600;
   letter-spacing: -0.02em;
@@ -25,18 +24,9 @@
 .details {
   width: 100%;
   padding: 2rem;
-  background: var(--paper);
-  background-image:
-    repeating-linear-gradient(
-      transparent,
-      transparent 2rem,
-      var(--paper-line) 2rem,
-      var(--paper-line) calc(2rem + 1px)
-    );
-  background-position-y: 0.5rem;
-  border: none;
-  border-left: 4px solid var(--accent);
-  box-shadow: var(--card-shadow);
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
@@ -61,8 +51,7 @@
 
 .archetype {
   font-size: 0.9rem;
-  color: var(--redpen);
-  font-style: italic;
+  color: var(--accent);
 }
 
 .score {
@@ -106,16 +95,15 @@
 
 .tag {
   padding: 0.25rem 0.6rem;
-  font-size: 0.9rem;
-  color: var(--redpen);
-  background: transparent;
+  font-size: 0.85rem;
+  color: var(--accent);
+  background: var(--accent-light);
   border: none;
-  border-bottom: 2px solid rgba(192, 98, 35, 0.35);
-  font-style: italic;
+  border-radius: 999px;
 }
 
 .dashes {
-  border-top: 1px dashed var(--border-dark);
+  border-top: 1px solid var(--border);
 }
 
 .breakers {
@@ -128,7 +116,7 @@
 
 .breaker {
   font-size: 1rem;
-  color: var(--ink-light);
+  color: var(--muted);
   line-height: 1.7;
   padding-left: 1.4rem;
   position: relative;
@@ -138,27 +126,25 @@
   content: '>';
   position: absolute;
   left: 0;
-  color: var(--redpen);
-  font-family: var(--font-sans);
+  color: var(--accent);
   font-weight: 600;
 }
 
 .resetBtn {
   padding: 0.5rem 1rem;
-  background: var(--key-bg);
+  background: transparent;
   color: var(--muted);
-  border: 1px solid var(--border-dark);
-  border-radius: 4px;
-  box-shadow: var(--key-shadow);
+  border: 1px solid var(--border);
+  border-radius: 8px;
   font-size: 0.75rem;
   font-family: inherit;
   cursor: pointer;
-  transition: box-shadow 0.1s ease, transform 0.1s ease;
+  transition: all 0.15s ease;
 }
 
-.resetBtn:active {
-  box-shadow: var(--key-shadow-pressed);
-  transform: translateY(2px);
+.resetBtn:hover {
+  border-color: var(--border-dark);
+  color: var(--foreground);
 }
 
 @media (max-width: 640px) {

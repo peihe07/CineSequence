@@ -8,7 +8,8 @@
   justify-content: center;
   padding: 8px 16px calc(8px + env(safe-area-inset-bottom));
   background: rgba(245, 243, 237, 0.92);
-  border-top: 1px dashed var(--border);
+  backdrop-filter: blur(8px);
+  border-top: 1px solid var(--border);
 }
 
 .inner {
@@ -25,8 +26,6 @@
   align-items: center;
   gap: 2px;
   padding: 6px 0;
-  border-radius: 0;
-  font-family: var(--font-sans);
   font-size: 10px;
   color: var(--muted);
   transition: color 0.2s;
@@ -48,18 +47,10 @@
   color: var(--accent);
 }
 
-/* Red-pen circle around active icon */
-.active i {
-  outline: 1.5px solid var(--accent);
-  outline-offset: 4px;
-  border-radius: 50%;
-}
-
 .active:hover {
   color: var(--accent);
 }
 
-/* Add bottom padding to page content so navbar doesn't overlap */
 .spacer {
   height: calc(64px + env(safe-area-inset-bottom));
 }
