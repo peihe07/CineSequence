@@ -44,3 +44,28 @@ export async function api<T>(
 
   return response.json()
 }
+
+/**
+ * Upload a file via multipart/form-data (no Content-Type header — browser sets boundary).
+ */
+export async function apiUpload<T>(
+  path: string,
+  file: File,
+  fieldName = 'file',
+): Promise<T> {
+  const formData = new FormData()
+  formData.append(fieldName, file)
+
+  const response = await fetch(`${API_URL}${path}`, {
+    method: 'POST',
+    body: formData,
+    credentials: 'include',
+  })
+
+  if (!response.ok) {
+    const body = await response.json().catch(() => ({ detail: 'Upload failed' }))
+    throw new ApiError(response.status, body.detail || 'Upload failed')
+  }
+
+  return response.json()
+}

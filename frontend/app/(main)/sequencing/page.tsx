@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { AnimatePresence } from 'framer-motion'
 import { useSequencingStore } from '@/stores/sequencingStore'
 import SwipePair from '@/components/sequencing/SwipePair'
+import LiquidTube from '@/components/sequencing/LiquidTube'
 import PhaseIndicator from '@/components/sequencing/PhaseIndicator'
 import LiveTagCloud from '@/components/sequencing/LiveTagCloud'
 import SkipActions from '@/components/sequencing/SkipActions'
@@ -72,6 +73,13 @@ export default function SequencingPage() {
     >
       {/* Ambient background glow */}
       <div className={styles.ambientGlow} />
+
+      {/* DNA liquid tube — fills as rounds progress */}
+      <LiquidTube
+        currentRound={roundNumber}
+        totalRounds={progress?.total_rounds ?? 20}
+        liquidColor={ambientColor || undefined}
+      />
 
       <div className={styles.header}>
         <PhaseIndicator phase={phase} round={roundNumber} totalRounds={progress?.total_rounds ?? 20} />

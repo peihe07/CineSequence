@@ -120,6 +120,23 @@ async def get_user_matches(
     return list(result.scalars().all())
 
 
+async def get_match_by_id(
+    db: AsyncSession,
+    match_id: uuid.UUID,
+    user_id: uuid.UUID,
+) -> Match | None:
+    """Get a single match by ID, only if the user is a participant."""
+    q = (
+        select(Match)
+        .where(
+            Match.id == match_id,
+            or_(Match.user_a_id == user_id, Match.user_b_id == user_id),
+        )
+    )
+    result = await db.execute(q)
+    return result.scalar_one_or_none()
+
+
 async def send_invite(
     db: AsyncSession,
     match_id: uuid.UUID,

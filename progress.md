@@ -10,8 +10,8 @@
 | Phase 2: Authentication | Done | 90% |
 | Phase 3: Sequencing Engine | Done | 85% |
 | Phase 4: DNA Builder + Result | Done | 80% |
-| Phase 5: Matching + Invite | Partial | 90% |
-| Phase 6: Groups + Profile | Partial | 80% |
+| Phase 5: Matching + Invite | Done | 100% |
+| Phase 6: Groups + Profile | Done | 95% |
 | Phase 7: Polish + Infrastructure | In progress | 80% |
 | Cross-cutting | Done | 95% |
 | **Overall** | | **~85%** |
@@ -97,7 +97,7 @@
 - [x] Ticket auto-generated on match accept (saved to R2 or local dev output/)
 - [x] TicketCard component (clip-path punch holes, scan lines, holographic hover, 3D tilt)
 - [x] TearRitual (drag gesture to tear ticket from perforated line) ✓
-- [ ] Ticket invite page (/ticket/[inviteId] - deep link from email)
+- [x] Ticket invite page (/ticket/[inviteId] - deep link from email with ticket, shared tags, ice breakers)
 
 ## Phase 6: Groups + Profile (in progress)
 - [x] Profile router (GET /profile, PATCH /profile)
@@ -106,11 +106,10 @@
 - [x] Groups router (GET /groups, POST /auto-assign, POST /:id/join, POST /:id/leave, GET /:id)
 - [x] Group store (Zustand: fetchGroups, autoAssign, joinGroup, leaveGroup)
 - [x] Theaters page (group list with join/leave, auto-assign button, i18n)
-- [ ] Profile: avatar upload (R2 integration)
+- [x] Profile: avatar upload (POST /profile/avatar, R2 prod / local dev, 2MB limit, JPEG/PNG/WebP)
 - [x] Tests: group affinity computation + threshold boundaries (12 unit tests)
 - [x] Tests: ticket image generation across 5 style palettes (12 unit tests)
 - [ ] Tests: profile CRUD
-- [ ] Profile: avatar upload (R2 integration)
 
 ## Phase 7: Polish + Infrastructure (in progress)
 

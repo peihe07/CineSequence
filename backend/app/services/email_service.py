@@ -120,7 +120,7 @@ async def send_match_accepted_email(
     match_id: uuid.UUID,
 ) -> None:
     """Send notification email when a match is accepted (sent to both parties)."""
-    match_url = f"{settings.frontend_url}/matches?match={match_id}"
+    match_url = f"{settings.frontend_url}/ticket/{match_id}"
     safe_partner = _esc(partner_name)
     safe_archetype = _esc(partner_archetype)
 

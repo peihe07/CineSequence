@@ -9,7 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.deps import get_current_user, get_db
 from app.models.user import User
-from app.services.matcher import find_matches, get_user_matches, respond_to_invite, send_invite
+from app.services.matcher import find_matches, get_match_by_id, get_user_matches, respond_to_invite, send_invite
 
 router = APIRouter()
 
@@ -61,6 +61,19 @@ async def list_matches(
     """List all matches for the current user."""
     matches = await get_user_matches(db, user.id)
     return [_match_to_out(m, user.id) for m in matches]
+
+
+@router.get("/{match_id}")
+async def get_match(
+    match_id: uuid.UUID,
+    user: Annotated[User, Depends(get_current_user)],
+    db: Annotated[AsyncSession, Depends(get_db)],
+):
+    """Get a single match by ID (must be a participant)."""
+    match = await get_match_by_id(db, match_id, user.id)
+    if not match:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Match not found")
+    return _match_to_out(match, user.id)
 
 
 @router.post("/discover")

@@ -1,8 +1,8 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
-import { api } from '@/lib/api'
+import { api, apiUpload } from '@/lib/api'
 import { useI18n } from '@/lib/i18n'
 import styles from './page.module.css'
 
@@ -31,6 +31,21 @@ export default function ProfilePage() {
   const [isEditing, setIsEditing] = useState(false)
   const [editName, setEditName] = useState('')
   const [saving, setSaving] = useState(false)
+  const [uploadingAvatar, setUploadingAvatar] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
+  const handleAvatarUpload = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setUploadingAvatar(true)
+    try {
+      const updated = await apiUpload<Profile>('/profile/avatar', file)
+      setProfile(updated)
+    } finally {
+      setUploadingAvatar(false)
+      if (fileInputRef.current) fileInputRef.current.value = ''
+    }
+  }, [])
 
   // Locale-aware label resolvers using t() — replaces hardcoded GENDER_LABELS / PREF_LABELS / STATUS_LABELS
   function getGenderLabel(value: string): string {
@@ -118,6 +133,35 @@ export default function ProfilePage() {
         <h1 className={styles.title}>{t('profile.title')}</h1>
 
         <div className={styles.card}>
+          <div className={styles.avatarSection}>
+            <button
+              className={styles.avatarBtn}
+              onClick={() => fileInputRef.current?.click()}
+              disabled={uploadingAvatar}
+              aria-label={t('profile.changeAvatar')}
+            >
+              {profile.avatar_url ? (
+                <img src={profile.avatar_url} alt="" className={styles.avatarImg} />
+              ) : (
+                <i className="ri-user-line" />
+              )}
+              <span className={styles.avatarOverlay}>
+                {uploadingAvatar ? (
+                  <i className="ri-loader-4-line ri-spin" />
+                ) : (
+                  <i className="ri-camera-line" />
+                )}
+              </span>
+            </button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              onChange={handleAvatarUpload}
+              className={styles.fileInput}
+            />
+          </div>
+
           <div className={styles.field}>
             <span className={styles.label}>{t('profile.name')}</span>
             {isEditing ? (

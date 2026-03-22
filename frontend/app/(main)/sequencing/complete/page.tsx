@@ -6,6 +6,7 @@ import { motion } from 'framer-motion'
 import { useSequencingStore } from '@/stores/sequencingStore'
 import { useDnaStore } from '@/stores/dnaStore'
 import { useI18n } from '@/lib/i18n'
+import { soundManager } from '@/lib/sound'
 import styles from './page.module.css'
 
 export default function SequencingCompletePage() {
@@ -16,6 +17,7 @@ export default function SequencingCompletePage() {
 
   useEffect(() => {
     fetchProgress()
+    soundManager.play('complete')
   }, [fetchProgress])
 
   const handleViewDna = async () => {

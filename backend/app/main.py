@@ -1,5 +1,6 @@
 import logging
 from contextlib import asynccontextmanager
+from urllib.parse import urlsplit, urlunsplit
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -39,6 +40,23 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         return response
 
 
+def _build_allowed_origins(frontend_url: str) -> list[str]:
+    """Accept both localhost and 127.0.0.1 for local dev credentials flows."""
+    origins = {frontend_url}
+    parsed = urlsplit(frontend_url)
+
+    if parsed.hostname == "localhost":
+        origins.add(
+            urlunsplit((parsed.scheme, f"127.0.0.1:{parsed.port}", parsed.path, "", ""))
+        )
+    elif parsed.hostname == "127.0.0.1":
+        origins.add(
+            urlunsplit((parsed.scheme, f"localhost:{parsed.port}", parsed.path, "", ""))
+        )
+
+    return sorted(origins)
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup: init DB pool, Redis connection
@@ -60,8 +78,8 @@ app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 app.add_middleware(SecurityHeadersMiddleware)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[settings.frontend_url],
-    allow_credentials=False,
+    allow_origins=_build_allowed_origins(settings.frontend_url),
+    allow_credentials=True,
     allow_methods=["GET", "POST", "PATCH", "DELETE"],
     allow_headers=["Authorization", "Content-Type"],
 )
@@ -72,6 +90,18 @@ app.include_router(dna.router, prefix="/dna", tags=["dna"])
 app.include_router(matches.router, prefix="/matches", tags=["matches"])
 app.include_router(groups.router, prefix="/groups", tags=["groups"])
 app.include_router(profile.router, prefix="/profile", tags=["profile"])
+
+# Dev mode: serve locally saved files (avatars, tickets) as static assets
+if settings.environment == "development":
+    import os
+    from pathlib import Path
+
+    from fastapi.staticfiles import StaticFiles
+
+    output_dir = Path("output")
+    output_dir.mkdir(exist_ok=True)
+    if os.path.isdir(output_dir):
+        app.mount("/static", StaticFiles(directory=str(output_dir)), name="static")
 
 
 @app.get("/health")

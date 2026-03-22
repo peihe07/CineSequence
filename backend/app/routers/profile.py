@@ -1,14 +1,22 @@
 """Profile router: user profile CRUD."""
 
+import logging
 import uuid
+from pathlib import Path
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, status
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.config import settings
 from app.deps import get_current_user, get_db
 from app.models.user import User
+
+logger = logging.getLogger(__name__)
+
+AVATAR_MAX_BYTES = 2 * 1024 * 1024  # 2 MB
+AVATAR_ALLOWED_TYPES = {"image/jpeg", "image/png", "image/webp"}
 
 router = APIRouter()
 
@@ -100,6 +108,46 @@ async def update_profile(
             continue
         setattr(user, field, value)
 
+    await db.commit()
+    await db.refresh(user)
+    return _user_to_profile(user)
+
+
+@router.post("/avatar")
+async def upload_avatar(
+    file: UploadFile,
+    user: Annotated[User, Depends(get_current_user)],
+    db: Annotated[AsyncSession, Depends(get_db)],
+):
+    """Upload avatar image. Accepts JPEG, PNG, WebP up to 2 MB."""
+    if file.content_type not in AVATAR_ALLOWED_TYPES:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Only JPEG, PNG, and WebP images are allowed",
+        )
+
+    data = await file.read()
+    if len(data) > AVATAR_MAX_BYTES:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="File size must be under 2 MB",
+        )
+
+    ext = {"image/jpeg": "jpg", "image/png": "png", "image/webp": "webp"}[file.content_type]
+    key = f"avatars/{user.id}.{ext}"
+
+    if not settings.s3_endpoint:
+        # Dev mode: save locally and serve via static
+        local_dir = Path("output") / "avatars"
+        local_dir.mkdir(parents=True, exist_ok=True)
+        (local_dir / f"{user.id}.{ext}").write_bytes(data)
+        url = f"{settings.api_url}/static/avatars/{user.id}.{ext}"
+        logger.info("Dev mode: saved avatar locally for user %s", user.id)
+    else:
+        from app.services.r2_storage import upload_bytes
+        url = await upload_bytes(data, key, content_type=file.content_type)
+
+    user.avatar_url = url
     await db.commit()
     await db.refresh(user)
     return _user_to_profile(user)
