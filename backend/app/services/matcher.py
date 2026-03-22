@@ -15,6 +15,7 @@ from app.models.dna_profile import DnaProfile
 from app.models.match import Match, MatchStatus
 from app.models.user import User
 from app.services.email_service import send_invite_email, send_match_accepted_email
+from app.services.ticket_gen import generate_and_upload_ticket
 
 logger = logging.getLogger(__name__)
 
@@ -211,6 +212,25 @@ async def respond_to_invite(
 
     match.status = MatchStatus.accepted if accept else MatchStatus.declined
     match.responded_at = datetime.now(tz=timezone.utc)
+
+    # Generate ticket image on accept (fire-and-forget)
+    if accept:
+        try:
+            ticket_style_a = _get_ticket_style(user_a)
+            ticket_url = await generate_and_upload_ticket(
+                match_id=match.id,
+                user_a_name=user_a.name,
+                user_b_name=user_b.name,
+                archetype_a=_get_archetype_name(user_a),
+                archetype_b=_get_archetype_name(user_b),
+                shared_tags=match.shared_tags or [],
+                similarity_score=match.similarity_score,
+                ticket_style=ticket_style_a,
+            )
+            match.ticket_image_url = ticket_url
+        except Exception:
+            logger.exception("Failed to generate ticket for match %s", match.id)
+
     await db.commit()
     await db.refresh(match)
 
@@ -243,6 +263,17 @@ async def respond_to_invite(
             logger.exception("Failed to send accepted email to user_b for match %s", match.id)
 
     return match
+
+
+def _get_ticket_style(user: User) -> str:
+    """Get ticket style from user's archetype."""
+    profile = user.dna_profile
+    if not profile:
+        return "classic"
+    archetype = ARCHETYPE_MAP.get(profile.archetype_id)
+    if not archetype:
+        return "classic"
+    return archetype.get("ticket_style", "classic")
 
 
 def _get_archetype_name(user: User) -> str:

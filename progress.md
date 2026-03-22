@@ -10,11 +10,11 @@
 | Phase 2: Authentication | Done | 90% |
 | Phase 3: Sequencing Engine | Done | 85% |
 | Phase 4: DNA Builder + Result | Done | 80% |
-| Phase 5: Matching + Invite | Partial | 75% |
+| Phase 5: Matching + Invite | Partial | 90% |
 | Phase 6: Groups + Profile | Partial | 80% |
 | Phase 7: Polish + Infrastructure | In progress | 40% |
 | Cross-cutting | Done | 95% |
-| **Overall** | | **~65%** |
+| **Overall** | | **~70%** |
 
 ---
 
@@ -92,11 +92,12 @@
 - [x] Email: match accepted notification (send_match_accepted_email)
 - [x] Email deep link support (?respond= and ?match= URL params, highlighted card)
 - [x] Tests: email notifications (13 unit tests — XSS, dev/prod, truncation, archetype)
-- [ ] Ticket generation service (Pillow image + R2 upload)
-- [ ] R2 storage utility (upload/get_public_url)
-- [ ] TicketCard (clip-path punch holes, scan lines, holographic hover, 3D tilt)
-- [ ] TearRitual (drag gesture to tear ticket from perforated line)
-- [ ] Ticket invite page (/ticket/[inviteId] - deep link from email)
+- [x] R2 storage utility (upload_bytes, get_public_url, S3v4 signature)
+- [x] Ticket generation service (Pillow image, 5 style palettes, punch holes, scan lines)
+- [x] Ticket auto-generated on match accept (saved to R2 or local dev output/)
+- [x] TicketCard component (clip-path punch holes, scan lines, holographic hover, 3D tilt)
+- [ ] TearRitual (drag gesture to tear ticket from perforated line) → Phase 7c
+- [ ] Ticket invite page (/ticket/[inviteId] - deep link from email) → Phase 7c
 
 ## Phase 6: Groups + Profile (in progress)
 - [x] Profile router (GET /profile, PATCH /profile)

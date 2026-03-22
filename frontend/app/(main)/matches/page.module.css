@@ -245,6 +245,12 @@
   border-color: var(--border-dark);
 }
 
+.acceptedSection {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
 .acceptedLabel {
   font-size: 0.8rem;
   color: #2d8659;

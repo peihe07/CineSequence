@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { useMatchStore, MatchItem } from '@/stores/matchStore'
 import { useI18n } from '@/lib/i18n'
+import TicketCard from '@/components/match/TicketCard'
 import styles from './page.module.css'
 
 const TAG_ZH: Record<string, string> = {
@@ -93,9 +94,16 @@ function MatchCard({ match, onInvite, onRespond, highlighted }: {
           </div>
         )}
         {match.status === 'accepted' && (
-          <span className={styles.acceptedLabel}>
-            <i className="ri-heart-line" /> {t('matches.matched')}
-          </span>
+          <div className={styles.acceptedSection}>
+            <TicketCard
+              ticketImageUrl={match.ticket_image_url}
+              partnerName={match.partner_name}
+              similarityScore={match.similarity_score}
+            />
+            <span className={styles.acceptedLabel}>
+              <i className="ri-heart-line" /> {t('matches.matched')}
+            </span>
+          </div>
         )}
       </div>
     </motion.div>
