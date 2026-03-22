@@ -2,11 +2,20 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  min-height: 100vh;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+/* ─── Hero section ─── */
+.hero {
+  display: flex;
+  align-items: center;
   justify-content: center;
+  width: 100%;
   min-height: 100vh;
   padding: 2rem;
   background: var(--terminal-bg);
-  overflow: hidden;
 }
 
 /* Terminal window */
@@ -89,7 +98,7 @@
 /* Terminal body */
 .body {
   padding: 1.5rem;
-  min-height: 320px;
+  min-height: 280px;
   display: flex;
   flex-direction: column;
   gap: 0;
@@ -116,13 +125,11 @@
   to { opacity: 1; }
 }
 
-/* Detected line — brighter */
 .lineHighlight {
   color: var(--terminal-line-bright);
   font-weight: 500;
 }
 
-/* Prompt line */
 .prompt {
   font-family: var(--font-sans);
   font-size: 0.85rem;
@@ -150,7 +157,6 @@
   50% { opacity: 0; }
 }
 
-/* Response line (Y) */
 .response {
   font-family: var(--font-sans);
   font-size: 0.85rem;
@@ -161,7 +167,7 @@
   animation: lineAppear 0.2s forwards;
 }
 
-/* CTA area */
+/* CTA area inside terminal */
 .ctaArea {
   display: flex;
   flex-direction: column;
@@ -184,22 +190,29 @@
   align-items: center;
   justify-content: center;
   gap: 0.4rem;
-  padding: 0.7rem 1.2rem;
-  background: var(--foreground);
-  color: var(--background);
+  padding: 0.75rem 1.2rem;
+  background: var(--key-bg);
+  color: var(--ink);
   border: none;
+  box-shadow: var(--key-shadow);
   font-family: var(--font-sans);
   font-size: 0.8rem;
   font-weight: 600;
   letter-spacing: 0.08em;
   cursor: pointer;
-  transition: background 0.2s ease;
+  transition: box-shadow 0.1s ease, transform 0.1s ease;
   text-decoration: none;
   text-transform: uppercase;
 }
 
 .ctaPrimary:hover {
-  background: color-mix(in srgb, var(--foreground) 88%, black);
+  transform: translateY(-1px);
+  box-shadow: 0 3px 0 #c5c0b7;
+}
+
+.ctaPrimary:active {
+  box-shadow: var(--key-shadow-pressed);
+  transform: translateY(2px);
 }
 
 .ctaSecondary {
@@ -208,10 +221,10 @@
   align-items: center;
   justify-content: center;
   gap: 0.4rem;
-  padding: 0.7rem 1.2rem;
+  padding: 0.75rem 1.2rem;
   background: transparent;
   color: var(--foreground);
-  border: 1px solid color-mix(in srgb, var(--foreground) 18%, transparent);
+  border: 1px dashed var(--border-dark);
   font-family: var(--font-sans);
   font-size: 0.8rem;
   letter-spacing: 0.08em;
@@ -223,8 +236,8 @@
 
 .ctaSecondary:hover {
   color: var(--foreground);
-  border-color: color-mix(in srgb, var(--foreground) 36%, transparent);
-  background: color-mix(in srgb, var(--foreground) 4%, transparent);
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 4%, transparent);
 }
 
 .hint {
@@ -235,16 +248,133 @@
   text-transform: uppercase;
 }
 
-/* Footer */
+/* ─── Flow section ─── */
+.flowSection {
+  width: 100%;
+  max-width: 640px;
+  padding: 5rem 2rem 4rem;
+  margin: 0 auto;
+}
+
+.flowTitle {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--muted);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 2.5rem;
+  text-align: center;
+}
+
+.flowTimeline {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.flowStep {
+  display: flex;
+  gap: 1.5rem;
+  align-items: flex-start;
+}
+
+.stepLeft {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+  width: 40px;
+}
+
+.stepNum {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: var(--key-bg);
+  box-shadow: var(--key-shadow);
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--ink);
+  letter-spacing: 0.05em;
+  flex-shrink: 0;
+}
+
+.stepConnector {
+  width: 1px;
+  flex: 1;
+  min-height: 100%;
+  background: repeating-linear-gradient(
+    180deg,
+    var(--border-dark) 0px,
+    var(--border-dark) 4px,
+    transparent 4px,
+    transparent 8px
+  );
+}
+
+.stepCard {
+  flex: 1;
+  padding: 1.2rem 1.5rem;
+  margin-bottom: 1.5rem;
+  background: var(--paper);
+  border: none;
+  border-left: 3px solid var(--accent);
+  box-shadow: var(--card-shadow);
+}
+
+.stepHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.5rem;
+}
+
+.stepHeader i {
+  font-size: 1.1rem;
+  color: var(--accent);
+  opacity: 0.7;
+}
+
+.stepTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+.stepDesc {
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: var(--ink-light);
+  margin: 0;
+}
+
+/* ─── Bottom CTA ─── */
+.bottomCta {
+  display: flex;
+  justify-content: center;
+  padding: 0 2rem 4rem;
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.bottomCta .ctaPrimary {
+  max-width: 280px;
+}
+
+/* ─── Footer ─── */
 .footer {
-  margin-top: 2rem;
+  padding: 2rem;
   font-family: var(--font-sans);
   font-size: 0.6rem;
   color: color-mix(in srgb, var(--foreground) 18%, transparent);
   letter-spacing: 0.08em;
 }
 
-/* Reduced motion */
+/* ─── Reduced motion ─── */
 @media (prefers-reduced-motion: reduce) {
   .terminal::after {
     animation: none;
@@ -259,16 +389,40 @@
   }
 }
 
-/* Mobile */
-@media (max-width: 480px) {
-  .main {
-    padding: 1rem;
+/* ─── Mobile ─── */
+@media (max-width: 640px) {
+  .hero {
+    padding: 1.5rem;
+    min-height: 90vh;
   }
+
   .body {
     padding: 1rem;
-    min-height: 280px;
+    min-height: 240px;
   }
+
   .line, .prompt, .response {
     font-size: 0.75rem;
+  }
+
+  .flowSection {
+    padding: 3rem 1.5rem 2.5rem;
+  }
+
+  .flowStep {
+    gap: 1rem;
+  }
+
+  .stepCard {
+    padding: 1rem 1.2rem;
+    margin-bottom: 1.2rem;
+  }
+
+  .stepTitle {
+    font-size: 0.9rem;
+  }
+
+  .stepDesc {
+    font-size: 0.8rem;
   }
 }
