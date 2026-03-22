@@ -11,13 +11,14 @@ const fadeUp = {
 }
 
 export default function Home() {
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
+  const isEnglish = locale === 'en'
 
   return (
     <main className={styles.main}>
       <section className={styles.hero}>
         <motion.h1
-          className={styles.title}
+          className={`${styles.title} ${styles.titleEn}`}
           {...fadeUp}
           transition={{ duration: 0.6 }}
         >
@@ -48,25 +49,27 @@ export default function Home() {
       <div className={styles.divider} />
 
       <section className={styles.section}>
-        <h2 className={styles.sectionTitle}>{t('landing.howTitle')}</h2>
+        <h2 className={`${styles.sectionTitle} ${isEnglish ? styles.sectionTitleEn : ''}`}>
+          {t('landing.howTitle')}
+        </h2>
         <div className={styles.steps}>
           <motion.div className={styles.step} {...fadeUp} transition={{ duration: 0.5, delay: 0.1 }}>
             <i className={`ri-film-line ${styles.stepIcon}`} />
-            <span className={styles.stepNumber}>01</span>
+            <span className={`${styles.stepNumber} ${styles.stepNumberEn}`}>01</span>
             <span className={styles.stepTitle}>{t('landing.step1Title')}</span>
             <span className={styles.stepDesc}>{t('landing.step1Desc')}</span>
           </motion.div>
 
           <motion.div className={styles.step} {...fadeUp} transition={{ duration: 0.5, delay: 0.2 }}>
             <i className={`ri-dna-line ${styles.stepIcon}`} />
-            <span className={styles.stepNumber}>02</span>
+            <span className={`${styles.stepNumber} ${styles.stepNumberEn}`}>02</span>
             <span className={styles.stepTitle}>{t('landing.step2Title')}</span>
             <span className={styles.stepDesc}>{t('landing.step2Desc')}</span>
           </motion.div>
 
           <motion.div className={styles.step} {...fadeUp} transition={{ duration: 0.5, delay: 0.3 }}>
             <i className={`ri-hearts-line ${styles.stepIcon}`} />
-            <span className={styles.stepNumber}>03</span>
+            <span className={`${styles.stepNumber} ${styles.stepNumberEn}`}>03</span>
             <span className={styles.stepTitle}>{t('landing.step3Title')}</span>
             <span className={styles.stepDesc}>{t('landing.step3Desc')}</span>
           </motion.div>

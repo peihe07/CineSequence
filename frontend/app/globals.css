@@ -16,7 +16,8 @@
   --error: #b33a3a;
   --font-sans: "SFMono-Regular", "IBM Plex Mono", "Cascadia Mono", "Menlo", "Monaco", monospace;
   --font-zh: var(--font-huninn), 'jf-openhuninn-2.1', sans-serif;
-  --font-display: var(--font-display-script), "Baskerville", "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
+  --font-display: var(--font-huninn), 'jf-openhuninn-2.1', sans-serif;
+  --font-display-en: var(--font-display-script), "Baskerville", "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
 }
 
 *,
