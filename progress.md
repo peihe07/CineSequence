@@ -157,8 +157,8 @@
 - [x] Email tasks (send_invite_email_task, send_accepted_email_task with retry)
 - [x] Docker compose: celery-worker + celery-beat services
 
-### 7c: UX Polish
-- [ ] Landing page (hero, how it works, CTA)
+### 7c: UX Polish (in progress)
+- [x] Landing page (hero, how it works 3 steps, CTA, Framer Motion fade-up, i18n)
 - [ ] Liquid DNA tube animation (Canvas/WebGL)
 - [ ] Three.js star nebula (each dot=movie, constellation lines)
 - [ ] Sound effects + atmosphere effects (smoke, dancing lights)
@@ -191,6 +191,9 @@
 - [x] Mature cinephile tone for all user-facing copy
 
 ---
+
+## Pending Requirements
+- **隱私政策 / 使用者同意條款** — 註冊時需同意條款。揭露給配對對象：顯示名稱、原型、品味標籤、ice breaker、相似度。不揭露：email、真實姓名、出生年份、性別。未來若加入個人照片/興趣簡介需額外同意。需前後端頁面 + 註冊勾選。
 
 ## Deferred Decisions
 - **N-V-E-P-S 5-dimension DNA system** — replace current 3-axis model after core flow is complete

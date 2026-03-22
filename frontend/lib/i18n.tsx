@@ -68,6 +68,18 @@ const translations: Record<Locale, Record<string, string>> = {
     'common.confirm': '確認',
     'common.cancel': '取消',
 
+    // Landing
+    'landing.subtitle': '二十道電影選擇，解碼你的觀影基因，找到與你頻率相近的人。',
+    'landing.start': '開始解碼',
+    'landing.login': '登入',
+    'landing.howTitle': 'How It Works',
+    'landing.step1Title': '序列分析',
+    'landing.step1Desc': '20 輪電影二選一，系統從你的選擇中萃取觀影偏好。',
+    'landing.step2Title': 'DNA 生成',
+    'landing.step2Desc': 'AI 分析你的品味標籤、原型與隱藏特質，生成專屬觀影 DNA。',
+    'landing.step3Title': '品味配對',
+    'landing.step3Desc': '根據 DNA 向量餘弦相似度，找到與你觀影頻率最接近的人。',
+
     // Nav
     'nav.sequencing': '序列',
     'nav.dna': 'DNA',
@@ -221,6 +233,18 @@ const translations: Record<Locale, Record<string, string>> = {
     'common.back': 'Back',
     'common.confirm': 'Confirm',
     'common.cancel': 'Cancel',
+
+    // Landing
+    'landing.subtitle': 'Twenty movie choices. Decode your cinematic DNA. Find someone on the same wavelength.',
+    'landing.start': 'Start Decoding',
+    'landing.login': 'Sign in',
+    'landing.howTitle': 'How It Works',
+    'landing.step1Title': 'Sequencing',
+    'landing.step1Desc': '20 rounds of A/B movie picks. The system extracts your viewing preferences from each choice.',
+    'landing.step2Title': 'DNA Analysis',
+    'landing.step2Desc': 'AI analyzes your taste tags, archetype, and hidden traits to generate your unique cinematic DNA.',
+    'landing.step3Title': 'Taste Matching',
+    'landing.step3Desc': 'Cosine similarity on DNA vectors finds people whose cinematic frequency matches yours.',
 
     // Nav
     'nav.sequencing': 'Sequence',

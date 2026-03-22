@@ -2,22 +2,158 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
   min-height: 100vh;
-  gap: 1.2rem;
-  padding: 2rem;
+  padding: 0;
+}
+
+/* Hero */
+.hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 85vh;
+  gap: 2rem;
+  padding: 4rem 2rem;
+  text-align: center;
+  max-width: 640px;
 }
 
 .title {
   font-family: var(--font-display);
-  font-size: 2.8rem;
+  font-size: 3.2rem;
   font-weight: 700;
   letter-spacing: -0.03em;
   color: var(--foreground);
+  line-height: 1.1;
 }
 
 .subtitle {
   color: var(--muted);
-  font-size: 1.1rem;
+  font-size: 1.05rem;
   letter-spacing: 0.02em;
+  line-height: 1.8;
+  max-width: 480px;
+}
+
+.cta {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.ctaPrimary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.8rem 2rem;
+  background: var(--foreground);
+  color: var(--background);
+  border: none;
+  font-family: inherit;
+  font-size: 0.9rem;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+  text-decoration: none;
+}
+
+.ctaPrimary:hover {
+  opacity: 0.85;
+}
+
+.ctaSecondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.8rem 2rem;
+  background: transparent;
+  color: var(--foreground);
+  border: 1px solid var(--border);
+  font-family: inherit;
+  font-size: 0.9rem;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+  text-decoration: none;
+}
+
+.ctaSecondary:hover {
+  border-color: var(--border-dark);
+}
+
+/* Divider */
+.divider {
+  width: 60px;
+  height: 1px;
+  background: var(--border);
+}
+
+/* How it works */
+.section {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 5rem 2rem;
+}
+
+.sectionTitle {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin-bottom: 3rem;
+}
+
+.steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 2.5rem;
+  max-width: 800px;
+  width: 100%;
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.8rem;
+}
+
+.stepIcon {
+  font-size: 2rem;
+  color: var(--accent);
+  line-height: 1;
+}
+
+.stepNumber {
+  font-family: var(--font-display);
+  font-size: 0.65rem;
+  color: var(--muted-light);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.stepTitle {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.stepDesc {
+  font-size: 0.8rem;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+/* Footer */
+.footer {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 3rem 2rem;
+  color: var(--muted-light);
+  font-size: 0.7rem;
+  letter-spacing: 0.04em;
 }
