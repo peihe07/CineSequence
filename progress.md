@@ -12,9 +12,9 @@
 | Phase 4: DNA Builder + Result | Done | 80% |
 | Phase 5: Matching + Invite | Done | 100% |
 | Phase 6: Groups + Profile | Done | 95% |
-| Phase 7: Polish + Infrastructure | In progress | 75% |
+| Phase 7: Polish + Infrastructure | In progress | 85% |
 | Cross-cutting | Done | 95% |
-| **Overall** | | **~85%** |
+| **Overall** | | **~90%** |
 
 ---
 
@@ -171,18 +171,24 @@
 - [x] Tear gesture for ticket reveal (TearRitual: drag-to-tear, perforation line, gap animation, hint arrow)
 
 ### 7c-2: UX Gaps (identified 2026-03-22)
-- [ ] Global error boundary (app/error.tsx, app/(main)/error.tsx)
-- [ ] Global 404 page (app/not-found.tsx)
-- [ ] Global loading state (app/loading.tsx)
-- [ ] Toast/notification system (operation success/failure feedback)
-- [ ] Flow-dependent route guards (no DNA → block /matches, no sequencing → block /dna)
-- [ ] Onboarding overlay for first-time users (sequencing tutorial, tear gesture hint)
-- [ ] "What's next" guidance on DNA result page (→ go to matches)
-- [ ] Confirmation dialogs (logout, leave group)
-- [ ] Empty state CTAs (matches: "click discover", theaters: "click auto-assign")
+- [x] Global error boundary (app/error.tsx)
+- [x] Global 404 page (app/not-found.tsx)
+- [x] Global loading state (app/loading.tsx)
+- [x] Toast/notification system (ToastContainer + toastStore)
+- [x] Flow-dependent route guards (FlowGuard: no sequencing → block /dna, no DNA → block /matches + /theaters)
+- [x] Onboarding overlay for first-time users (OnboardingOverlay on sequencing page)
+- [x] "What's next" guidance on DNA result page (→ go to matches button already existed)
+- [x] Confirmation dialogs (ConfirmDialog: logout, leave group)
+- [x] Empty state CTAs (matches: discover button, theaters: auto-assign button)
 - [ ] Mobile responsive refinements (touch targets, card density, landscape)
 - [ ] Accessibility (aria-labels, focus-visible, keyboard nav, color contrast)
 - [ ] TAG_ZH/TAG_EN deduplication (shared constant instead of repeated in 3 pages)
+
+### 7c-3: Terminal Landing Page ✓
+- [x] CRT terminal aesthetic (dark background, amber text, scan lines, flicker)
+- [x] Sequential typewriter line animation (5 lines with staggered delays)
+- [x] Keyboard input (press Y to start)
+- [x] CSS custom properties for terminal palette (--terminal-bg, --terminal-line, etc.)
 
 ### 7d: Testing + Security (in progress)
 - [x] E2E tests: 17 passing (landing page 6, auth 5, protected routes 6)
@@ -200,15 +206,15 @@
 - [ ] Integration tests (backend API with real DB)
 - [ ] Frontend component tests (Vitest + Testing Library)
 
-### 7e: Admin Dashboard + Monitoring
-- [ ] Admin role field on User model + Alembic migration
-- [ ] Admin auth middleware (require admin role)
-- [ ] GET /admin/stats endpoint (user count, DNA count, match count, invite/accept rates)
-- [ ] GET /admin/stats/daily endpoint (daily registration, DNA builds, matches over time)
-- [ ] GET /admin/api-usage endpoint (Gemini calls, TMDB queries, Resend emails)
+### 7e: Admin Dashboard + Monitoring (in progress)
+- [x] Admin role field on User model + Alembic migration
+- [x] Admin auth middleware (require_admin dependency)
+- [x] GET /admin/stats endpoint (user count, DNA count, match count, invite/accept rates, funnel)
+- [x] GET /admin/stats/daily endpoint (daily registration, DNA builds, matches over time)
+- [x] GET /admin/api-usage endpoint (Gemini calls, TMDB queries, Resend emails)
 - [ ] Prometheus metrics endpoint (/metrics — request latency, error rate, Celery queue depth)
 - [ ] Grafana dashboard config (API health, user funnel, external API usage)
-- [ ] Frontend /admin page (stats overview, daily charts, API usage)
+- [x] Frontend /admin page (stats overview, funnel chart, daily mini charts, API usage cards)
 - [ ] Docker compose: Prometheus + Grafana services
 
 ### 7f: Deploy
