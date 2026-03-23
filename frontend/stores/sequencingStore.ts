@@ -137,6 +137,8 @@ export const useSequencingStore = create<SequencingState>((set, get) => ({
         body: JSON.stringify({
           chosen_tmdb_id: tmdbId,
           pick_mode: pickMode,
+          movie_a_tmdb_id: currentPair?.movie_a.tmdb_id ?? null,
+          movie_b_tmdb_id: currentPair?.movie_b.tmdb_id ?? null,
           response_time_ms: responseTimeMs,
           test_dimension: currentPair?.test_dimension ?? null,
         }),
@@ -158,6 +160,8 @@ export const useSequencingStore = create<SequencingState>((set, get) => ({
       const progress = await api<Progress>('/sequencing/skip', {
         method: 'POST',
         body: JSON.stringify({
+          movie_a_tmdb_id: currentPair?.movie_a.tmdb_id ?? null,
+          movie_b_tmdb_id: currentPair?.movie_b.tmdb_id ?? null,
           response_time_ms: responseTimeMs,
           test_dimension: currentPair?.test_dimension ?? null,
         }),
@@ -191,6 +195,7 @@ export const useSequencingStore = create<SequencingState>((set, get) => ({
     try {
       const res = await api<ExtendResponse>('/sequencing/extend', { method: 'POST' })
       set((state) => ({
+        currentPair: null,
         isLoading: false,
         progress: state.progress
           ? {

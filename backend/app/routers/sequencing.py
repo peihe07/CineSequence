@@ -174,7 +174,7 @@ async def get_pair(
             if seed_movie:
                 seed_genres = seed_movie.genres
 
-        pair = get_pair_for_round(round_number, seed_genres)
+        pair = get_pair_for_round(round_number, seed_genres, session_seed=str(session.id))
         movie_a = await get_movie(pair["movie_a"]["tmdb_id"])
         movie_b = await get_movie(pair["movie_b"]["tmdb_id"])
 
@@ -297,15 +297,15 @@ async def submit_pick(
             seed_movie = await get_movie(session.seed_movie_tmdb_id)
             if seed_movie:
                 seed_genres = seed_movie.genres
-        pair = get_pair_for_round(round_number, seed_genres)
+        pair = get_pair_for_round(round_number, seed_genres, session_seed=str(session.id))
         pair_id = pair["id"]
         movie_a_tmdb_id = pair["movie_a"]["tmdb_id"]
         movie_b_tmdb_id = pair["movie_b"]["tmdb_id"]
         test_dimension = pair.get("dimension")
     else:
         pair_id = None
-        movie_a_tmdb_id = body.chosen_tmdb_id
-        movie_b_tmdb_id = 0
+        movie_a_tmdb_id = body.movie_a_tmdb_id or body.chosen_tmdb_id
+        movie_b_tmdb_id = body.movie_b_tmdb_id or 0
         test_dimension = body.test_dimension
 
     if phase == 1 and body.chosen_tmdb_id not in (movie_a_tmdb_id, movie_b_tmdb_id):
@@ -362,14 +362,14 @@ async def skip_pair(
             seed_movie = await get_movie(session.seed_movie_tmdb_id)
             if seed_movie:
                 seed_genres = seed_movie.genres
-        pair = get_pair_for_round(round_number, seed_genres)
+        pair = get_pair_for_round(round_number, seed_genres, session_seed=str(session.id))
         pair_id = pair["id"]
         movie_a_tmdb_id = pair["movie_a"]["tmdb_id"]
         movie_b_tmdb_id = pair["movie_b"]["tmdb_id"]
     else:
         pair_id = None
-        movie_a_tmdb_id = 0
-        movie_b_tmdb_id = 0
+        movie_a_tmdb_id = body.movie_a_tmdb_id or 0
+        movie_b_tmdb_id = body.movie_b_tmdb_id or 0
 
     # Determine test_dimension
     if phase == 1:

@@ -25,11 +25,15 @@ class PairResponse(BaseModel):
 class PickRequest(BaseModel):
     chosen_tmdb_id: int
     pick_mode: PickMode
+    movie_a_tmdb_id: int | None = None
+    movie_b_tmdb_id: int | None = None
     response_time_ms: int | None = None
     test_dimension: str | None = None
 
 
 class SkipRequest(BaseModel):
+    movie_a_tmdb_id: int | None = None
+    movie_b_tmdb_id: int | None = None
     response_time_ms: int | None = None
     test_dimension: str | None = None
 
