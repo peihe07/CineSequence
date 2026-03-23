@@ -58,6 +58,14 @@ class Settings(BaseSettings):
     # Matching
     match_threshold: float = 0.8  # 80% minimum similarity
 
+    @field_validator("database_url")
+    @classmethod
+    def ensure_asyncpg_driver(cls, v: str) -> str:
+        """Railway/Heroku provide postgresql://, we need postgresql+asyncpg://."""
+        if v.startswith("postgresql://"):
+            return v.replace("postgresql://", "postgresql+asyncpg://", 1)
+        return v
+
     @property
     def resolved_auth_cookie_secure(self) -> bool:
         if self.auth_cookie_secure is not None:
