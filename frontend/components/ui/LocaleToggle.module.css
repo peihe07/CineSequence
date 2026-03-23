@@ -2,7 +2,8 @@
   display: inline-flex;
   border-radius: 999px;
   overflow: hidden;
-  background: var(--foreground);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.04);
   cursor: pointer;
 }
 
@@ -15,8 +16,8 @@
   border: none;
   cursor: pointer;
   transition: background 0.25s ease, color 0.25s ease;
-  background: var(--foreground);
-  color: var(--muted-light);
+  background: transparent;
+  color: var(--archive-text-muted);
   line-height: 1;
 }
 

@@ -1,10 +1,10 @@
 .shell {
   min-height: 100vh;
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.92) 0%, rgba(245, 243, 237, 0.96) 24%, rgba(236, 234, 227, 0.9) 100%);
+    linear-gradient(180deg, rgba(18, 14, 13, 0.98) 0%, rgba(12, 10, 9, 1) 100%);
 }
 
 .page {
   position: relative;
-  /* No bottom padding needed — bottom NavBar removed */
+  isolation: isolate;
 }

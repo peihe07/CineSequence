@@ -111,6 +111,7 @@ function TheatersContent() {
       <div className={styles.content}>
         <section className={`${styles.section} ${styles.heroSection}`}>
           <span className={styles.sideLabel}>FILE 06</span>
+          <p className={styles.eyebrow}>[ SCREENING_INDEX ]</p>
           <div className={styles.header}>
             <h1 className={styles.title}>{t('theaters.title')}</h1>
             <button
@@ -125,6 +126,7 @@ function TheatersContent() {
           <p className={styles.deck}>
             {t('theaters.deck')}
           </p>
+          <p className={styles.heroMeta}>GROUP_SCAN: LIVE // ASSIGNMENT: READY</p>
         </section>
 
         <section className={`${styles.section} ${styles.resultsSection}`}>

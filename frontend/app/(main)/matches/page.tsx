@@ -221,6 +221,7 @@ function MatchesContent() {
         {/* ── HERO SECTION ────────────────────────────── */}
         <section className={`${styles.section} ${styles.heroSection}`}>
           <span className={styles.sideLabel}>FILE 03</span>
+          <p className={styles.eyebrow}>[ MATCH_RESOLUTION ]</p>
           <div className={styles.header}>
             <h1 className={styles.title}>{t('matches.title')}</h1>
             <button
@@ -236,6 +237,7 @@ function MatchesContent() {
           <p className={styles.deck}>
             {t('matches.deck')}
           </p>
+          <p className={styles.heroMeta}>SYNC: OPEN CHANNEL // DISCOVERY: STANDBY</p>
         </section>
 
         {/* ── CONTROLS SECTION ────────────────────────── */}

@@ -9,11 +9,11 @@ import MuteToggle from './MuteToggle'
 import styles from './Header.module.css'
 
 const NAV_ITEMS = [
-  { href: '/sequencing', labelKey: 'nav.sequencing' },
-  { href: '/dna', labelKey: 'nav.dna' },
-  { href: '/matches', labelKey: 'nav.matches' },
-  { href: '/theaters', labelKey: 'nav.theaters' },
-  { href: '/profile', labelKey: 'nav.profile' },
+  { href: '/sequencing', labelKey: 'nav.sequencing', index: '00' },
+  { href: '/dna', labelKey: 'nav.dna', index: '01' },
+  { href: '/matches', labelKey: 'nav.matches', index: '02' },
+  { href: '/theaters', labelKey: 'nav.theaters', index: '03' },
+  { href: '/profile', labelKey: 'nav.profile', index: '04' },
 ]
 
 export default function Header() {
@@ -34,12 +34,13 @@ export default function Header() {
     <header className={`${styles.header} ${isScrolled ? styles.scrolled : ''}`}>
       {/* Left: brand logo */}
       <Link href="/sequencing" className={styles.brand}>
-        CINE SEQUENCE
+        <span className={styles.brandMain}>Cine</span>
+        <span className={styles.brandSub}>Sequence</span>
       </Link>
 
-      {/* Center: recessed nav tray with pill-shaped active item */}
+      {/* Center: recessed nav tray with sequenced active item */}
       <nav className={styles.navTray} aria-label={t('nav.main')}>
-        {NAV_ITEMS.map(({ href, labelKey }) => {
+        {NAV_ITEMS.map(({ href, labelKey, index }) => {
           const isActive = pathname.startsWith(href)
           return (
             <Link
@@ -47,7 +48,8 @@ export default function Header() {
               href={href}
               className={`${styles.navLink} ${isActive ? styles.navLinkActive : ''}`}
             >
-              {t(labelKey)}
+              <span className={styles.navIndex}>{index}</span>
+              <span>{t(labelKey)}</span>
             </Link>
           )
         })}

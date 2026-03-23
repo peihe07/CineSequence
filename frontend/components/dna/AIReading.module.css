@@ -17,6 +17,7 @@
 }
 
 .readingBox {
+  position: relative;
   padding: clamp(1.5rem, 3vw, 2.4rem);
   background: var(--glass-bg-strong);
   backdrop-filter: blur(var(--glass-blur));
@@ -24,6 +25,34 @@
   border: none;
   border-radius: var(--card-radius);
   box-shadow: var(--glass-shadow);
+  overflow: hidden;
+}
+
+.readingBox::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(
+      180deg,
+      transparent 0,
+      transparent 6px,
+      rgba(45, 54, 50, 0.02) 7px,
+      transparent 8px
+    );
+}
+
+.readingBox::after {
+  content: '';
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 38px;
+  height: 38px;
+  border-top: 1px solid rgba(45, 54, 50, 0.12);
+  border-right: 1px solid rgba(45, 54, 50, 0.12);
+  pointer-events: none;
 }
 
 .reading {

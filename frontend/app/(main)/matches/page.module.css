@@ -21,9 +21,30 @@
   position: relative;
   width: 100%;
   padding: var(--section-space) clamp(1.1rem, 4vw, 2.25rem);
+  overflow: hidden;
 }
 
-.section:last-of-type {
+.section::before,
+.section::after {
+  content: '';
+  position: absolute;
+  width: 44px;
+  height: 44px;
+  pointer-events: none;
+}
+
+.section::before {
+  top: 1rem;
+  left: 1rem;
+  border-top: 1px solid rgba(45, 54, 50, 0.12);
+  border-left: 1px solid rgba(45, 54, 50, 0.12);
+}
+
+.section::after {
+  right: 1rem;
+  bottom: 1rem;
+  border-right: 1px solid rgba(45, 54, 50, 0.12);
+  border-bottom: 1px solid rgba(45, 54, 50, 0.12);
 }
 
 /* ── DISCLAIMER ───────────────────────────────── */
@@ -46,6 +67,11 @@
     linear-gradient(135deg, rgba(255, 255, 255, 0.78) 0%, rgba(236, 234, 227, 0.58) 60%, rgba(192, 98, 35, 0.07) 100%);
 }
 
+.heroSection::before,
+.heroSection::after {
+  border-color: rgba(192, 98, 35, 0.22);
+}
+
 .sideLabel {
   position: absolute;
   top: 1.5rem;
@@ -64,6 +90,26 @@
   font-size: 0.95rem;
   color: var(--foreground-soft);
   line-height: 1.9;
+}
+
+.eyebrow,
+.heroMeta {
+  position: relative;
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+}
+
+.eyebrow {
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  color: var(--accent-ink);
+}
+
+.heroMeta {
+  margin-top: auto;
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  color: var(--muted);
 }
 
 /* ── CONTROLS SECTION ─────────────────────────── */
@@ -96,6 +142,7 @@
   line-height: 0.94;
   text-transform: uppercase;
   position: relative;
+  max-width: 10ch;
 }
 
 /* ── DISCOVER BUTTON ──────────────────────────── */
@@ -107,7 +154,7 @@
   background: var(--accent);
   color: #ffffff;
   border: none;
-  border-radius: 999px;
+  border-radius: 0.85rem;
   font-size: 0.72rem;
   font-family: var(--font-mono);
   letter-spacing: 0.12em;
@@ -120,7 +167,7 @@
 .discoverBtn:hover {
   background: var(--accent-hover);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 12px 24px rgba(192, 98, 35, 0.18);
 }
 
 .discoverBtn:active {
@@ -170,7 +217,7 @@
   backdrop-filter: blur(var(--glass-blur));
   -webkit-backdrop-filter: blur(var(--glass-blur));
   box-shadow: var(--glass-shadow);
-  border: none;
+  border: 1px solid rgba(45, 54, 50, 0.06);
   border-radius: var(--card-radius);
   overflow: hidden;
 }
@@ -197,6 +244,7 @@
 }
 
 .filterOption {
+  position: relative;
   padding: 0.35rem 0.8rem;
   background: rgba(255, 255, 255, 0.55);
   backdrop-filter: blur(8px);
@@ -211,6 +259,17 @@
   transition: all 0.15s ease;
 }
 
+.filterOption::before {
+  content: '';
+  position: absolute;
+  top: 0.45rem;
+  bottom: 0.45rem;
+  left: 0.35rem;
+  width: 2px;
+  background: transparent;
+  transition: background 0.15s ease;
+}
+
 .filterOption:hover {
   color: var(--foreground);
   box-shadow: 0 2px 8px rgba(45, 54, 50, 0.1);
@@ -220,6 +279,10 @@
   color: var(--accent-ink);
   background: rgba(192, 98, 35, 0.12);
   box-shadow: 0 1px 4px rgba(45, 54, 50, 0.06);
+}
+
+.filterActive::before {
+  background: var(--accent);
 }
 
 .ageInputs {

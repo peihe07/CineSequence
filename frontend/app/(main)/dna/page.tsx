@@ -25,7 +25,7 @@ export default function DnaResultPage() {
 
 function DnaResultContent() {
   const router = useRouter()
-const { t } = useI18n()
+  const { t } = useI18n()
   const { result, isBuilding, isLoading, error, buildDna, fetchResult } = useDnaStore()
   const sectionTransition = { duration: 0.65, ease: 'easeOut' as const }
 
@@ -92,6 +92,7 @@ const { t } = useI18n()
           transition={sectionTransition}
         >
           <span className={styles.sideLabel}>FILE 01</span>
+          <p className={styles.eyebrow}>[ MOVIE_DNA_PROFILE ]</p>
           <motion.h1
             className={styles.title}
             initial={{ opacity: 0, y: -20 }}
@@ -103,6 +104,7 @@ const { t } = useI18n()
           <p className={styles.deck}>
             {t('dna.deck')}
           </p>
+          <p className={styles.heroMeta}>GEN_SEQ: v2.0.4 // SIGNAL: STABLE</p>
         </motion.section>
 
         <motion.section

@@ -150,6 +150,10 @@ export default function SequencingPage() {
       <div className={styles.shell}>
         <section className={`${styles.section} ${styles.heroSection}`}>
           <span className={styles.sideLabel}>FILE 05</span>
+          <div className={styles.heroCopy}>
+            <p className={styles.eyebrow}>[ SEQUENCE_SESSION ]</p>
+            <p className={styles.heroMeta}>ROUND {String(roundNumber).padStart(2, '0')} // PHASE {phase}</p>
+          </div>
           <div className={styles.header}>
             <PhaseIndicator phase={phase} round={roundNumber} totalRounds={progress?.total_rounds ?? 20} />
           </div>

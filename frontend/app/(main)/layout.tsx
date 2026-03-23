@@ -1,6 +1,7 @@
 'use client'
 
 import Header from '@/components/ui/Header'
+import ArchiveWrapper from '@/components/ui/ArchiveWrapper'
 import AuthGuard from '@/components/guards/AuthGuard'
 import styles from './layout.module.css'
 
@@ -9,7 +10,9 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
     <AuthGuard>
       <div className={styles.shell}>
         <Header />
-        <div className={styles.page}>{children}</div>
+        <div className={styles.page}>
+          <ArchiveWrapper>{children}</ArchiveWrapper>
+        </div>
       </div>
     </AuthGuard>
   )

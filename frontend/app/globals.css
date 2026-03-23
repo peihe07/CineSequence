@@ -7,6 +7,16 @@
   --accent-light: rgba(192, 98, 35, 0.06);
   --accent-ink: #7d3f1b;
   --accent-hover: #a35420;
+  --archive-bg: #0c0a09;
+  --archive-bg-alt: #120e0d;
+  --archive-border: rgba(255, 255, 255, 0.08);
+  --archive-text: rgba(255, 255, 255, 0.85);
+  --archive-text-muted: rgba(255, 255, 255, 0.45);
+  --archive-glow: rgba(192, 98, 35, 0.12);
+  --archive-scanline: rgba(255, 255, 255, 0.028);
+  --archive-bracket: rgba(255, 255, 255, 0.12);
+  --archive-label-bg: rgba(255, 255, 255, 0.05);
+  --archive-label-text: rgba(255, 255, 255, 0.72);
   --muted: #8a9189;
   --muted-light: #b5bab3;
 
