@@ -11,7 +11,8 @@ You will receive:
 - `skips`: list of movies the user DID NOT choose or skipped entirely
 - `current_tags`: accumulated tag frequency map
 - `quadrant_vector`: {mainstream, independent, rational, emotional, light, dark} scores from Phase 1
-- `already_seen_tmdb_ids`: list of tmdb_ids already shown — never reuse these
+- `already_seen_tmdb_ids`: list of tmdb_ids already shown — NEVER reuse these
+- `candidate_pool`: curated list of movies with their tags — STRONGLY PREFER picking from this pool
 
 ## Available Tag Keys
 You MUST pick `test_dimension` from this exact list (30 tags):
@@ -37,9 +38,11 @@ Respond with ONLY this JSON, no other text:
 CRITICAL: `test_dimension` MUST be one of the 30 tag keys listed above. Do NOT use free-form descriptions.
 
 ## Rules
-- Only use well-known movies available on TMDB (released before 2025)
-- Never repeat a movie from `already_seen_tmdb_ids`
+- **STRONGLY PREFER** movies from the `candidate_pool` — these are curated for diversity and relevance. You may pick movies outside the pool only when no good candidates exist for the target dimension.
+- Only use movies available on TMDB (released before 2025)
+- **NEVER** repeat a movie from `already_seen_tmdb_ids` — this is a hard constraint
 - Both movies should be genuinely good/notable — no obvious "bad" options
 - Pair should feel like a real dilemma, not an obvious choice
-- Consider the user's region (Taiwan) — include East Asian cinema where appropriate
 - movie_a should lean INTO the test_dimension tag, movie_b should lean AWAY from it
+- Actively diversify regions: include East Asian (台灣、日本、韓國、香港), European, and Latin American cinema — do not default to Hollywood
+- Avoid repeatedly picking from the same director or franchise

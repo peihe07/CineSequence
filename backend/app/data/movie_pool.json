@@ -1,0 +1,2799 @@
+{
+  "version": "1.0",
+  "description": "Curated movie pool for Phase 2-3 AI pair generation. Each movie is tagged with relevant taste dimensions.",
+  "movies": [
+    {
+      "tmdb_id": 680,
+      "title_en": "Pulp Fiction",
+      "tags": [
+        "twist",
+        "ensemble",
+        "violentAesthetic",
+        "cult",
+        "dialogue"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 807,
+      "title_en": "Se7en",
+      "tags": [
+        "darkTone",
+        "psychoThriller",
+        "twist",
+        "antiHero"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 550,
+      "title_en": "Fight Club",
+      "tags": [
+        "twist",
+        "antiHero",
+        "darkTone",
+        "cult",
+        "socialCritique"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 603,
+      "title_en": "The Matrix",
+      "tags": [
+        "mindfuck",
+        "philosophical",
+        "visualFeast"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 27205,
+      "title_en": "Inception",
+      "tags": [
+        "mindfuck",
+        "visualFeast",
+        "heist"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 1124,
+      "title_en": "The Prestige",
+      "tags": [
+        "twist",
+        "mindfuck",
+        "dialogue"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 77,
+      "title_en": "Memento",
+      "tags": [
+        "mindfuck",
+        "twist",
+        "psychoThriller"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 8967,
+      "title_en": "The Sixth Sense",
+      "tags": [
+        "twist",
+        "psychoThriller",
+        "darkTone"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 137113,
+      "title_en": "Edge of Tomorrow",
+      "tags": [
+        "timeTravel",
+        "survival",
+        "visualFeast"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 264660,
+      "title_en": "Ex Machina",
+      "tags": [
+        "mindfuck",
+        "philosophical",
+        "dystopia"
+      ],
+      "region": "uk"
+    },
+    {
+      "tmdb_id": 329865,
+      "title_en": "Arrival",
+      "tags": [
+        "mindfuck",
+        "philosophical",
+        "slowburn",
+        "nonEnglish"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 152601,
+      "title_en": "Her",
+      "tags": [
+        "romanticCore",
+        "philosophical",
+        "existential",
+        "slowburn"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 1891,
+      "title_en": "The Empire Strikes Back",
+      "tags": [
+        "visualFeast",
+        "ensemble"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 120,
+      "title_en": "The Lord of the Rings: The Fellowship of the Ring",
+      "tags": [
+        "visualFeast",
+        "ensemble"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 157336,
+      "title_en": "Interstellar",
+      "tags": [
+        "visualFeast",
+        "philosophical",
+        "tearjerker"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 335984,
+      "title_en": "Blade Runner 2049",
+      "tags": [
+        "visualFeast",
+        "slowburn",
+        "existential",
+        "dystopia"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 62,
+      "title_en": "2001: A Space Odyssey",
+      "tags": [
+        "experimental",
+        "philosophical",
+        "slowburn",
+        "visualFeast"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 153,
+      "title_en": "Lost in Translation",
+      "tags": [
+        "slowburn",
+        "existential",
+        "dialogue",
+        "nostalgic"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 4935,
+      "title_en": "Before Sunrise",
+      "tags": [
+        "dialogue",
+        "romanticCore",
+        "slowburn"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 740,
+      "title_en": "Before Sunset",
+      "tags": [
+        "dialogue",
+        "romanticCore",
+        "slowburn",
+        "nostalgic"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 4538,
+      "title_en": "Before Midnight",
+      "tags": [
+        "dialogue",
+        "romanticCore"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 508,
+      "title_en": "Cinema Paradiso",
+      "tags": [
+        "nostalgic",
+        "tearjerker",
+        "comingOfAge"
+      ],
+      "region": "it"
+    },
+    {
+      "tmdb_id": 637,
+      "title_en": "Life Is Beautiful",
+      "tags": [
+        "tearjerker",
+        "uplifting",
+        "trueStory"
+      ],
+      "region": "it"
+    },
+    {
+      "tmdb_id": 278,
+      "title_en": "The Shawshank Redemption",
+      "tags": [
+        "uplifting",
+        "dialogue",
+        "tearjerker"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 13,
+      "title_en": "Forrest Gump",
+      "tags": [
+        "uplifting",
+        "nostalgic",
+        "tearjerker",
+        "comingOfAge"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 424,
+      "title_en": "Schindler's List",
+      "tags": [
+        "tearjerker",
+        "trueStory",
+        "darkTone"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 857,
+      "title_en": "Saving Private Ryan",
+      "tags": [
+        "trueStory",
+        "ensemble",
+        "survival",
+        "visualFeast"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 389,
+      "title_en": "12 Angry Men",
+      "tags": [
+        "dialogue",
+        "socialCritique",
+        "ensemble"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 567,
+      "title_en": "Rear Window",
+      "tags": [
+        "psychoThriller",
+        "solo",
+        "slowburn"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 539,
+      "title_en": "Psycho",
+      "tags": [
+        "psychoThriller",
+        "twist",
+        "darkTone"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 694,
+      "title_en": "The Shining",
+      "tags": [
+        "psychoThriller",
+        "darkTone",
+        "cult",
+        "experimental"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 1402,
+      "title_en": "The Silence of the Lambs",
+      "tags": [
+        "psychoThriller",
+        "darkTone",
+        "antiHero"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 745,
+      "title_en": "The Usual Suspects",
+      "tags": [
+        "twist",
+        "heist",
+        "ensemble",
+        "antiHero"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 500,
+      "title_en": "Reservoir Dogs",
+      "tags": [
+        "violentAesthetic",
+        "ensemble",
+        "heist",
+        "dialogue"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 16869,
+      "title_en": "Inglourious Basterds",
+      "tags": [
+        "violentAesthetic",
+        "satirical",
+        "revenge",
+        "ensemble"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 393,
+      "title_en": "Kill Bill: Volume 1",
+      "tags": [
+        "violentAesthetic",
+        "revenge",
+        "visualFeast",
+        "cult"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 380,
+      "title_en": "A Clockwork Orange",
+      "tags": [
+        "violentAesthetic",
+        "dystopia",
+        "cult",
+        "satirical",
+        "experimental"
+      ],
+      "region": "uk"
+    },
+    {
+      "tmdb_id": 141,
+      "title_en": "Donnie Darko",
+      "tags": [
+        "mindfuck",
+        "timeTravel",
+        "cult",
+        "comingOfAge"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 68718,
+      "title_en": "Django Unchained",
+      "tags": [
+        "revenge",
+        "violentAesthetic",
+        "satirical"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 769,
+      "title_en": "Goodfellas",
+      "tags": [
+        "ensemble",
+        "darkTone",
+        "trueStory",
+        "violentAesthetic"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 238,
+      "title_en": "The Godfather",
+      "tags": [
+        "ensemble",
+        "darkTone",
+        "dialogue",
+        "antiHero"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 240,
+      "title_en": "The Godfather Part II",
+      "tags": [
+        "ensemble",
+        "darkTone",
+        "antiHero"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 106646,
+      "title_en": "The Wolf of Wall Street",
+      "tags": [
+        "satirical",
+        "trueStory",
+        "antiHero",
+        "darkTone"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 1422,
+      "title_en": "The Departed",
+      "tags": [
+        "psychoThriller",
+        "twist",
+        "ensemble",
+        "violentAesthetic"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 475557,
+      "title_en": "Joker",
+      "tags": [
+        "antiHero",
+        "darkTone",
+        "socialCritique",
+        "psychoThriller",
+        "solo"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 120467,
+      "title_en": "The Grand Budapest Hotel",
+      "tags": [
+        "satirical",
+        "visualFeast",
+        "nostalgic",
+        "ensemble"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 68726,
+      "title_en": "Pacific Rim",
+      "tags": [
+        "visualFeast",
+        "survival"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 76341,
+      "title_en": "Mad Max: Fury Road",
+      "tags": [
+        "visualFeast",
+        "survival",
+        "dystopia",
+        "violentAesthetic"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 70,
+      "title_en": "Million Dollar Baby",
+      "tags": [
+        "tearjerker",
+        "solo",
+        "darkTone",
+        "trueStory"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 453,
+      "title_en": "A Beautiful Mind",
+      "tags": [
+        "trueStory",
+        "twist",
+        "uplifting"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 115,
+      "title_en": "The Big Lebowski",
+      "tags": [
+        "cult",
+        "absurdist",
+        "dialogue"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 510,
+      "title_en": "Being John Malkovich",
+      "tags": [
+        "absurdist",
+        "experimental",
+        "cult",
+        "mindfuck"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 334,
+      "title_en": "Magnolia",
+      "tags": [
+        "ensemble",
+        "existential",
+        "tearjerker"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 14,
+      "title_en": "American Beauty",
+      "tags": [
+        "satirical",
+        "existential",
+        "darkTone",
+        "comingOfAge"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 1538,
+      "title_en": "Collateral",
+      "tags": [
+        "psychoThriller",
+        "antiHero",
+        "dialogue"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 194,
+      "title_en": "Amelie",
+      "tags": [
+        "uplifting",
+        "romanticCore",
+        "visualFeast",
+        "nonEnglish"
+      ],
+      "region": "fr"
+    },
+    {
+      "tmdb_id": 101,
+      "title_en": "Leon: The Professional",
+      "tags": [
+        "antiHero",
+        "violentAesthetic",
+        "solo",
+        "nonEnglish"
+      ],
+      "region": "fr"
+    },
+    {
+      "tmdb_id": 901,
+      "title_en": "The Diving Bell and the Butterfly",
+      "tags": [
+        "trueStory",
+        "existential",
+        "solo",
+        "nonEnglish"
+      ],
+      "region": "fr"
+    },
+    {
+      "tmdb_id": 400,
+      "title_en": "Amour",
+      "tags": [
+        "slowburn",
+        "tearjerker",
+        "existential",
+        "nonEnglish"
+      ],
+      "region": "fr"
+    },
+    {
+      "tmdb_id": 517814,
+      "title_en": "Portrait of a Lady on Fire",
+      "tags": [
+        "slowburn",
+        "romanticCore",
+        "visualFeast",
+        "nonEnglish"
+      ],
+      "region": "fr"
+    },
+    {
+      "tmdb_id": 194662,
+      "title_en": "Blue Is the Warmest Colour",
+      "tags": [
+        "romanticCore",
+        "comingOfAge",
+        "nonEnglish"
+      ],
+      "region": "fr"
+    },
+    {
+      "tmdb_id": 77338,
+      "title_en": "The Intouchables",
+      "tags": [
+        "uplifting",
+        "trueStory",
+        "nonEnglish"
+      ],
+      "region": "fr"
+    },
+    {
+      "tmdb_id": 346,
+      "title_en": "Seven Samurai",
+      "tags": [
+        "ensemble",
+        "visualFeast",
+        "nonEnglish"
+      ],
+      "region": "jp"
+    },
+    {
+      "tmdb_id": 548,
+      "title_en": "Rashomon",
+      "tags": [
+        "twist",
+        "philosophical",
+        "nonEnglish"
+      ],
+      "region": "jp"
+    },
+    {
+      "tmdb_id": 129,
+      "title_en": "Spirited Away",
+      "tags": [
+        "visualFeast",
+        "comingOfAge",
+        "nonEnglish"
+      ],
+      "region": "jp"
+    },
+    {
+      "tmdb_id": 128,
+      "title_en": "Princess Mononoke",
+      "tags": [
+        "visualFeast",
+        "socialCritique",
+        "nonEnglish"
+      ],
+      "region": "jp"
+    },
+    {
+      "tmdb_id": 149870,
+      "title_en": "The Wind Rises",
+      "tags": [
+        "nostalgic",
+        "trueStory",
+        "nonEnglish",
+        "slowburn"
+      ],
+      "region": "jp"
+    },
+    {
+      "tmdb_id": 372058,
+      "title_en": "Your Name",
+      "tags": [
+        "romanticCore",
+        "timeTravel",
+        "tearjerker",
+        "nonEnglish",
+        "visualFeast"
+      ],
+      "region": "jp"
+    },
+    {
+      "tmdb_id": 14537,
+      "title_en": "Still Walking",
+      "tags": [
+        "slowburn",
+        "dialogue",
+        "nonEnglish",
+        "nostalgic"
+      ],
+      "region": "jp"
+    },
+    {
+      "tmdb_id": 3782,
+      "title_en": "Departures",
+      "tags": [
+        "tearjerker",
+        "existential",
+        "nonEnglish",
+        "uplifting"
+      ],
+      "region": "jp"
+    },
+    {
+      "tmdb_id": 11953,
+      "title_en": "Nobody Knows",
+      "tags": [
+        "socialCritique",
+        "darkTone",
+        "nonEnglish",
+        "slowburn"
+      ],
+      "region": "jp"
+    },
+    {
+      "tmdb_id": 1581,
+      "title_en": "The Taste of Tea",
+      "tags": [
+        "absurdist",
+        "nonEnglish",
+        "experimental"
+      ],
+      "region": "jp"
+    },
+    {
+      "tmdb_id": 329,
+      "title_en": "Ikiru",
+      "tags": [
+        "existential",
+        "slowburn",
+        "nonEnglish",
+        "tearjerker"
+      ],
+      "region": "jp"
+    },
+    {
+      "tmdb_id": 1111,
+      "title_en": "Ringu",
+      "tags": [
+        "psychoThriller",
+        "darkTone",
+        "nonEnglish"
+      ],
+      "region": "jp"
+    },
+    {
+      "tmdb_id": 18491,
+      "title_en": "Neon Genesis Evangelion: The End of Evangelion",
+      "tags": [
+        "experimental",
+        "existential",
+        "nonEnglish",
+        "mindfuck"
+      ],
+      "region": "jp"
+    },
+    {
+      "tmdb_id": 346364,
+      "title_en": "It's a Flickering Life",
+      "tags": [
+        "nostalgic",
+        "nonEnglish",
+        "tearjerker"
+      ],
+      "region": "jp"
+    },
+    {
+      "tmdb_id": 496243,
+      "title_en": "Parasite",
+      "tags": [
+        "socialCritique",
+        "twist",
+        "darkTone",
+        "satirical",
+        "nonEnglish"
+      ],
+      "region": "kr"
+    },
+    {
+      "tmdb_id": 670,
+      "title_en": "Oldboy",
+      "tags": [
+        "revenge",
+        "twist",
+        "violentAesthetic",
+        "nonEnglish",
+        "darkTone"
+      ],
+      "region": "kr"
+    },
+    {
+      "tmdb_id": 338766,
+      "title_en": "Burning",
+      "tags": [
+        "slowburn",
+        "existential",
+        "psychoThriller",
+        "nonEnglish"
+      ],
+      "region": "kr"
+    },
+    {
+      "tmdb_id": 387886,
+      "title_en": "A Taxi Driver",
+      "tags": [
+        "trueStory",
+        "socialCritique",
+        "nonEnglish",
+        "uplifting"
+      ],
+      "region": "kr"
+    },
+    {
+      "tmdb_id": 346646,
+      "title_en": "The Handmaiden",
+      "tags": [
+        "twist",
+        "romanticCore",
+        "nonEnglish",
+        "visualFeast"
+      ],
+      "region": "kr"
+    },
+    {
+      "tmdb_id": 614696,
+      "title_en": "Minari",
+      "tags": [
+        "comingOfAge",
+        "nonEnglish",
+        "nostalgic",
+        "slowburn"
+      ],
+      "region": "kr"
+    },
+    {
+      "tmdb_id": 49084,
+      "title_en": "Poetry",
+      "tags": [
+        "existential",
+        "slowburn",
+        "nonEnglish",
+        "socialCritique"
+      ],
+      "region": "kr"
+    },
+    {
+      "tmdb_id": 664767,
+      "title_en": "Decision to Leave",
+      "tags": [
+        "psychoThriller",
+        "romanticCore",
+        "nonEnglish",
+        "slowburn"
+      ],
+      "region": "kr"
+    },
+    {
+      "tmdb_id": 2017,
+      "title_en": "Memories of Murder",
+      "tags": [
+        "darkTone",
+        "trueStory",
+        "nonEnglish",
+        "psychoThriller"
+      ],
+      "region": "kr"
+    },
+    {
+      "tmdb_id": 4550,
+      "title_en": "The Host",
+      "tags": [
+        "ensemble",
+        "survival",
+        "nonEnglish",
+        "satirical"
+      ],
+      "region": "kr"
+    },
+    {
+      "tmdb_id": 10687,
+      "title_en": "Spring, Summer, Fall, Winter... and Spring",
+      "tags": [
+        "slowburn",
+        "philosophical",
+        "nonEnglish",
+        "visualFeast"
+      ],
+      "region": "kr"
+    },
+    {
+      "tmdb_id": 25538,
+      "title_en": "Yi Yi",
+      "tags": [
+        "ensemble",
+        "existential",
+        "dialogue",
+        "nonEnglish",
+        "slowburn"
+      ],
+      "region": "tw"
+    },
+    {
+      "tmdb_id": 15899,
+      "title_en": "A City of Sadness",
+      "tags": [
+        "trueStory",
+        "socialCritique",
+        "nonEnglish",
+        "slowburn"
+      ],
+      "region": "tw"
+    },
+    {
+      "tmdb_id": 22429,
+      "title_en": "Eat Drink Man Woman",
+      "tags": [
+        "ensemble",
+        "dialogue",
+        "nonEnglish",
+        "nostalgic"
+      ],
+      "region": "tw"
+    },
+    {
+      "tmdb_id": 1585,
+      "title_en": "A Brighter Summer Day",
+      "tags": [
+        "comingOfAge",
+        "socialCritique",
+        "nonEnglish",
+        "darkTone"
+      ],
+      "region": "tw"
+    },
+    {
+      "tmdb_id": 939,
+      "title_en": "In the Mood for Love",
+      "tags": [
+        "romanticCore",
+        "slowburn",
+        "visualFeast",
+        "nonEnglish",
+        "nostalgic"
+      ],
+      "region": "hk"
+    },
+    {
+      "tmdb_id": 11610,
+      "title_en": "Chungking Express",
+      "tags": [
+        "romanticCore",
+        "experimental",
+        "nonEnglish",
+        "absurdist"
+      ],
+      "region": "hk"
+    },
+    {
+      "tmdb_id": 654299,
+      "title_en": "Infernal Affairs",
+      "tags": [
+        "psychoThriller",
+        "twist",
+        "nonEnglish",
+        "ensemble"
+      ],
+      "region": "hk"
+    },
+    {
+      "tmdb_id": 823754,
+      "title_en": "A Sun",
+      "tags": [
+        "ensemble",
+        "darkTone",
+        "nonEnglish",
+        "socialCritique"
+      ],
+      "region": "tw"
+    },
+    {
+      "tmdb_id": 639720,
+      "title_en": "A Leg",
+      "tags": [
+        "absurdist",
+        "nonEnglish",
+        "darkTone"
+      ],
+      "region": "tw"
+    },
+    {
+      "tmdb_id": 7326,
+      "title_en": "Pan's Labyrinth",
+      "tags": [
+        "visualFeast",
+        "darkTone",
+        "nonEnglish",
+        "comingOfAge"
+      ],
+      "region": "es"
+    },
+    {
+      "tmdb_id": 264644,
+      "title_en": "Room",
+      "tags": [
+        "survival",
+        "tearjerker",
+        "solo"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 60243,
+      "title_en": "A Separation",
+      "tags": [
+        "dialogue",
+        "socialCritique",
+        "nonEnglish",
+        "ensemble"
+      ],
+      "region": "ir"
+    },
+    {
+      "tmdb_id": 36643,
+      "title_en": "Atonement",
+      "tags": [
+        "romanticCore",
+        "tearjerker",
+        "nostalgic",
+        "visualFeast"
+      ],
+      "region": "uk"
+    },
+    {
+      "tmdb_id": 4476,
+      "title_en": "Y Tu Mama Tambien",
+      "tags": [
+        "comingOfAge",
+        "romanticCore",
+        "nonEnglish"
+      ],
+      "region": "mx"
+    },
+    {
+      "tmdb_id": 2062,
+      "title_en": "Amores Perros",
+      "tags": [
+        "ensemble",
+        "darkTone",
+        "violentAesthetic",
+        "nonEnglish"
+      ],
+      "region": "mx"
+    },
+    {
+      "tmdb_id": 10867,
+      "title_en": "The Secret in Their Eyes",
+      "tags": [
+        "twist",
+        "romanticCore",
+        "nonEnglish",
+        "psychoThriller"
+      ],
+      "region": "ar"
+    },
+    {
+      "tmdb_id": 598,
+      "title_en": "City of God",
+      "tags": [
+        "ensemble",
+        "socialCritique",
+        "violentAesthetic",
+        "nonEnglish",
+        "trueStory"
+      ],
+      "region": "br"
+    },
+    {
+      "tmdb_id": 378064,
+      "title_en": "A Fantastic Woman",
+      "tags": [
+        "socialCritique",
+        "solo",
+        "nonEnglish"
+      ],
+      "region": "cl"
+    },
+    {
+      "tmdb_id": 523607,
+      "title_en": "Everything Everywhere All at Once",
+      "tags": [
+        "absurdist",
+        "mindfuck",
+        "ensemble",
+        "tearjerker",
+        "nonEnglish"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 497,
+      "title_en": "The Green Mile",
+      "tags": [
+        "tearjerker",
+        "uplifting",
+        "darkTone"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 629,
+      "title_en": "The Usual Suspects",
+      "tags": [
+        "twist",
+        "ensemble",
+        "heist",
+        "antiHero"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 98,
+      "title_en": "Gladiator",
+      "tags": [
+        "revenge",
+        "visualFeast",
+        "survival"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 155,
+      "title_en": "The Dark Knight",
+      "tags": [
+        "antiHero",
+        "darkTone",
+        "ensemble",
+        "visualFeast"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 87827,
+      "title_en": "Life of Pi",
+      "tags": [
+        "survival",
+        "philosophical",
+        "visualFeast",
+        "solo"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 205596,
+      "title_en": "The Imitation Game",
+      "tags": [
+        "trueStory",
+        "solo"
+      ],
+      "region": "uk"
+    },
+    {
+      "tmdb_id": 398818,
+      "title_en": "Call Me by Your Name",
+      "tags": [
+        "romanticCore",
+        "comingOfAge",
+        "slowburn",
+        "nostalgic"
+      ],
+      "region": "it"
+    },
+    {
+      "tmdb_id": 313369,
+      "title_en": "La La Land",
+      "tags": [
+        "romanticCore",
+        "uplifting",
+        "nostalgic",
+        "visualFeast"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 274479,
+      "title_en": "The Notebook",
+      "tags": [
+        "romanticCore",
+        "tearjerker",
+        "nostalgic"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 787699,
+      "title_en": "Wonka",
+      "tags": [
+        "uplifting",
+        "visualFeast",
+        "comingOfAge"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 438631,
+      "title_en": "Dune",
+      "tags": [
+        "visualFeast",
+        "slowburn",
+        "dystopia"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 11887,
+      "title_en": "Amelie",
+      "tags": [
+        "uplifting",
+        "romanticCore",
+        "visualFeast",
+        "nonEnglish"
+      ],
+      "region": "fr"
+    },
+    {
+      "tmdb_id": 346698,
+      "title_en": "Barbie",
+      "tags": [
+        "satirical",
+        "absurdist",
+        "uplifting"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 872585,
+      "title_en": "Oppenheimer",
+      "tags": [
+        "trueStory",
+        "philosophical",
+        "ensemble",
+        "darkTone"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 37165,
+      "title_en": "The Truman Show",
+      "tags": [
+        "satirical",
+        "existential",
+        "solo",
+        "philosophical"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 82695,
+      "title_en": "Eternal Sunshine of the Spotless Mind",
+      "tags": [
+        "romanticCore",
+        "mindfuck",
+        "existential"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 68,
+      "title_en": "Brazil",
+      "tags": [
+        "dystopia",
+        "satirical",
+        "absurdist",
+        "cult"
+      ],
+      "region": "uk"
+    },
+    {
+      "tmdb_id": 105,
+      "title_en": "Back to the Future",
+      "tags": [
+        "timeTravel",
+        "uplifting",
+        "comingOfAge"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 652837,
+      "title_en": "Past Lives",
+      "tags": [
+        "romanticCore",
+        "slowburn",
+        "nonEnglish",
+        "existential",
+        "nostalgic"
+      ],
+      "region": "kr"
+    },
+    {
+      "tmdb_id": 530385,
+      "title_en": "Midsommar",
+      "tags": [
+        "cult",
+        "darkTone",
+        "psychoThriller",
+        "visualFeast"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 419704,
+      "title_en": "Get Out",
+      "tags": [
+        "socialCritique",
+        "psychoThriller",
+        "satirical",
+        "twist"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 381288,
+      "title_en": "Split",
+      "tags": [
+        "psychoThriller",
+        "solo",
+        "twist"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 490132,
+      "title_en": "Green Book",
+      "tags": [
+        "trueStory",
+        "uplifting",
+        "dialogue",
+        "socialCritique"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 508442,
+      "title_en": "Soul",
+      "tags": [
+        "philosophical",
+        "existential",
+        "uplifting"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 150540,
+      "title_en": "Inside Out",
+      "tags": [
+        "tearjerker",
+        "uplifting",
+        "comingOfAge"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 207703,
+      "title_en": "WALL-E",
+      "tags": [
+        "dystopia",
+        "romanticCore",
+        "solo",
+        "uplifting"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 862,
+      "title_en": "Toy Story",
+      "tags": [
+        "uplifting",
+        "ensemble",
+        "comingOfAge"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 585,
+      "title_en": "Monsters, Inc.",
+      "tags": [
+        "uplifting",
+        "ensemble"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 354912,
+      "title_en": "Coco",
+      "tags": [
+        "tearjerker",
+        "nostalgic",
+        "nonEnglish",
+        "uplifting"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 286217,
+      "title_en": "The Martian",
+      "tags": [
+        "survival",
+        "solo",
+        "uplifting"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 109445,
+      "title_en": "Frozen",
+      "tags": [
+        "uplifting",
+        "comingOfAge"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 671,
+      "title_en": "Harry Potter and the Philosopher's Stone",
+      "tags": [
+        "comingOfAge",
+        "ensemble",
+        "visualFeast"
+      ],
+      "region": "uk"
+    },
+    {
+      "tmdb_id": 597,
+      "title_en": "Titanic",
+      "tags": [
+        "romanticCore",
+        "tearjerker",
+        "visualFeast",
+        "trueStory"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 1366,
+      "title_en": "Rocky",
+      "tags": [
+        "uplifting",
+        "solo",
+        "trueStory"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 600,
+      "title_en": "Full Metal Jacket",
+      "tags": [
+        "darkTone",
+        "satirical",
+        "ensemble"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 73,
+      "title_en": "American History X",
+      "tags": [
+        "socialCritique",
+        "darkTone",
+        "antiHero"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 578,
+      "title_en": "Jaws",
+      "tags": [
+        "survival",
+        "ensemble"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 11036,
+      "title_en": "The Notebook",
+      "tags": [
+        "romanticCore",
+        "tearjerker"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 1359,
+      "title_en": "American Psycho",
+      "tags": [
+        "antiHero",
+        "satirical",
+        "darkTone",
+        "cult",
+        "psychoThriller"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 840,
+      "title_en": "Close Encounters of the Third Kind",
+      "tags": [
+        "visualFeast",
+        "philosophical",
+        "slowburn"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 607,
+      "title_en": "Men in Black",
+      "tags": [
+        "ensemble",
+        "uplifting"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 489,
+      "title_en": "Good Will Hunting",
+      "tags": [
+        "dialogue",
+        "uplifting",
+        "comingOfAge",
+        "solo"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 311,
+      "title_en": "Once Upon a Time in America",
+      "tags": [
+        "nostalgic",
+        "ensemble",
+        "darkTone",
+        "slowburn"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 500244,
+      "title_en": "1917",
+      "tags": [
+        "visualFeast",
+        "survival",
+        "trueStory",
+        "solo"
+      ],
+      "region": "uk"
+    },
+    {
+      "tmdb_id": 399055,
+      "title_en": "The Shape of Water",
+      "tags": [
+        "romanticCore",
+        "visualFeast",
+        "nonEnglish"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 49026,
+      "title_en": "The Dark Knight Rises",
+      "tags": [
+        "visualFeast",
+        "ensemble",
+        "darkTone"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 429617,
+      "title_en": "Spider-Man: Into the Spider-Verse",
+      "tags": [
+        "visualFeast",
+        "comingOfAge",
+        "ensemble"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 530915,
+      "title_en": "1917",
+      "tags": [
+        "visualFeast",
+        "survival",
+        "trueStory"
+      ],
+      "region": "uk"
+    },
+    {
+      "tmdb_id": 244786,
+      "title_en": "Whiplash",
+      "tags": [
+        "solo",
+        "darkTone",
+        "comingOfAge",
+        "dialogue"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 76600,
+      "title_en": "Avatar: The Way of Water",
+      "tags": [
+        "visualFeast",
+        "survival"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 361743,
+      "title_en": "Top Gun: Maverick",
+      "tags": [
+        "uplifting",
+        "nostalgic",
+        "visualFeast"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 539681,
+      "title_en": "DC League of Super-Pets",
+      "tags": [
+        "uplifting",
+        "ensemble"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 324857,
+      "title_en": "Spider-Man: Homecoming",
+      "tags": [
+        "comingOfAge",
+        "uplifting"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 447365,
+      "title_en": "Guardians of the Galaxy Vol. 3",
+      "tags": [
+        "ensemble",
+        "tearjerker"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 296096,
+      "title_en": "Me Before You",
+      "tags": [
+        "romanticCore",
+        "tearjerker"
+      ],
+      "region": "uk"
+    },
+    {
+      "tmdb_id": 36685,
+      "title_en": "The Pianist",
+      "tags": [
+        "trueStory",
+        "solo",
+        "darkTone",
+        "tearjerker",
+        "nonEnglish"
+      ],
+      "region": "uk"
+    },
+    {
+      "tmdb_id": 310131,
+      "title_en": "The Witch",
+      "tags": [
+        "darkTone",
+        "slowburn",
+        "cult"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 1895,
+      "title_en": "Star Wars: Episode III",
+      "tags": [
+        "visualFeast",
+        "darkTone",
+        "ensemble"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 44214,
+      "title_en": "Black Swan",
+      "tags": [
+        "psychoThriller",
+        "solo",
+        "darkTone",
+        "visualFeast"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 4348,
+      "title_en": "The Lives of Others",
+      "tags": [
+        "socialCritique",
+        "psychoThriller",
+        "nonEnglish",
+        "trueStory"
+      ],
+      "region": "de"
+    },
+    {
+      "tmdb_id": 9806,
+      "title_en": "The Incredibles",
+      "tags": [
+        "ensemble",
+        "uplifting",
+        "comingOfAge"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 24,
+      "title_en": "Kill Bill: Volume 2",
+      "tags": [
+        "revenge",
+        "dialogue",
+        "violentAesthetic"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 10681,
+      "title_en": "WALL-E",
+      "tags": [
+        "dystopia",
+        "romanticCore",
+        "solo"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 640,
+      "title_en": "Catch Me If You Can",
+      "tags": [
+        "trueStory",
+        "heist",
+        "comingOfAge",
+        "uplifting"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 281957,
+      "title_en": "The Revenant",
+      "tags": [
+        "survival",
+        "revenge",
+        "visualFeast",
+        "solo"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 11324,
+      "title_en": "Shutter Island",
+      "tags": [
+        "mindfuck",
+        "twist",
+        "psychoThriller"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 36557,
+      "title_en": "Casino Royale",
+      "tags": [
+        "heist",
+        "visualFeast"
+      ],
+      "region": "uk"
+    },
+    {
+      "tmdb_id": 13223,
+      "title_en": "Gran Torino",
+      "tags": [
+        "socialCritique",
+        "antiHero",
+        "solo"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 146233,
+      "title_en": "Prisoners",
+      "tags": [
+        "psychoThriller",
+        "darkTone",
+        "ensemble"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 49521,
+      "title_en": "Man of Steel",
+      "tags": [
+        "visualFeast",
+        "solo"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 197,
+      "title_en": "Braveheart",
+      "tags": [
+        "revenge",
+        "visualFeast",
+        "trueStory"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 121,
+      "title_en": "The Lord of the Rings: The Two Towers",
+      "tags": [
+        "ensemble",
+        "visualFeast",
+        "survival"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 122,
+      "title_en": "The Lord of the Rings: The Return of the King",
+      "tags": [
+        "ensemble",
+        "visualFeast",
+        "uplifting"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 872,
+      "title_en": "Singin' in the Rain",
+      "tags": [
+        "uplifting",
+        "nostalgic",
+        "romanticCore"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 185,
+      "title_en": "A Clockwork Orange",
+      "tags": [
+        "dystopia",
+        "cult",
+        "violentAesthetic",
+        "satirical"
+      ],
+      "region": "uk"
+    },
+    {
+      "tmdb_id": 73723,
+      "title_en": "The Dark Knight",
+      "tags": [
+        "antiHero",
+        "ensemble",
+        "darkTone"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 644,
+      "title_en": "A.I. Artificial Intelligence",
+      "tags": [
+        "philosophical",
+        "existential",
+        "tearjerker"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 9693,
+      "title_en": "Children of Men",
+      "tags": [
+        "dystopia",
+        "survival",
+        "socialCritique",
+        "slowburn"
+      ],
+      "region": "uk"
+    },
+    {
+      "tmdb_id": 1427,
+      "title_en": "Perfume: The Story of a Murderer",
+      "tags": [
+        "darkTone",
+        "solo",
+        "nonEnglish",
+        "cult"
+      ],
+      "region": "de"
+    },
+    {
+      "tmdb_id": 13187,
+      "title_en": "Grave of the Fireflies",
+      "tags": [
+        "tearjerker",
+        "darkTone",
+        "nonEnglish",
+        "survival"
+      ],
+      "region": "jp"
+    },
+    {
+      "tmdb_id": 14836,
+      "title_en": "Coraline",
+      "tags": [
+        "darkTone",
+        "visualFeast",
+        "comingOfAge"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 497698,
+      "title_en": "Black Panther: Wakanda Forever",
+      "tags": [
+        "ensemble",
+        "visualFeast"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 12477,
+      "title_en": "Grave of the Fireflies",
+      "tags": [
+        "tearjerker",
+        "darkTone",
+        "nonEnglish"
+      ],
+      "region": "jp"
+    },
+    {
+      "tmdb_id": 316029,
+      "title_en": "The Greatest Showman",
+      "tags": [
+        "uplifting",
+        "trueStory",
+        "visualFeast"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 245891,
+      "title_en": "John Wick",
+      "tags": [
+        "revenge",
+        "violentAesthetic",
+        "solo"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 550988,
+      "title_en": "Free Guy",
+      "tags": [
+        "absurdist",
+        "uplifting"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 438695,
+      "title_en": "Sing 2",
+      "tags": [
+        "uplifting",
+        "ensemble"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 496450,
+      "title_en": "Tenet",
+      "tags": [
+        "mindfuck",
+        "timeTravel",
+        "visualFeast",
+        "heist"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 503736,
+      "title_en": "Army of the Dead",
+      "tags": [
+        "survival",
+        "ensemble",
+        "heist"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 718930,
+      "title_en": "Bullet Train",
+      "tags": [
+        "ensemble",
+        "absurdist",
+        "violentAesthetic"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 348,
+      "title_en": "Alien",
+      "tags": [
+        "survival",
+        "darkTone",
+        "solo",
+        "psychoThriller"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 679,
+      "title_en": "Aliens",
+      "tags": [
+        "survival",
+        "ensemble",
+        "visualFeast"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 406997,
+      "title_en": "The Florida Project",
+      "tags": [
+        "socialCritique",
+        "comingOfAge",
+        "slowburn"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 399106,
+      "title_en": "The Farewell",
+      "tags": [
+        "ensemble",
+        "nonEnglish",
+        "tearjerker"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 11321,
+      "title_en": "Seven Pounds",
+      "tags": [
+        "twist",
+        "tearjerker",
+        "solo"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 629542,
+      "title_en": "The Banshees of Inisherin",
+      "tags": [
+        "absurdist",
+        "existential",
+        "dialogue",
+        "darkTone"
+      ],
+      "region": "uk"
+    },
+    {
+      "tmdb_id": 578189,
+      "title_en": "Shoplifters",
+      "tags": [
+        "socialCritique",
+        "ensemble",
+        "nonEnglish",
+        "tearjerker"
+      ],
+      "region": "jp"
+    },
+    {
+      "tmdb_id": 630566,
+      "title_en": "Drive My Car",
+      "tags": [
+        "existential",
+        "slowburn",
+        "nonEnglish",
+        "dialogue"
+      ],
+      "region": "jp"
+    },
+    {
+      "tmdb_id": 680901,
+      "title_en": "Perfect Days",
+      "tags": [
+        "slowburn",
+        "existential",
+        "solo",
+        "nonEnglish"
+      ],
+      "region": "jp"
+    },
+    {
+      "tmdb_id": 508947,
+      "title_en": "Turning Red",
+      "tags": [
+        "comingOfAge",
+        "uplifting",
+        "nonEnglish"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 361,
+      "title_en": "Waking Life",
+      "tags": [
+        "experimental",
+        "philosophical",
+        "existential",
+        "absurdist"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 640146,
+      "title_en": "Ant-Man and the Wasp: Quantumania",
+      "tags": [
+        "visualFeast",
+        "ensemble"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 620683,
+      "title_en": "Guillermo del Toro's Pinocchio",
+      "tags": [
+        "darkTone",
+        "nonEnglish",
+        "comingOfAge"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 675,
+      "title_en": "Solaris",
+      "tags": [
+        "philosophical",
+        "slowburn",
+        "existential",
+        "nonEnglish",
+        "experimental"
+      ],
+      "region": "ru"
+    },
+    {
+      "tmdb_id": 9800,
+      "title_en": "The Fountain",
+      "tags": [
+        "experimental",
+        "romanticCore",
+        "philosophical",
+        "timeTravel"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 256591,
+      "title_en": "Nightcrawler",
+      "tags": [
+        "antiHero",
+        "darkTone",
+        "solo",
+        "psychoThriller"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 419430,
+      "title_en": "Sicario",
+      "tags": [
+        "darkTone",
+        "ensemble",
+        "survival"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 19404,
+      "title_en": "Dilwale Dulhania Le Jayenge",
+      "tags": [
+        "romanticCore",
+        "nonEnglish",
+        "uplifting",
+        "comingOfAge"
+      ],
+      "region": "in"
+    },
+    {
+      "tmdb_id": 20453,
+      "title_en": "3 Idiots",
+      "tags": [
+        "uplifting",
+        "satirical",
+        "nonEnglish",
+        "comingOfAge"
+      ],
+      "region": "in"
+    },
+    {
+      "tmdb_id": 532639,
+      "title_en": "Tumbbad",
+      "tags": [
+        "darkTone",
+        "visualFeast",
+        "nonEnglish",
+        "cult"
+      ],
+      "region": "in"
+    },
+    {
+      "tmdb_id": 19,
+      "title_en": "Metropolis",
+      "tags": [
+        "dystopia",
+        "experimental",
+        "nonEnglish",
+        "visualFeast"
+      ],
+      "region": "de"
+    },
+    {
+      "tmdb_id": 11377,
+      "title_en": "Stalker",
+      "tags": [
+        "philosophical",
+        "slowburn",
+        "nonEnglish",
+        "experimental",
+        "existential"
+      ],
+      "region": "ru"
+    },
+    {
+      "tmdb_id": 838,
+      "title_en": "The Seventh Seal",
+      "tags": [
+        "existential",
+        "philosophical",
+        "nonEnglish"
+      ],
+      "region": "se"
+    },
+    {
+      "tmdb_id": 935,
+      "title_en": "Dr. Strangelove",
+      "tags": [
+        "satirical",
+        "absurdist",
+        "darkTone",
+        "cult"
+      ],
+      "region": "uk"
+    },
+    {
+      "tmdb_id": 9032,
+      "title_en": "Trainspotting",
+      "tags": [
+        "cult",
+        "darkTone",
+        "absurdist",
+        "comingOfAge"
+      ],
+      "region": "uk"
+    },
+    {
+      "tmdb_id": 773,
+      "title_en": "Little Miss Sunshine",
+      "tags": [
+        "ensemble",
+        "uplifting",
+        "comingOfAge",
+        "absurdist"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 454983,
+      "title_en": "The Lighthouse",
+      "tags": [
+        "experimental",
+        "darkTone",
+        "absurdist",
+        "cult"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 11694,
+      "title_en": "The Diving Bell and the Butterfly",
+      "tags": [
+        "trueStory",
+        "solo",
+        "existential",
+        "nonEnglish"
+      ],
+      "region": "fr"
+    },
+    {
+      "tmdb_id": 841,
+      "title_en": "Mulholland Drive",
+      "tags": [
+        "mindfuck",
+        "experimental",
+        "cult",
+        "psychoThriller"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 582014,
+      "title_en": "Triangle of Sadness",
+      "tags": [
+        "satirical",
+        "absurdist",
+        "socialCritique",
+        "nonEnglish"
+      ],
+      "region": "se"
+    },
+    {
+      "tmdb_id": 755,
+      "title_en": "No Country for Old Men",
+      "tags": [
+        "darkTone",
+        "antiHero",
+        "slowburn",
+        "philosophical"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 1160,
+      "title_en": "Unforgiven",
+      "tags": [
+        "revenge",
+        "antiHero",
+        "slowburn"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 490,
+      "title_en": "The Seventh Continent",
+      "tags": [
+        "existential",
+        "darkTone",
+        "slowburn",
+        "nonEnglish",
+        "experimental"
+      ],
+      "region": "at"
+    },
+    {
+      "tmdb_id": 11202,
+      "title_en": "Dogtooth",
+      "tags": [
+        "absurdist",
+        "darkTone",
+        "nonEnglish",
+        "experimental",
+        "cult"
+      ],
+      "region": "gr"
+    },
+    {
+      "tmdb_id": 481848,
+      "title_en": "The Lobster",
+      "tags": [
+        "absurdist",
+        "dystopia",
+        "nonEnglish",
+        "satirical"
+      ],
+      "region": "uk"
+    },
+    {
+      "tmdb_id": 12444,
+      "title_en": "Harry Potter and the Deathly Hallows Part 2",
+      "tags": [
+        "ensemble",
+        "darkTone",
+        "visualFeast"
+      ],
+      "region": "uk"
+    },
+    {
+      "tmdb_id": 392044,
+      "title_en": "A Silent Voice",
+      "tags": [
+        "comingOfAge",
+        "tearjerker",
+        "nonEnglish",
+        "romanticCore"
+      ],
+      "region": "jp"
+    },
+    {
+      "tmdb_id": 568124,
+      "title_en": "Encanto",
+      "tags": [
+        "ensemble",
+        "uplifting",
+        "nonEnglish"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 324786,
+      "title_en": "Hacksaw Ridge",
+      "tags": [
+        "trueStory",
+        "survival",
+        "uplifting"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 585083,
+      "title_en": "Hotel Mumbai",
+      "tags": [
+        "trueStory",
+        "survival",
+        "ensemble"
+      ],
+      "region": "in"
+    },
+    {
+      "tmdb_id": 4247,
+      "title_en": "Moonlight",
+      "tags": [
+        "comingOfAge",
+        "solo",
+        "slowburn",
+        "existential"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 376867,
+      "title_en": "Moonlight",
+      "tags": [
+        "comingOfAge",
+        "solo",
+        "slowburn"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 359940,
+      "title_en": "Three Billboards Outside Ebbing, Missouri",
+      "tags": [
+        "darkTone",
+        "satirical",
+        "dialogue",
+        "revenge"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 637920,
+      "title_en": "Aftersun",
+      "tags": [
+        "slowburn",
+        "tearjerker",
+        "nostalgic",
+        "solo"
+      ],
+      "region": "uk"
+    },
+    {
+      "tmdb_id": 762441,
+      "title_en": "A Man Called Otto",
+      "tags": [
+        "uplifting",
+        "tearjerker",
+        "solo"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 12405,
+      "title_en": "Slumdog Millionaire",
+      "tags": [
+        "trueStory",
+        "uplifting",
+        "nonEnglish",
+        "romanticCore"
+      ],
+      "region": "in"
+    },
+    {
+      "tmdb_id": 101299,
+      "title_en": "The Hunt",
+      "tags": [
+        "socialCritique",
+        "darkTone",
+        "nonEnglish",
+        "solo"
+      ],
+      "region": "dk"
+    },
+    {
+      "tmdb_id": 11090,
+      "title_en": "After the Storm",
+      "tags": [
+        "slowburn",
+        "dialogue",
+        "nonEnglish",
+        "nostalgic"
+      ],
+      "region": "jp"
+    },
+    {
+      "tmdb_id": 8536,
+      "title_en": "Looper",
+      "tags": [
+        "timeTravel",
+        "mindfuck",
+        "darkTone"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 2493,
+      "title_en": "The Terminator",
+      "tags": [
+        "timeTravel",
+        "survival",
+        "darkTone"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 57214,
+      "title_en": "About Time",
+      "tags": [
+        "timeTravel",
+        "romanticCore",
+        "uplifting"
+      ],
+      "region": "uk"
+    },
+    {
+      "tmdb_id": 10195,
+      "title_en": "The Girl Who Leapt Through Time",
+      "tags": [
+        "timeTravel",
+        "comingOfAge",
+        "nonEnglish"
+      ],
+      "region": "jp"
+    },
+    {
+      "tmdb_id": 614560,
+      "title_en": "Palm Springs",
+      "tags": [
+        "timeTravel",
+        "romanticCore",
+        "absurdist"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 2757,
+      "title_en": "Groundhog Day",
+      "tags": [
+        "timeTravel",
+        "romanticCore",
+        "uplifting",
+        "absurdist"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 49797,
+      "title_en": "Source Code",
+      "tags": [
+        "timeTravel",
+        "mindfuck",
+        "psychoThriller"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 14801,
+      "title_en": "Predestination",
+      "tags": [
+        "timeTravel",
+        "mindfuck",
+        "twist"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 14337,
+      "title_en": "Primer",
+      "tags": [
+        "timeTravel",
+        "mindfuck",
+        "experimental"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 161,
+      "title_en": "Ocean's Eleven",
+      "tags": [
+        "heist",
+        "ensemble",
+        "uplifting"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 1725,
+      "title_en": "The Italian Job",
+      "tags": [
+        "heist",
+        "ensemble"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 271677,
+      "title_en": "Now You See Me",
+      "tags": [
+        "heist",
+        "twist",
+        "ensemble"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 207933,
+      "title_en": "Inside Man",
+      "tags": [
+        "heist",
+        "dialogue",
+        "twist"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 228150,
+      "title_en": "Baby Driver",
+      "tags": [
+        "heist",
+        "visualFeast",
+        "romanticCore"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 960,
+      "title_en": "Heat",
+      "tags": [
+        "heist",
+        "ensemble",
+        "darkTone",
+        "dialogue"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 17431,
+      "title_en": "A Prophet",
+      "tags": [
+        "heist",
+        "antiHero",
+        "darkTone",
+        "nonEnglish"
+      ],
+      "region": "fr"
+    },
+    {
+      "tmdb_id": 664,
+      "title_en": "Requiem for a Dream",
+      "tags": [
+        "darkTone",
+        "experimental",
+        "existential",
+        "solo"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 334541,
+      "title_en": "Manchester by the Sea",
+      "tags": [
+        "tearjerker",
+        "slowburn",
+        "solo",
+        "dialogue"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 381284,
+      "title_en": "Hidden Figures",
+      "tags": [
+        "trueStory",
+        "uplifting",
+        "ensemble",
+        "socialCritique"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 490125,
+      "title_en": "Capernaum",
+      "tags": [
+        "socialCritique",
+        "nonEnglish",
+        "tearjerker",
+        "solo"
+      ],
+      "region": "lb"
+    },
+    {
+      "tmdb_id": 2048,
+      "title_en": "I Am Legend",
+      "tags": [
+        "survival",
+        "solo",
+        "dystopia"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 413594,
+      "title_en": "Weathering with You",
+      "tags": [
+        "romanticCore",
+        "visualFeast",
+        "nonEnglish",
+        "comingOfAge"
+      ],
+      "region": "jp"
+    }
+  ]
+}
