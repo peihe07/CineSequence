@@ -16,7 +16,13 @@ const {
   sequencingState,
 } = vi.hoisted(() => {
   const dnaState = { result: null as null | { archetype: { id: string } } }
-  const sequencingState = { progress: null as null | { completed: boolean } }
+  const sequencingState = {
+    progress: null as null | {
+      completed: boolean
+      seed_movie_tmdb_id: number | null
+      round_number: number
+    },
+  }
 
   return {
     routerReplaceMock: vi.fn(),
@@ -130,7 +136,11 @@ describe('FlowGuard', () => {
   // ---------------------------------------------------------------------------
 
   it('renders children when require="sequencing" and sequencing is completed', async () => {
-    sequencingState.progress = { completed: true }
+    sequencingState.progress = {
+      completed: true,
+      seed_movie_tmdb_id: 12,
+      round_number: 20,
+    }
     fetchProgressMock.mockResolvedValue(undefined)
 
     render(
@@ -146,8 +156,34 @@ describe('FlowGuard', () => {
     expect(routerReplaceMock).not.toHaveBeenCalled()
   })
 
-  it('redirects to /sequencing/seed when require="sequencing" and sequencing is not completed', async () => {
-    sequencingState.progress = { completed: false }
+  it('redirects to /sequencing when require="sequencing" and a seeded session is in progress', async () => {
+    sequencingState.progress = {
+      completed: false,
+      seed_movie_tmdb_id: 42,
+      round_number: 12,
+    }
+    fetchProgressMock.mockResolvedValue(undefined)
+
+    render(
+      <FlowGuard require="sequencing">
+        <p>Sequencing content</p>
+      </FlowGuard>,
+    )
+
+    await waitFor(() => {
+      expect(routerReplaceMock).toHaveBeenCalledWith('/sequencing')
+    })
+
+    expect(addToastMock).toHaveBeenCalledWith('info', 'guard.needSequencing')
+    expect(screen.queryByText('Sequencing content')).toBeNull()
+  })
+
+  it('redirects to /sequencing/seed when require="sequencing" and seed selection is still missing', async () => {
+    sequencingState.progress = {
+      completed: false,
+      seed_movie_tmdb_id: null,
+      round_number: 1,
+    }
     fetchProgressMock.mockResolvedValue(undefined)
 
     render(

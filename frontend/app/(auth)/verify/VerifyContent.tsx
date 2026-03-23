@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuthStore } from '@/stores/authStore'
+import { useSequencingStore } from '@/stores/sequencingStore'
 import { useI18n } from '@/lib/i18n'
 import styles from './page.module.css'
 
@@ -13,6 +14,7 @@ export function VerifyContent({
 }) {
   const router = useRouter()
   const { verify, error } = useAuthStore()
+  const fetchProgress = useSequencingStore((s) => s.fetchProgress)
   const { t } = useI18n()
   const [status, setStatus] = useState<'verifying' | 'success' | 'error'>('verifying')
 
@@ -23,14 +25,25 @@ export function VerifyContent({
     }
 
     verify(token)
-      .then(() => {
+      .then(async () => {
         setStatus('success')
-        setTimeout(() => router.push('/sequencing'), 1500)
+        let nextPath = '/sequencing'
+
+        try {
+          const progress = await fetchProgress()
+          if (!progress.seed_movie_tmdb_id && progress.round_number === 1) {
+            nextPath = '/sequencing/seed'
+          }
+        } catch {
+          // Fall back to sequencing bootstrap when progress is not yet available.
+        }
+
+        setTimeout(() => router.replace(nextPath), 1500)
       })
       .catch(() => {
         setStatus('error')
       })
-  }, [token, verify, router])
+  }, [token, verify, fetchProgress, router])
 
   return (
     <div className={styles.content}>

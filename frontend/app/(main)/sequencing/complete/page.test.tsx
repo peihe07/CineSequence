@@ -2,14 +2,14 @@ import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/re
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 const {
-  pushMock,
+  replaceMock,
   fetchProgressMock,
   extendSequencingMock,
   buildDnaMock,
   progressState,
   playSoundMock,
 } = vi.hoisted(() => ({
-  pushMock: vi.fn(),
+  replaceMock: vi.fn(),
   fetchProgressMock: vi.fn(),
   extendSequencingMock: vi.fn(),
   buildDnaMock: vi.fn(),
@@ -25,7 +25,7 @@ const {
 }))
 
 vi.mock('next/navigation', () => ({
-  useRouter: () => ({ push: pushMock }),
+  useRouter: () => ({ replace: replaceMock }),
 }))
 
 vi.mock('@/stores/sequencingStore', () => ({
@@ -74,7 +74,7 @@ import SequencingCompletePage from './page'
 
 describe('SequencingCompletePage', () => {
   beforeEach(() => {
-    pushMock.mockReset()
+    replaceMock.mockReset()
     fetchProgressMock.mockReset()
     extendSequencingMock.mockReset()
     buildDnaMock.mockReset()
@@ -107,7 +107,20 @@ describe('SequencingCompletePage', () => {
 
     await waitFor(() => {
       expect(buildDnaMock).toHaveBeenCalled()
-      expect(pushMock).toHaveBeenCalledWith('/dna')
+      expect(replaceMock).toHaveBeenCalledWith('/dna')
+    })
+  })
+
+  it('extends sequencing and routes back into the sequencing flow', async () => {
+    extendSequencingMock.mockResolvedValue(undefined)
+
+    render(<SequencingCompletePage />)
+
+    fireEvent.click(screen.getByRole('button', { name: /Extend/i }))
+
+    await waitFor(() => {
+      expect(extendSequencingMock).toHaveBeenCalled()
+      expect(replaceMock).toHaveBeenCalledWith('/sequencing')
     })
   })
 })

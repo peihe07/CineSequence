@@ -22,12 +22,12 @@ export default function SequencingCompletePage() {
 
   const handleViewDna = async () => {
     await buildDna()
-    router.push('/dna')
+    router.replace('/dna')
   }
 
   const handleExtend = async () => {
     await extendSequencing()
-    router.push('/sequencing')
+    router.replace('/sequencing')
   }
 
   const extensionBatches = progress?.extension_batches ?? 0

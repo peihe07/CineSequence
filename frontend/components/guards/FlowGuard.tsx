@@ -39,7 +39,11 @@ export default function FlowGuard({ require, children }: FlowGuardProps) {
         if (!cancelled && p && !p.completed && !redirected.current) {
           redirected.current = true
           addToast('info', t('guard.needSequencing'))
-          router.replace('/sequencing/seed')
+          router.replace(
+            !p.seed_movie_tmdb_id && p.round_number === 1
+              ? '/sequencing/seed'
+              : '/sequencing',
+          )
           return
         }
       }
