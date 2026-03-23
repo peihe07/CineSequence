@@ -9,7 +9,7 @@
 | Phase 1: Data Layer | Done | 100% |
 | Phase 2: Authentication | Done | 100% |
 | Phase 3: Sequencing Engine | Done | 100% |
-| Phase 4: DNA Builder + Result | Done | 80% |
+| Phase 4: DNA Builder + Result | In progress | 95% |
 | Phase 5: Matching + Invite | Done | 100% |
 | Phase 6: Groups + Profile | Done | 100% |
 | Phase 7: Polish + Infrastructure | In progress | 95% |
@@ -83,7 +83,7 @@
 - [x] Star nebula (Canvas 2D constellation with archetype colors) ✓
 - [ ] Atmosphere effects (smoke particles, dancing lights) → Phase 7
 
-## Phase 5: Matching + Invite (in progress)
+## Phase 5: Matching + Invite ✓
 - [x] Matcher service (pgvector cosine similarity >= 0.8 + preference filters)
 - [x] Ice breaker generation (Gemini API + ice_breaker.txt prompt)
 - [x] Matches router (GET /matches, POST /discover, POST /invite, POST /respond)
@@ -105,7 +105,7 @@
 - [x] Reciprocal preference filtering added to matcher
 - [x] Unordered pair protection: app-level reverse-pair check + DB unique index
 
-## Phase 6: Groups + Profile (in progress)
+## Phase 6: Groups + Profile ✓
 - [x] Profile router (GET /profile, PATCH /profile)
 - [x] Profile page (basic CRUD with i18n)
 - [x] Group engine (auto-assign by DNA tag affinity, hidden group filtering, activation threshold)
@@ -157,11 +157,15 @@
 - [x] Fix: matcher only discovers active DNA profiles (is_active filter)
 - [x] Fix: auth tests use stored magic_link_token (token reuse + superseded rejection tests)
 - [x] Fix: authStore fetchProfile only clears token on 401/403, not network errors
+- [x] Fix: auth verify now persists returned access_token; frontend API client sends Bearer token when available
 - [x] Fix: API URL default changed to 127.0.0.1 (avoid localhost DNS issues)
 - [x] Fix: next.config outputFileTracingRoot for workspace root detection
 - [x] All 9 frontend routes return 200 (/, /login, /register, /verify, /sequencing, /sequencing/seed, /sequencing/complete, /dna, /matches, /profile)
 - [x] Frontend API client uses correct paths (verified all stores + page-level api calls)
 - [x] No frontend build errors or runtime errors
+- [x] Fix: sequencingStore restores current pair after pick/skip failures; optimistic liveTags rollback on submit failure
+- [x] Fix: legal pages (`/terms`, `/privacy`) text contrast improved for readability
+- [x] Fix: register page tests updated to cover birth year validation + scroll-to-read consent unlock
 - [ ] Frontend browser walkthrough (manual test in browser — needs Gemini quota for full flow)
 - [x] Route guard: (main) layout redirects unauthenticated users to /login ✓
 - [x] Nav bar: bottom tab navigation (Sequence, DNA, Matches, Profile) with i18n ✓

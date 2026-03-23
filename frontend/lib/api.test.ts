@@ -5,11 +5,13 @@ import { ApiError, api, apiUpload } from './api'
 describe('api helpers', () => {
   beforeEach(() => {
     vi.stubGlobal('fetch', vi.fn())
+    window.localStorage.clear()
   })
 
   afterEach(() => {
     vi.unstubAllGlobals()
     vi.restoreAllMocks()
+    window.localStorage.clear()
   })
 
   it('returns undefined for 204 responses', async () => {
@@ -52,6 +54,28 @@ describe('api helpers', () => {
     const result = await api<{ ok: boolean }>('/health')
 
     expect(result).toEqual({ ok: true })
+  })
+
+  it('adds the bearer token header when one is stored', async () => {
+    window.localStorage.setItem('cine_sequence_access_token', 'jwt-token')
+    vi.mocked(fetch).mockResolvedValue({
+      ok: true,
+      status: 200,
+      headers: new Headers({ 'content-type': 'application/json' }),
+      text: vi.fn().mockResolvedValue('{"ok":true}'),
+    } as unknown as Response)
+
+    await api('/profile')
+
+    expect(fetch).toHaveBeenCalledWith(
+      expect.stringContaining('/profile'),
+      expect.objectContaining({
+        credentials: 'include',
+        headers: expect.objectContaining({
+          Authorization: 'Bearer jwt-token',
+        }),
+      }),
+    )
   })
 
   it('throws ApiError with fallback detail on failed uploads', async () => {

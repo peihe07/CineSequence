@@ -158,6 +158,11 @@ export default function ProfilePage() {
             isLoggingOut={isLoggingOut}
             onLogout={async () => setShowLogoutConfirm(true)}
           />
+          <div className={styles.metaRow}>
+            <span className={styles.metaChip}>ARCHIVE / PROFILE</span>
+            <span className={styles.metaChip}>{profile.region}</span>
+            <span className={styles.metaChip}>{getStatusLabel(profile.sequencing_status)}</span>
+          </div>
           <p className={styles.deck}>
             {t('profile.deck')}
           </p>

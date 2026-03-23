@@ -308,7 +308,7 @@ class TestPick:
         assert response.status_code == 400
 
     @pytest.mark.asyncio
-    @patch("app.routers.sequencing._enqueue_dna_build")
+    @patch("app.routers.sequencing._enqueue_dna_build", new_callable=AsyncMock)
     @patch("app.routers.sequencing.get_movie", new_callable=AsyncMock)
     async def test_submit_pick_final_round_enqueues_dna_build(
         self, mock_get_movie, mock_enqueue_dna_build, client, auth_user, db_session
@@ -338,7 +338,7 @@ class TestPick:
 
         await db_session.refresh(user)
         assert user.sequencing_status == SequencingStatus.completed
-        mock_enqueue_dna_build.assert_called_once_with(user.id)
+        mock_enqueue_dna_build.assert_awaited_once_with(user.id)
 
 
 class TestSkip:
@@ -411,9 +411,12 @@ class TestSkip:
         phase2_skip = picks[-1]
         assert phase2_skip.phase == 2
         assert phase2_skip.movie_a_tmdb_id == 3101
+        assert phase2_skip.movie_b_tmdb_id == 3102
+        assert phase2_skip.chosen_tmdb_id is None
+        assert phase2_skip.test_dimension == "slowburn"
 
     @pytest.mark.asyncio
-    @patch("app.routers.sequencing._enqueue_dna_build")
+    @patch("app.routers.sequencing._enqueue_dna_build", new_callable=AsyncMock)
     @patch("app.routers.sequencing.get_movie", new_callable=AsyncMock)
     async def test_skip_final_round_enqueues_dna_build(
         self, mock_get_movie, mock_enqueue_dna_build, client, auth_user, db_session
@@ -439,7 +442,4 @@ class TestSkip:
 
         await db_session.refresh(user)
         assert user.sequencing_status == SequencingStatus.completed
-        mock_enqueue_dna_build.assert_called_once_with(user.id)
-        assert phase2_skip.movie_b_tmdb_id == 3102
-        assert phase2_skip.chosen_tmdb_id is None
-        assert phase2_skip.test_dimension == "slowburn"
+        mock_enqueue_dna_build.assert_awaited_once_with(user.id)

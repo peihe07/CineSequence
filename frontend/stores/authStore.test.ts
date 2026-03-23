@@ -56,6 +56,22 @@ describe('authStore', () => {
     expect(useAuthStore.getState().isAuthenticated).toBe(false)
   })
 
+  it('stores the access token after verify succeeds', async () => {
+    apiMock.mockResolvedValue({
+      access_token: 'jwt-token',
+      token_type: 'bearer',
+    })
+
+    await useAuthStore.getState().verify('magic-link-token')
+
+    expect(apiMock).toHaveBeenCalledWith('/auth/verify', {
+      method: 'POST',
+      body: JSON.stringify({ token: 'magic-link-token' }),
+    })
+    expect(setTokenMock).toHaveBeenCalledWith('jwt-token')
+    expect(useAuthStore.getState().isAuthenticated).toBe(true)
+  })
+
   it('does not clear the token on non-auth failures during fetchProfile', async () => {
     useAuthStore.setState({
       user: { id: 'u1', email: 'u@test.com', name: 'User', gender: 'other', region: 'TW', avatar_url: null, sequencing_status: 'completed' },

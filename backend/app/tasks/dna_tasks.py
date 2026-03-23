@@ -18,7 +18,7 @@ def _run_async(coro):
         loop.close()
 
 
-async def _build_dna_for_user(user_id: str):
+async def build_dna_for_user(user_id: str):
     """Build DNA profile and trigger matching for a user."""
     from sqlalchemy import select
     from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
@@ -145,7 +145,7 @@ async def _build_dna_for_user(user_id: str):
 def build_dna_task(self, user_id: str):
     """Build DNA profile asynchronously and trigger matching."""
     try:
-        _run_async(_build_dna_for_user(user_id))
+        _run_async(build_dna_for_user(user_id))
         # Trigger matching after DNA build
         from app.tasks.match_tasks import find_matches_task
         find_matches_task.delay(user_id)

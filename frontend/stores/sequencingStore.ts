@@ -122,7 +122,7 @@ export const useSequencingStore = create<SequencingState>((set, get) => ({
   },
 
   submitPick: async (tmdbId, pickMode, responseTimeMs) => {
-    const { currentPair } = get()
+    const { currentPair, liveTags, rerollExcludedTmdbIds } = get()
 
     if (currentPair?.test_dimension) {
       set((state) => ({
@@ -149,12 +149,18 @@ export const useSequencingStore = create<SequencingState>((set, get) => ({
         get().fetchPair()
       }
     } catch (err) {
-      set({ isLoading: false, error: err instanceof Error ? err.message : 'Failed to submit pick' })
+      set({
+        currentPair,
+        liveTags,
+        rerollExcludedTmdbIds,
+        isLoading: false,
+        error: err instanceof Error ? err.message : 'Failed to submit pick',
+      })
     }
   },
 
   skip: async (responseTimeMs) => {
-    const { currentPair } = get()
+    const { currentPair, rerollExcludedTmdbIds } = get()
     set({ currentPair: null, rerollExcludedTmdbIds: [], isLoading: true })
     try {
       const progress = await api<Progress>('/sequencing/skip', {
@@ -172,7 +178,12 @@ export const useSequencingStore = create<SequencingState>((set, get) => ({
         get().fetchPair()
       }
     } catch (err) {
-      set({ isLoading: false, error: err instanceof Error ? err.message : 'Failed to skip' })
+      set({
+        currentPair,
+        rerollExcludedTmdbIds,
+        isLoading: false,
+        error: err instanceof Error ? err.message : 'Failed to skip',
+      })
     }
   },
 

@@ -1,5 +1,7 @@
 """Sequencing router: pair retrieval, pick submission, progress tracking."""
 
+import logging
+
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
@@ -39,13 +41,30 @@ from app.services.session_service import (
 from app.services.tmdb_client import get_movie, search_movies
 
 router = APIRouter()
+logger = logging.getLogger(__name__)
 
 
-def _enqueue_dna_build(user_id) -> None:
-    """Trigger async DNA generation after sequencing completion."""
-    from app.tasks.dna_tasks import build_dna_task
+async def _enqueue_dna_build(user_id) -> None:
+    """Trigger DNA generation after sequencing completion.
 
-    build_dna_task.delay(str(user_id))
+    Prefer Celery for normal operation, but fall back to an in-process build if the
+    broker/result backend is unavailable so sequencing completion never 500s.
+    """
+    from app.tasks.dna_tasks import build_dna_for_user, build_dna_task
+    from app.tasks.match_tasks import find_matches_task
+
+    try:
+        build_dna_task.delay(str(user_id))
+    except Exception:
+        logger.exception(
+            "Failed to enqueue DNA build for user %s; falling back to in-process build",
+            user_id,
+        )
+        await build_dna_for_user(str(user_id))
+        try:
+            find_matches_task.delay(str(user_id))
+        except Exception:
+            logger.exception("Failed to enqueue match build after inline DNA build for user %s", user_id)
 
 
 def _get_phase(round_number: int) -> int:
@@ -347,7 +366,7 @@ async def submit_pick(
 
     await db.commit()
     if round_number >= session.total_rounds:
-        _enqueue_dna_build(user.id)
+        await _enqueue_dna_build(user.id)
     return _build_progress(session, len(picks) + 1)
 
 
@@ -414,7 +433,7 @@ async def skip_pair(
 
     await db.commit()
     if round_number >= session.total_rounds:
-        _enqueue_dna_build(user.id)
+        await _enqueue_dna_build(user.id)
     return _build_progress(session, len(picks) + 1)
 
 

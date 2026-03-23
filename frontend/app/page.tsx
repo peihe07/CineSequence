@@ -145,7 +145,6 @@ export default function Home() {
             </div>
           </div>
         </div>
-
       </section>
 
       <footer className={styles.footer}>

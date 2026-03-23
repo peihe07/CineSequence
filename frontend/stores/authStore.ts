@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { ApiError, api, clearToken } from '@/lib/api'
+import { ApiError, api, clearToken, setToken } from '@/lib/api'
 import type {
   LoginRequest,
   RegisterRequest,
@@ -65,10 +65,11 @@ export const useAuthStore = create<AuthState>((set) => ({
     set({ isLoading: true, error: null })
     try {
       const payload: VerifyRequest = { token }
-      await api<VerifyResponse>('/auth/verify', {
+      const response = await api<VerifyResponse>('/auth/verify', {
         method: 'POST',
         body: JSON.stringify(payload),
       })
+      setToken(response.access_token)
       set({ isAuthenticated: true, isLoading: false })
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Verification failed'

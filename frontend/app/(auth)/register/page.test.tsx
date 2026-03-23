@@ -56,6 +56,28 @@ vi.mock('@/lib/i18n', () => ({
 
 import RegisterPage from './page'
 
+function unlockConsent() {
+  const policyBox = screen.getByText('privacy.collectTitle').closest('div')
+  if (!policyBox) {
+    throw new Error('Policy box not found')
+  }
+
+  Object.defineProperty(policyBox, 'scrollHeight', {
+    configurable: true,
+    value: 200,
+  })
+  Object.defineProperty(policyBox, 'clientHeight', {
+    configurable: true,
+    value: 100,
+  })
+  Object.defineProperty(policyBox, 'scrollTop', {
+    configurable: true,
+    value: 100,
+  })
+
+  fireEvent.scroll(policyBox)
+}
+
 describe('RegisterPage', () => {
   beforeEach(() => {
     pushMock.mockReset()
@@ -76,6 +98,9 @@ describe('RegisterPage', () => {
     fireEvent.change(screen.getByLabelText('Display name'), {
       target: { value: 'User' },
     })
+    fireEvent.change(screen.getByLabelText('register.birthYear'), {
+      target: { value: '1990' },
+    })
     fireEvent.click(screen.getByRole('button', { name: 'Male' }))
     fireEvent.click(screen.getByRole('button', { name: 'Sign up' }))
 
@@ -94,7 +119,11 @@ describe('RegisterPage', () => {
     fireEvent.change(screen.getByLabelText('Display name'), {
       target: { value: 'User' },
     })
+    fireEvent.change(screen.getByLabelText('register.birthYear'), {
+      target: { value: '1990' },
+    })
     fireEvent.click(screen.getByRole('button', { name: 'Male' }))
+    unlockConsent()
     fireEvent.click(screen.getByRole('checkbox'))
     fireEvent.click(screen.getByRole('button', { name: 'Sign up' }))
 
@@ -104,6 +133,7 @@ describe('RegisterPage', () => {
         name: 'User',
         gender: 'male',
         region: 'TW',
+        birth_year: 1990,
         agreed_to_terms: true,
       })
     })

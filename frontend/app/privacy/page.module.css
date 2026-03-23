@@ -3,11 +3,19 @@
   display: flex;
   justify-content: center;
   padding: 4rem 2rem 6rem;
+  background:
+    radial-gradient(circle at top left, rgba(192, 98, 35, 0.08), transparent 32%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.9));
 }
 
 .content {
   width: 100%;
   max-width: 600px;
+  padding: 2rem 1.75rem;
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(125, 63, 27, 0.08);
+  border-radius: 20px;
+  box-shadow: 0 18px 48px rgba(45, 54, 50, 0.08);
 }
 
 .title {
@@ -20,7 +28,7 @@
 
 .updated {
   font-size: 0.75rem;
-  color: var(--muted);
+  color: var(--foreground-soft);
   margin-bottom: 2.5rem;
 }
 
@@ -37,7 +45,7 @@
 
 .section p {
   font-size: 0.85rem;
-  color: var(--muted);
+  color: var(--foreground-soft);
   line-height: 1.6;
   margin-bottom: 0.5rem;
 }
@@ -50,7 +58,7 @@
 
 .section li {
   font-size: 0.85rem;
-  color: var(--muted);
+  color: var(--foreground-soft);
   line-height: 1.6;
   padding-left: 1rem;
   position: relative;
@@ -60,5 +68,16 @@
   content: '·';
   position: absolute;
   left: 0;
-  color: var(--muted-light);
+  color: var(--accent-ink);
+}
+
+@media (max-width: 640px) {
+  .container {
+    padding: 3rem 1rem 4rem;
+  }
+
+  .content {
+    padding: 1.5rem 1rem;
+    border-radius: 16px;
+  }
 }
