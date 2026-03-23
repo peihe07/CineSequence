@@ -303,12 +303,14 @@ async def submit_pick(
         movie_b_tmdb_id = pair["movie_b"]["tmdb_id"]
         test_dimension = pair.get("dimension")
     else:
+        if body.movie_a_tmdb_id is None or body.movie_b_tmdb_id is None:
+            raise HTTPException(status_code=400, detail="Phase 2-3 picks require full pair context")
         pair_id = None
-        movie_a_tmdb_id = body.movie_a_tmdb_id or body.chosen_tmdb_id
-        movie_b_tmdb_id = body.movie_b_tmdb_id or 0
+        movie_a_tmdb_id = body.movie_a_tmdb_id
+        movie_b_tmdb_id = body.movie_b_tmdb_id
         test_dimension = body.test_dimension
 
-    if phase == 1 and body.chosen_tmdb_id not in (movie_a_tmdb_id, movie_b_tmdb_id):
+    if body.chosen_tmdb_id not in (movie_a_tmdb_id, movie_b_tmdb_id):
         raise HTTPException(status_code=400, detail="Chosen movie is not in the current pair")
 
     pick = Pick(
@@ -367,9 +369,11 @@ async def skip_pair(
         movie_a_tmdb_id = pair["movie_a"]["tmdb_id"]
         movie_b_tmdb_id = pair["movie_b"]["tmdb_id"]
     else:
+        if body.movie_a_tmdb_id is None or body.movie_b_tmdb_id is None:
+            raise HTTPException(status_code=400, detail="Phase 2-3 skips require full pair context")
         pair_id = None
-        movie_a_tmdb_id = body.movie_a_tmdb_id or 0
-        movie_b_tmdb_id = body.movie_b_tmdb_id or 0
+        movie_a_tmdb_id = body.movie_a_tmdb_id
+        movie_b_tmdb_id = body.movie_b_tmdb_id
 
     # Determine test_dimension
     if phase == 1:

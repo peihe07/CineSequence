@@ -3,11 +3,11 @@ from datetime import datetime, timedelta, timezone
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy import func, select, case, and_
+from sqlalchemy import func, select, union_all
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.deps import get_current_user, get_db
-from app.models.user import User, SequencingStatus
+from app.models.user import User
 from app.models.dna_profile import DnaProfile
 from app.models.match import Match, MatchStatus
 
@@ -87,8 +87,12 @@ async def get_stats(
 
     # Funnel: registered → completed sequencing → has DNA → has match
     completed_sequencing = sequencing_breakdown.get("completed", 0)
+    matched_users = union_all(
+        select(Match.user_a_id.label("user_id")),
+        select(Match.user_b_id.label("user_id")),
+    ).subquery()
     has_match = await db.scalar(
-        select(func.count(func.distinct(Match.user_a_id)))
+        select(func.count(func.distinct(matched_users.c.user_id)))
     )
 
     return {
