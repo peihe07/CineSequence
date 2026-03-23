@@ -18,6 +18,10 @@ class LoginRequest(BaseModel):
     email: EmailStr
 
 
+class RegisterResponse(BaseModel):
+    message: str
+
+
 class VerifyRequest(BaseModel):
     token: str
 

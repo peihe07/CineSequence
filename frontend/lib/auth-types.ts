@@ -21,6 +21,10 @@ export interface LoginRequest {
   email: string
 }
 
+export interface RegisterResponse {
+  message: string
+}
+
 export interface VerifyRequest {
   token: string
 }

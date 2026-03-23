@@ -3,6 +3,7 @@ import { ApiError, api, clearToken } from '@/lib/api'
 import type {
   LoginRequest,
   RegisterRequest,
+  RegisterResponse,
   User,
   VerifyRequest,
   VerifyResponse,
@@ -32,7 +33,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   register: async (data) => {
     set({ isLoading: true, error: null })
     try {
-      await api<User>('/auth/register', {
+      await api<RegisterResponse>('/auth/register', {
         method: 'POST',
         body: JSON.stringify(data),
       })

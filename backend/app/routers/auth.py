@@ -14,6 +14,7 @@ from app.deps import get_current_user, get_db
 from app.models.user import User
 from app.schemas.auth import (
     LoginRequest,
+    RegisterResponse,
     RegisterRequest,
     TokenResponse,
     UserResponse,
@@ -42,7 +43,10 @@ def sync_admin_flag(user: User) -> bool:
     return False
 
 
-@router.post("/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
+REGISTER_SUCCESS_MESSAGE = "If this email is eligible, a magic link has been sent."
+
+
+@router.post("/register", response_model=RegisterResponse, status_code=status.HTTP_201_CREATED)
 @limiter.limit("5/minute")
 async def register(
     request: Request,
@@ -61,8 +65,7 @@ async def register(
     result = await db.execute(select(User).where(User.email == body.email))
     existing = result.scalar_one_or_none()
     if existing:
-        # Return generic message to prevent user enumeration
-        return existing
+        return RegisterResponse(message=REGISTER_SUCCESS_MESSAGE)
 
     # Create user
     user = User(
@@ -86,7 +89,7 @@ async def register(
 
     await send_magic_link(body.email, token)
 
-    return user
+    return RegisterResponse(message=REGISTER_SUCCESS_MESSAGE)
 
 
 @router.post("/login")
