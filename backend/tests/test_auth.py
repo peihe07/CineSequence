@@ -68,9 +68,9 @@ class TestRegisterEndpoint:
         })
         assert response.status_code == 201
         data = response.json()
-        assert data["email"] == "user@test.com"
-        assert data["name"] == "Test User"
-        assert data["sequencing_status"] == "not_started"
+        assert data == {
+            "message": "If this email is eligible, a magic link has been sent."
+        }
         mock_send.assert_called_once()
 
     @patch("app.routers.auth.send_magic_link", new_callable=AsyncMock)
@@ -87,8 +87,9 @@ class TestRegisterEndpoint:
         response = await client.post("/auth/register", json={**payload, "name": "User B"})
         assert response.status_code == 201
         data = response.json()
-        assert data["email"] == payload["email"]
-        assert data["name"] == payload["name"]
+        assert data == {
+            "message": "If this email is eligible, a magic link has been sent."
+        }
         assert mock_send.await_count == 1
 
     @patch("app.routers.auth.send_magic_link", new_callable=AsyncMock)

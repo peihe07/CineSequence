@@ -70,6 +70,28 @@ npm run smoke:backend
 This verifies `/health`, `/readiness`, and a basic auth endpoint response, which is enough
 to catch common startup and schema-drift failures early.
 
+### Tests
+
+Backend tests are now split into fast unit tests and DB-backed integration tests.
+Installing `backend/requirements.txt` includes the pytest dependencies needed for both.
+
+```bash
+# Fast isolated backend tests
+npm run test:backend:unit
+
+# Full backend suite
+npm run test:backend
+
+# Only integration tests (requires local Postgres test DB access)
+npm run test:backend:integration
+
+# Existing targeted backend regression/security suite
+npm run test:backend:security
+```
+
+If Postgres is unavailable in the current environment, integration tests will be skipped
+instead of failing during fixture setup.
+
 ### Production
 
 ```bash

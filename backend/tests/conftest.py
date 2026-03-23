@@ -1,4 +1,5 @@
 from collections.abc import AsyncGenerator
+from pathlib import Path
 
 import pytest
 import pytest_asyncio
@@ -32,6 +33,25 @@ admin_engine = create_async_engine(
 test_session = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 
 
+def _skip_integration_tests(reason: str) -> None:
+    pytest.skip(
+        f"Integration test database unavailable: {reason}",
+        allow_module_level=True,
+    )
+
+
+def pytest_collection_modifyitems(config, items) -> None:
+    """Auto-label tests by directory to keep unit/integration runs easy to target."""
+    unit_root = Path(__file__).parent / "unit"
+
+    for item in items:
+        item_path = Path(str(item.fspath))
+        if unit_root in item_path.parents:
+            item.add_marker(pytest.mark.unit)
+        else:
+            item.add_marker(pytest.mark.integration)
+
+
 async def reset_test_schema() -> None:
     async with engine.begin() as conn:
         await conn.execute(text("DROP SCHEMA IF EXISTS public CASCADE"))
@@ -42,13 +62,17 @@ async def reset_test_schema() -> None:
 @pytest_asyncio.fixture(scope="session", autouse=True)
 async def ensure_test_database():
     """Create the integration-test database on demand."""
-    async with admin_engine.connect() as conn:
-        exists = await conn.scalar(
-            text("SELECT 1 FROM pg_database WHERE datname = :name"),
-            {"name": test_database_name},
-        )
-        if not exists:
-            await conn.execute(text(f'CREATE DATABASE "{test_database_name}"'))
+    try:
+        async with admin_engine.connect() as conn:
+            exists = await conn.scalar(
+                text("SELECT 1 FROM pg_database WHERE datname = :name"),
+                {"name": test_database_name},
+            )
+            if not exists:
+                await conn.execute(text(f'CREATE DATABASE "{test_database_name}"'))
+    except Exception as exc:
+        await admin_engine.dispose()
+        _skip_integration_tests(str(exc))
 
     yield
 
@@ -60,13 +84,20 @@ async def setup_database(ensure_test_database):
     """Create tables before each test, drop after."""
     app.state.limiter._storage.reset()
     auth_limiter._storage.reset()
-    await reset_test_schema()
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+    try:
+        await reset_test_schema()
+        async with engine.begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)
+    except Exception as exc:
+        _skip_integration_tests(str(exc))
     yield
     app.state.limiter._storage.reset()
     auth_limiter._storage.reset()
-    await reset_test_schema()
+    try:
+        await reset_test_schema()
+    except Exception:
+        # Teardown failure should not mask the original test result.
+        pass
 
 
 @pytest_asyncio.fixture

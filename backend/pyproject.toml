@@ -14,3 +14,7 @@ select = ["E", "F", "I", "N", "W", "UP"]
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 testpaths = ["tests"]
+markers = [
+    "unit: fast isolated tests that should not require external services",
+    "integration: tests that exercise the app with database or service dependencies",
+]

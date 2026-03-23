@@ -7,6 +7,7 @@ import pytest_asyncio
 from sqlalchemy import select
 
 from app.models.pick import Pick
+from app.models.sequencing_session import SequencingSession
 from app.models.user import SequencingStatus, User
 from app.services.auth_utils import create_access_token
 from app.services.tmdb_client import MovieInfo
@@ -215,6 +216,97 @@ class TestPick:
         assert len(picks) == 1
         assert picks[0].round_number == 1
 
+    @pytest.mark.asyncio
+    async def test_submit_pick_phase2_persists_full_pair(
+        self, client, auth_user, db_session
+    ):
+        user, headers = auth_user
+
+        await client.get("/sequencing/progress", headers=headers)
+        session_result = await db_session.execute(
+            select(SequencingSession).where(SequencingSession.user_id == user.id)
+        )
+        session = session_result.scalar_one()
+
+        for round_number in range(1, 6):
+            db_session.add(Pick(
+                user_id=user.id,
+                session_id=session.id,
+                round_number=round_number,
+                phase=1,
+                pair_id=f"p1_0{round_number}",
+                movie_a_tmdb_id=1000 + round_number,
+                movie_b_tmdb_id=2000 + round_number,
+                chosen_tmdb_id=1000 + round_number,
+                pick_mode="watched",
+                test_dimension="mainstream_vs_independent",
+            ))
+        await db_session.commit()
+
+        response = await client.post(
+            "/sequencing/pick",
+            json={
+                "chosen_tmdb_id": 3001,
+                "pick_mode": "attracted",
+                "movie_a_tmdb_id": 3001,
+                "movie_b_tmdb_id": 3002,
+                "response_time_ms": 1800,
+                "test_dimension": "mindfuck",
+            },
+            headers=headers,
+        )
+        assert response.status_code == 200
+
+        result = await db_session.execute(
+            select(Pick).where(Pick.user_id == user.id).order_by(Pick.round_number)
+        )
+        picks = result.scalars().all()
+        phase2_pick = picks[-1]
+        assert phase2_pick.phase == 2
+        assert phase2_pick.movie_a_tmdb_id == 3001
+        assert phase2_pick.movie_b_tmdb_id == 3002
+        assert phase2_pick.chosen_tmdb_id == 3001
+        assert phase2_pick.test_dimension == "mindfuck"
+
+    @pytest.mark.asyncio
+    async def test_submit_pick_phase2_rejects_missing_pair_context(
+        self, client, auth_user, db_session
+    ):
+        user, headers = auth_user
+
+        await client.get("/sequencing/progress", headers=headers)
+        session_result = await db_session.execute(
+            select(SequencingSession).where(SequencingSession.user_id == user.id)
+        )
+        session = session_result.scalar_one()
+
+        for round_number in range(1, 6):
+            db_session.add(Pick(
+                user_id=user.id,
+                session_id=session.id,
+                round_number=round_number,
+                phase=1,
+                pair_id=f"p1_0{round_number}",
+                movie_a_tmdb_id=1000 + round_number,
+                movie_b_tmdb_id=2000 + round_number,
+                chosen_tmdb_id=1000 + round_number,
+                pick_mode="watched",
+                test_dimension="mainstream_vs_independent",
+            ))
+        await db_session.commit()
+
+        response = await client.post(
+            "/sequencing/pick",
+            json={
+                "chosen_tmdb_id": 3001,
+                "pick_mode": "attracted",
+                "response_time_ms": 1800,
+                "test_dimension": "mindfuck",
+            },
+            headers=headers,
+        )
+        assert response.status_code == 400
+
 
 class TestSkip:
     """POST /sequencing/skip"""
@@ -241,3 +333,51 @@ class TestSkip:
         picks = result.scalars().all()
         assert len(picks) == 1
         assert picks[0].chosen_tmdb_id is None
+
+    @pytest.mark.asyncio
+    async def test_skip_phase2_persists_full_pair(self, client, auth_user, db_session):
+        user, headers = auth_user
+
+        await client.get("/sequencing/progress", headers=headers)
+        session_result = await db_session.execute(
+            select(SequencingSession).where(SequencingSession.user_id == user.id)
+        )
+        session = session_result.scalar_one()
+
+        for round_number in range(1, 6):
+            db_session.add(Pick(
+                user_id=user.id,
+                session_id=session.id,
+                round_number=round_number,
+                phase=1,
+                pair_id=f"p1_0{round_number}",
+                movie_a_tmdb_id=1000 + round_number,
+                movie_b_tmdb_id=2000 + round_number,
+                chosen_tmdb_id=1000 + round_number,
+                pick_mode="watched",
+                test_dimension="mainstream_vs_independent",
+            ))
+        await db_session.commit()
+
+        response = await client.post(
+            "/sequencing/skip",
+            json={
+                "movie_a_tmdb_id": 3101,
+                "movie_b_tmdb_id": 3102,
+                "response_time_ms": 900,
+                "test_dimension": "slowburn",
+            },
+            headers=headers,
+        )
+        assert response.status_code == 200
+
+        result = await db_session.execute(
+            select(Pick).where(Pick.user_id == user.id).order_by(Pick.round_number)
+        )
+        picks = result.scalars().all()
+        phase2_skip = picks[-1]
+        assert phase2_skip.phase == 2
+        assert phase2_skip.movie_a_tmdb_id == 3101
+        assert phase2_skip.movie_b_tmdb_id == 3102
+        assert phase2_skip.chosen_tmdb_id is None
+        assert phase2_skip.test_dimension == "slowburn"

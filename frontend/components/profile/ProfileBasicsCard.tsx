@@ -14,6 +14,7 @@ interface ProfileBasicsCardProps {
   saveLabel: string
   cancelLabel: string
   changeAvatarLabel: string
+  editNameLabel: string
   editName: string
   isEditing: boolean
   saving: boolean
@@ -37,6 +38,7 @@ export default function ProfileBasicsCard({
   saveLabel,
   cancelLabel,
   changeAvatarLabel,
+  editNameLabel,
   editName,
   isEditing,
   saving,
@@ -100,7 +102,7 @@ export default function ProfileBasicsCard({
         ) : (
           <div className={styles.valueRow}>
             <span className={styles.value}>{profile.name}</span>
-            <button className={styles.editBtn} onClick={onEditStart} aria-label="Edit name">
+            <button className={styles.editBtn} onClick={onEditStart} aria-label={editNameLabel}>
               <i className="ri-pencil-line" />
             </button>
           </div>

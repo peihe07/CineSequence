@@ -130,6 +130,32 @@ class TestAdminStats:
         assert data["matches"]["total"] == 1
         assert data["matches"]["status_breakdown"]["accepted"] == 1
 
+    async def test_stats_funnel_counts_users_from_both_match_sides(
+        self, client: AsyncClient, db_session: AsyncSession
+    ):
+        admin = await create_user(db_session, email="admin@test.com", is_admin=True)
+        user_b = await create_user(db_session, email="userb@test.com")
+        user_c = await create_user(db_session, email="userc@test.com")
+
+        db_session.add(Match(
+            user_a_id=admin.id,
+            user_b_id=user_b.id,
+            similarity_score=0.9,
+            status=MatchStatus.accepted,
+        ))
+        db_session.add(Match(
+            user_a_id=user_c.id,
+            user_b_id=admin.id,
+            similarity_score=0.88,
+            status=MatchStatus.invited,
+        ))
+        await db_session.commit()
+
+        response = await client.get("/admin/stats", headers=auth_headers(admin))
+        data = response.json()
+
+        assert data["funnel"]["has_match"] == 3
+
 
 @pytest.mark.asyncio
 class TestAdminDailyStats:
