@@ -135,55 +135,66 @@ export default function ProfilePage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
       >
-        <ProfileHeader
-          title={t('profile.title')}
-          logoutLabel={t('profile.logout')}
-          loggingOutLabel={t('profile.loggingOut')}
-          isLoggingOut={isLoggingOut}
-          onLogout={async () => setShowLogoutConfirm(true)}
-        />
+        <section className={`${styles.section} ${styles.heroSection}`}>
+          <span className={styles.sideLabel}>FILE 02</span>
+          <span className={styles.scriptWord} aria-hidden="true">Profile</span>
+          <ProfileHeader
+            title={t('profile.title')}
+            logoutLabel={t('profile.logout')}
+            loggingOutLabel={t('profile.loggingOut')}
+            isLoggingOut={isLoggingOut}
+            onLogout={async () => setShowLogoutConfirm(true)}
+          />
+          <p className={styles.deck}>
+            Identity, preference, and sequencing state arranged like a clean production dossier.
+          </p>
+        </section>
 
-        <ProfileBasicsCard
-          profile={profile}
-          nameLabel={t('profile.name')}
-          emailLabel={t('profile.email')}
-          genderLabel={t('profile.gender')}
-          birthYearLabel={t('profile.birthYear')}
-          regionLabel={t('profile.region')}
-          saveLabel={t('profile.save')}
-          cancelLabel={t('profile.cancel')}
-          changeAvatarLabel={t('profile.changeAvatar')}
-          editName={editName}
-          isEditing={isEditing}
-          saving={saving}
-          uploadingAvatar={uploadingAvatar}
-          fileInputRef={fileInputRef}
-          onAvatarUpload={handleAvatarUpload}
-          onEditNameChange={setEditName}
-          onEditStart={() => setIsEditing(true)}
-          onEditCancel={() => setIsEditing(false)}
-          onSave={handleSave}
-          getGenderLabel={getGenderLabel}
-        />
+        <section className={`${styles.section} ${styles.profileGrid}`}>
+          <ProfileBasicsCard
+            profile={profile}
+            nameLabel={t('profile.name')}
+            emailLabel={t('profile.email')}
+            genderLabel={t('profile.gender')}
+            birthYearLabel={t('profile.birthYear')}
+            regionLabel={t('profile.region')}
+            saveLabel={t('profile.save')}
+            cancelLabel={t('profile.cancel')}
+            changeAvatarLabel={t('profile.changeAvatar')}
+            editName={editName}
+            isEditing={isEditing}
+            saving={saving}
+            uploadingAvatar={uploadingAvatar}
+            fileInputRef={fileInputRef}
+            onAvatarUpload={handleAvatarUpload}
+            onEditNameChange={setEditName}
+            onEditStart={() => setIsEditing(true)}
+            onEditCancel={() => setIsEditing(false)}
+            onSave={handleSave}
+            getGenderLabel={getGenderLabel}
+          />
 
-        <ProfilePreferencesCard
-          profile={profile}
-          title={t('profile.matchPref')}
-          lookingForLabel={t('profile.lookingFor')}
-          ageRangeLabel={t('profile.ageRange')}
-          pureTasteLabel={t('profile.pureTaste')}
-          notSetLabel={t('profile.notSet')}
-          yesLabel={t('profile.yes')}
-          noLabel={t('profile.no')}
-          getPrefLabel={getPrefLabel}
-        />
+          <div className={styles.stack}>
+            <ProfilePreferencesCard
+              profile={profile}
+              title={t('profile.matchPref')}
+              lookingForLabel={t('profile.lookingFor')}
+              ageRangeLabel={t('profile.ageRange')}
+              pureTasteLabel={t('profile.pureTaste')}
+              notSetLabel={t('profile.notSet')}
+              yesLabel={t('profile.yes')}
+              noLabel={t('profile.no')}
+              getPrefLabel={getPrefLabel}
+            />
 
-        <ProfileSequencingCard
-          profile={profile}
-          title={t('profile.seqStatus')}
-          archetypeLabel={t('profile.archetype')}
-          getStatusLabel={getStatusLabel}
-        />
+            <ProfileSequencingCard
+              profile={profile}
+              title={t('profile.seqStatus')}
+              archetypeLabel={t('profile.archetype')}
+              getStatusLabel={getStatusLabel}
+            />
+          </div>
+        </section>
       </motion.div>
 
       <ConfirmDialog

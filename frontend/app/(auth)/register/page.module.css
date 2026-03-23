@@ -1,17 +1,8 @@
-.container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-  padding: 4rem 2rem;
-}
-
-.card {
+.stack {
   display: flex;
   flex-direction: column;
   gap: 2rem;
   width: 100%;
-  max-width: 360px;
 }
 
 .title {

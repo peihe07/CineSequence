@@ -190,6 +190,13 @@
 - [x] Keyboard input (press Y to start)
 - [x] CSS custom properties for terminal palette (--terminal-bg, --terminal-line, etc.)
 
+### 7c-4: Inner Page Layout Review (identified 2026-03-22)
+- [ ] Fix nested `main` landmarks after shared `(main)` layout introduced global `<main>` wrapper
+- [ ] Remove duplicated page-level titles now that shared `Header` renders route title on inner pages
+- [ ] Reconcile fixed bottom nav spacer with `min-height: 100vh` page containers to avoid extra blank scroll space
+- [ ] Treat `/admin` as a root destination in shared `Header` navigation logic instead of showing a back button
+- [ ] Re-run browser walkthrough for `/dna`, `/matches`, `/theaters`, `/profile`, `/admin` after layout cleanup
+
 ### 7d: Testing + Security (in progress)
 - [x] E2E tests: 17 passing (landing page 6, auth 5, protected routes 6)
 - [x] Security review completed (15 findings: 2 CRITICAL, 5 HIGH, 5 MEDIUM, 3 LOW)

@@ -60,90 +60,86 @@ export default function RegisterPage() {
 
   if (sent) {
     return (
-      <main className={styles.container}>
-        <div className={styles.card}>
-          <i className="ri-mail-check-line ri-3x" />
-          <h1 className={styles.title}>{t('auth.checkEmail')}</h1>
-          <p className={styles.subtitle}>
-            {t('auth.checkEmailSent', { email: form.email })}
-          </p>
-          <Button variant="ghost" onClick={() => router.push('/login')}>
-            {t('auth.backToLogin')}
-          </Button>
-        </div>
-      </main>
+      <div className={styles.stack}>
+        <i className="ri-mail-check-line ri-3x" />
+        <h1 className={styles.title}>{t('auth.checkEmail')}</h1>
+        <p className={styles.subtitle}>
+          {t('auth.checkEmailSent', { email: form.email })}
+        </p>
+        <Button variant="ghost" onClick={() => router.push('/login')}>
+          {t('auth.backToLogin')}
+        </Button>
+      </div>
     )
   }
 
   return (
-    <main className={styles.container}>
-      <form className={styles.card} onSubmit={handleSubmit}>
-        <h1 className={styles.title}>{t('register.title')}</h1>
-        <p className={styles.subtitle}>{t('register.subtitle')}</p>
+    <form className={styles.stack} onSubmit={handleSubmit}>
+      <h1 className={styles.title}>{t('register.title')}</h1>
+      <p className={styles.subtitle}>{t('register.subtitle')}</p>
 
-        <Input
-          label={t('auth.emailPlaceholder')}
-          type="email"
-          placeholder="you@example.com"
-          value={form.email}
-          onChange={(e) => setForm({ ...form, email: e.target.value })}
-          error={errors.email}
-        />
+      <Input
+        label={t('auth.emailPlaceholder')}
+        type="email"
+        placeholder="you@example.com"
+        value={form.email}
+        onChange={(e) => setForm({ ...form, email: e.target.value })}
+        error={errors.email}
+      />
 
-        <Input
-          label={t('register.name')}
-          placeholder={t('register.namePlaceholder')}
-          value={form.name}
-          onChange={(e) => setForm({ ...form, name: e.target.value })}
-          error={errors.name}
-        />
+      <Input
+        label={t('register.name')}
+        placeholder={t('register.namePlaceholder')}
+        value={form.name}
+        onChange={(e) => setForm({ ...form, name: e.target.value })}
+        error={errors.name}
+      />
 
-        <div className={styles.field}>
-          <label className={styles.label}>{t('register.gender')}</label>
-          <div className={styles.genderGrid}>
-            {GENDERS.map((g) => (
-              <button
-                key={g.value}
-                type="button"
-                className={`${styles.genderOption} ${form.gender === g.value ? styles.genderActive : ''}`}
-                onClick={() => setForm({ ...form, gender: g.value })}
-              >
-                {g.label}
-              </button>
-            ))}
-          </div>
-          {errors.gender && <span className={styles.error}>{errors.gender}</span>}
+      <div className={styles.field}>
+        <label className={styles.label}>{t('register.gender')}</label>
+        <div className={styles.genderGrid}>
+          {GENDERS.map((g) => (
+            <button
+              key={g.value}
+              type="button"
+              className={`${styles.genderOption} ${form.gender === g.value ? styles.genderActive : ''}`}
+              onClick={() => setForm({ ...form, gender: g.value })}
+            >
+              {g.label}
+            </button>
+          ))}
         </div>
+        {errors.gender && <span className={styles.error}>{errors.gender}</span>}
+      </div>
 
-        <label className={styles.consent}>
-          <input
-            type="checkbox"
-            checked={form.agreed_to_terms}
-            onChange={(e) => setForm({ ...form, agreed_to_terms: e.target.checked })}
-            className={styles.checkbox}
-          />
-          <span>
-            {t('register.agreePrefix')}{' '}
-            <a href="/privacy" target="_blank" rel="noopener noreferrer" className={styles.link}>
-              {t('register.privacyLink')}
-            </a>
-          </span>
-        </label>
-        {errors.consent && <span className={styles.error}>{errors.consent}</span>}
-
-        {error && <p className={styles.error}>{error}</p>}
-
-        <Button type="submit" size="lg" loading={isLoading}>
-          {t('register.submit')}
-        </Button>
-
-        <p className={styles.footer}>
-          {t('auth.hasAccount')}{' '}
-          <a href="/login" className={styles.link}>
-            {t('auth.signIn')}
+      <label className={styles.consent}>
+        <input
+          type="checkbox"
+          checked={form.agreed_to_terms}
+          onChange={(e) => setForm({ ...form, agreed_to_terms: e.target.checked })}
+          className={styles.checkbox}
+        />
+        <span>
+          {t('register.agreePrefix')}{' '}
+          <a href="/privacy" target="_blank" rel="noopener noreferrer" className={styles.link}>
+            {t('register.privacyLink')}
           </a>
-        </p>
-      </form>
-    </main>
+        </span>
+      </label>
+      {errors.consent && <span className={styles.error}>{errors.consent}</span>}
+
+      {error && <p className={styles.error}>{error}</p>}
+
+      <Button type="submit" size="lg" loading={isLoading}>
+        {t('register.submit')}
+      </Button>
+
+      <p className={styles.footer}>
+        {t('auth.hasAccount')}{' '}
+        <a href="/login" className={styles.link}>
+          {t('auth.signIn')}
+        </a>
+      </p>
+    </form>
   )
 }

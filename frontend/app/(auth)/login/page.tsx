@@ -65,66 +65,62 @@ export default function LoginPage() {
 
   if (sent) {
     return (
-      <main className={styles.container}>
-        <div className={styles.card}>
-          <i className="ri-mail-check-line ri-3x" />
-          <h1 className={styles.title}>{t('auth.checkEmail')}</h1>
-          <p className={styles.subtitle}>
-            {t('auth.checkEmailSent', { email })}
-          </p>
-          <Button variant="ghost" onClick={() => setSent(false)}>
-            {t('auth.tryOther')}
-          </Button>
-        </div>
-      </main>
+      <div className={styles.stack}>
+        <i className="ri-mail-check-line ri-3x" />
+        <h1 className={styles.title}>{t('auth.checkEmail')}</h1>
+        <p className={styles.subtitle}>
+          {t('auth.checkEmailSent', { email })}
+        </p>
+        <Button variant="ghost" onClick={() => setSent(false)}>
+          {t('auth.tryOther')}
+        </Button>
+      </div>
     )
   }
 
   return (
-    <main className={styles.container}>
-      <form className={styles.card} onSubmit={handleSubmit}>
-        <h1 className={styles.title}>{t('auth.signIn')}</h1>
-        <p className={styles.subtitle}>{t('auth.subtitle')}</p>
+    <form className={styles.stack} onSubmit={handleSubmit}>
+      <h1 className={styles.title}>{t('auth.signIn')}</h1>
+      <p className={styles.subtitle}>{t('auth.subtitle')}</p>
 
-        <Input
-          type="email"
-          placeholder={t('auth.emailPlaceholder')}
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          error={emailError}
-        />
+      <Input
+        type="email"
+        placeholder={t('auth.emailPlaceholder')}
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        error={emailError}
+      />
 
-        {error && <p className={styles.error}>{error}</p>}
+      {error && <p className={styles.error}>{error}</p>}
 
-        <Button type="submit" size="lg" loading={isLoading}>
-          {isLoading ? t('auth.sending') : t('auth.sendLink')}
-        </Button>
+      <Button type="submit" size="lg" loading={isLoading}>
+        {isLoading ? t('auth.sending') : t('auth.sendLink')}
+      </Button>
 
-        {SHOW_DEV_LOGIN && (
-          <div className={styles.devCard}>
-            <p className={styles.devTitle}>Development</p>
-            <p className={styles.devText}>
-              Use the local admin shortcut and go straight to the dashboard.
-            </p>
-            <Button
-              type="button"
-              variant="secondary"
-              size="lg"
-              loading={devLoading}
-              onClick={handleDevAdminLogin}
-            >
-              Dev Admin Login
-            </Button>
-          </div>
-        )}
+      {SHOW_DEV_LOGIN && (
+        <div className={styles.devCard}>
+          <p className={styles.devTitle}>Development</p>
+          <p className={styles.devText}>
+            Use the local admin shortcut and go straight to the dashboard.
+          </p>
+          <Button
+            type="button"
+            variant="secondary"
+            size="lg"
+            loading={devLoading}
+            onClick={handleDevAdminLogin}
+          >
+            Dev Admin Login
+          </Button>
+        </div>
+      )}
 
-        <p className={styles.footer}>
-          {t('auth.noAccount')}{' '}
-          <a href="/register" className={styles.link}>
-            {t('auth.signUp')}
-          </a>
-        </p>
-      </form>
-    </main>
+      <p className={styles.footer}>
+        {t('auth.noAccount')}{' '}
+        <a href="/register" className={styles.link}>
+          {t('auth.signUp')}
+        </a>
+      </p>
+    </form>
   )
 }

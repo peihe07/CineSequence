@@ -4,6 +4,7 @@ import 'remixicon/fonts/remixicon.css'
 import './globals.css'
 import { I18nProvider } from '@/lib/i18n'
 import FloatingLocaleToggle from '@/components/ui/FloatingLocaleToggle'
+import LocaleDocumentSync from '@/components/ui/LocaleDocumentSync'
 import ToastContainer from '@/components/ui/Toast'
 
 const huninn = localFont({
@@ -18,15 +19,19 @@ const properScript = localFont({
 })
 
 export const metadata: Metadata = {
-  title: 'Cine Sequence',
+  title: {
+    default: 'Cine Sequence',
+    template: '%s',
+  },
   description: 'Decode your cinematic DNA through movie choices',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="zh-TW">
+    <html lang="en" suppressHydrationWarning>
       <body className={`${huninn.variable} ${properScript.variable}`}>
         <I18nProvider>
+          <LocaleDocumentSync />
           <FloatingLocaleToggle />
           <ToastContainer />
           {children}

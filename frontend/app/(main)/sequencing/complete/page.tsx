@@ -44,49 +44,56 @@ export default function SequencingCompletePage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <div className={styles.icon}>
-          <i className="ri-dna-line ri-3x" />
-        </div>
-
-        <h1 className={styles.title}>{t('complete.title')}</h1>
-        <p className={styles.subtitle}>
-          {t('complete.subtitle', { total: totalRounds })}
-        </p>
-
-        <div className={styles.stats}>
-          <div className={styles.stat}>
-            <span className={styles.statValue}>{totalRounds}</span>
-            <span className={styles.statLabel}>{t('complete.rounds')}</span>
+        <section className={`${styles.section} ${styles.heroSection}`}>
+          <span className={styles.sideLabel}>FILE 04</span>
+          <span className={styles.scriptWord} aria-hidden="true">Decoded</span>
+          <div className={styles.icon}>
+            <i className="ri-dna-line ri-3x" />
           </div>
-          <div className={styles.stat}>
-            <span className={styles.statValue}>{extensionBatches}/{maxBatches}</span>
-            <span className={styles.statLabel}>{t('complete.extensions')}</span>
-          </div>
-        </div>
+          <h1 className={styles.title}>{t('complete.title')}</h1>
+          <p className={styles.subtitle}>
+            {t('complete.subtitle', { total: totalRounds })}
+          </p>
+        </section>
 
-        <div className={styles.actions}>
-          <button className={styles.primaryBtn} onClick={handleViewDna}>
-            <i className="ri-eye-line" /> {t('complete.viewDna')}
-          </button>
+        <section className={`${styles.section} ${styles.statsSection}`}>
+          <div className={styles.stats}>
+            <div className={styles.stat}>
+              <span className={styles.statValue}>{totalRounds}</span>
+              <span className={styles.statLabel}>{t('complete.rounds')}</span>
+            </div>
+            <div className={styles.stat}>
+              <span className={styles.statValue}>{extensionBatches}/{maxBatches}</span>
+              <span className={styles.statLabel}>{t('complete.extensions')}</span>
+            </div>
+          </div>
+        </section>
+
+        <section className={`${styles.section} ${styles.actionsSection}`}>
+          <div className={styles.actions}>
+            <button className={styles.primaryBtn} onClick={handleViewDna}>
+              <i className="ri-eye-line" /> {t('complete.viewDna')}
+            </button>
+
+            {canExtend && (
+              <button className={styles.secondaryBtn} onClick={handleExtend}>
+                <i className="ri-add-line" /> {t('complete.extend')}
+              </button>
+            )}
+          </div>
 
           {canExtend && (
-            <button className={styles.secondaryBtn} onClick={handleExtend}>
-              <i className="ri-add-line" /> {t('complete.extend')}
-            </button>
+            <p className={styles.hint}>
+              {t('complete.extendHint', { remaining })}
+            </p>
           )}
-        </div>
 
-        {canExtend && (
-          <p className={styles.hint}>
-            {t('complete.extendHint', { remaining })}
-          </p>
-        )}
-
-        {!canExtend && extensionBatches > 0 && (
-          <p className={styles.hint}>
-            {t('complete.maxReached')}
-          </p>
-        )}
+          {!canExtend && extensionBatches > 0 && (
+            <p className={styles.hint}>
+              {t('complete.maxReached')}
+            </p>
+          )}
+        </section>
       </motion.div>
     </div>
   )

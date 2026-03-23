@@ -1,0 +1,22 @@
+.state {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  max-width: 24rem;
+  text-align: center;
+}
+
+.icon {
+  font-size: 2rem;
+  color: var(--accent);
+}

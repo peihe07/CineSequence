@@ -1,8 +1,12 @@
 .container {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   gap: 1.5rem;
+  min-height: 100%;
+  padding: clamp(1.5rem, 3vw, 2.4rem);
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid var(--border);
 }
 
 .title {
@@ -18,6 +22,7 @@
 
 .svg {
   max-width: 220px;
+  align-self: center;
 }
 
 .labels {
@@ -36,11 +41,13 @@
 
 .labelA,
 .labelB {
-  font-size: 0.65rem;
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
   color: var(--muted);
-  width: 32px;
+  width: 40px;
   text-align: center;
   flex-shrink: 0;
+  letter-spacing: 0.08em;
 }
 
 .bar {

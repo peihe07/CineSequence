@@ -25,8 +25,9 @@ export default function DnaResultPage() {
 
 function DnaResultContent() {
   const router = useRouter()
-  const { t } = useI18n()
+const { t } = useI18n()
   const { result, isBuilding, isLoading, error, buildDna, fetchResult } = useDnaStore()
+  const sectionTransition = { duration: 0.65, ease: 'easeOut' as const }
 
   useEffect(() => {
     void fetchResult().catch((err) => {
@@ -84,7 +85,14 @@ function DnaResultContent() {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
       >
-        <div className={styles.header}>
+        <motion.section
+          className={`${styles.section} ${styles.heroSection}`}
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={sectionTransition}
+        >
+          <span className={styles.sideLabel}>FILE 01</span>
+          <span className={styles.scriptWord} aria-hidden="true">Cine</span>
           <motion.h1
             className={styles.title}
             initial={{ opacity: 0, y: -20 }}
@@ -93,29 +101,54 @@ function DnaResultContent() {
           >
             {t('dna.title')}
           </motion.h1>
-        </div>
+          <p className={styles.deck}>
+            A dossier of your cinematic instinct, rendered as vectors, symbols, and narrative bias.
+          </p>
+        </motion.section>
 
-        <div className={styles.topRow}>
+        <motion.section
+          className={`${styles.section} ${styles.topRow}`}
+          initial={{ opacity: 0, y: 28 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ ...sectionTransition, delay: 0.08 }}
+        >
           <StarNebula
             genreVector={result.genre_vector}
             archetypeId={result.archetype.id}
           />
           <ArchetypeCard archetype={result.archetype} />
-        </div>
+        </motion.section>
 
-        <div className={styles.grid}>
+        <motion.section
+          className={`${styles.section} ${styles.grid}`}
+          initial={{ opacity: 0, y: 28 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ ...sectionTransition, delay: 0.14 }}
+        >
           <RadarChart scores={result.quadrant_scores} />
           <TagCloud tagLabels={result.tag_labels} />
-        </div>
+        </motion.section>
 
-        <AIReading
-          personalityReading={result.personality_reading}
-          hiddenTraits={result.hidden_traits}
-          conversationStyle={result.conversation_style}
-          idealMovieDate={result.ideal_movie_date}
-        />
+        <motion.section
+          className={`${styles.section} ${styles.readingSection}`}
+          initial={{ opacity: 0, y: 32 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ ...sectionTransition, delay: 0.2 }}
+        >
+          <AIReading
+            personalityReading={result.personality_reading}
+            hiddenTraits={result.hidden_traits}
+            conversationStyle={result.conversation_style}
+            idealMovieDate={result.ideal_movie_date}
+          />
+        </motion.section>
 
-        <div className={styles.actions}>
+        <motion.section
+          className={`${styles.section} ${styles.actions}`}
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ ...sectionTransition, delay: 0.28 }}
+        >
           <Button
             variant="primary"
             size="lg"
@@ -123,7 +156,7 @@ function DnaResultContent() {
           >
             <i className="ri-group-line" /> {t('dna.findMatches')}
           </Button>
-        </div>
+        </motion.section>
       </motion.div>
     </main>
   )

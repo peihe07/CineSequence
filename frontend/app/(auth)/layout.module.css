@@ -1,0 +1,12 @@
+.shell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 3rem 2rem;
+}
+
+.card {
+  width: 100%;
+  max-width: var(--content-max-width);
+}

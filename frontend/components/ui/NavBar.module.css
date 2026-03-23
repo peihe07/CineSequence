@@ -3,7 +3,7 @@
   bottom: calc(1.2rem + env(safe-area-inset-bottom));
   left: 50%;
   transform: translateX(-50%);
-  z-index: 100;
+  z-index: var(--z-nav);
   width: calc(100% - 2.5rem);
   max-width: 420px;
   background: rgba(255, 255, 255, 0.78);

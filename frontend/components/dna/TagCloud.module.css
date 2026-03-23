@@ -2,7 +2,10 @@
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  align-items: center;
+  min-height: 100%;
+  padding: clamp(1.5rem, 3vw, 2.4rem);
+  background: rgba(250, 248, 243, 0.9);
+  border: 1px solid var(--border);
 }
 
 .title {
@@ -19,18 +22,20 @@
 .cloud {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.4rem;
-  justify-content: center;
-  max-width: 380px;
+  gap: 0.55rem;
+  justify-content: flex-start;
+  max-width: 420px;
 }
 
 .tag {
-  padding: 0.3rem 0.75rem;
-  font-size: calc(0.7rem * var(--tag-scale, 1));
+  padding: 0.42rem 0.82rem;
+  font-size: calc(0.66rem * var(--tag-scale, 1));
   font-weight: 500;
-  color: var(--accent);
-  background: var(--accent-light);
-  border: none;
+  font-family: var(--font-mono);
+  color: var(--accent-ink);
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(171, 163, 151, 0.75);
   border-radius: 999px;
   white-space: nowrap;
+  letter-spacing: 0.04em;
 }

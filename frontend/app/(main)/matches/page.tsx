@@ -250,58 +250,69 @@ function MatchesContent() {
   return (
     <div className={styles.container}>
       <div className={styles.content}>
-        <div className={styles.header}>
-          <h1 className={styles.title}>{t('matches.title')}</h1>
-          <button
-            className={styles.discoverBtn}
-            onClick={discoverMatches}
-            disabled={isDiscovering}
-          >
-            <i className="ri-compass-discover-line" />
-            {isDiscovering ? t('matches.discovering') : t('matches.discover')}
-          </button>
-        </div>
-
-        {(prefsError || error) && (
-          <p className={styles.errorText}>{prefsError || error}</p>
-        )}
-
-        <MatchFilter prefs={prefs} onChange={savePrefs} />
-
-        {isLoading && (
-          <div className={styles.loading}>
-            <i className="ri-loader-4-line ri-spin ri-2x" />
-          </div>
-        )}
-
-        {!isLoading && matches.length === 0 && (
-          <div className={styles.empty}>
-            <i className="ri-group-line ri-3x" />
-            <p>{t('matches.empty')}</p>
-            <p className={styles.emptyHint}>{t('matches.emptyHint')}</p>
+        <section className={`${styles.section} ${styles.heroSection}`}>
+          <span className={styles.sideLabel}>FILE 03</span>
+          <span className={styles.scriptWord} aria-hidden="true">Matches</span>
+          <div className={styles.header}>
+            <h1 className={styles.title}>{t('matches.title')}</h1>
             <button
               className={styles.discoverBtn}
               onClick={discoverMatches}
               disabled={isDiscovering}
-              style={{ marginTop: '0.5rem' }}
             >
               <i className="ri-compass-discover-line" />
               {isDiscovering ? t('matches.discovering') : t('matches.discover')}
             </button>
           </div>
-        )}
+          <p className={styles.deck}>
+            Preference filters, invitation state, and chemistry signals arranged as a casting dossier.
+          </p>
+        </section>
 
-        <div className={styles.grid}>
-          {matches.map((match) => (
-            <MatchCard
-              key={match.id}
-              match={match}
-              onInvite={() => sendInvite(match.id)}
-              onRespond={(accept) => respondToInvite(match.id, accept)}
-              highlighted={match.id === highlightId}
-            />
-          ))}
-        </div>
+        <section className={`${styles.section} ${styles.controlsSection}`}>
+          {(prefsError || error) && (
+            <p className={styles.errorText}>{prefsError || error}</p>
+          )}
+
+          <MatchFilter prefs={prefs} onChange={savePrefs} />
+        </section>
+
+        <section className={`${styles.section} ${styles.resultsSection}`}>
+          {isLoading && (
+            <div className={styles.loading}>
+              <i className="ri-loader-4-line ri-spin ri-2x" />
+            </div>
+          )}
+
+          {!isLoading && matches.length === 0 && (
+            <div className={styles.empty}>
+              <i className="ri-group-line ri-3x" />
+              <p>{t('matches.empty')}</p>
+              <p className={styles.emptyHint}>{t('matches.emptyHint')}</p>
+              <button
+                className={styles.discoverBtn}
+                onClick={discoverMatches}
+                disabled={isDiscovering}
+                style={{ marginTop: '0.5rem' }}
+              >
+                <i className="ri-compass-discover-line" />
+                {isDiscovering ? t('matches.discovering') : t('matches.discover')}
+              </button>
+            </div>
+          )}
+
+          <div className={styles.grid}>
+            {matches.map((match) => (
+              <MatchCard
+                key={match.id}
+                match={match}
+                onInvite={() => sendInvite(match.id)}
+                onRespond={(accept) => respondToInvite(match.id, accept)}
+                highlighted={match.id === highlightId}
+              />
+            ))}
+          </div>
+        </section>
       </div>
     </div>
   )

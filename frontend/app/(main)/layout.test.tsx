@@ -16,6 +16,7 @@ const {
 
 vi.mock('next/navigation', () => ({
   useRouter: () => ({ replace: replaceMock }),
+  usePathname: () => '/dna',
 }))
 
 vi.mock('@/stores/authStore', () => ({
@@ -30,6 +31,7 @@ vi.mock('@/lib/i18n', () => ({
     t: (key: string) => {
       const dict: Record<string, string> = {
         'common.error': 'Something went wrong',
+        'common.loading': 'Loading...',
         'error.retry': 'Retry',
       }
       return dict[key] ?? key
@@ -70,6 +72,19 @@ describe('MainLayout', () => {
 
     expect(await screen.findByText('Profile unavailable')).toBeTruthy()
     expect(replaceMock).not.toHaveBeenCalled()
+    expect(screen.queryByText('Protected content')).toBeNull()
+  })
+
+  it('shows a loading state while the auth check is running', () => {
+    authState.isLoading = true
+
+    render(
+      <MainLayout>
+        <p>Protected content</p>
+      </MainLayout>,
+    )
+
+    expect(screen.getByText('Loading...')).toBeTruthy()
     expect(screen.queryByText('Protected content')).toBeNull()
   })
 
