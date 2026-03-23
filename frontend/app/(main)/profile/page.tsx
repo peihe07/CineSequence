@@ -137,7 +137,6 @@ export default function ProfilePage() {
       >
         <section className={`${styles.section} ${styles.heroSection}`}>
           <span className={styles.sideLabel}>FILE 02</span>
-          <span className={styles.scriptWord} aria-hidden="true">Profile</span>
           <ProfileHeader
             title={t('profile.title')}
             logoutLabel={t('profile.logout')}

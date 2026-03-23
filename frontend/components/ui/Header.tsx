@@ -1,56 +1,62 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useRouter, usePathname } from 'next/navigation'
+import { usePathname } from 'next/navigation'
+import Link from 'next/link'
 import { useI18n } from '@/lib/i18n'
+import LocaleToggle from './LocaleToggle'
 import MuteToggle from './MuteToggle'
 import styles from './Header.module.css'
 
-const TITLE_MAP: Record<string, string> = {
-  '/sequencing': 'nav.sequencing',
-  '/sequencing/seed': 'nav.sequencing',
-  '/sequencing/complete': 'nav.sequencing',
-  '/dna': 'nav.dna',
-  '/matches': 'nav.matches',
-  '/theaters': 'nav.theaters',
-  '/profile': 'nav.profile',
-  '/admin': 'nav.admin',
-}
-
-const ROOT_PATHS = ['/sequencing', '/dna', '/matches', '/theaters', '/profile']
+const NAV_ITEMS = [
+  { href: '/sequencing', labelKey: 'nav.sequencing' },
+  { href: '/dna', labelKey: 'nav.dna' },
+  { href: '/matches', labelKey: 'nav.matches' },
+  { href: '/theaters', labelKey: 'nav.theaters' },
+  { href: '/profile', labelKey: 'nav.profile' },
+]
 
 export default function Header() {
-  const router = useRouter()
   const pathname = usePathname()
   const { t } = useI18n()
   const [isScrolled, setIsScrolled] = useState(false)
-
-  const isRoot = ROOT_PATHS.includes(pathname)
-  const titleKey = TITLE_MAP[pathname] || Object.entries(TITLE_MAP).find(([p]) => pathname.startsWith(p))?.[1]
 
   useEffect(() => {
     const syncScroll = () => {
       setIsScrolled(window.scrollY > 16)
     }
-
     syncScroll()
     window.addEventListener('scroll', syncScroll, { passive: true })
-
     return () => window.removeEventListener('scroll', syncScroll)
   }, [])
 
   return (
     <header className={`${styles.header} ${isScrolled ? styles.scrolled : ''}`}>
-      <div className={styles.left}>
-        {!isRoot && (
-          <button onClick={() => router.back()} className={styles.backBtn} aria-label="Back">
-            <i className="ri-arrow-left-s-line" />
-          </button>
-        )}
-      </div>
-      <span className={styles.title}>{titleKey ? t(titleKey) : ''}</span>
+      {/* Left: brand logo */}
+      <Link href="/sequencing" className={styles.brand}>
+        CINE SEQUENCE
+      </Link>
+
+      {/* Center: recessed nav tray with pill-shaped active item */}
+      <nav className={styles.navTray} aria-label="Main navigation">
+        {NAV_ITEMS.map(({ href, labelKey }) => {
+          const isActive = pathname.startsWith(href)
+          return (
+            <Link
+              key={href}
+              href={href}
+              className={`${styles.navLink} ${isActive ? styles.navLinkActive : ''}`}
+            >
+              {t(labelKey)}
+            </Link>
+          )
+        })}
+      </nav>
+
+      {/* Right: locale toggle + mute */}
       <div className={styles.right}>
         <MuteToggle />
+        <LocaleToggle />
       </div>
     </header>
   )

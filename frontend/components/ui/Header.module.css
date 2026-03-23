@@ -1,59 +1,159 @@
+/* Unified single-row header — Studio CBR warm organic style */
+/* Logo (left) | recessed nav tray (center) | locale toggle (right) */
+
 .header {
   position: sticky;
   top: 0;
   z-index: var(--z-header);
   display: grid;
-  grid-template-columns: 48px 1fr 48px;
+  grid-template-columns: auto 1fr auto;
   align-items: center;
-  height: 52px;
-  padding: 0 1.1rem;
-  background: linear-gradient(180deg, rgba(250, 248, 243, 0.18) 0%, rgba(250, 248, 243, 0.02) 100%);
-  border-bottom: 1px solid transparent;
-  backdrop-filter: blur(2px);
-  transition: background 0.24s ease, border-color 0.24s ease, backdrop-filter 0.24s ease;
+  width: 100%;
+  height: 56px;
+  padding: 0 1.25rem;
+  background: rgba(245, 243, 237, 0.55);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  transition:
+    background 0.28s ease,
+    backdrop-filter 0.28s ease;
 }
 
 .scrolled {
-  background: rgba(250, 248, 243, 0.86);
-  border-bottom-color: var(--border);
-  backdrop-filter: blur(14px);
+  background: rgba(245, 243, 237, 0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
 }
 
-.left,
-.right {
-  display: flex;
-  align-items: center;
-}
+/* ─── Left: Brand logo ────────────────────────────── */
 
-.right {
-  justify-content: flex-end;
-}
-
-.backBtn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  background: transparent;
-  border: none;
+.brand {
+  flex-shrink: 0;
+  font-family: var(--font-display-script), var(--font-mono), monospace;
+  font-size: 0.72rem;
+  font-weight: 400;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
   color: var(--foreground);
-  font-size: 1.25rem;
-  cursor: pointer;
-  border-radius: 6px;
-  transition: background 0.18s ease, color 0.18s ease;
+  text-decoration: none;
+  user-select: none;
+  white-space: nowrap;
 }
 
-.backBtn:hover {
-  background: rgba(68, 81, 75, 0.05);
+.brand:hover {
   color: var(--accent);
 }
 
-.title {
-  text-align: center;
-  font-size: 0.72rem;
-  font-weight: 600;
-  letter-spacing: 0.18em;
+/* ─── Center: Recessed nav tray ───────────────────── */
+
+.navTray {
+  justify-self: center;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  height: 38px;
+  padding: 3px;
+  border-radius: 2rem;
+  /* Inset / recessed look — darker than surrounding header */
+  background: rgba(221, 217, 208, 0.45);
+  box-shadow: inset 0 1px 3px rgba(45, 54, 50, 0.08);
+}
+
+/* Nav items — flat text inside the tray */
+.navLink {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 0 0.85rem;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.58rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--foreground);
+  color: var(--muted);
+  text-decoration: none;
+  border-radius: 2rem;
+  transition: color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+  white-space: nowrap;
+}
+
+.navLink:hover {
+  color: var(--foreground-soft);
+}
+
+.navLink:focus-visible {
+  outline: 1px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Active item — capsule pill that "pops out" of the tray */
+.navLinkActive {
+  color: #fff;
+  background: var(--accent);
+  box-shadow: 0 2px 8px rgba(192, 98, 35, 0.3);
+  font-weight: 600;
+}
+
+.navLinkActive:hover {
+  color: #fff;
+  background: var(--accent-hover);
+}
+
+/* ─── Right: utilities ────────────────────────────── */
+
+.right {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* ─── Mobile: stack to two rows ───────────────────── */
+
+@media (max-width: 640px) {
+  .header {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto;
+    height: auto;
+    padding: 0.5rem 0.75rem;
+    gap: 0.35rem;
+  }
+
+  /* Row 1: brand + right on same line */
+  .brand {
+    font-size: 0.65rem;
+    grid-column: 1;
+  }
+
+  .right {
+    position: absolute;
+    right: 0.75rem;
+    top: 0.5rem;
+  }
+
+  /* Row 2: nav tray centered */
+  .navTray {
+    justify-self: center;
+    height: 36px;
+  }
+
+  .navLink {
+    font-size: 0.5rem;
+    letter-spacing: 0.08em;
+    padding: 0 0.55rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .navLink {
+    font-size: 0.46rem;
+    letter-spacing: 0.06em;
+    padding: 0 0.4rem;
+  }
+
+  .brand {
+    font-size: 0.58rem;
+    letter-spacing: 0.14em;
+  }
 }

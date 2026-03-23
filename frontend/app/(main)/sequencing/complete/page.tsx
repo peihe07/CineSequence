@@ -46,7 +46,6 @@ export default function SequencingCompletePage() {
       >
         <section className={`${styles.section} ${styles.heroSection}`}>
           <span className={styles.sideLabel}>FILE 04</span>
-          <span className={styles.scriptWord} aria-hidden="true">Decoded</span>
           <div className={styles.icon}>
             <i className="ri-dna-line ri-3x" />
           </div>

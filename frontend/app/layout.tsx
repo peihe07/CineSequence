@@ -3,7 +3,6 @@ import localFont from 'next/font/local'
 import 'remixicon/fonts/remixicon.css'
 import './globals.css'
 import { I18nProvider } from '@/lib/i18n'
-import FloatingLocaleToggle from '@/components/ui/FloatingLocaleToggle'
 import LocaleDocumentSync from '@/components/ui/LocaleDocumentSync'
 import ToastContainer from '@/components/ui/Toast'
 
@@ -32,7 +31,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className={`${huninn.variable} ${properScript.variable}`}>
         <I18nProvider>
           <LocaleDocumentSync />
-          <FloatingLocaleToggle />
           <ToastContainer />
           {children}
         </I18nProvider>

@@ -58,18 +58,6 @@
   color: var(--muted);
 }
 
-.scriptWord {
-  position: absolute;
-  top: clamp(1.6rem, 4vw, 2.7rem);
-  left: 50%;
-  transform: translateX(-50%);
-  font-family: var(--font-display-script);
-  font-size: clamp(4.5rem, 14vw, 8.6rem);
-  line-height: 0.84;
-  color: rgba(125, 63, 27, 0.14);
-  pointer-events: none;
-}
-
 .icon {
   color: var(--accent-ink);
   position: relative;

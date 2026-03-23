@@ -6,4 +6,5 @@
 
 .page {
   position: relative;
+  /* No bottom padding needed — bottom NavBar removed */
 }

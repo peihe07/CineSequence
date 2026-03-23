@@ -111,7 +111,6 @@ function TheatersContent() {
       <div className={styles.content}>
         <section className={`${styles.section} ${styles.heroSection}`}>
           <span className={styles.sideLabel}>FILE 06</span>
-          <span className={styles.scriptWord} aria-hidden="true">Theaters</span>
           <div className={styles.header}>
             <h1 className={styles.title}>{t('theaters.title')}</h1>
             <button

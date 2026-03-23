@@ -75,7 +75,6 @@ export default function TicketPage() {
       >
         <section className={`${styles.section} ${styles.heroSection}`}>
           <span className={styles.sideLabel}>FILE 07</span>
-          <span className={styles.scriptWord} aria-hidden="true">Reveal</span>
           <h1 className={styles.title}>{t('ticket.title')}</h1>
         </section>
 

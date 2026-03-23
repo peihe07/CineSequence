@@ -109,7 +109,6 @@ export default function SequencingPage() {
       <div className={styles.shell}>
         <section className={`${styles.section} ${styles.heroSection}`}>
           <span className={styles.sideLabel}>FILE 05</span>
-          <span className={styles.scriptWord} aria-hidden="true">Sequence</span>
           <div className={styles.header}>
             <PhaseIndicator phase={phase} round={roundNumber} totalRounds={progress?.total_rounds ?? 20} />
           </div>

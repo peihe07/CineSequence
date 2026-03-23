@@ -58,17 +58,6 @@
   color: var(--muted);
 }
 
-.scriptWord {
-  position: absolute;
-  top: 1.4rem;
-  left: 1rem;
-  font-family: var(--font-display-script);
-  font-size: clamp(4rem, 11vw, 7rem);
-  line-height: 0.84;
-  color: rgba(125, 63, 27, 0.12);
-  pointer-events: none;
-}
-
 .ambientGlow {
   position: fixed;
   top: 50%;

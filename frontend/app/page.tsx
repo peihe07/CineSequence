@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import Link from 'next/link'
 import { useI18n } from '@/lib/i18n'
+import FloatingLocaleToggle from '@/components/ui/FloatingLocaleToggle'
 import styles from './page.module.css'
 
 const PANELS = [
@@ -79,6 +80,7 @@ export default function Home() {
 
   return (
     <main className={styles.main}>
+      <FloatingLocaleToggle />
       <section className={styles.hero}>
         <div className={styles.panelStrip}>
           {PANELS.map((panel, i) => (

@@ -92,7 +92,6 @@ const { t } = useI18n()
           transition={sectionTransition}
         >
           <span className={styles.sideLabel}>FILE 01</span>
-          <span className={styles.scriptWord} aria-hidden="true">Cine</span>
           <motion.h1
             className={styles.title}
             initial={{ opacity: 0, y: -20 }}
