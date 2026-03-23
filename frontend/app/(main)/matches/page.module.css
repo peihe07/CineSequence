@@ -1,3 +1,7 @@
+/* ═══════════════════════════════════════════════
+   Matches page — horizontal ticket carousel layout
+   ═══════════════════════════════════════════════ */
+
 .container {
   min-height: 100vh;
   display: flex;
@@ -24,6 +28,7 @@
   border-bottom: 1px solid var(--border);
 }
 
+/* ── HERO SECTION ─────────────────────────────── */
 .heroSection {
   display: flex;
   flex-direction: column;
@@ -54,14 +59,21 @@
   line-height: 1.9;
 }
 
+/* ── CONTROLS SECTION ─────────────────────────── */
 .controlsSection {
   background: rgba(255, 255, 255, 0.58);
 }
 
+/* ── RESULTS SECTION ──────────────────────────── */
 .resultsSection {
   background: linear-gradient(180deg, rgba(250, 248, 243, 0.92) 0%, rgba(236, 234, 227, 0.54) 100%);
+  /* Override default section padding — carousel handles its own horizontal padding */
+  padding-left: 0;
+  padding-right: 0;
+  padding-bottom: 2rem;
 }
 
+/* ── HEADER ───────────────────────────────────── */
 .header {
   display: flex;
   align-items: center;
@@ -79,6 +91,7 @@
   position: relative;
 }
 
+/* ── DISCOVER BUTTON ──────────────────────────── */
 .discoverBtn {
   display: flex;
   align-items: center;
@@ -93,6 +106,7 @@
   letter-spacing: 0.12em;
   text-transform: uppercase;
   cursor: pointer;
+  min-height: 44px;
   transition: background 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
 }
 
@@ -102,12 +116,16 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
+.discoverBtn:active {
+  transform: scale(0.95);
+}
+
 .discoverBtn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
-/* Filter bar */
+/* ── FILTER BAR ───────────────────────────────── */
 .filterBar {
   display: flex;
   flex-direction: column;
@@ -128,6 +146,7 @@
   letter-spacing: 0.14em;
   text-transform: uppercase;
   cursor: pointer;
+  min-height: 44px;
   transition: color 0.15s ease;
 }
 
@@ -237,21 +256,31 @@
   margin-top: -0.5rem;
 }
 
-/* Loading */
+/* ── ERROR / LOADING / EMPTY ──────────────────── */
+.errorText {
+  font-size: 0.8rem;
+  color: #c0622310;
+  margin-bottom: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  background: rgba(192, 98, 35, 0.07);
+  border: 1px solid rgba(192, 98, 35, 0.18);
+  border-radius: 6px;
+  color: var(--accent-ink);
+}
+
 .loading {
   display: flex;
   justify-content: center;
-  padding: 4rem 0;
+  padding: 4rem clamp(1.1rem, 4vw, 2.25rem);
   color: var(--muted);
 }
 
-/* Empty state */
 .empty {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 0.8rem;
-  padding: 4rem 0;
+  padding: 4rem clamp(1.1rem, 4vw, 2.25rem);
   color: var(--muted);
   text-align: center;
 }
@@ -261,238 +290,82 @@
   color: var(--muted-light);
 }
 
-/* Grid */
-.grid {
+/* ── HORIZONTAL TICKET CAROUSEL ───────────────── */
+.carousel {
   display: flex;
-  flex-direction: column;
-  gap: 1.1rem;
+  flex-direction: row;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  /* Negative gap + overlap for stacking feel */
+  gap: -1.5rem;
+  /* Side padding so first/last tickets are centered */
+  padding: 1.5rem clamp(1.1rem, 4vw, 2.25rem) 1.75rem;
+  /* Hide scrollbar */
+  scrollbar-width: none;
 }
 
-/* Match card */
-.card {
-  padding: clamp(1.25rem, 3vw, 1.75rem);
-  background: var(--card-bg);
-  border: 1px solid var(--border);
-  border-radius: var(--card-radius);
-  box-shadow: var(--card-shadow);
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  transition: box-shadow 0.2s ease;
+.carousel::-webkit-scrollbar {
+  display: none;
 }
 
-.card:hover {
-  box-shadow: var(--card-shadow-hover);
-}
-
-.highlighted {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 1px var(--accent);
-}
-
-.cardHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.partnerInfo {
-  display: flex;
-  align-items: baseline;
-  gap: 0.8rem;
-}
-
-.partnerName {
-  font-size: 1.08rem;
-  font-weight: 600;
-}
-
-.similarity {
-  font-size: 0.74rem;
-  color: var(--accent-ink);
-  font-weight: 500;
-  font-family: var(--font-mono);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-
-.status {
-  font-size: 0.66rem;
-  font-weight: 500;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  padding: 0.3rem 0.62rem;
-  border-radius: 999px;
-  border: 1px solid var(--border);
-  font-family: var(--font-mono);
-  background: rgba(255, 255, 255, 0.72);
-}
-
-.discovered {
-  color: var(--muted);
-}
-
-.invited {
-  color: var(--accent-ink);
-  border-color: rgba(125, 63, 27, 0.24);
-  background: rgba(192, 98, 35, 0.08);
-}
-
-.accepted {
-  color: var(--success);
-  border-color: rgba(5, 150, 105, 0.2);
-  background: rgba(5, 150, 105, 0.06);
-}
-
-.declined {
-  color: var(--muted-light);
-}
-
-/* Tags */
-.tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem;
-}
-
-.tag {
-  padding: 0.28rem 0.62rem;
-  font-size: 0.68rem;
-  color: var(--accent-ink);
-  background: rgba(255, 255, 255, 0.7);
-  border: 1px solid rgba(171, 163, 151, 0.75);
-  border-radius: 999px;
-  font-family: var(--font-mono);
-}
-
-/* Ice breaker */
-.iceBreaker {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.5rem;
-  font-size: 0.8rem;
-  color: var(--muted);
-  line-height: 1.5;
-}
-
-.iceBreaker i {
-  color: var(--accent);
-  margin-top: 0.1rem;
+/* Stacking effect — non-active tickets recede */
+.carouselItem {
   flex-shrink: 0;
+  scroll-snap-align: center;
+  transform: scale(0.88) translateY(8px);
+  opacity: 0.55;
+  filter: brightness(0.94);
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.4s ease,
+              filter 0.4s ease;
+  z-index: 0;
+  /* Overlap spacing between cards */
+  margin-right: -1rem;
 }
 
-/* Card actions */
-.cardActions {
-  display: flex;
-  align-items: center;
-  padding-top: 0.8rem;
-  border-top: 1px solid var(--border);
+.carouselItemActive {
+  transform: scale(1) translateY(0);
+  opacity: 1;
+  filter: brightness(1);
+  z-index: 2;
 }
 
-.inviteBtn {
+/* ── CAROUSEL DOTS ────────────────────────────── */
+.carouselDots {
   display: flex;
+  justify-content: center;
   align-items: center;
-  gap: 0.3rem;
-  padding: 0.5rem 1rem;
+  gap: 0.45rem;
+  padding: 0 clamp(1.1rem, 4vw, 2.25rem) 0.5rem;
+}
+
+.dot {
+  display: block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--border-dark, #c8c3b8);
+  transition: background 0.2s ease, transform 0.2s ease;
+  cursor: default;
+}
+
+.dotActive {
   background: var(--accent);
-  color: #ffffff;
-  border: none;
-  border-radius: 8px;
-  font-size: 0.75rem;
-  font-family: inherit;
-  cursor: pointer;
-  transition: background 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+  transform: scale(1.35);
 }
 
-.inviteBtn:hover {
-  background: var(--accent-hover);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-}
-
-.inviteBtn:active,
-.acceptBtn:active,
-.declineBtn:active,
-.discoverBtn:active {
-  transform: scale(0.95);
-}
-
-.respondBtns {
-  display: flex;
-  gap: 0.6rem;
-}
-
-.acceptBtn {
-  display: flex;
-  align-items: center;
-  gap: 0.3rem;
-  padding: 0.5rem 1rem;
-  background: var(--accent);
-  color: #ffffff;
-  border: none;
-  border-radius: 8px;
-  font-size: 0.75rem;
-  font-family: inherit;
-  cursor: pointer;
-  transition: background 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
-}
-
-.acceptBtn:hover {
-  background: var(--accent-hover);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-}
-
-.declineBtn {
-  display: flex;
-  align-items: center;
-  gap: 0.3rem;
-  padding: 0.5rem 1rem;
-  background: transparent;
-  color: var(--muted);
-  border: none;
-  border-radius: 8px;
-  font-size: 0.75rem;
-  font-family: inherit;
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-
-.declineBtn:hover {
-  color: var(--foreground);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-}
-
-.acceptedSection {
-  display: flex;
-  flex-direction: column;
-  gap: 0.8rem;
-}
-
-.acceptedLabel {
-  font-size: 0.8rem;
-  color: var(--success);
-  display: flex;
-  align-items: center;
-  gap: 0.3rem;
-}
-
-/* Mobile */
+/* ── MOBILE ───────────────────────────────────── */
 @media (max-width: 640px) {
   .container {
-    padding: 2rem 1rem;
+    padding-top: 2rem;
   }
 
   .title {
     font-size: 1.3rem;
   }
 
-  .discoverBtn,
-  .inviteBtn,
-  .acceptBtn,
-  .declineBtn {
-    min-height: 44px;
+  .discoverBtn {
     padding: 0.6rem 1rem;
   }
 
@@ -513,12 +386,10 @@
     padding: 0.5rem;
   }
 
-  .card {
-    padding: 1.2rem;
-  }
-
-  .cardHeader {
-    flex-wrap: wrap;
-    gap: 0.4rem;
+  /* Ensure last card doesn't get clipped */
+  .carousel::after {
+    content: '';
+    flex-shrink: 0;
+    width: clamp(1.1rem, 4vw, 2.25rem);
   }
 }

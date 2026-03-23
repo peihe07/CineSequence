@@ -1,18 +1,433 @@
-.ticket {
+/* ═══════════════════════════════════════════════════
+   Cinema Ticket Card — commemorative ticket aesthetic
+   ═══════════════════════════════════════════════════ */
+
+/* Outer wrapper — handles 3D tilt + snap behaviour */
+.ticketWrapper {
+  position: relative;
+  /* Ticket dimensions — tall cinema ticket proportion */
+  width: min(360px, 78vw);
+  min-height: 520px;
+  /* Paper texture via subtle noise gradient */
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  /* Left accent strip — ticket number colour block */
+  border-left: 4px solid var(--accent);
+  /* No border-radius — real tickets are rectangular */
+  border-radius: 0;
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.06),
+    0 8px 24px rgba(0, 0, 0, 0.08),
+    inset 0 0 0 0.5px rgba(255, 255, 255, 0.6);
+  display: flex;
+  flex-direction: column;
+  /* 3D tilt */
+  perspective: 900px;
+  transform-style: preserve-3d;
+  cursor: default;
+  transition: box-shadow 0.25s ease, transform 0.35s ease, opacity 0.35s ease;
+  /* Paper-like subtle warm background noise */
+  background-image:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.0) 0%, rgba(192, 98, 35, 0.025) 100%);
+  /* Clip punch holes on the perforation edges using SVG-based clip-path is not
+     feasible across all browsers without JS; we simulate with the perforationRow
+     element instead (see below). */
+}
+
+.ticketWrapper:hover {
+  box-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.09),
+    0 16px 40px rgba(0, 0, 0, 0.12),
+    inset 0 0 0 0.5px rgba(255, 255, 255, 0.7);
+}
+
+/* ── STUB ──────────────────────────────────────────── */
+.stub {
+  padding: 1.1rem 1.35rem 1rem;
+  background: var(--background-alt, #eceae3);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.stubMeta {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.stubLabel {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.stubDate {
+  font-family: var(--font-mono);
+  font-size: 0.63rem;
+  letter-spacing: 0.12em;
+  color: var(--muted-light, #b0a99e);
+}
+
+.similarityBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.similarityLabel {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.similarityValue {
+  font-size: 2.5rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--accent);
+  letter-spacing: -0.03em;
+}
+
+/* Progress bar */
+.progressBar {
+  height: 3px;
+  background: rgba(0, 0, 0, 0.08);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 999px;
+  transition: width 0.6s ease;
+}
+
+/* ── PERFORATION ROW ───────────────────────────────── */
+/* Simulates the tear-off line with semicircle punch holes on both sides */
+.perforationRow {
+  display: flex;
+  align-items: center;
+  position: relative;
+  height: 0;
+  /* Extend 1px to cover the border visually */
+  margin: 0 -1px;
+}
+
+.punchHole {
+  /* Semicircle cutout — overflows the card border to look like real notches */
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--background, #f5f4f0);
+  border: 1px solid var(--border);
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+  /* Pull outward so half the circle exceeds the card edge */
+  margin: 0 -7px;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+
+.dashedLine {
+  flex: 1;
+  height: 0;
+  border-top: 1.5px dashed rgba(0, 0, 0, 0.13);
+  margin: 0 7px;
+}
+
+/* ── MAIN SECTION ──────────────────────────────────── */
+.main {
+  padding: 1.2rem 1.35rem 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  flex: 1;
+}
+
+/* Partner name */
+.partnerName {
+  font-size: 1.25rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+  color: var(--foreground);
+}
+
+/* Tags */
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.tag {
+  padding: 0.22rem 0.58rem;
+  font-size: 0.64rem;
+  font-family: var(--font-mono);
+  letter-spacing: 0.08em;
+  color: var(--accent-ink);
+  background: rgba(255, 255, 255, 0.68);
+  border: 1px solid rgba(171, 163, 151, 0.7);
+  border-radius: 999px;
+}
+
+/* Ice breaker quote */
+.iceBreaker {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.45rem;
+  font-size: 0.78rem;
+  color: var(--foreground-soft);
+  line-height: 1.55;
+  font-style: italic;
+}
+
+.iceBreaker i {
+  color: var(--accent);
+  font-style: normal;
+  margin-top: 0.15rem;
+  flex-shrink: 0;
+  font-size: 0.9rem;
+}
+
+/* Action area */
+.actionArea {
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--border);
+}
+
+.inviteBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.6rem 1.15rem;
+  background: var(--accent);
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.73rem;
+  font-family: var(--font-mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  min-height: 44px;
+  transition: background 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.inviteBtn:hover {
+  background: var(--accent-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.inviteBtn:active {
+  transform: scale(0.96);
+}
+
+.respondBtns {
+  display: flex;
+  gap: 0.55rem;
+}
+
+.acceptBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.6rem 1.1rem;
+  background: var(--accent);
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.73rem;
+  font-family: var(--font-mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  min-height: 44px;
+  transition: background 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.acceptBtn:hover {
+  background: var(--accent-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.acceptBtn:active {
+  transform: scale(0.96);
+}
+
+.declineBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.6rem 0.9rem;
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 0.73rem;
+  font-family: var(--font-mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  min-height: 44px;
+  transition: all 0.15s ease;
+}
+
+.declineBtn:hover {
+  color: var(--foreground);
+  border-color: var(--border-dark, #c8c3b8);
+}
+
+.declineBtn:active {
+  transform: scale(0.96);
+}
+
+/* Tear ritual section */
+.tearSection {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.tearHint {
+  font-size: 0.72rem;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  letter-spacing: 0.08em;
+}
+
+/* Declined note */
+.declinedNote {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.72rem;
+  font-family: var(--font-mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted-light, #b0a99e);
+}
+
+/* ── STATUS LINE ───────────────────────────────────── */
+.statusLine {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: auto;
+  padding-top: 0.6rem;
+}
+
+.statusDot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--muted-light, #b0a99e);
+  flex-shrink: 0;
+}
+
+.statusText {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--muted-light, #b0a99e);
+}
+
+/* ── STATUS-BASED STATES ───────────────────────────── */
+
+/* discovered — slightly muted, default appearance */
+.discovered .statusDot {
+  background: var(--muted-light, #b0a99e);
+}
+
+/* invited — amber pulsing border glow */
+.invited {
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.06),
+    0 8px 24px rgba(0, 0, 0, 0.08),
+    0 0 0 1.5px rgba(192, 98, 35, 0.35);
+  animation: invitedPulse 2.4s ease-in-out infinite;
+}
+
+@keyframes invitedPulse {
+  0%, 100% {
+    box-shadow:
+      0 2px 8px rgba(0, 0, 0, 0.06),
+      0 8px 24px rgba(0, 0, 0, 0.08),
+      0 0 0 1.5px rgba(192, 98, 35, 0.35);
+  }
+  50% {
+    box-shadow:
+      0 2px 8px rgba(0, 0, 0, 0.06),
+      0 8px 24px rgba(0, 0, 0, 0.08),
+      0 0 0 3px rgba(192, 98, 35, 0.2),
+      0 0 16px rgba(192, 98, 35, 0.15);
+  }
+}
+
+.invited .statusDot {
+  background: var(--accent);
+}
+
+.invited .statusText {
+  color: var(--accent-ink);
+}
+
+/* accepted — full color */
+.accepted .statusDot {
+  background: #059669;
+}
+
+.accepted .statusText {
+  color: #059669;
+}
+
+/* declined — greyed out */
+.declined {
+  opacity: 0.55;
+  filter: grayscale(0.35);
+}
+
+.declined .statusDot {
+  background: var(--muted-light, #b0a99e);
+}
+
+/* highlighted — accent ring */
+.highlighted {
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.06),
+    0 8px 24px rgba(0, 0, 0, 0.08),
+    0 0 0 2px var(--accent);
+}
+
+/* ═══════════════════════════════════════════════════
+   Legacy image-display ticket (TearRitual + detail page)
+   Preserves original aspect-ratio + image/placeholder layout.
+   ═══════════════════════════════════════════════════ */
+
+.legacyTicket {
   position: relative;
   width: 100%;
   aspect-ratio: 2 / 1;
   overflow: hidden;
   cursor: pointer;
-  transition: transform 0.3s ease;
   perspective: 800px;
+  transition: transform 0.3s ease;
 }
 
-.ticket:hover {
+.legacyTicket:hover {
   transform: scale(1.02);
 }
 
-.ticketInner {
+.legacyInner {
   position: relative;
   width: 100%;
   height: 100%;
@@ -22,13 +437,13 @@
   overflow: hidden;
 }
 
-.ticketImage {
+.legacyImage {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-.placeholder {
+.legacyPlaceholder {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -39,8 +454,24 @@
   font-size: 1.1rem;
 }
 
-.placeholder i {
+.legacyPlaceholder i {
   font-size: 2.5rem;
   color: var(--accent);
   opacity: 0.5;
+}
+
+/* ── MOBILE ────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .ticketWrapper {
+    width: 82vw;
+    min-height: 460px;
+  }
+
+  .similarityValue {
+    font-size: 2rem;
+  }
+
+  .partnerName {
+    font-size: 1.1rem;
+  }
 }
