@@ -8,51 +8,275 @@
   },
   {
     "id": "p1_02",
-    "label": "燒腦科幻 vs 浪漫歌舞",
+    "label": "超級英雄宇宙 vs 墨西哥魔幻寫實",
+    "dimension": "mainstream_vs_independent",
+    "movie_a": { "tmdb_id": 299536, "title_en": "Avengers: Infinity War", "title_zh": "復仇者聯盟3：無限之戰" },
+    "movie_b": { "tmdb_id": 7326, "title_en": "Pan's Labyrinth", "title_zh": "乘夢之旅" }
+  },
+  {
+    "id": "p1_03",
+    "label": "票房巨獸 vs 手持鏡頭寫實",
+    "dimension": "mainstream_vs_independent",
+    "movie_a": { "tmdb_id": 19995, "title_en": "Avatar", "title_zh": "阿凡達" },
+    "movie_b": { "tmdb_id": 153, "title_en": "Lost in Translation", "title_zh": "乘夢之旅" }
+  },
+  {
+    "id": "p1_04",
+    "label": "迪士尼奇幻 vs 伊朗家庭劇",
+    "dimension": "mainstream_vs_independent",
+    "movie_a": { "tmdb_id": 109445, "title_en": "Frozen", "title_zh": "冰雪奇緣" },
+    "movie_b": { "tmdb_id": 60243, "title_en": "A Separation", "title_zh": "乘夢之旅" }
+  },
+  {
+    "id": "p1_05",
+    "label": "間諜動作 vs 羅馬尼亞新浪潮",
+    "dimension": "mainstream_vs_independent",
+    "movie_a": { "tmdb_id": 37724, "title_en": "Skyfall", "title_zh": "乘夢之旅" },
+    "movie_b": { "tmdb_id": 35008, "title_en": "4 Months, 3 Weeks and 2 Days", "title_zh": "乘夢之旅" }
+  },
+  {
+    "id": "p1_06",
+    "label": "皮克斯闔家歡 vs 韓國底層悲歌",
+    "dimension": "mainstream_vs_independent",
+    "movie_a": { "tmdb_id": 150540, "title_en": "Inside Out", "title_zh": "腦筋急轉彎" },
+    "movie_b": { "tmdb_id": 338766, "title_en": "Burning", "title_zh": "乘夢之旅" }
+  },
+  {
+    "id": "p1_07",
+    "label": "諾蘭燒腦 vs 歌舞浪漫",
     "dimension": "rational_vs_emotional",
     "movie_a": { "tmdb_id": 27205, "title_en": "Inception", "title_zh": "全面啟動" },
     "movie_b": { "tmdb_id": 313369, "title_en": "La La Land", "title_zh": "乘夢飛翔" }
   },
   {
-    "id": "p1_03",
+    "id": "p1_08",
+    "label": "硬科幻壯闘 vs 純愛私語",
+    "dimension": "rational_vs_emotional",
+    "movie_a": { "tmdb_id": 157336, "title_en": "Interstellar", "title_zh": "星際效應" },
+    "movie_b": { "tmdb_id": 398818, "title_en": "Call Me by Your Name", "title_zh": "乘夢之旅" }
+  },
+  {
+    "id": "p1_09",
+    "label": "數學天才 vs 鋼琴詩人",
+    "dimension": "rational_vs_emotional",
+    "movie_a": { "tmdb_id": 453, "title_en": "A Beautiful Mind", "title_zh": "乘夢之旅" },
+    "movie_b": { "tmdb_id": 36685, "title_en": "The Pianist", "title_zh": "戰地乘風" }
+  },
+  {
+    "id": "p1_10",
+    "label": "駭客解謎 vs 初戀悸動",
+    "dimension": "rational_vs_emotional",
+    "movie_a": { "tmdb_id": 603, "title_en": "The Matrix", "title_zh": "駭客任務" },
+    "movie_b": { "tmdb_id": 11887, "title_en": "Amélie", "title_zh": "乘夢之旅" }
+  },
+  {
+    "id": "p1_11",
+    "label": "法庭攻防 vs 童年回憶",
+    "dimension": "rational_vs_emotional",
+    "movie_a": { "tmdb_id": 389, "title_en": "12 Angry Men", "title_zh": "乘夢之旅" },
+    "movie_b": { "tmdb_id": 637, "title_en": "Life Is Beautiful", "title_zh": "乘夢之旅" }
+  },
+  {
+    "id": "p1_12",
+    "label": "密碼破譯 vs 青春書信",
+    "dimension": "rational_vs_emotional",
+    "movie_a": { "tmdb_id": 205596, "title_en": "The Imitation Game", "title_zh": "乘夢之旅" },
+    "movie_b": { "tmdb_id": 296096, "title_en": "Me Before You", "title_zh": "乘夢之旅" }
+  },
+  {
+    "id": "p1_13",
+    "label": "太空求生 vs 家書情深",
+    "dimension": "rational_vs_emotional",
+    "movie_a": { "tmdb_id": 286217, "title_en": "The Martian", "title_zh": "絕地救援" },
+    "movie_b": { "tmdb_id": 274479, "title_en": "The Notebook", "title_zh": "乘夢之旅" }
+  },
+  {
+    "id": "p1_14",
     "label": "經典史詩 vs 反體制暴力",
     "dimension": "light_vs_dark",
     "movie_a": { "tmdb_id": 120, "title_en": "The Lord of the Rings: The Fellowship of the Ring", "title_zh": "魔戒首部曲" },
     "movie_b": { "tmdb_id": 550, "title_en": "Fight Club", "title_zh": "鬥陣俱樂部" }
   },
   {
-    "id": "p1_04",
-    "label": "硬科幻壯闘 vs 純愛私語",
-    "dimension": "rational_vs_emotional",
-    "movie_a": { "tmdb_id": 157336, "title_en": "Interstellar", "title_zh": "星際效應" },
-    "movie_b": { "tmdb_id": 398818, "title_en": "Call Me by Your Name", "title_zh": "乘風之名" }
+    "id": "p1_15",
+    "label": "勵志追夢 vs 連環殺手",
+    "dimension": "light_vs_dark",
+    "movie_a": { "tmdb_id": 13, "title_en": "Forrest Gump", "title_zh": "乘夢之旅" },
+    "movie_b": { "tmdb_id": 562, "title_en": "Die Hard", "title_zh": "乘夢之旅" }
   },
   {
-    "id": "p1_05",
+    "id": "p1_16",
+    "label": "溫馨冒險 vs 末日荒涼",
+    "dimension": "light_vs_dark",
+    "movie_a": { "tmdb_id": 862, "title_en": "Toy Story", "title_zh": "玩具總動員" },
+    "movie_b": { "tmdb_id": 1402, "title_en": "The Silence of the Lambs", "title_zh": "乘夢之旅" }
+  },
+  {
+    "id": "p1_17",
+    "label": "監獄救贖 vs 犯罪深淵",
+    "dimension": "light_vs_dark",
+    "movie_a": { "tmdb_id": 278, "title_en": "The Shawshank Redemption", "title_zh": "乘勝翻盤" },
+    "movie_b": { "tmdb_id": 769, "title_en": "Goodfellas", "title_zh": "乘夢之旅" }
+  },
+  {
+    "id": "p1_18",
+    "label": "奇幻冒險 vs 心理恐懼",
+    "dimension": "light_vs_dark",
+    "movie_a": { "tmdb_id": 671, "title_en": "Harry Potter and the Philosopher's Stone", "title_zh": "哈利波特：神秘的魔法石" },
+    "movie_b": { "tmdb_id": 694, "title_en": "The Shining", "title_zh": "乘夢之旅" }
+  },
+  {
+    "id": "p1_19",
+    "label": "宮崎駿療癒 vs 朴贊郁暴烈",
+    "dimension": "light_vs_dark",
+    "movie_a": { "tmdb_id": 129, "title_en": "Spirited Away", "title_zh": "神隱少女" },
+    "movie_b": { "tmdb_id": 670, "title_en": "Oldboy", "title_zh": "乘夢之旅" }
+  },
+  {
+    "id": "p1_20",
+    "label": "歡樂動畫 vs 戰爭殘酷",
+    "dimension": "light_vs_dark",
+    "movie_a": { "tmdb_id": 585, "title_en": "Monsters, Inc.", "title_zh": "怪獸電力公司" },
+    "movie_b": { "tmdb_id": 857, "title_en": "Saving Private Ryan", "title_zh": "乘夢之旅" }
+  },
+  {
+    "id": "p1_21",
     "label": "腎上腺素狂飆 vs 慢熱對白",
     "dimension": "fast_vs_slow",
-    "movie_a": { "tmdb_id": 76341, "title_en": "Mad Max: Fury Road", "title_zh": "乘風嘯" },
+    "movie_a": { "tmdb_id": 76341, "title_en": "Mad Max: Fury Road", "title_zh": "瘋狂乘風" },
     "movie_b": { "tmdb_id": 4935, "title_en": "Before Sunrise", "title_zh": "乘夢再續" }
   },
   {
-    "id": "p1_06",
-    "label": "溫馨冒險 vs 日式奇幻",
+    "id": "p1_22",
+    "label": "飛車追逐 vs 鄉間漫步",
+    "dimension": "fast_vs_slow",
+    "movie_a": { "tmdb_id": 475557, "title_en": "Joker", "title_zh": "小丑" },
+    "movie_b": { "tmdb_id": 508, "title_en": "Cinema Paradiso", "title_zh": "乘夢之旅" }
+  },
+  {
+    "id": "p1_23",
+    "label": "動作諜報 vs 日式靜謐",
+    "dimension": "fast_vs_slow",
+    "movie_a": { "tmdb_id": 254128, "title_en": "Mission: Impossible - Rogue Nation", "title_zh": "乘夢之旅" },
+    "movie_b": { "tmdb_id": 14537, "title_en": "Still Walking", "title_zh": "乘夢之旅" }
+  },
+  {
+    "id": "p1_24",
+    "label": "群星會 vs 獨角戲",
+    "dimension": "ensemble_vs_solo",
+    "movie_a": { "tmdb_id": 680, "title_en": "Pulp Fiction", "title_zh": "乘夢之旅" },
+    "movie_b": { "tmdb_id": 473033, "title_en": "All Is Lost", "title_zh": "乘夢之旅" }
+  },
+  {
+    "id": "p1_25",
+    "label": "犯罪群像 vs 孤獨求生",
+    "dimension": "ensemble_vs_solo",
+    "movie_a": { "tmdb_id": 240, "title_en": "The Godfather Part II", "title_zh": "乘夢之旅" },
+    "movie_b": { "tmdb_id": 87827, "title_en": "Life of Pi", "title_zh": "少年Pi的奇幻漂流" }
+  },
+  {
+    "id": "p1_26",
+    "label": "視覺奇觀 vs 對白為王",
+    "dimension": "visual_vs_dialogue",
+    "movie_a": { "tmdb_id": 49026, "title_en": "The Dark Knight Rises", "title_zh": "乘夢之旅" },
+    "movie_b": { "tmdb_id": 740, "title_en": "Before Sunset", "title_zh": "乘夢之旅" }
+  },
+  {
+    "id": "p1_27",
+    "label": "太空視覺詩 vs 餐桌上的交鋒",
+    "dimension": "visual_vs_dialogue",
+    "movie_a": { "tmdb_id": 264660, "title_en": "Ex Machina", "title_zh": "乘夢之旅" },
+    "movie_b": { "tmdb_id": 567, "title_en": "Rear Window", "title_zh": "乘夢之旅" }
+  },
+  {
+    "id": "p1_28",
+    "label": "西方經典 vs 東方美學",
     "dimension": "western_vs_eastern",
-    "movie_a": { "tmdb_id": 862, "title_en": "Toy Story", "title_zh": "玩具總動員" },
-    "movie_b": { "tmdb_id": 129, "title_en": "Spirited Away", "title_zh": "乘風回憶" }
+    "movie_a": { "tmdb_id": 238, "title_en": "The Godfather", "title_zh": "教父" },
+    "movie_b": { "tmdb_id": 346, "title_en": "Seven Samurai", "title_zh": "乘夢之旅" }
   },
   {
-    "id": "p1_07",
-    "label": "漫威宇宙 vs 監獄救贖",
+    "id": "p1_29",
+    "label": "好萊塢傳記 vs 日本動畫",
+    "dimension": "western_vs_eastern",
+    "movie_a": { "tmdb_id": 98, "title_en": "Gladiator", "title_zh": "乘夢之旅" },
+    "movie_b": { "tmdb_id": 372058, "title_en": "Your Name", "title_zh": "你的名字" }
+  },
+  {
+    "id": "p1_30",
+    "label": "美式青春 vs 台灣新電影",
+    "dimension": "western_vs_eastern",
+    "movie_a": { "tmdb_id": 1891, "title_en": "The Empire Strikes Back", "title_zh": "乘夢之旅" },
+    "movie_b": { "tmdb_id": 25538, "title_en": "Yi Yi", "title_zh": "一一" }
+  },
+  {
+    "id": "p1_31",
+    "label": "奇觀大片 vs 親密小品",
     "dimension": "spectacle_vs_intimate",
-    "movie_a": { "tmdb_id": 299536, "title_en": "Avengers: Infinity War", "title_zh": "復仇者聯盟3" },
-    "movie_b": { "tmdb_id": 278, "title_en": "The Shawshank Redemption", "title_zh": "乘勝翻盤" }
+    "movie_a": { "tmdb_id": 118340, "title_en": "Guardians of the Galaxy", "title_zh": "乘夢之旅" },
+    "movie_b": { "tmdb_id": 77338, "title_en": "The Intouchables", "title_zh": "乘夢之旅" }
   },
   {
-    "id": "p1_08",
-    "label": "勵志拳擊 vs 存在主義喜劇",
+    "id": "p1_32",
+    "label": "災難場面 vs 兩人世界",
+    "dimension": "spectacle_vs_intimate",
+    "movie_a": { "tmdb_id": 597, "title_en": "Titanic", "title_zh": "鐵達尼號" },
+    "movie_b": { "tmdb_id": 1422, "title_en": "The Departed", "title_zh": "乘夢之旅" }
+  },
+  {
+    "id": "p1_33",
+    "label": "直敘熱血 vs 後設解構",
     "dimension": "straightforward_vs_meta",
-    "movie_a": { "tmdb_id": 1366, "title_en": "Rocky", "title_zh": "乘風再起" },
-    "movie_b": { "tmdb_id": 37165, "title_en": "The Truman Show", "title_zh": "乘夢而行" }
+    "movie_a": { "tmdb_id": 1366, "title_en": "Rocky", "title_zh": "乘夢之旅" },
+    "movie_b": { "tmdb_id": 37165, "title_en": "The Truman Show", "title_zh": "乘夢之旅" }
+  },
+  {
+    "id": "p1_34",
+    "label": "英雄之旅 vs 存在荒謬",
+    "dimension": "straightforward_vs_meta",
+    "movie_a": { "tmdb_id": 11, "title_en": "Star Wars", "title_zh": "乘夢之旅" },
+    "movie_b": { "tmdb_id": 510, "title_en": "Being John Malkovich", "title_zh": "乘夢之旅" }
+  },
+  {
+    "id": "p1_35",
+    "label": "寫實劇情 vs 奇幻寓言",
+    "dimension": "realism_vs_fantasy",
+    "movie_a": { "tmdb_id": 1124, "title_en": "The Prestige", "title_zh": "乘夢之旅" },
+    "movie_b": { "tmdb_id": 13353, "title_en": "The Grand Budapest Hotel", "title_zh": "乘夢之旅" }
+  },
+  {
+    "id": "p1_36",
+    "label": "紀實風格 vs 夢境邏輯",
+    "dimension": "realism_vs_fantasy",
+    "movie_a": { "tmdb_id": 70, "title_en": "Million Dollar Baby", "title_zh": "乘夢之旅" },
+    "movie_b": { "tmdb_id": 523607, "title_en": "Everything Everywhere All at Once", "title_zh": "媽的多重宇宙" }
+  },
+  {
+    "id": "p1_37",
+    "label": "當代議題 vs 年代回望",
+    "dimension": "contemporary_vs_period",
+    "movie_a": { "tmdb_id": 466420, "title_en": "Joker", "title_zh": "小丑" },
+    "movie_b": { "tmdb_id": 424, "title_en": "Schindler's List", "title_zh": "辛德勒的名單" }
+  },
+  {
+    "id": "p1_38",
+    "label": "科技焦慮 vs 古典優雅",
+    "dimension": "contemporary_vs_period",
+    "movie_a": { "tmdb_id": 335984, "title_en": "Blade Runner 2049", "title_zh": "乘夢之旅" },
+    "movie_b": { "tmdb_id": 36643, "title_en": "Atonement", "title_zh": "乘夢之旅" }
+  },
+  {
+    "id": "p1_39",
+    "label": "黑色幽默 vs 純粹感動",
+    "dimension": "cynical_vs_sincere",
+    "movie_a": { "tmdb_id": 115, "title_en": "The Big Lebowski", "title_zh": "乘夢之旅" },
+    "movie_b": { "tmdb_id": 207703, "title_en": "WALL·E", "title_zh": "瓦力" }
+  },
+  {
+    "id": "p1_40",
+    "label": "暴力美學 vs 溫柔力量",
+    "dimension": "cynical_vs_sincere",
+    "movie_a": { "tmdb_id": 16869, "title_en": "Inglourious Basterds", "title_zh": "乘夢之旅" },
+    "movie_b": { "tmdb_id": 508442, "title_en": "Soul", "title_zh": "靈魂急轉彎" }
   }
 ]

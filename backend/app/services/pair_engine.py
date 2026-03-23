@@ -1,6 +1,14 @@
-"""Phase 1 pair engine: rule-based pairs from phase1_pairs.json."""
+"""Phase 1 pair engine: rule-based pairs from phase1_pairs.json.
 
+Randomly selects 5 pairs per session while guaranteeing coverage of
+all 3 quadrant axes (mainstream_vs_independent, rational_vs_emotional,
+light_vs_dark). Uses session_seed for deterministic randomness so the
+same session always produces the same pair sequence.
+"""
+
+import hashlib
 import json
+import random
 from pathlib import Path
 
 DATA_FILE = Path(__file__).resolve().parent.parent / "data" / "phase1_pairs.json"
@@ -16,8 +24,10 @@ DIMENSION_TO_AXIS = {
     "light_vs_dark": "light_dark",
 }
 
-# Default selection: 5 pairs covering all 3 quadrant axes + 2 extra dimensions
-DEFAULT_PAIR_IDS = ["p1_01", "p1_02", "p1_03", "p1_05", "p1_07"]
+# The 3 required quadrant axes — each session must include at least 1 pair per axis
+REQUIRED_AXES = ["mainstream_vs_independent", "rational_vs_emotional", "light_vs_dark"]
+
+PHASE1_COUNT = 5
 
 
 def _get_pair_by_id(pair_id: str) -> dict | None:
@@ -32,17 +42,19 @@ def _score_pair_relevance(pair: dict, seed_genres: list[str]) -> float:
     if not seed_genres:
         return 0.0
 
-    # Simple heuristic: check if pair's movies share genres with seed
     pair_keywords = pair.get("label", "").lower()
     score = 0.0
     genre_signals = {
-        "Action": ["英雄", "腎上腺素", "漫威"],
-        "Drama": ["救贖", "階級", "純愛"],
-        "Comedy": ["喜劇", "存在主義"],
-        "Science Fiction": ["科幻", "燒腦"],
-        "Romance": ["浪漫", "歌舞", "純愛"],
-        "Thriller": ["暴力", "反體制"],
-        "Animation": ["冒險", "奇幻"],
+        "Action": ["英雄", "腎上腺素", "漫威", "動作", "追逐"],
+        "Drama": ["救贖", "階級", "純愛", "劇情", "傳記"],
+        "Comedy": ["喜劇", "存在主義", "幽默", "荒謬"],
+        "Science Fiction": ["科幻", "燒腦", "太空", "駭客", "科技"],
+        "Romance": ["浪漫", "歌舞", "純愛", "初戀", "書信"],
+        "Thriller": ["暴力", "反體制", "殺手", "恐懼", "驚悚"],
+        "Animation": ["冒險", "奇幻", "動畫", "宮崎駿", "皮克斯"],
+        "Horror": ["恐懼", "心理", "黑暗"],
+        "War": ["戰爭", "殘酷"],
+        "Crime": ["犯罪", "黑幫", "復仇"],
     }
 
     for genre in seed_genres:
@@ -54,22 +66,107 @@ def _score_pair_relevance(pair: dict, seed_genres: list[str]) -> float:
     return score
 
 
-def get_phase1_pairs(seed_movie_genres: list[str] | None = None) -> list[dict]:
-    """Return 5 ordered pairs for Phase 1. Reorders by seed movie relevance if provided."""
-    # Start with the default 5 pairs
-    selected = [_get_pair_by_id(pid) for pid in DEFAULT_PAIR_IDS]
-    selected = [p for p in selected if p is not None]
+def _session_rng(session_seed: str | None) -> random.Random:
+    """Create a deterministic RNG from session seed."""
+    if not session_seed:
+        return random.Random()
+    # Hash the session_seed (UUID string) to get a stable integer seed
+    seed_int = int(hashlib.sha256(session_seed.encode()).hexdigest()[:16], 16)
+    return random.Random(seed_int)
 
-    if seed_movie_genres:
-        # Reorder: most relevant pair first, but ensure all quadrant axes are covered
-        selected.sort(key=lambda p: _score_pair_relevance(p, seed_movie_genres), reverse=True)
 
+def get_phase1_pairs(
+    seed_movie_genres: list[str] | None = None,
+    session_seed: str | None = None,
+) -> list[dict]:
+    """Return 5 randomly selected pairs for Phase 1.
+
+    Guarantees at least 1 pair per required quadrant axis.
+    Uses session_seed for deterministic selection across calls.
+    Seed movie genres influence the weighting of pair selection.
+    """
+    rng = _session_rng(session_seed)
+
+    # Group pairs by dimension
+    axis_pairs: dict[str, list[dict]] = {axis: [] for axis in REQUIRED_AXES}
+    other_pairs: list[dict] = []
+
+    for pair in ALL_PAIRS:
+        dim = pair.get("dimension", "")
+        if dim in axis_pairs:
+            axis_pairs[dim].append(pair)
+        else:
+            other_pairs.append(pair)
+
+    selected: list[dict] = []
+    used_tmdb_ids: set[int] = set()
+
+    # Step 1: Pick 1 pair per required axis (weighted by seed relevance)
+    for axis in REQUIRED_AXES:
+        candidates = axis_pairs[axis]
+        if not candidates:
+            continue
+
+        weights = [
+            _score_pair_relevance(p, seed_movie_genres or []) + 1.0
+            for p in candidates
+        ]
+        chosen = rng.choices(candidates, weights=weights, k=1)[0]
+        selected.append(chosen)
+        used_tmdb_ids.add(chosen["movie_a"]["tmdb_id"])
+        used_tmdb_ids.add(chosen["movie_b"]["tmdb_id"])
+
+    # Step 2: Fill remaining slots from all unused pairs (no movie overlap)
+    remaining_slots = PHASE1_COUNT - len(selected)
+    if remaining_slots > 0:
+        selected_ids = {p["id"] for p in selected}
+        pool = [
+            p for p in ALL_PAIRS
+            if p["id"] not in selected_ids
+            and p["movie_a"]["tmdb_id"] not in used_tmdb_ids
+            and p["movie_b"]["tmdb_id"] not in used_tmdb_ids
+        ]
+
+        weights = [
+            _score_pair_relevance(p, seed_movie_genres or []) + 1.0
+            for p in pool
+        ]
+
+        while remaining_slots > 0 and pool:
+            chosen = rng.choices(pool, weights=weights, k=1)[0]
+            selected.append(chosen)
+            used_tmdb_ids.add(chosen["movie_a"]["tmdb_id"])
+            used_tmdb_ids.add(chosen["movie_b"]["tmdb_id"])
+
+            # Remove chosen and any overlapping pairs from pool
+            idx = pool.index(chosen)
+            pool.pop(idx)
+            weights.pop(idx)
+
+            # Filter out pairs that share movies with the newly selected pair
+            new_pool = []
+            new_weights = []
+            for p, w in zip(pool, weights):
+                if (p["movie_a"]["tmdb_id"] not in used_tmdb_ids
+                        and p["movie_b"]["tmdb_id"] not in used_tmdb_ids):
+                    new_pool.append(p)
+                    new_weights.append(w)
+            pool = new_pool
+            weights = new_weights
+            remaining_slots -= 1
+
+    # Shuffle final order (deterministic)
+    rng.shuffle(selected)
     return selected
 
 
-def get_pair_for_round(round_number: int, seed_movie_genres: list[str] | None = None) -> dict:
+def get_pair_for_round(
+    round_number: int,
+    seed_movie_genres: list[str] | None = None,
+    session_seed: str | None = None,
+) -> dict:
     """Get the specific pair for a given round (1-5)."""
-    pairs = get_phase1_pairs(seed_movie_genres)
+    pairs = get_phase1_pairs(seed_movie_genres, session_seed)
     index = round_number - 1
     if 0 <= index < len(pairs):
         return pairs[index]
