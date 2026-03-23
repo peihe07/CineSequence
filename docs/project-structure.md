@@ -86,13 +86,14 @@ movie-dna/
 │   │   │   ├── email_tasks.py
 │   │   │   └── match_tasks.py
 │   │   └── data/
-│   │       ├── phase1_pairs.json      # Pre-curated Phase 1 pairs
+│   │       ├── phase1_pairs.json      # 40 Phase 1 pairs (randomized selection)
+│   │       ├── movie_pool.json        # 266-movie curated pool for AI pair generation
 │   │       ├── archetypes.json        # Cinephile archetype definitions
-│   │       ├── tag_taxonomy.json      # Movie tag taxonomy
+│   │       ├── tag_taxonomy.json      # 30 movie tag dimensions
 │   │       ├── groups_seed.json       # Group seed data
 │   │       ├── ticket_styles.json     # Ticket style templates
 │   │       └── prompts/
-│   │           ├── pair_picker.txt    # AI prompt for pair selection
+│   │           ├── pair_picker.txt    # AI prompt for pair selection (uses candidate pool)
 │   │           ├── personality.txt    # AI prompt for personality reading
 │   │           └── ice_breaker.txt    # AI prompt for ice breakers
 │   ├── tests/
@@ -101,6 +102,8 @@ movie-dna/
 │   │   ├── test_sequencing_router.py
 │   │   ├── test_email_notifications.py
 │   │   └── unit/
+│   │       ├── test_ai_pair_engine.py
+│   │       ├── test_ai_personality.py
 │   │       ├── test_dna_builder.py
 │   │       ├── test_pair_engine.py
 │   │       └── test_tmdb_client.py

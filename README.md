@@ -17,11 +17,11 @@ A movie-taste-based social matching platform. Users go through a 20-round binary
 1. **Register** — email (magic link), name, avatar, gender, region
 2. **Set preferences** — who to meet (gender, age) or pure taste match
 3. **Seed movie** — user inputs a seed movie to establish initial signal
-4. **Sequencing (20 rounds, extendable to 25)** — binary movie choices across 3 phases:
-   - Phase 1 (1-5): Quadrant Scan — rule-based extreme contrast pairs
-   - Phase 2 (6-12): Deep Dive — AI-powered nuance testing
-   - Phase 3 (13-20): Soul Tags — AI-powered value/personality probing
-   - Extension (+5): Optional extra rounds for finer profiling
+4. **Sequencing (20 rounds, extendable to 35)** — binary movie choices across 3 phases:
+   - Phase 1 (1-5): Quadrant Scan — randomized from 40-pair pool with guaranteed quadrant axis coverage
+   - Phase 2 (6-12): Deep Dive — AI-powered nuance testing with 266-movie curated candidate pool
+   - Phase 3 (13-20): Soul Tags — AI-powered value/personality probing with hard duplicate prevention
+   - Extension (+5 per batch, up to 3 batches): Optional extra rounds for finer profiling
 5. **DNA Result** — archetype, tag cloud, AI personality reading (supports seasonal retest)
 6. **Matching** — 80%+ cosine similarity matches, group recommendations
 7. **Invite** — email invitation with match details, mutual accept to connect

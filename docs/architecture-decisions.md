@@ -63,11 +63,13 @@ LIMIT 50;
 
 ## ADR-005: Hybrid AI strategy for sequencing
 
-**Decision**: Phase 1 rule-based, Phase 2-3 Gemini API, DNA result Gemini API.
+**Decision**: Phase 1 rule-based, Phase 2-3 Gemini API with curated candidate pool, DNA result Gemini API.
 
 **Rationale**:
-- Phase 1 needs to be fast and deterministic — pre-curated pairs avoid API latency
-- Phase 2-3 benefit from AI flexibility to probe nuanced taste dimensions
+- Phase 1 needs to be fast and deterministic — 40 pre-curated pairs, 5 randomly selected per session with guaranteed quadrant axis coverage (session_seed for deterministic randomness)
+- Phase 2-3 benefit from AI flexibility to probe nuanced taste dimensions — guided by a 266-movie curated candidate pool (30 tag dimensions, 21 regions) to improve diversity
+- Hard duplicate prevention: backend validates returned TMDB IDs against seen history, retries up to 3 times on collision
+- Pick submission now tracks both movie IDs (movie_a + movie_b) so the exclusion list is complete
 - DNA personality reading is the "wow factor" — worth the API cost
 - Prefetch strategy: while user views current pair, backend requests next pair from Gemini
 
@@ -204,10 +206,12 @@ Note: `ice_breaker.txt` prompt exists but ice breakers are currently rule-based 
 ### Token estimate per call
 
 **ai_pair_engine (per call, average across rounds):**
-- System prompt (pair_picker.txt): ~730 tokens
+- System prompt (pair_picker.txt): ~800 tokens
 - User context (picks, quadrant, seen_ids): ~100 tokens (round 6) to ~500 tokens (round 20), avg ~300
-- **Input avg: ~1,030 tokens/call**
+- Candidate pool (~40 movies with tags): ~800 tokens
+- **Input avg: ~1,900 tokens/call**
 - **Output avg: ~150 tokens/call** (max 500, actual JSON response ~150)
+- Note: up to 3 retries on duplicate/invalid responses (worst case 3x input cost per round)
 
 **ai_personality (single call):**
 - System prompt (personality.txt): ~580 tokens
@@ -219,28 +223,32 @@ Note: `ice_breaker.txt` prompt exists but ice breakers are currently rule-based 
 
 | Scenario | Input tokens | Output tokens | Total tokens |
 |----------|-------------|---------------|--------------|
-| Standard 20 rounds | ~16,860 | ~2,750 | **~19,610** |
-| Extension 25 rounds | ~22,010 | ~3,550 | **~25,560** |
-| Retest (additional) | +16,860 to +22,010 | +2,750 to +3,550 | +19,610 to +25,560 |
+| Standard 20 rounds | ~30,000 | ~2,750 | **~32,750** |
+| Extension 25 rounds | ~39,500 | ~3,550 | **~43,050** |
+| Retest (additional) | +30,000 to +39,500 | +2,750 to +3,550 | +32,750 to +43,050 |
+
+Note: candidate pool context (~800 tokens/call) increases input substantially. Retry on duplicates may add up to 2x per affected round, but typically <5% of rounds trigger a retry.
 
 ### Cost per user (Gemini 2.5 Flash pricing, as of 2026-03)
 
 | | Rate | Standard 20 | Extension 25 |
 |--|------|-------------|--------------|
-| Input | $0.15 / 1M tokens | $0.0025 | $0.0033 |
+| Input | $0.15 / 1M tokens | $0.0045 | $0.0059 |
 | Output | $0.60 / 1M tokens | $0.0017 | $0.0021 |
-| **Total** | | **~$0.004** | **~$0.005** |
+| **Total** | | **~$0.006** | **~$0.008** |
 
 ### Scale projections
 
 | Users | Standard cost | With 20% extension | With 10% retest |
 |-------|-------------|---------------------|-----------------|
-| 1,000 | $4.0 | $4.4 | $4.8 |
-| 10,000 | $40 | $44 | $48 |
-| 100,000 | $400 | $440 | $480 |
+| 1,000 | $6.0 | $6.8 | $7.4 |
+| 10,000 | $60 | $68 | $74 |
+| 100,000 | $600 | $680 | $740 |
 
 ### Optimization notes
 - Phase 1 (rounds 1-5) is fully rule-based — zero API cost
 - User context grows linearly per round; capping `picks[-10:]` keeps input bounded
 - `response_mime_type: "application/json"` reduces wasted output tokens
+- Curated candidate pool (~40 movies/call) adds ~800 input tokens but significantly improves diversity and reduces retry rate
+- Hard duplicate prevention retries add at most 2x cost per affected round; in practice <5% of rounds need a retry
 - If ice breakers are upgraded to AI-generated, add ~1 call per match (~500 input + 100 output tokens)
