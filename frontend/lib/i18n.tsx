@@ -69,10 +69,10 @@ const translations: Record<Locale, Record<string, string>> = {
     'common.cancel': '取消',
 
     // Onboarding
-    'onboarding.title': '歡迎來到序列分析',
-    'onboarding.step1': '每輪你會看到兩部電影，選擇更吸引你的那一部。',
-    'onboarding.step2': '系統會從你的選擇中萃取觀影偏好，20 輪後生成你的 DNA。',
-    'onboarding.step3': '不確定的話可以跳過，不會影響最終結果。',
+    'onboarding.title': '歡迎進入定序程序',
+    'onboarding.step1': '每輪呈現兩部作品，憑直覺選擇更吸引你的那一部。',
+    'onboarding.step2': '系統將從你的抉擇中析出品味特徵，20 輪後生成你的基因圖譜。',
+    'onboarding.step3': '不確定可以跳過，不影響最終鑑定結果。',
     'onboarding.start': '開始',
 
     // Confirm dialogs
@@ -80,25 +80,25 @@ const translations: Record<Locale, Record<string, string>> = {
     'confirm.leaveGroup': '確定要離開這個放映廳嗎？',
 
     // Landing
-    'landing.start': '開始解碼',
+    'landing.start': '開始鑑定',
     'landing.login': '登入',
     'landing.termLine1': '正在初始化 CINE SEQUENCE...',
-    'landing.termLine2': '載入觀影偏好分析模組...',
+    'landing.termLine2': '載入觀影品味鑑定模組...',
     'landing.termLine3': '校準品味向量空間...',
-    'landing.termLine4': '偵測到未知的觀影 DNA 序列。',
-    'landing.termLine5': '是否開始解碼？',
+    'landing.termLine4': '偵測到未知的電影基因序列。',
+    'landing.termLine5': '是否開始鑑定？',
     'landing.termHint': '按下 [Y] 或點擊開始',
-    'landing.howTitle': '序列流程',
-    'landing.step1Title': '起源',
-    'landing.step1Desc': '選一部代表你品味的電影，作為分析起點。',
-    'landing.step2Title': '測序',
-    'landing.step2Desc': '每輪兩部電影，選擇更吸引你的那部，系統逐步萃取你的偏好。',
+    'landing.howTitle': '鑑定流程',
+    'landing.step1Title': '原點',
+    'landing.step1Desc': '選一部代表你品味的作品，作為鑑定基準。',
+    'landing.step2Title': '定序',
+    'landing.step2Desc': '在兩部作品中憑直覺抉擇，系統將精確析出你的品味特徵。',
     'landing.step3Title': '解碼',
-    'landing.step3Desc': 'AI 分析你的選擇模式，生成專屬原型與品味標籤。',
+    'landing.step3Desc': 'AI 解析你的選擇紋理，生成專屬原型與品味圖譜。',
     'landing.step4Title': '共鳴',
-    'landing.step4Desc': '根據 DNA 相似度，找到與你品味最契合的觀影夥伴。',
+    'landing.step4Desc': '透過基因相似度比對，找到與你品味最契合的觀影知己。',
     'landing.step5Title': '揭曉',
-    'landing.step5Desc': '配對成功後，撕開票券揭曉對方資訊與對話方向。',
+    'landing.step5Desc': '配對成立後，撕開票券揭曉對方的品味檔案與對話方向。',
 
     // Error boundary
     'error.title': '發生了一些問題',
@@ -112,8 +112,8 @@ const translations: Record<Locale, Record<string, string>> = {
     'notFound.backHome': '回到首頁',
 
     // Flow guard
-    'guard.needSequencing': '請先完成序列分析',
-    'guard.needDna': '請先生成你的觀影 DNA',
+    'guard.needSequencing': '請先完成定序程序',
+    'guard.needDna': '請先完成基因鑑定',
 
     // Toast
     'toast.inviteSent': '已發送邀請',
@@ -125,8 +125,8 @@ const translations: Record<Locale, Record<string, string>> = {
     'toast.prefsSaved': '偏好設定已儲存',
 
     // Nav
-    'nav.sequencing': '序列',
-    'nav.dna': 'DNA',
+    'nav.sequencing': '定序',
+    'nav.dna': '基因',
     'nav.matches': '配對',
     'nav.theaters': '放映廳',
     'nav.profile': '檔案',
@@ -135,7 +135,7 @@ const translations: Record<Locale, Record<string, string>> = {
     // Auth
     'auth.signIn': '登入',
     'auth.signUp': '註冊',
-    'auth.subtitle': '透過電影選擇，解碼你的觀影 DNA',
+    'auth.subtitle': '透過電影選擇，鑑定你的觀影基因',
     'auth.emailPlaceholder': '輸入 email',
     'auth.sendLink': '發送登入連結',
     'auth.sending': '發送中...',
@@ -186,16 +186,16 @@ const translations: Record<Locale, Record<string, string>> = {
     'seq.attracted': '更想看這部',
 
     // Sequencing - Seed
-    'seed.title': '選擇你的起點',
-    'seed.subtitle': '選一部代表你品味的電影，作為序列分析的校準基準。',
-    'seed.placeholder': '搜尋電影名稱...',
-    'seed.confirm': '開始序列分析',
+    'seed.title': '選擇你的原點',
+    'seed.subtitle': '選一部代表你品味的作品，作為鑑定程序的校準基準。',
+    'seed.placeholder': '搜尋作品名稱...',
+    'seed.confirm': '開始定序',
     'seed.skip': '跳過此步驟',
     'seed.searching': '搜尋中...',
 
     // Sequencing - Complete
     'complete.title': 'Sequencing Complete',
-    'complete.subtitle': '已完成 {{total}} 輪序列分析，你的觀影 DNA 已就緒。',
+    'complete.subtitle': '已完成 {{total}} 輪定序程序，你的觀影基因已就緒。',
     'complete.rounds': '輪數',
     'complete.extensions': '延伸',
     'complete.viewDna': '查看 DNA 結果',
@@ -205,7 +205,7 @@ const translations: Record<Locale, Record<string, string>> = {
 
     // DNA
     'dna.title': 'Your Cine DNA',
-    'dna.analyzing': '正在分析你的觀影 DNA...',
+    'dna.analyzing': '正在鑑定你的觀影基因...',
     'dna.retry': '重試',
     'dna.archetype': '原型',
     'dna.tags': '品味標籤',
@@ -221,7 +221,7 @@ const translations: Record<Locale, Record<string, string>> = {
     'matches.discover': '尋找配對',
     'matches.discovering': '搜尋中...',
     'matches.empty': '目前沒有配對紀錄',
-    'matches.emptyHint': '點擊「尋找配對」，系統會根據你的觀影 DNA 進行比對',
+    'matches.emptyHint': '點擊「尋找配對」，系統將根據你的觀影基因進行比對',
     'matches.filterLabel': '配對偏好',
     'matches.prefGender': '對象性別',
     'matches.prefAny': '不限',
@@ -246,9 +246,9 @@ const translations: Record<Locale, Record<string, string>> = {
 
     // Theaters (Groups)
     'theaters.title': 'Theaters',
-    'theaters.autoAssign': 'DNA 配組',
+    'theaters.autoAssign': '基因配組',
     'theaters.empty': '尚未加入任何放映廳',
-    'theaters.emptyHint': '點擊「DNA 配組」，系統會根據你的觀影 DNA 自動分配',
+    'theaters.emptyHint': '點擊「基因配組」，系統將根據你的觀影基因自動分配',
     'theaters.join': '加入',
     'theaters.leave': '離開',
     'theaters.hidden': '隱藏',
@@ -266,7 +266,7 @@ const translations: Record<Locale, Record<string, string>> = {
     'profile.gender': '性別',
     'profile.birthYear': '出生年份',
     'profile.region': '地區',
-    'profile.dnaStatus': 'DNA 狀態',
+    'profile.dnaStatus': '基因狀態',
     'profile.matchPref': '配對偏好',
     'profile.lookingFor': '配對對象',
     'profile.ageRange': '年齡範圍',
@@ -275,7 +275,7 @@ const translations: Record<Locale, Record<string, string>> = {
     'profile.no': '否',
     'profile.notSet': '未設定',
     'profile.loadError': '無法載入個人資料',
-    'profile.seqStatus': '序列狀態',
+    'profile.seqStatus': '定序狀態',
     'profile.archetype': '原型',
     'profile.notStarted': '未開始',
     'profile.inProgress': '進行中',
@@ -286,7 +286,7 @@ const translations: Record<Locale, Record<string, string>> = {
     'profile.genderSkip': '不透露',
     'profile.prefAny': '不限',
     'profile.retest': '重新測試',
-    'profile.retestHint': '開始新的序列分析，保留歷史紀錄。',
+    'profile.retestHint': '重新進行定序鑑定，歷史紀錄將保留。',
     'profile.logout': '登出',
     'profile.loggingOut': '登出中...',
 
@@ -304,7 +304,7 @@ const translations: Record<Locale, Record<string, string>> = {
     'privacy.collectName': '顯示名稱',
     'privacy.collectGender': '性別（用於配對偏好篩選）',
     'privacy.collectRegion': '地區',
-    'privacy.collectPicks': '觀影序列選擇紀錄（用於計算品味 DNA）',
+    'privacy.collectPicks': '觀影定序選擇紀錄（用於鑑定品味基因）',
     'privacy.sharedTitle': '配對時揭露的資訊',
     'privacy.sharedIntro': '當你與他人配對成功時，對方可以看到：',
     'privacy.sharedName': '你的顯示名稱',
