@@ -21,11 +21,18 @@
   position: relative;
   width: 100%;
   padding: var(--section-space) clamp(1.1rem, 4vw, 2.25rem);
-  border-top: 1px solid var(--border);
 }
 
 .section:last-of-type {
-  border-bottom: 1px solid var(--border);
+}
+
+/* ── DISCLAIMER ───────────────────────────────── */
+.disclaimer {
+  font-size: 0.72rem;
+  color: var(--muted-light, var(--muted));
+  line-height: 1.7;
+  max-width: 42rem;
+  opacity: 0.75;
 }
 
 /* ── HERO SECTION ─────────────────────────────── */
@@ -159,8 +166,11 @@
   flex-direction: column;
   gap: 1rem;
   padding: 1.2rem 1.25rem;
-  background: rgba(250, 248, 243, 0.86);
-  border: 1px solid var(--border);
+  background: var(--glass-bg-strong);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  box-shadow: var(--glass-shadow);
+  border: none;
   border-radius: var(--card-radius);
   overflow: hidden;
 }
@@ -188,9 +198,12 @@
 
 .filterOption {
   padding: 0.35rem 0.8rem;
-  background: rgba(255, 255, 255, 0.82);
-  border: 1px solid var(--border);
-  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 1px 4px rgba(45, 54, 50, 0.06);
+  border: none;
+  border-radius: 999px;
   color: var(--muted);
   font-size: 0.72rem;
   font-family: var(--font-mono);
@@ -200,13 +213,13 @@
 
 .filterOption:hover {
   color: var(--foreground);
-  border-color: var(--border-strong);
+  box-shadow: 0 2px 8px rgba(45, 54, 50, 0.1);
 }
 
 .filterActive {
-  border-color: var(--accent);
   color: var(--accent-ink);
-  background: rgba(192, 98, 35, 0.08);
+  background: rgba(192, 98, 35, 0.12);
+  box-shadow: 0 1px 4px rgba(45, 54, 50, 0.06);
 }
 
 .ageInputs {
@@ -218,18 +231,22 @@
 .ageInput {
   width: 64px;
   padding: 0.35rem 0.5rem;
-  background: transparent;
-  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: none;
+  border-bottom: 1px solid rgba(45, 54, 50, 0.1);
   border-radius: 6px;
   color: var(--foreground);
   font-size: 0.8rem;
   font-family: inherit;
   outline: none;
-  transition: border-color 0.15s ease;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .ageInput:focus {
-  border-color: var(--accent);
+  border-bottom-color: var(--accent);
+  box-shadow: 0 1px 0 var(--accent);
 }
 
 .ageDash {
@@ -358,15 +375,35 @@
 /* ── MOBILE ───────────────────────────────────── */
 @media (max-width: 640px) {
   .container {
-    padding-top: 2rem;
+    padding-top: 0.5rem;
+  }
+
+  .section {
+    padding: 2.5rem 1.1rem;
+  }
+
+  .heroSection {
+    min-height: auto;
+    justify-content: flex-start;
+  }
+
+  .sideLabel {
+    display: none;
   }
 
   .title {
     font-size: 1.3rem;
   }
 
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
   .discoverBtn {
     padding: 0.6rem 1rem;
+    width: 100%;
+    justify-content: center;
   }
 
   .filterOption {
@@ -390,6 +427,11 @@
   .carousel::after {
     content: '';
     flex-shrink: 0;
-    width: clamp(1.1rem, 4vw, 2.25rem);
+    width: 1.1rem;
+  }
+
+  .resultsSection {
+    padding-left: 0;
+    padding-right: 0;
   }
 }

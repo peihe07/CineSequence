@@ -6,6 +6,7 @@ import './globals.css'
 import { I18nProvider } from '@/lib/i18n'
 import LocaleDocumentSync from '@/components/ui/LocaleDocumentSync'
 import ToastContainer from '@/components/ui/Toast'
+import CookieConsent from '@/components/ui/CookieConsent'
 
 const inter = Inter({
   subsets: ['latin'],
@@ -39,6 +40,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <I18nProvider>
           <LocaleDocumentSync />
           <ToastContainer />
+          <CookieConsent />
           {children}
         </I18nProvider>
       </body>

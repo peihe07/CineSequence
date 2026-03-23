@@ -6,11 +6,18 @@ from pathlib import Path
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, status
+from fastapi.responses import JSONResponse, Response
 from pydantic import BaseModel
+from sqlalchemy import delete, or_
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import settings
 from app.deps import get_current_user, get_db
+from app.models.dna_profile import DnaProfile
+from app.models.group import group_members
+from app.models.match import Match
+from app.models.pick import Pick
+from app.models.sequencing_session import SequencingSession
 from app.models.user import User
 from app.services.dna_builder import ARCHETYPES
 
@@ -174,3 +181,138 @@ async def upload_avatar(
     await db.commit()
     await db.refresh(user)
     return _user_to_profile(user)
+
+
+@router.get("/export")
+async def export_data(
+    user: Annotated[User, Depends(get_current_user)],
+    db: Annotated[AsyncSession, Depends(get_db)],
+):
+    """Export all data belonging to the current user as a JSON payload."""
+    dna = user.dna_profile
+
+    picks_data = [
+        {
+            "round_number": p.round_number,
+            "phase": p.phase,
+            "movie_a_tmdb_id": p.movie_a_tmdb_id,
+            "movie_b_tmdb_id": p.movie_b_tmdb_id,
+            "chosen_tmdb_id": p.chosen_tmdb_id,
+            "pick_mode": p.pick_mode.value if p.pick_mode else None,
+            "created_at": p.created_at.isoformat(),
+        }
+        for p in user.picks
+    ]
+
+    dna_data = None
+    if dna:
+        dna_data = {
+            "archetype_id": dna.archetype_id,
+            "tag_vector": list(dna.tag_vector) if dna.tag_vector is not None else None,
+            "personality_reading": dna.personality_reading,
+            "ticket_style": dna.ticket_style,
+            "created_at": dna.created_at.isoformat(),
+        }
+
+    sessions_data = [
+        {
+            "id": str(s.id),
+            "session_type": s.session_type.value,
+            "status": s.status.value,
+            "total_rounds": s.total_rounds,
+            "created_at": s.created_at.isoformat(),
+        }
+        for s in user.sessions
+    ]
+
+    # Fetch matches where this user is either party
+    matches_result = await db.execute(
+        Match.__table__.select().where(
+            or_(Match.user_a_id == user.id, Match.user_b_id == user.id)
+        )
+    )
+    matches_rows = matches_result.mappings().all()
+    matches_data = [
+        {
+            "id": str(row["id"]),
+            "user_a_id": str(row["user_a_id"]),
+            "user_b_id": str(row["user_b_id"]),
+            "similarity_score": row["similarity_score"],
+            "status": row["status"].value if hasattr(row["status"], "value") else row["status"],
+            "created_at": row["created_at"].isoformat(),
+        }
+        for row in matches_rows
+    ]
+
+    payload = {
+        "profile": {
+            "name": user.name,
+            "email": user.email,
+            "gender": user.gender.value,
+            "birth_year": user.birth_year,
+            "region": user.region,
+            "created_at": user.created_at.isoformat(),
+        },
+        "picks": picks_data,
+        "dna_profile": dna_data,
+        "sequencing_sessions": sessions_data,
+        "matches": matches_data,
+    }
+
+    return JSONResponse(content=payload, media_type="application/json")
+
+
+@router.delete("")
+async def delete_account(
+    user: Annotated[User, Depends(get_current_user)],
+    db: Annotated[AsyncSession, Depends(get_db)],
+):
+    """Permanently delete the current user's account and all associated data."""
+    user_id = user.id
+
+    # 1. Remove group memberships (association table, no ORM cascade)
+    await db.execute(
+        delete(group_members).where(group_members.c.user_id == user_id)
+    )
+
+    # 2. Delete matches where the user is either party
+    await db.execute(
+        delete(Match).where(
+            or_(Match.user_a_id == user_id, Match.user_b_id == user_id)
+        )
+    )
+
+    # 3. Delete picks
+    await db.execute(delete(Pick).where(Pick.user_id == user_id))
+
+    # 4. Delete DNA profiles
+    await db.execute(delete(DnaProfile).where(DnaProfile.user_id == user_id))
+
+    # 5. Clear the active_session_id FK on the user row before deleting sessions
+    #    (use_alter=True FK would otherwise block cascaded session deletion)
+    user.active_session_id = None
+    await db.flush()
+
+    # 6. Delete sequencing sessions
+    await db.execute(
+        delete(SequencingSession).where(SequencingSession.user_id == user_id)
+    )
+
+    # 7. Delete the user record itself
+    await db.delete(user)
+    await db.commit()
+
+    logger.info("Account deleted for user %s", user_id)
+
+    response = Response(
+        content='{"message": "Account and all associated data have been deleted"}',
+        media_type="application/json",
+        status_code=status.HTTP_200_OK,
+    )
+    response.delete_cookie(
+        key=settings.auth_cookie_name,
+        httponly=True,
+        samesite=settings.auth_cookie_samesite,
+        secure=settings.resolved_auth_cookie_secure,
+    )
+    return response

@@ -25,6 +25,8 @@ export default function ProfilePage() {
   const [saving, setSaving] = useState(false)
   const [isLoggingOut, setIsLoggingOut] = useState(false)
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+  const [isDeletingAccount, setIsDeletingAccount] = useState(false)
   const [uploadingAvatar, setUploadingAvatar] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
@@ -109,6 +111,18 @@ export default function ProfilePage() {
     }
   }
 
+  const handleDeleteAccount = async () => {
+    setShowDeleteConfirm(false)
+    setIsDeletingAccount(true)
+    try {
+      await api('/profile', { method: 'DELETE' })
+      await logout()
+      router.replace('/login')
+    } finally {
+      setIsDeletingAccount(false)
+    }
+  }
+
   if (isLoading) {
     return (
       <div className={styles.container}>
@@ -181,10 +195,21 @@ export default function ProfilePage() {
               lookingForLabel={t('profile.lookingFor')}
               ageRangeLabel={t('profile.ageRange')}
               pureTasteLabel={t('profile.pureTaste')}
+              birthYearLabel={t('profile.birthYear')}
               notSetLabel={t('profile.notSet')}
               yesLabel={t('profile.yes')}
               noLabel={t('profile.no')}
+              editLabel={t('profile.editPref')}
+              saveLabel={t('profile.save')}
+              cancelLabel={t('profile.cancel')}
               getPrefLabel={getPrefLabel}
+              prefOptions={[
+                { value: 'male', label: t('profile.genderMale') },
+                { value: 'female', label: t('profile.genderFemale') },
+                { value: 'other', label: t('profile.genderOther') },
+                { value: 'any', label: t('profile.prefAny') },
+              ]}
+              onProfileUpdate={setProfile}
             />
 
             <ProfileSequencingCard
@@ -197,11 +222,29 @@ export default function ProfilePage() {
         </section>
       </motion.div>
 
+      <section className={`${styles.section} ${styles.dangerSection}`}>
+        <button
+          className={styles.deleteAccountBtn}
+          onClick={() => setShowDeleteConfirm(true)}
+          disabled={isDeletingAccount}
+          aria-busy={isDeletingAccount}
+        >
+          {isDeletingAccount ? t('profile.deletingAccount') : t('profile.deleteAccount')}
+        </button>
+      </section>
+
       <ConfirmDialog
         open={showLogoutConfirm}
         message={t('confirm.logout')}
         onConfirm={handleLogout}
         onCancel={() => setShowLogoutConfirm(false)}
+      />
+
+      <ConfirmDialog
+        open={showDeleteConfirm}
+        message={t('confirm.deleteAccount')}
+        onConfirm={handleDeleteAccount}
+        onCancel={() => setShowDeleteConfirm(false)}
       />
     </div>
   )

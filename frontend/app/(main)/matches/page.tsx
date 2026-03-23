@@ -246,6 +246,11 @@ function MatchesContent() {
           <MatchFilter prefs={prefs} onChange={savePrefs} />
         </section>
 
+        {/* ── DISCLAIMER SECTION ──────────────────────── */}
+        <section className={styles.section}>
+          <p className={styles.disclaimer}>{t('matches.disclaimer')}</p>
+        </section>
+
         {/* ── RESULTS SECTION ─────────────────────────── */}
         <section className={`${styles.section} ${styles.resultsSection}`} aria-label={t('matches.results')}>
           {isLoading && (

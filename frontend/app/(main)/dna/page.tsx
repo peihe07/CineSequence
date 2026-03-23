@@ -156,6 +156,15 @@ const { t } = useI18n()
             <i className="ri-group-line" /> {t('dna.findMatches')}
           </Button>
         </motion.section>
+
+        <motion.section
+          className={styles.section}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ ...sectionTransition, delay: 0.34 }}
+        >
+          <p className={styles.disclaimer}>{t('dna.disclaimer')}</p>
+        </motion.section>
       </motion.div>
     </main>
   )

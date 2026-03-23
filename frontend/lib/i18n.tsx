@@ -80,6 +80,7 @@ const translations: Record<Locale, Record<string, string>> = {
     // Confirm dialogs
     'confirm.logout': '確定要登出嗎？',
     'confirm.leaveGroup': '確定要離開這個放映廳嗎？',
+    'confirm.deleteAccount': '確定要永久刪除帳號嗎？此操作無法復原，所有資料（包括品味基因、配對紀錄）將被永久刪除。',
 
     // Landing
     'landing.start': '開始鑑定',
@@ -96,7 +97,7 @@ const translations: Record<Locale, Record<string, string>> = {
     'landing.step1Title': '原點',
     'landing.step1Desc': '選一部代表你品味的作品，作為鑑定基準。',
     'landing.step2Title': '定序',
-    'landing.step2Desc': '在兩部作品中憑直覺抉擇，系統將精確析出你的品味特徵。',
+    'landing.step2Desc': '憑直覺做選擇，你的品味會慢慢浮現。',
     'landing.step3Title': '解碼',
     'landing.step3Desc': 'AI 解析你的選擇紋理，生成專屬原型與品味圖譜。',
     'landing.step4Title': '共鳴',
@@ -379,15 +380,58 @@ const translations: Record<Locale, Record<string, string>> = {
     'profile.genderOther': '其他',
     'profile.genderSkip': '不透露',
     'profile.prefAny': '不限',
+    'profile.editPref': '編輯偏好',
     'profile.retest': '重新測試',
     'profile.retestHint': '重新進行定序鑑定，歷史紀錄將保留。',
     'profile.logout': '登出',
     'profile.loggingOut': '登出中...',
+    'profile.deleteAccount': '刪除帳號',
+    'profile.deletingAccount': '刪除中...',
+
+    // Cookie consent
+    'cookie.message': '本網站使用必要 Cookie 以維持登入狀態。繼續使用即表示你同意我們的 Cookie 使用方式。',
+    'cookie.accept': '接受',
+
+    // DNA disclaimer
+    'dna.disclaimer': 'DNA 分析與人格解讀由 AI 生成，僅供娛樂與自我省思之用，不構成任何專業心理評估。',
+
+    // Matches disclaimer
+    'matches.disclaimer': '配對結果基於觀影品味相似度分析。相容度分數僅反映電影偏好的重疊程度，不代表人際相容性。',
+
+    // Terms of service
+    'terms.title': '服務條款',
+    'terms.lastUpdated': '最後更新：2026 年 3 月',
+    'terms.serviceTitle': '服務說明',
+    'terms.serviceBody': 'Cine Sequence 透過電影偏好分析建立使用者的品味基因圖譜，並以此為基礎推薦品味相近的對象，協助使用者探索觀影興趣的共鳴。',
+    'terms.eligibilityTitle': '使用資格',
+    'terms.eligibilityBody': '使用本服務須年滿 18 歲，且需同意本服務條款及隱私政策。',
+    'terms.accountTitle': '帳號責任',
+    'terms.accountBody': '使用者對自身帳號的使用行為負完全責任。每人限持有一個帳號，不得以任何形式轉讓或共用帳號。',
+    'terms.aiTitle': 'AI 生成內容',
+    'terms.aiBody': 'DNA 解讀與人格分析由 AI 自動生成，僅供娛樂及自我省思，不構成任何形式的專業心理評估或建議。',
+    'terms.matchingTitle': '配對免責說明',
+    'terms.matchingBody': '配對結果以電影品味相似度為唯一依據，相容度分數不代表人際相容性，亦不保證任何關係結果。',
+    'terms.conductTitle': '使用規範',
+    'terms.conductBody': '禁止對其他使用者進行騷擾、身份冒充，或以任何不當方式濫用配對系統。',
+    'terms.dataTitle': '資料與隱私',
+    'terms.dataBody': '關於個人資料的蒐集、使用與保護方式，請參閱我們的隱私政策。',
+    'terms.terminationTitle': '帳號終止',
+    'terms.terminationBody': '違反本服務條款的帳號可能遭到暫停或終止。使用者可隨時於帳號設定中自行刪除帳號。',
+    'terms.warrantyTitle': '免責聲明',
+    'terms.warrantyBody': '本服務以「現況」提供，不對配對品質或 AI 分析準確性做出任何明示或默示的保證。',
+    'terms.contactTitle': '聯繫我們',
+    'terms.contactBody': '如對本服務條款有任何疑問，請透過應用程式內的設定頁面與我們聯繫。',
 
     // Register consent
     'register.agreePrefix': '我已閱讀並同意',
+    'register.termsLink': '服務條款',
+    'register.and': '與',
     'register.privacyLink': '隱私政策',
-    'register.consentRequired': '請先同意隱私政策',
+    'register.consentRequired': '請先同意服務條款與隱私政策',
+    'register.birthYearRequired': '請輸入出生年份',
+    'register.ageMinimum': '您必須年滿 18 歲方可使用本服務',
+    'register.scrollToRead': '請滾動閱讀完整政策內容',
+    'register.disclaimer': '本服務僅供年滿 18 歲之使用者。註冊即表示您已閱讀並理解隱私政策的全部內容，並同意我們依據政策條款處理您的個人資料。',
 
     // Privacy policy
     'privacy.title': '隱私政策',
@@ -439,6 +483,7 @@ const translations: Record<Locale, Record<string, string>> = {
     // Confirm dialogs
     'confirm.logout': 'Are you sure you want to sign out?',
     'confirm.leaveGroup': 'Are you sure you want to leave this theater?',
+    'confirm.deleteAccount': 'Are you sure you want to permanently delete your account? This action cannot be undone. All data including your taste DNA and match history will be permanently deleted.',
 
     // Landing
     'landing.start': 'Start Decoding',
@@ -453,7 +498,7 @@ const translations: Record<Locale, Record<string, string>> = {
     'landing.step1Title': 'Origin',
     'landing.step1Desc': 'Choose one film that represents your taste as a calibration point.',
     'landing.step2Title': 'Sequence',
-    'landing.step2Desc': 'Two films each round. Pick the one that draws you in. The system distills your preferences.',
+    'landing.step2Desc': 'Follow your instinct with every choice, and your taste will slowly come into view.',
     'landing.step3Title': 'Decode',
     'landing.step3Desc': 'AI analyzes your choice patterns to produce a unique archetype and taste profile.',
     'landing.step4Title': 'Resonate',
@@ -736,17 +781,60 @@ const translations: Record<Locale, Record<string, string>> = {
     'profile.genderOther': 'Other',
     'profile.genderSkip': 'Not disclosed',
     'profile.prefAny': 'Any',
+    'profile.editPref': 'Edit',
     'profile.retest': 'Retest',
     'profile.retestHint': 'Start a new sequence analysis. History is preserved.',
     'profile.logout': 'Log out',
     'profile.loggingOut': 'Logging out...',
+    'profile.deleteAccount': 'Delete Account',
+    'profile.deletingAccount': 'Deleting...',
     'locale.switchZh': 'Switch to Chinese',
     'locale.switchEn': 'Switch to English',
 
+    // Cookie consent
+    'cookie.message': 'This site uses essential cookies for authentication. By continuing to use this site, you agree to our cookie usage.',
+    'cookie.accept': 'Accept',
+
+    // DNA disclaimer
+    'dna.disclaimer': 'The DNA analysis and personality reading are generated by AI for entertainment and self-reflection purposes. They do not constitute professional psychological assessments.',
+
+    // Matches disclaimer
+    'matches.disclaimer': 'Matches are based on cinematic taste similarity analysis. Compatibility scores reflect shared movie preferences only and do not guarantee interpersonal compatibility.',
+
+    // Terms of service
+    'terms.title': 'Terms of Service',
+    'terms.lastUpdated': 'Last updated: March 2026',
+    'terms.serviceTitle': 'Service Description',
+    'terms.serviceBody': 'Cine Sequence uses movie preference analysis to create taste profiles and suggest compatible connections, helping users discover shared cinematic sensibilities.',
+    'terms.eligibilityTitle': 'Eligibility',
+    'terms.eligibilityBody': 'You must be at least 18 years of age to use this service. By registering, you agree to these Terms of Service and our Privacy Policy.',
+    'terms.accountTitle': 'Account Responsibility',
+    'terms.accountBody': 'You are fully responsible for all activity under your account. Each person may hold only one account, which may not be transferred or shared.',
+    'terms.aiTitle': 'AI-Generated Content',
+    'terms.aiBody': 'DNA readings and personality analysis are generated by AI for entertainment and self-reflection purposes. They do not constitute professional psychological assessments or advice of any kind.',
+    'terms.matchingTitle': 'Matching Disclaimer',
+    'terms.matchingBody': 'Matches are based solely on cinematic taste similarity. Compatibility scores reflect shared movie preferences only and do not guarantee personal compatibility or any specific relationship outcome.',
+    'terms.conductTitle': 'User Conduct',
+    'terms.conductBody': 'You may not harass or impersonate other users, or misuse the matching system in any manner.',
+    'terms.dataTitle': 'Data & Privacy',
+    'terms.dataBody': 'For details on how we collect, use, and protect your personal data, please refer to our Privacy Policy.',
+    'terms.terminationTitle': 'Termination',
+    'terms.terminationBody': 'Accounts found to be in violation of these terms may be suspended or terminated. Users may delete their account at any time through account settings.',
+    'terms.warrantyTitle': 'Disclaimer of Warranties',
+    'terms.warrantyBody': 'The service is provided "as is" without warranties of any kind, express or implied. We make no guarantees regarding match quality or the accuracy of AI-generated analysis.',
+    'terms.contactTitle': 'Contact',
+    'terms.contactBody': 'For questions regarding these Terms of Service, please contact us through the settings page in the app.',
+
     // Register consent
     'register.agreePrefix': 'I have read and agree to the',
+    'register.termsLink': 'Terms of Service',
+    'register.and': 'and',
     'register.privacyLink': 'Privacy Policy',
-    'register.consentRequired': 'You must agree to the privacy policy',
+    'register.consentRequired': 'You must agree to the Terms of Service and Privacy Policy',
+    'register.birthYearRequired': 'Birth year is required',
+    'register.ageMinimum': 'You must be at least 18 years old to use this service',
+    'register.scrollToRead': 'Please scroll to read the full policy',
+    'register.disclaimer': 'This service is available to users aged 18 and above. By registering, you confirm that you have read and understood the privacy policy in its entirety, and consent to the processing of your personal data as described therein.',
 
     // Privacy policy
     'privacy.title': 'Privacy Policy',

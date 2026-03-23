@@ -1,6 +1,8 @@
 .container {
   min-height: 100vh;
   display: flex;
+  flex-direction: column;
+  align-items: center;
   justify-content: center;
   padding: 1.25rem 0 calc(7rem + env(safe-area-inset-bottom));
 }
@@ -17,11 +19,9 @@
   position: relative;
   width: 100%;
   padding: var(--section-space) clamp(1.1rem, 4vw, 2.25rem);
-  border-top: 1px solid var(--border);
 }
 
 .section:last-of-type {
-  border-bottom: 1px solid var(--border);
 }
 
 .heroSection {
@@ -86,9 +86,12 @@
 
 .logoutButton {
   padding: 0.48rem 0.9rem;
-  border: 1px solid var(--border);
+  border: none;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.66);
+  background: var(--glass-bg-strong);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  box-shadow: var(--glass-shadow);
   color: var(--foreground-soft);
   font-size: 0.72rem;
   font-family: var(--font-mono);
@@ -100,7 +103,7 @@
 
 .logoutButton:hover {
   color: var(--accent-ink);
-  border-color: var(--border-strong);
+  box-shadow: var(--glass-shadow-hover);
 }
 
 .logoutButton:disabled {
@@ -180,10 +183,12 @@
 /* Card */
 .card {
   padding: clamp(1.35rem, 3vw, 2rem);
-  background: var(--card-bg);
-  border: 1px solid var(--border);
+  background: var(--glass-bg-strong);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: none;
   border-radius: var(--card-radius);
-  box-shadow: var(--card-shadow);
+  box-shadow: var(--glass-shadow);
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -201,13 +206,60 @@
   font-family: var(--font-mono);
 }
 
+.sectionTitleRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.prefGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.prefOption {
+  padding: 0.4rem 0.85rem;
+  border: none;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 1px 4px rgba(45, 54, 50, 0.06);
+  color: var(--foreground-soft);
+  font-size: 0.78rem;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.prefOption:hover {
+  color: var(--foreground);
+  box-shadow: 0 2px 8px rgba(45, 54, 50, 0.1);
+}
+
+.prefActive {
+  background: var(--accent);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(192, 98, 35, 0.25);
+}
+
+.prefActive:hover {
+  background: var(--accent-hover);
+  color: #fff;
+}
+
+.rangeDash {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
 /* Field */
 .field {
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
   padding-top: 0.9rem;
-  border-top: 1px solid rgba(221, 217, 208, 0.7);
 }
 
 .label {
@@ -256,8 +308,9 @@
   padding: 0.4rem 0.6rem;
   background: rgba(255, 255, 255, 0.7);
   color: var(--foreground);
-  border: 1px solid var(--border);
-  border-radius: 6px;
+  border: none;
+  border-bottom: 1px solid rgba(45, 54, 50, 0.1);
+  border-radius: 0;
   font-size: 0.9rem;
   font-family: inherit;
   outline: none;
@@ -265,7 +318,7 @@
 }
 
 .editInput:focus {
-  border-color: var(--accent);
+  border-bottom-color: var(--accent);
 }
 
 .saveBtn {
@@ -321,21 +374,69 @@
   font-family: var(--font-mono);
   letter-spacing: 0.14em;
   color: var(--muted);
-  border: 1px solid var(--border);
+  border: none;
   border-radius: 999px;
   text-transform: uppercase;
-  background: rgba(255, 255, 255, 0.64);
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 1px 4px rgba(45, 54, 50, 0.06);
 }
 
 .statusCompleted {
   color: var(--accent-ink);
-  border-color: rgba(125, 63, 27, 0.32);
+  background: rgba(192, 98, 35, 0.08);
+}
+
+/* Danger zone */
+.dangerSection {
+  display: flex;
+  justify-content: flex-start;
+  width: 100%;
+  max-width: var(--page-max-width);
+  padding-top: 0.5rem;
+  padding-bottom: 3rem;
+}
+
+.deleteAccountBtn {
+  padding: 0.45rem 1rem;
+  border: none;
+  border-radius: 999px;
+  background: rgba(var(--error-rgb, 185, 28, 28), 0.08);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  color: var(--error, #b91c1c);
+  font-size: 0.72rem;
+  font-family: var(--font-mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.deleteAccountBtn:hover {
+  background: rgba(var(--error-rgb, 185, 28, 28), 0.14);
+  box-shadow: 0 2px 10px rgba(185, 28, 28, 0.12);
+}
+
+.deleteAccountBtn:disabled {
+  opacity: 0.5;
+  cursor: default;
 }
 
 /* Mobile */
 @media (max-width: 768px) {
   .container {
     padding-top: 0.5rem;
+  }
+
+  .section {
+    padding: 2.5rem 1.1rem;
+  }
+
+  .heroSection {
+    min-height: auto;
+    justify-content: flex-start;
   }
 
   .profileGrid {
@@ -372,5 +473,9 @@
 
   .card {
     padding: 1.2rem;
+  }
+
+  .dangerSection {
+    padding: 0 1.1rem 3rem;
   }
 }
