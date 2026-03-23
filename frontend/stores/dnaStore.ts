@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { api } from '@/lib/api'
+import { ApiError, api } from '@/lib/api'
 
 interface ArchetypeInfo {
   id: string
@@ -35,7 +35,7 @@ interface DnaState {
   error: string | null
 
   buildDna: () => Promise<void>
-  fetchResult: () => Promise<DnaResult>
+  fetchResult: () => Promise<DnaResult | null>
 }
 
 export const useDnaStore = create<DnaState>((set, get) => ({
@@ -67,6 +67,11 @@ export const useDnaStore = create<DnaState>((set, get) => ({
       set({ result, isLoading: false })
       return result
     } catch (err) {
+      if (err instanceof ApiError && err.status === 404) {
+        set({ result: null, isLoading: false, error: null })
+        return null
+      }
+
       set({
         isLoading: false,
         error: err instanceof Error ? err.message : 'Failed to fetch DNA result',

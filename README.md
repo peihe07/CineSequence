@@ -23,8 +23,16 @@ A movie-taste-based social matching platform. Users go through a 20-round binary
    - Phase 3 (13-20): Soul Tags — AI-powered value/personality probing with hard duplicate prevention
    - Extension (+5 per batch, up to 3 batches): Optional extra rounds for finer profiling
 5. **DNA Result** — archetype, tag cloud, AI personality reading (supports seasonal retest)
-6. **Matching** — 80%+ cosine similarity matches, group recommendations
-7. **Invite** — email invitation with match details, mutual accept to connect
+6. **Matching** — cosine-similarity-based candidate discovery, reciprocal preference filtering, group recommendations
+7. **Invite** — the initiator reviews discovered candidates and sends invites individually by email
+8. **Accept** — only the invited recipient can accept or decline; confirmed matches receive a ticket deep link
+
+## Match Privacy
+
+- Discovered matches are only visible to the initiator until an invite is sent.
+- Contact details are not revealed before the recipient accepts the invite.
+- Email notifications are sent at three points only: magic link login, invite received, match accepted.
+- Accepted-match deep links use `/ticket?inviteId=<match_id>`.
 
 ## Getting Started
 

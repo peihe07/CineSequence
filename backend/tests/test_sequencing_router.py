@@ -307,6 +307,39 @@ class TestPick:
         )
         assert response.status_code == 400
 
+    @pytest.mark.asyncio
+    @patch("app.routers.sequencing._enqueue_dna_build")
+    @patch("app.routers.sequencing.get_movie", new_callable=AsyncMock)
+    async def test_submit_pick_final_round_enqueues_dna_build(
+        self, mock_get_movie, mock_enqueue_dna_build, client, auth_user, db_session
+    ):
+        mock_get_movie.return_value = _fake_movie()
+        user, headers = auth_user
+
+        await client.get("/sequencing/progress", headers=headers)
+        session_result = await db_session.execute(
+            select(SequencingSession).where(SequencingSession.user_id == user.id)
+        )
+        session = session_result.scalar_one()
+        session.total_rounds = 1
+        await db_session.commit()
+
+        response = await client.post(
+            "/sequencing/pick",
+            json={
+                "chosen_tmdb_id": 155,
+                "pick_mode": "watched",
+                "response_time_ms": 2500,
+            },
+            headers=headers,
+        )
+        assert response.status_code == 200
+        assert response.json()["completed"] is True
+
+        await db_session.refresh(user)
+        assert user.sequencing_status == SequencingStatus.completed
+        mock_enqueue_dna_build.assert_called_once_with(user.id)
+
 
 class TestSkip:
     """POST /sequencing/skip"""
@@ -378,6 +411,35 @@ class TestSkip:
         phase2_skip = picks[-1]
         assert phase2_skip.phase == 2
         assert phase2_skip.movie_a_tmdb_id == 3101
+
+    @pytest.mark.asyncio
+    @patch("app.routers.sequencing._enqueue_dna_build")
+    @patch("app.routers.sequencing.get_movie", new_callable=AsyncMock)
+    async def test_skip_final_round_enqueues_dna_build(
+        self, mock_get_movie, mock_enqueue_dna_build, client, auth_user, db_session
+    ):
+        mock_get_movie.return_value = _fake_movie()
+        user, headers = auth_user
+
+        await client.get("/sequencing/progress", headers=headers)
+        session_result = await db_session.execute(
+            select(SequencingSession).where(SequencingSession.user_id == user.id)
+        )
+        session = session_result.scalar_one()
+        session.total_rounds = 1
+        await db_session.commit()
+
+        response = await client.post(
+            "/sequencing/skip",
+            json={"response_time_ms": 1000},
+            headers=headers,
+        )
+        assert response.status_code == 200
+        assert response.json()["completed"] is True
+
+        await db_session.refresh(user)
+        assert user.sequencing_status == SequencingStatus.completed
+        mock_enqueue_dna_build.assert_called_once_with(user.id)
         assert phase2_skip.movie_b_tmdb_id == 3102
         assert phase2_skip.chosen_tmdb_id is None
         assert phase2_skip.test_dimension == "slowburn"

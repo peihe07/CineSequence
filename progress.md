@@ -1,6 +1,6 @@
 # Cine Sequence - Development Progress
 
-> Last updated: 2026-03-22
+> Last updated: 2026-03-23
 
 ## Overall Status
 
@@ -97,7 +97,12 @@
 - [x] Ticket auto-generated on match accept (saved to R2 or local dev output/)
 - [x] TicketCard component (clip-path punch holes, scan lines, holographic hover, 3D tilt)
 - [x] TearRitual (drag gesture to tear ticket from perforated line) ✓
-- [x] Ticket invite page (/ticket/[inviteId] - deep link from email with ticket, shared tags, ice breakers)
+- [x] Ticket invite page (`/ticket?inviteId=<match_id>` - deep link from accepted-match email with ticket, shared tags, ice breakers)
+- [x] Match visibility rule: `discovered` visible to initiator only
+- [x] Invite authority rule: only initiator (`user_a`) can send invite
+- [x] Respond authority rule: only recipient (`user_b`) can accept/decline
+- [x] Reciprocal preference filtering added to matcher
+- [x] Unordered pair protection: app-level reverse-pair check + DB unique index
 
 ## Phase 6: Groups + Profile (in progress)
 - [x] Profile router (GET /profile, PATCH /profile)
@@ -142,6 +147,11 @@
 - [x] Matches invite: User A sends invite → status "invited" ✓
 - [x] Matches respond: User B accepts → status "accepted" ✓
 - [x] Full match flow verified: discover → invite → respond (accept) ✓
+- [x] Fix: accepted-match email link updated to `/ticket?inviteId=<match_id>`
+- [x] Fix: recipient cannot see `discovered` matches before invite
+- [x] Fix: only initiator may invite; only recipient may respond
+- [x] Fix: matcher now honors reciprocal preferences
+- [x] Fix: unordered match pair unique index added via Alembic migration
 - [x] Fix: group activation logic extracted to should_activate_group, applied on join/leave/auto-assign
 - [x] Fix: matcher only discovers active DNA profiles (is_active filter)
 - [x] Fix: auth tests use stored magic_link_token (token reuse + superseded rejection tests)
@@ -254,12 +264,54 @@
   - User model 新增 agreed_to_terms_at，Alembic migration
   - 後端驗證 agreed_to_terms=true 才允許註冊
 
+### 7g: Legal & Ethical Features ✓ (2026-03-23)
+- [x] Terms of Service 頁面 (/terms，10 sections)
+- [x] Cookie consent banner (glassmorphism，localStorage 記錄)
+- [x] Account deletion (DELETE /profile API + UI confirm dialog)
+- [x] Data export (GET /profile/export API)
+- [x] AI-generated content disclaimers (DNA 頁面、Matches 頁面)
+- [x] 註冊 birth_year 必填 + 18 歲以上驗證
+- [x] Privacy policy scroll-to-read（必須捲到底才能勾選同意）
+- [x] 註冊 consent 連結 Terms + Privacy
+
+### 7h: AI Movie Selection Improvement (planned)
+> 三個方向同時進行，改善 AI 電影選擇的侷限性和重複問題
+
+- [ ] **A. 硬性防重複** — ai_pair_engine.py 的 get_ai_pair() 回傳前檢查 TMDB ID 是否重複，重複則 retry（最多 3 次）
+- [ ] **B. 擴大電影候選池** — 建立 curated 電影清單（200-500 部，涵蓋 30 個 tag dimensions），修改 pair_picker prompt 讓 AI 從候選池中挑選
+- [ ] **C. Phase 1 動態化** — 擴充 phase1_pairs.json 從 8 對到 25-30 對，每次隨機抽 5 對（確保覆蓋 3 個 quadrant axis）
+
+相關檔案：
+- `backend/app/services/ai_pair_engine.py` — Phase 2-3 AI pair engine
+- `backend/app/services/pair_engine.py` — Phase 1 pair engine
+- `backend/app/data/phase1_pairs.json` — Phase 1 固定電影對
+- `backend/app/data/prompts/pair_picker.txt` — Gemini prompt
+- `backend/app/data/tag_taxonomy.json` — 30 個 tag definitions
+
+### 7i: Notification System (planned)
+> 分階段實作，MVP 先做輕量版
+
+| Phase | 做法 | 時機 |
+|-------|------|------|
+| Phase 1 | Header 鈴鐺 + dropdown（靜態 polling） | 近期可做 |
+| Phase 2 | 獨立通知頁面 + 已讀管理 | 用戶量成長後 |
+| Phase 3 | 即時推播（WebSocket / SSE） | 需要即時性時 |
+
+通知場景：
+- 配對成功通知（有新 match）
+- Sequencing 完成（DNA 分析結果出來）
+- 系統公告（維護、新功能）
+
+- [ ] **Phase 1**: Header 鈴鐺 icon + 未讀紅點 + dropdown list
+- [ ] **Phase 2**: 獨立 /notifications 頁面 + 已讀/未讀狀態 + notifications DB table
+- [ ] **Phase 3**: WebSocket / SSE 即時推播
+
 ## Deferred Decisions
 - **N-V-E-P-S 5-dimension DNA system** — replace current 3-axis model after core flow is complete
 - **Bilingual movie titles** — backend has title_en + title_zh, seed page is locale-aware, other pages TBD
 
 ## Suggested Next Steps
-1. **Phase 7e** — Admin dashboard + Prometheus + Grafana monitoring
-2. **Phase 7c-2** — UX gaps (error boundaries, toast, onboarding, mobile)
-3. **Phase 7d (continue)** — Integration tests, frontend component tests
-4. **Phase 7f** — Deploy (Vercel + Railway + CI/CD)
+1. **Phase 7h** — AI movie selection improvement (A/B/C 三方向)
+2. **Phase 7i-1** — Notification system Phase 1 (Header 鈴鐺 + dropdown)
+3. **Phase 7e** — Admin dashboard: Prometheus + Grafana monitoring
+4. **Phase 7f** — Deploy (Cloudflare Pages + Railway + CI/CD)

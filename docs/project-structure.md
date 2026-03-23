@@ -14,10 +14,10 @@ movie-dna/
 │   │   │   │   ├── page.tsx           # Sequencing flow (20 rounds)
 │   │   │   │   └── complete/page.tsx  # Sequencing complete
 │   │   │   ├── dna/page.tsx           # DNA profile results
-│   │   │   ├── matches/page.tsx       # Match discovery & listing
+│   │   │   ├── matches/page.tsx       # Match discovery, invite flow, match listing
 │   │   │   ├── profile/page.tsx       # User profile management
-│   │   │   ├── theaters/[id]/         # Theater detail (placeholder)
-│   │   │   └── ticket/[inviteId]/     # Ticket detail (placeholder)
+│   │   │   ├── theaters/page.tsx      # Theater list, auto-assign, join/leave
+│   │   │   └── ticket/page.tsx        # Ticket detail via ?inviteId=<match_id>
 │   │   ├── globals.css                # CSS variables, font stack, reset
 │   │   ├── layout.tsx                 # Root layout (fonts, I18nProvider)
 │   │   └── page.tsx                   # Landing page
@@ -54,7 +54,7 @@ movie-dna/
 │   │   │   ├── dna.py                 # /dna/* endpoints
 │   │   │   ├── matches.py             # /matches/* endpoints
 │   │   │   ├── profile.py            # /profile/* endpoints
-│   │   │   └── groups.py             # /groups/* endpoints (stub)
+│   │   │   └── groups.py             # /groups/* endpoints
 │   │   ├── services/
 │   │   │   ├── auth_utils.py          # JWT + magic link tokens
 │   │   │   ├── tmdb_client.py         # TMDB API client
@@ -63,17 +63,17 @@ movie-dna/
 │   │   │   ├── session_service.py     # Session management (extend/retest)
 │   │   │   ├── dna_builder.py         # DNA profile computation
 │   │   │   ├── ai_personality.py      # AI personality reading
-│   │   │   ├── matcher.py            # Matching + invite + email integration
+│   │   │   ├── matcher.py            # Discovery, reciprocal preferences, invite/respond rules
 │   │   │   ├── email_service.py       # Email (magic link, invite, accepted)
-│   │   │   ├── group_engine.py        # Group operations (stub)
-│   │   │   └── ticket_gen.py          # Ticket image generation (stub)
+│   │   │   ├── group_engine.py        # Group affinity + activation logic
+│   │   │   └── ticket_gen.py          # Ticket image generation + upload
 │   │   ├── models/
 │   │   │   ├── user.py                # User + preferences
 │   │   │   ├── dna_profile.py         # DNA profile (pgvector)
 │   │   │   ├── sequencing_session.py  # Session tracking (extend/retest)
 │   │   │   ├── pick.py                # Individual movie picks
 │   │   │   ├── match.py               # User matches + status
-│   │   │   └── group.py               # Group model (placeholder)
+│   │   │   └── group.py               # Group model + membership state
 │   │   ├── schemas/
 │   │   │   ├── auth.py
 │   │   │   ├── sequencing.py
@@ -111,7 +111,11 @@ movie-dna/
 │   │   ├── env.py
 │   │   └── versions/
 │   │       ├── 001_initial.py
-│   │       └── ed7b2fe54c0a_add_sequencing_sessions_extension_and_.py
+│   │       ├── ed7b2fe54c0a_add_sequencing_sessions_extension_and_.py
+│   │       ├── add_agreed_to_terms_at.py
+│   │       ├── add_is_admin_to_users.py
+│   │       ├── add_auth_version_to_users.py
+│   │       └── add_unordered_match_pair_index.py
 │   ├── alembic.ini
 │   ├── requirements.txt
 │   └── pyproject.toml
@@ -160,10 +164,10 @@ GET    /dna/history                # List all DNA versions
 
 ### Matching (`/matches`)
 ```
-GET    /matches                    # Get user's matches
-POST   /matches/discover           # Run matching algorithm
-POST   /matches/invite             # Send invite to match
-POST   /matches/respond            # Accept/decline invite
+GET    /matches                    # Get user's visible matches (recipient cannot see discovered items)
+POST   /matches/discover           # Run matching algorithm for initiator-visible candidates
+POST   /matches/invite             # Send invite to a discovered match (initiator only)
+POST   /matches/respond            # Accept/decline invite (recipient only)
 ```
 
 ### Profile (`/profile`)
@@ -172,12 +176,22 @@ GET    /profile                    # Get user profile
 PATCH  /profile                    # Update profile
 ```
 
-### Groups (`/groups`) — Not yet implemented
+### Groups (`/groups`)
 ```
-GET    /groups                     # List groups (stub)
-POST   /groups/:id/join            # Join group (stub)
-GET    /groups/:id                 # Group detail (stub)
+GET    /groups                     # List groups
+POST   /groups/auto-assign         # Auto-assign by DNA affinity
+POST   /groups/:id/join            # Join group
+POST   /groups/:id/leave           # Leave group
+GET    /groups/:id                 # Group detail
 ```
+
+## Match Flow Notes
+
+- `discover` creates candidate matches visible only to the initiator.
+- A discovered match becomes visible to the recipient only after `invite`.
+- Only `user_a` can send the invite; only `user_b` can respond.
+- Match discovery applies both the initiator's filters and the candidate's reciprocal preferences.
+- Accepted-match email links currently point to `/ticket?inviteId=<match_id>`.
 
 ## Font Stack
 

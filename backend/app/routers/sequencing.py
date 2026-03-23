@@ -41,6 +41,13 @@ from app.services.tmdb_client import get_movie, search_movies
 router = APIRouter()
 
 
+def _enqueue_dna_build(user_id) -> None:
+    """Trigger async DNA generation after sequencing completion."""
+    from app.tasks.dna_tasks import build_dna_task
+
+    build_dna_task.delay(str(user_id))
+
+
 def _get_phase(round_number: int) -> int:
     """Phase 1: rounds 1-5, Phase 2: 6-12, Phase 3: 13+ (includes extensions)."""
     if round_number <= 5:
@@ -339,6 +346,8 @@ async def submit_pick(
         user.sequencing_status = SequencingStatus.in_progress
 
     await db.commit()
+    if round_number >= session.total_rounds:
+        _enqueue_dna_build(user.id)
     return _build_progress(session, len(picks) + 1)
 
 
@@ -404,6 +413,8 @@ async def skip_pair(
         user.sequencing_status = SequencingStatus.completed
 
     await db.commit()
+    if round_number >= session.total_rounds:
+        _enqueue_dna_build(user.id)
     return _build_progress(session, len(picks) + 1)
 
 

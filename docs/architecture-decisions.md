@@ -252,3 +252,27 @@ Note: candidate pool context (~800 tokens/call) increases input substantially. R
 - Curated candidate pool (~40 movies/call) adds ~800 input tokens but significantly improves diversity and reduces retry rate
 - Hard duplicate prevention retries add at most 2x cost per affected round; in practice <5% of rounds need a retry
 - If ice breakers are upgraded to AI-generated, add ~1 call per match (~500 input + 100 output tokens)
+
+---
+
+## ADR-015: Match Visibility, Invite Authority, and Pair Uniqueness
+
+**Decision**: Treat match discovery as initiator-private until invite, restrict invite/respond authority by role, and enforce unordered pair uniqueness.
+
+**Rules**:
+- `discovered` matches are visible only to the initiator.
+- Only `user_a` may send an invite for a discovered match.
+- Only `user_b` may accept or decline an invited match.
+- Match candidates must satisfy both the initiator's filters and the candidate's reciprocal preferences unless the candidate opted into taste-only matching.
+- Match pairs are unique regardless of ordering (`A-B` and `B-A` cannot coexist).
+
+**Rationale**:
+- Prevents accidental exposure of one-sided discovery results.
+- Keeps the state model coherent: `discover -> invite -> respond`.
+- Reduces invalid match suggestions where the other party would never accept the demographic filter.
+- Protects against race conditions in async matching tasks and batch rematch runs.
+
+**Implementation notes**:
+- Application layer checks skip existing forward and reverse pairs before insert.
+- Database layer enforces an unordered unique index on `LEAST(user_a_id, user_b_id)` and `GREATEST(user_a_id, user_b_id)`.
+- Accepted email deep links use `/ticket?inviteId=<match_id>`, matching the current frontend route shape.

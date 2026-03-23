@@ -215,7 +215,7 @@ class TestSendMatchAcceptedEmail:
                 match_id=match_id,
             )
             html = mock_resend.Emails.send.call_args[0][0]["html"]
-            assert f"ticket/{match_id}" in html
+            assert f"ticket?inviteId={match_id}" in html
 
 
 class TestGetArchetypeName:

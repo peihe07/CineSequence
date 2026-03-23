@@ -6,7 +6,8 @@ import uuid
 from datetime import datetime, timezone
 from pathlib import Path
 
-from sqlalchemy import or_, select
+from sqlalchemy import and_, or_, select, true
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
@@ -62,7 +63,7 @@ async def find_matches(
         .where(User.sequencing_status == "completed")
     )
 
-    # Apply preference filters (skip if pure_taste_match)
+    # Apply current user's preference filters (skip if pure_taste_match)
     if not user.pure_taste_match:
         if user.match_gender_pref and user.match_gender_pref != "any":
             q = q.where(User.gender == user.match_gender_pref)
@@ -71,6 +72,9 @@ async def find_matches(
             q = q.where(User.birth_year <= current_year - user.match_age_min)
         if user.match_age_max:
             q = q.where(User.birth_year >= current_year - user.match_age_max)
+
+    # Also honor the candidate's reciprocal preferences unless they opted into taste-only matching.
+    q = q.where(_build_reciprocal_preference_clause(user))
 
     q = q.order_by("distance").limit(limit)
     result = await db.execute(q)
@@ -81,6 +85,17 @@ async def find_matches(
     for candidate_profile, distance in candidates:
         similarity = 1.0 - distance
         if similarity < settings.match_threshold:
+            continue
+
+        existing_pair = await db.execute(
+            select(Match.id).where(
+                or_(
+                    and_(Match.user_a_id == user.id, Match.user_b_id == candidate_profile.user_id),
+                    and_(Match.user_a_id == candidate_profile.user_id, Match.user_b_id == user.id),
+                )
+            )
+        )
+        if existing_pair.scalar_one_or_none():
             continue
 
         shared = _compute_shared_tags(profile, candidate_profile)
@@ -96,8 +111,17 @@ async def find_matches(
             ice_breakers=ice_breakers,
             status=MatchStatus.discovered,
         )
-        db.add(match)
-        matches.append(match)
+        try:
+            async with db.begin_nested():
+                db.add(match)
+                await db.flush()
+            matches.append(match)
+        except IntegrityError:
+            logger.info(
+                "Skipped duplicate match creation for pair %s <-> %s",
+                user.id,
+                candidate_profile.user_id,
+            )
 
     await db.commit()
     for m in matches:
@@ -113,7 +137,15 @@ async def get_user_matches(
     """Get all matches for a user (both as user_a and user_b)."""
     q = (
         select(Match)
-        .where(or_(Match.user_a_id == user_id, Match.user_b_id == user_id))
+        .where(
+            or_(
+                Match.user_a_id == user_id,
+                and_(
+                    Match.user_b_id == user_id,
+                    Match.status != MatchStatus.discovered,
+                ),
+            )
+        )
         .order_by(Match.similarity_score.desc())
     )
     result = await db.execute(q)
@@ -157,6 +189,8 @@ async def send_invite(
         raise ValueError("Match not found")
     if match.user_a_id != user_id and match.user_b_id != user_id:
         raise PermissionError("Not part of this match")
+    if match.user_a_id != user_id:
+        raise PermissionError("Only the match initiator can send the invite")
     if match.status != MatchStatus.discovered:
         raise ValueError(f"Cannot invite: status is {match.status}")
 
@@ -208,6 +242,8 @@ async def respond_to_invite(
         raise ValueError("Match not found")
     if match.user_a_id != user_id and match.user_b_id != user_id:
         raise PermissionError("Not part of this match")
+    if match.user_b_id != user_id:
+        raise PermissionError("Only the invited recipient can respond")
     if match.status != MatchStatus.invited:
         raise ValueError(f"Cannot respond: status is {match.status}")
 
@@ -292,6 +328,48 @@ def _get_ticket_style(user: User) -> str:
     if not archetype:
         return "classic"
     return archetype.get("ticket_style", "classic")
+
+
+def _build_reciprocal_preference_clause(user: User):
+    """Build SQL predicates for the candidate's preference rules toward the current user."""
+    clauses = []
+
+    # If the candidate wants pure taste matching, skip reciprocal demographic filters.
+    clauses.append(
+        or_(
+            User.pure_taste_match == True,  # noqa: E712
+            _build_candidate_demographic_clause(user),
+        )
+    )
+
+    return and_(*clauses)
+
+
+def _build_candidate_demographic_clause(user: User):
+    current_year = datetime.now(tz=timezone.utc).year
+    user_birth_year = getattr(user, "birth_year", None)
+    user_gender = getattr(user, "gender", None)
+    user_age = current_year - user_birth_year if user_birth_year is not None else None
+
+    gender_clause = or_(
+        User.match_gender_pref.is_(None),
+        User.match_gender_pref == "any",
+        user_gender is None,
+        User.match_gender_pref == user_gender,
+    )
+
+    age_min_clause = (
+        or_(User.match_age_min.is_(None), User.match_age_min <= user_age)
+        if user_age is not None
+        else true()
+    )
+    age_max_clause = (
+        or_(User.match_age_max.is_(None), User.match_age_max >= user_age)
+        if user_age is not None
+        else true()
+    )
+
+    return and_(gender_clause, age_min_clause, age_max_clause)
 
 
 def _get_archetype_name(user: User) -> str:
