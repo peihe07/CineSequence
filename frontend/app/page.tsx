@@ -122,7 +122,7 @@ export default function Home() {
           <span className={styles.sideLabel}>FILE 00</span>
           <div className={styles.manifest}>
             <h1 className={styles.heroHeadline}>
-              <span>{displayed}</span>
+              <span className={styles.headlineText}>{displayed}</span>
               <span className={`${styles.cursor} ${done ? styles.cursorBlink : ''}`}>|</span>
             </h1>
             <div className={styles.terminal}>

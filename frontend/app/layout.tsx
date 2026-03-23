@@ -1,14 +1,21 @@
 import type { Metadata } from 'next'
 import localFont from 'next/font/local'
+import { Inter, Noto_Sans_TC } from 'next/font/google'
 import 'remixicon/fonts/remixicon.css'
 import './globals.css'
 import { I18nProvider } from '@/lib/i18n'
 import LocaleDocumentSync from '@/components/ui/LocaleDocumentSync'
 import ToastContainer from '@/components/ui/Toast'
 
-const huninn = localFont({
-  src: '../public/fonts/jf-openhuninn-2.1.ttf',
-  variable: '--font-huninn',
+const inter = Inter({
+  subsets: ['latin'],
+  variable: '--font-inter',
+  display: 'swap',
+})
+const notoSansTC = Noto_Sans_TC({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-noto',
   display: 'swap',
 })
 const properScript = localFont({
@@ -28,7 +35,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${huninn.variable} ${properScript.variable}`}>
+      <body className={`${inter.variable} ${notoSansTC.variable} ${properScript.variable}`}>
         <I18nProvider>
           <LocaleDocumentSync />
           <ToastContainer />

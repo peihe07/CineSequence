@@ -8,9 +8,9 @@
 
 .option {
   padding: 0.35rem 0.7rem;
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   font-weight: 600;
-  font-family: inherit;
+  font-family: var(--font-sans), sans-serif;
   letter-spacing: 0.04em;
   border: none;
   cursor: pointer;

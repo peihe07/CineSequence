@@ -42,28 +42,29 @@
   right: 1rem;
   writing-mode: vertical-rl;
   text-orientation: mixed;
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
-  letter-spacing: 0.2em;
-  color: var(--muted);
+  font-family: var(--font-sans), sans-serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  color: var(--foreground-soft);
 }
 
 .title {
   position: relative;
   max-width: 12ch;
-  font-size: clamp(2.4rem, 8vw, 5.4rem);
+  font-size: clamp(1.8rem, 5vw, 3rem);
   font-weight: 600;
-  letter-spacing: -0.04em;
-  line-height: 0.92;
+  letter-spacing: -0.03em;
+  line-height: 0.94;
   text-transform: uppercase;
 }
 
 .deck {
   position: relative;
   max-width: 36rem;
-  font-size: 0.95rem;
+  font-size: 0.88rem;
   color: var(--foreground-soft);
-  line-height: 1.9;
+  line-height: 1.8;
 }
 
 .topRow {

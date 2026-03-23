@@ -9,8 +9,8 @@
   grid-template-columns: auto 1fr auto;
   align-items: center;
   width: 100%;
-  height: 56px;
-  padding: 0 1.25rem;
+  height: 60px;
+  padding: 0 1.5rem;
   background: rgba(245, 243, 237, 0.55);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
@@ -29,10 +29,10 @@
 
 .brand {
   flex-shrink: 0;
-  font-family: var(--font-display-script), var(--font-mono), monospace;
-  font-size: 0.72rem;
-  font-weight: 400;
-  letter-spacing: 0.2em;
+  font-family: var(--font-display-script), var(--font-sans), sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--foreground);
   text-decoration: none;
@@ -50,9 +50,9 @@
   justify-self: center;
   display: flex;
   align-items: center;
-  gap: 0.25rem;
-  height: 38px;
-  padding: 3px;
+  gap: 0.2rem;
+  height: 40px;
+  padding: 4px;
   border-radius: 2rem;
   /* Inset / recessed look — darker than surrounding header */
   background: rgba(221, 217, 208, 0.45);
@@ -65,13 +65,13 @@
   align-items: center;
   justify-content: center;
   height: 100%;
-  padding: 0 0.85rem;
-  font-family: var(--font-mono), monospace;
-  font-size: 0.58rem;
+  padding: 0 1rem;
+  font-family: var(--font-sans), sans-serif;
+  font-size: 0.75rem;
   font-weight: 500;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--muted);
+  color: var(--foreground-soft);
   text-decoration: none;
   border-radius: 2rem;
   transition: color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
@@ -79,7 +79,7 @@
 }
 
 .navLink:hover {
-  color: var(--foreground-soft);
+  color: var(--foreground);
 }
 
 .navLink:focus-visible {
@@ -91,7 +91,7 @@
 .navLinkActive {
   color: #fff;
   background: var(--accent);
-  box-shadow: 0 2px 8px rgba(192, 98, 35, 0.3);
+  box-shadow: 0 2px 8px rgba(192, 98, 35, 0.25);
   font-weight: 600;
 }
 
@@ -106,7 +106,7 @@
   flex-shrink: 0;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.6rem;
 }
 
 /* ─── Mobile: stack to two rows ───────────────────── */
@@ -120,40 +120,38 @@
     gap: 0.35rem;
   }
 
-  /* Row 1: brand + right on same line */
   .brand {
-    font-size: 0.65rem;
+    font-size: 0.82rem;
     grid-column: 1;
   }
 
   .right {
     position: absolute;
     right: 0.75rem;
-    top: 0.5rem;
+    top: 0.6rem;
   }
 
-  /* Row 2: nav tray centered */
   .navTray {
     justify-self: center;
-    height: 36px;
+    height: 38px;
   }
 
   .navLink {
-    font-size: 0.5rem;
-    letter-spacing: 0.08em;
-    padding: 0 0.55rem;
+    font-size: 0.65rem;
+    letter-spacing: 0.06em;
+    padding: 0 0.7rem;
   }
 }
 
 @media (max-width: 360px) {
   .navLink {
-    font-size: 0.46rem;
-    letter-spacing: 0.06em;
-    padding: 0 0.4rem;
+    font-size: 0.6rem;
+    letter-spacing: 0.04em;
+    padding: 0 0.5rem;
   }
 
   .brand {
-    font-size: 0.58rem;
-    letter-spacing: 0.14em;
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
   }
 }
