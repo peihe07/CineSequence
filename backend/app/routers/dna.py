@@ -62,14 +62,27 @@ async def _get_session_picks_and_genres(
             "pick_mode": p.pick_mode.value if p.pick_mode else None,
             "test_dimension": p.test_dimension,
         })
+        tmdb_ids.add(p.movie_a_tmdb_id)
+        if p.movie_b_tmdb_id:
+            tmdb_ids.add(p.movie_b_tmdb_id)
         if p.chosen_tmdb_id:
             tmdb_ids.add(p.chosen_tmdb_id)
 
     genre_map: dict[int, list[str]] = {}
+    movie_map = {}
     for tmdb_id in tmdb_ids:
         movie = await get_movie(tmdb_id)
         if movie:
+            movie_map[tmdb_id] = movie
             genre_map[tmdb_id] = movie.genres
+
+    for pick in picks:
+        movie_a = movie_map.get(pick["movie_a_tmdb_id"])
+        movie_b = movie_map.get(pick["movie_b_tmdb_id"])
+        chosen = movie_map.get(pick["chosen_tmdb_id"])
+        pick["movie_a_title"] = (movie_a.title_zh or movie_a.title_en) if movie_a else None
+        pick["movie_b_title"] = (movie_b.title_zh or movie_b.title_en) if movie_b else None
+        pick["chosen_title"] = (chosen.title_zh or chosen.title_en) if chosen else None
 
     return picks, genre_map
 

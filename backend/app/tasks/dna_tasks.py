@@ -66,12 +66,28 @@ async def _build_dna_for_user(user_id: str):
         ]
 
         # Build genre map from TMDB
-        tmdb_ids = {p["chosen_tmdb_id"] for p in picks if p["chosen_tmdb_id"]}
+        tmdb_ids = set()
+        for pick in picks:
+            tmdb_ids.add(pick["movie_a_tmdb_id"])
+            if pick["movie_b_tmdb_id"]:
+                tmdb_ids.add(pick["movie_b_tmdb_id"])
+            if pick["chosen_tmdb_id"]:
+                tmdb_ids.add(pick["chosen_tmdb_id"])
         genre_map = {}
+        movie_map = {}
         for tmdb_id in tmdb_ids:
             movie = await get_movie(tmdb_id)
             if movie:
+                movie_map[tmdb_id] = movie
                 genre_map[tmdb_id] = movie.genres
+
+        for pick in picks:
+            movie_a = movie_map.get(pick["movie_a_tmdb_id"])
+            movie_b = movie_map.get(pick["movie_b_tmdb_id"])
+            chosen = movie_map.get(pick["chosen_tmdb_id"])
+            pick["movie_a_title"] = (movie_a.title_zh or movie_a.title_en) if movie_a else None
+            pick["movie_b_title"] = (movie_b.title_zh or movie_b.title_en) if movie_b else None
+            pick["chosen_title"] = (chosen.title_zh or chosen.title_en) if chosen else None
 
         dna_data = build_dna(picks, genre_map)
 
