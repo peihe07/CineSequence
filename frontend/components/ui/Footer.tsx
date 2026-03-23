@@ -38,7 +38,6 @@ export default function Footer() {
                 <span className={styles.signatureTitleMain}>Cine</span>
                 <span className={styles.signatureTitleSub}>Sequence</span>
               </span>
-              <span className={styles.signatureMeta}>{t('footer.tagline')}</span>
             </div>
           </div>
 
