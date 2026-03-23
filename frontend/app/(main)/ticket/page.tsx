@@ -1,28 +1,35 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useParams, useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { useMatchStore, MatchItem } from '@/stores/matchStore'
 import { useI18n } from '@/lib/i18n'
 import TicketCard from '@/components/match/TicketCard'
 import Button from '@/components/ui/Button'
+import { getTagLabel } from '@/lib/tagLabels'
 import styles from './page.module.css'
 
 export default function TicketPage() {
-  const { inviteId } = useParams<{ inviteId: string }>()
+  const searchParams = useSearchParams()
+  const inviteId = searchParams.get('inviteId')
   const router = useRouter()
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
   const { fetchMatch } = useMatchStore()
   const [match, setMatch] = useState<MatchItem | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    if (!inviteId) return
+    if (!inviteId) {
+      setError('notFound')
+      setIsLoading(false)
+      return
+    }
 
     setIsLoading(true)
-    fetchMatch(inviteId).then((result) => {
+    setError(null)
+    void fetchMatch(inviteId).then((result) => {
       if (!result) {
         setError('notFound')
       } else if (result.status !== 'accepted') {
@@ -100,7 +107,7 @@ export default function TicketPage() {
                 <h3 className={styles.sectionTitle}>{t('ticket.sharedTags')}</h3>
                 <div className={styles.tags}>
                   {match.shared_tags.map((tag) => (
-                    <span key={tag} className={styles.tag}>{tag}</span>
+                    <span key={tag} className={styles.tag}>{getTagLabel(tag, locale)}</span>
                   ))}
                 </div>
               </div>
@@ -110,8 +117,8 @@ export default function TicketPage() {
               <div className={styles.sectionBlock}>
                 <h3 className={styles.sectionTitle}>{t('ticket.iceBreakers')}</h3>
                 <ul className={styles.breakers}>
-                  {match.ice_breakers.map((b, i) => (
-                    <li key={i} className={styles.breaker}>{b}</li>
+                  {match.ice_breakers.map((breaker) => (
+                    <li key={breaker} className={styles.breaker}>{breaker}</li>
                   ))}
                 </ul>
               </div>

@@ -7,7 +7,9 @@ const { pushMock, fetchMatchMock } = vi.hoisted(() => ({
 }))
 
 vi.mock('next/navigation', () => ({
-  useParams: () => ({ inviteId: 'abc123' }),
+  useSearchParams: () => ({
+    get: (key: string) => (key === 'inviteId' ? 'abc123' : null),
+  }),
   useRouter: () => ({ push: pushMock }),
 }))
 
@@ -19,6 +21,7 @@ vi.mock('@/stores/matchStore', () => ({
 
 vi.mock('@/lib/i18n', () => ({
   useI18n: () => ({
+    locale: 'en',
     t: (key: string) => {
       const dict: Record<string, string> = {
         'ticket.title': 'Match Ticket',
@@ -32,6 +35,10 @@ vi.mock('@/lib/i18n', () => ({
       return dict[key] ?? key
     },
   }),
+}))
+
+vi.mock('@/lib/tagLabels', () => ({
+  getTagLabel: (tag: string) => tag,
 }))
 
 vi.mock('@/components/match/TicketCard', () => ({

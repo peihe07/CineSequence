@@ -163,7 +163,6 @@
   color: var(--muted-light);
 }
 
-/* Loading */
 .loading {
   display: flex;
   align-items: center;
@@ -172,7 +171,6 @@
   color: var(--muted);
 }
 
-/* Error */
 .error {
   display: flex;
   flex-direction: column;
