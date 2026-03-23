@@ -12,6 +12,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.config import settings
 from app.deps import get_current_user, get_db
 from app.models.user import User
+from app.services.dna_builder import ARCHETYPES
 
 logger = logging.getLogger(__name__)
 
@@ -67,6 +68,12 @@ class ProfileUpdate(BaseModel):
 def _user_to_profile(user: User) -> ProfileOut:
     """Convert User model to ProfileOut, including DNA summary if available."""
     dna = user.dna_profile
+    archetype_name = None
+    if dna:
+        for archetype in ARCHETYPES:
+            if archetype["id"] == dna.archetype_id:
+                archetype_name = archetype["name"]
+                break
     return ProfileOut(
         id=user.id,
         email=user.email,
@@ -81,6 +88,7 @@ def _user_to_profile(user: User) -> ProfileOut:
         pure_taste_match=user.pure_taste_match,
         sequencing_status=user.sequencing_status.value,
         archetype_id=dna.archetype_id if dna else None,
+        archetype_name=archetype_name,
         personality_reading=dna.personality_reading if dna else None,
         ticket_style=dna.ticket_style if dna else None,
     )

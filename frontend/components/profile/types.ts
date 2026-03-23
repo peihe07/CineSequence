@@ -12,6 +12,7 @@ export interface Profile {
   pure_taste_match: boolean
   sequencing_status: string
   archetype_id: string | null
+  archetype_name: string | null
   personality_reading: string | null
   ticket_style: string | null
 }

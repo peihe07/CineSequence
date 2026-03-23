@@ -32,7 +32,7 @@ export default function ProfileSequencingCard({
       {profile.archetype_id && (
         <div className={styles.field}>
           <span className={styles.label}>{archetypeLabel}</span>
-          <span className={styles.value}>{profile.archetype_id}</span>
+          <span className={styles.value}>{profile.archetype_name || profile.archetype_id}</span>
         </div>
       )}
     </div>
