@@ -81,7 +81,7 @@ export default function RegisterPage() {
       <Input
         label={t('auth.emailPlaceholder')}
         type="email"
-        placeholder="you@example.com"
+        placeholder={t('auth.emailExample')}
         value={form.email}
         onChange={(e) => setForm({ ...form, email: e.target.value })}
         error={errors.email}

@@ -123,7 +123,7 @@ function TheatersContent() {
             </button>
           </div>
           <p className={styles.deck}>
-            Shared viewing rooms arranged by cinematic DNA, ready for assignment, entry, and reveal.
+            {t('theaters.deck')}
           </p>
         </section>
 

@@ -66,6 +66,7 @@ vi.mock('@/lib/i18n', () => ({
         'dna.analyzing': 'Analyzing DNA...',
         'dna.retry': 'Retry',
         'dna.title': 'Your Cine DNA',
+        'dna.deck': 'DNA deck copy',
         'dna.findMatches': 'Find matches',
       }
       return dict[key] ?? key

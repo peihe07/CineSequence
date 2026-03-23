@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
+import { useI18n } from '@/lib/i18n'
 import styles from './AIReading.module.css'
 
 interface AIReadingProps {
@@ -47,6 +48,7 @@ export default function AIReading({
   conversationStyle,
   idealMovieDate,
 }: AIReadingProps) {
+  const { t } = useI18n()
   const { displayed, isDone } = useTypewriter(personalityReading || '', 25)
 
   if (!personalityReading) return null
@@ -54,7 +56,7 @@ export default function AIReading({
   return (
     <div className={styles.container}>
       <h3 className={styles.title}>
-        <i className="ri-brain-line" /> AI Personality Reading
+        <i className="ri-brain-line" /> {t('dna.reading')}
       </h3>
 
       <div className={styles.readingBox}>
@@ -74,7 +76,7 @@ export default function AIReading({
           {hiddenTraits.length > 0 && (
             <div className={styles.section}>
               <h4 className={styles.sectionTitle}>
-                <i className="ri-eye-off-line" /> Hidden Traits
+                <i className="ri-eye-off-line" /> {t('dna.traits')}
               </h4>
               <div className={styles.traits}>
                 {hiddenTraits.map((trait) => (
@@ -87,7 +89,7 @@ export default function AIReading({
           {conversationStyle && (
             <div className={styles.section}>
               <h4 className={styles.sectionTitle}>
-                <i className="ri-chat-smile-2-line" /> Conversation Style
+                <i className="ri-chat-smile-2-line" /> {t('dna.style')}
               </h4>
               <p className={styles.sectionText}>{conversationStyle}</p>
             </div>
@@ -96,7 +98,7 @@ export default function AIReading({
           {idealMovieDate && (
             <div className={styles.section}>
               <h4 className={styles.sectionTitle}>
-                <i className="ri-movie-2-line" /> Ideal Movie Date
+                <i className="ri-movie-2-line" /> {t('dna.idealDate')}
               </h4>
               <p className={styles.sectionText}>{idealMovieDate}</p>
             </div>

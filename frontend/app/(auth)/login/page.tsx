@@ -99,9 +99,9 @@ export default function LoginPage() {
 
       {SHOW_DEV_LOGIN && (
         <div className={styles.devCard}>
-          <p className={styles.devTitle}>Development</p>
+          <p className={styles.devTitle}>{t('auth.devTitle')}</p>
           <p className={styles.devText}>
-            Use the local admin shortcut and go straight to the dashboard.
+            {t('auth.devHint')}
           </p>
           <Button
             type="button"
@@ -110,7 +110,7 @@ export default function LoginPage() {
             loading={devLoading}
             onClick={handleDevAdminLogin}
           >
-            Dev Admin Login
+            {t('auth.devLogin')}
           </Button>
         </div>
       )}

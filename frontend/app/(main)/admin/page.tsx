@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { api } from '@/lib/api'
+import { useI18n } from '@/lib/i18n'
 import styles from './page.module.css'
 
 interface Stats {
@@ -80,6 +81,7 @@ function FunnelBar({ count, max, label }: { count: number; max: number; label: s
 }
 
 export default function AdminPage() {
+  const { t } = useI18n()
   const [stats, setStats] = useState<Stats | null>(null)
   const [daily, setDaily] = useState<DailyStats | null>(null)
   const [apiUsage, setApiUsage] = useState<ApiUsage | null>(null)
@@ -98,14 +100,14 @@ export default function AdminPage() {
         setDaily(d)
         setApiUsage(a)
       } catch (e: unknown) {
-        const msg = e instanceof Error ? e.message : 'Failed to load'
+        const msg = e instanceof Error ? e.message : t('admin.loadFailed')
         setError(msg)
       } finally {
         setLoading(false)
       }
     }
     load()
-  }, [])
+  }, [t])
 
   if (loading) {
     return (
@@ -135,55 +137,55 @@ export default function AdminPage() {
   return (
     <div className={styles.container}>
       <div className={styles.content}>
-        <h1 className={styles.title}>Admin Dashboard</h1>
+        <h1 className={styles.title}>{t('admin.title')}</h1>
 
         {/* Overview */}
         <div className={styles.grid}>
-          <StatCard value={stats.users.total} label="Total Users" />
-          <StatCard value={stats.users.today} label="Today" />
-          <StatCard value={stats.users.this_week} label="This Week" />
-          <StatCard value={stats.dna.total_active} label="DNA Profiles" />
-          <StatCard value={stats.matches.total} label="Total Matches" />
-          <StatCard value={`${(stats.matches.accept_rate * 100).toFixed(0)}%`} label="Accept Rate" />
+          <StatCard value={stats.users.total} label={t('admin.totalUsers')} />
+          <StatCard value={stats.users.today} label={t('admin.today')} />
+          <StatCard value={stats.users.this_week} label={t('admin.thisWeek')} />
+          <StatCard value={stats.dna.total_active} label={t('admin.dnaProfiles')} />
+          <StatCard value={stats.matches.total} label={t('admin.totalMatches')} />
+          <StatCard value={`${(stats.matches.accept_rate * 100).toFixed(0)}%`} label={t('admin.acceptRate')} />
         </div>
 
         {/* Funnel */}
         <div className={styles.section}>
-          <h2 className={styles.sectionTitle}>User Funnel</h2>
+          <h2 className={styles.sectionTitle}>{t('admin.userFunnel')}</h2>
           <div className={styles.funnel}>
-            <FunnelBar count={stats.funnel.registered} max={funnelMax} label="Registered" />
-            <FunnelBar count={stats.funnel.completed_sequencing} max={funnelMax} label="Completed Sequencing" />
-            <FunnelBar count={stats.funnel.has_dna} max={funnelMax} label="Has DNA" />
-            <FunnelBar count={stats.funnel.has_match} max={funnelMax} label="Has Match" />
+            <FunnelBar count={stats.funnel.registered} max={funnelMax} label={t('admin.registered')} />
+            <FunnelBar count={stats.funnel.completed_sequencing} max={funnelMax} label={t('admin.completedSequencing')} />
+            <FunnelBar count={stats.funnel.has_dna} max={funnelMax} label={t('admin.hasDna')} />
+            <FunnelBar count={stats.funnel.has_match} max={funnelMax} label={t('admin.hasMatch')} />
           </div>
         </div>
 
         {/* Daily charts */}
         <div className={styles.section}>
-          <h2 className={styles.sectionTitle}>Daily Registrations (30d)</h2>
+          <h2 className={styles.sectionTitle}>{t('admin.dailyRegistrations')}</h2>
           {daily.registrations.length > 0 ? (
             <MiniChart data={daily.registrations} />
           ) : (
-            <p className={styles.funnelLabel}>No data yet</p>
+            <p className={styles.funnelLabel}>{t('admin.noData')}</p>
           )}
         </div>
 
         <div className={styles.section}>
-          <h2 className={styles.sectionTitle}>Daily DNA Builds (30d)</h2>
+          <h2 className={styles.sectionTitle}>{t('admin.dailyDnaBuilds')}</h2>
           {daily.dna_builds.length > 0 ? (
             <MiniChart data={daily.dna_builds} />
           ) : (
-            <p className={styles.funnelLabel}>No data yet</p>
+            <p className={styles.funnelLabel}>{t('admin.noData')}</p>
           )}
         </div>
 
         {/* Archetype distribution */}
         {Object.keys(stats.dna.archetype_distribution).length > 0 && (
           <div className={styles.section}>
-            <h2 className={styles.sectionTitle}>Archetype Distribution</h2>
+            <h2 className={styles.sectionTitle}>{t('admin.archetypeDistribution')}</h2>
             <table className={styles.table}>
               <thead>
-                <tr><th>Archetype</th><th>Count</th></tr>
+                <tr><th>{t('admin.archetype')}</th><th>{t('admin.count')}</th></tr>
               </thead>
               <tbody>
                 {Object.entries(stats.dna.archetype_distribution)
@@ -198,10 +200,10 @@ export default function AdminPage() {
 
         {/* Match breakdown */}
         <div className={styles.section}>
-          <h2 className={styles.sectionTitle}>Match Status</h2>
+          <h2 className={styles.sectionTitle}>{t('admin.matchStatus')}</h2>
           <table className={styles.table}>
             <thead>
-              <tr><th>Status</th><th>Count</th></tr>
+              <tr><th>{t('admin.status')}</th><th>{t('admin.count')}</th></tr>
             </thead>
             <tbody>
               {Object.entries(stats.matches.status_breakdown).map(([status, count]) => (
@@ -213,24 +215,24 @@ export default function AdminPage() {
 
         {/* API usage */}
         <div className={styles.section}>
-          <h2 className={styles.sectionTitle}>Estimated API Usage</h2>
+          <h2 className={styles.sectionTitle}>{t('admin.estimatedApiUsage')}</h2>
           <div className={styles.apiGrid}>
             <div className={styles.apiCard}>
               <span className={styles.apiCardTitle}>Gemini</span>
               <div className={styles.apiRow}>
-                <span>Personality readings</span>
+                <span>{t('admin.personalityReadings')}</span>
                 <span>{apiUsage.gemini.personality_readings}</span>
               </div>
               <div className={styles.apiRow}>
-                <span>Ice breakers</span>
+                <span>{t('admin.iceBreakers')}</span>
                 <span>{apiUsage.gemini.ice_breakers}</span>
               </div>
               <div className={styles.apiRow}>
-                <span>AI pairs</span>
+                <span>{t('admin.aiPairs')}</span>
                 <span>{apiUsage.gemini.ai_pairs}</span>
               </div>
               <div className={`${styles.apiRow} ${styles.apiTotal}`}>
-                <span>Total</span>
+                <span>{t('admin.total')}</span>
                 <span>{apiUsage.gemini.estimated_total}</span>
               </div>
             </div>
@@ -238,7 +240,7 @@ export default function AdminPage() {
             <div className={styles.apiCard}>
               <span className={styles.apiCardTitle}>TMDB</span>
               <div className={styles.apiRow}>
-                <span>Queries</span>
+                <span>{t('admin.queries')}</span>
                 <span>{apiUsage.tmdb.estimated_queries}</span>
               </div>
             </div>
@@ -246,15 +248,15 @@ export default function AdminPage() {
             <div className={styles.apiCard}>
               <span className={styles.apiCardTitle}>Resend</span>
               <div className={styles.apiRow}>
-                <span>Invite emails</span>
+                <span>{t('admin.inviteEmails')}</span>
                 <span>{apiUsage.resend.invite_emails}</span>
               </div>
               <div className={styles.apiRow}>
-                <span>Accepted emails</span>
+                <span>{t('admin.acceptedEmails')}</span>
                 <span>{apiUsage.resend.accepted_emails}</span>
               </div>
               <div className={`${styles.apiRow} ${styles.apiTotal}`}>
-                <span>Total</span>
+                <span>{t('admin.total')}</span>
                 <span>{apiUsage.resend.estimated_total}</span>
               </div>
             </div>

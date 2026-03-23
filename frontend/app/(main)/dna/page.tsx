@@ -101,7 +101,7 @@ const { t } = useI18n()
             {t('dna.title')}
           </motion.h1>
           <p className={styles.deck}>
-            A dossier of your cinematic instinct, rendered as vectors, symbols, and narrative bias.
+            {t('dna.deck')}
           </p>
         </motion.section>
 

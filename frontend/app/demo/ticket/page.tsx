@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import TearRitual from '@/components/match/TearRitual'
 import { getTagLabel } from '@/lib/tagLabels'
+import { useI18n } from '@/lib/i18n'
 import styles from './page.module.css'
 
 const MOCK = {
@@ -19,6 +20,7 @@ const MOCK = {
 }
 
 export default function TicketDemoPage() {
+  const { t } = useI18n()
   const [torn, setTorn] = useState(false)
   const [tearKey, setTearKey] = useState(0)
 
@@ -30,7 +32,7 @@ export default function TicketDemoPage() {
   return (
     <div className={styles.container}>
       <div className={styles.content}>
-        <h1 className={styles.title}>Your Cinema Ticket</h1>
+        <h1 className={styles.title}>{t('demo.ticketTitle')}</h1>
 
         <TearRitual
           key={tearKey}
@@ -58,14 +60,14 @@ export default function TicketDemoPage() {
                   <span className={styles.scoreValue}>
                     {Math.round(MOCK.similarity * 100)}%
                   </span>
-                  <span className={styles.scoreLabel}>match</span>
+                  <span className={styles.scoreLabel}>{t('demo.match')}</span>
                 </div>
               </div>
 
               <div className={styles.dashes} />
 
               <div className={styles.block}>
-                <span className={styles.blockTitle}>SHARED TASTE TAGS</span>
+                <span className={styles.blockTitle}>{t('ticket.sharedTags')}</span>
                 <div className={styles.tags}>
                   {MOCK.tags.map((tag) => (
                     <span key={tag} className={styles.tag}>
@@ -78,7 +80,7 @@ export default function TicketDemoPage() {
               <div className={styles.dashes} />
 
               <div className={styles.block}>
-                <span className={styles.blockTitle}>ICE BREAKERS</span>
+                <span className={styles.blockTitle}>{t('ticket.iceBreakers')}</span>
                 <ul className={styles.breakers}>
                   {MOCK.iceBreakers.map((b, i) => (
                     <li key={i} className={styles.breaker}>{b}</li>
@@ -91,7 +93,7 @@ export default function TicketDemoPage() {
 
         {torn && (
           <button className={styles.resetBtn} onClick={handleReset}>
-            Reset
+            {t('demo.reset')}
           </button>
         )}
       </div>

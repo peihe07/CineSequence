@@ -1,12 +1,13 @@
 'use client'
 
 import { motion } from 'framer-motion'
+import { useI18n } from '@/lib/i18n'
 import styles from './PhaseIndicator.module.css'
 
 const PHASE_LABELS = [
-  { phase: 1, label: 'Quadrant Scan', range: '1-5' },
-  { phase: 2, label: 'Deep Dive', range: '6-12' },
-  { phase: 3, label: 'Soul Tags', range: '13-20' },
+  { phase: 1, labelKey: 'seq.phase1' },
+  { phase: 2, labelKey: 'seq.phase2' },
+  { phase: 3, labelKey: 'seq.phase3' },
 ]
 
 interface PhaseIndicatorProps {
@@ -16,6 +17,7 @@ interface PhaseIndicatorProps {
 }
 
 export default function PhaseIndicator({ phase, round, totalRounds }: PhaseIndicatorProps) {
+  const { t } = useI18n()
   const progressPercent = Math.min(((round - 1) / totalRounds) * 100, 100)
 
   return (
@@ -27,7 +29,7 @@ export default function PhaseIndicator({ phase, round, totalRounds }: PhaseIndic
             className={`${styles.phase} ${phase === p.phase ? styles.phaseActive : ''} ${phase > p.phase ? styles.phaseDone : ''}`}
           >
             <span className={styles.phaseNum}>{p.phase}</span>
-            <span className={styles.phaseLabel}>{p.label}</span>
+            <span className={styles.phaseLabel}>{t(p.labelKey)}</span>
           </div>
         ))}
       </div>
@@ -42,7 +44,10 @@ export default function PhaseIndicator({ phase, round, totalRounds }: PhaseIndic
       </div>
 
       <span className={styles.roundLabel}>
-        Round {Math.min(round, totalRounds)} / {totalRounds}
+        {t('seq.round', {
+          round: Math.min(round, totalRounds),
+          total: totalRounds,
+        })}
       </span>
     </div>
   )
