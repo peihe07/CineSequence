@@ -111,7 +111,11 @@ export default function SequencingPage() {
           <span className={styles.sideLabel}>{t('landing.fileLabel', { id: '05' })}</span>
           <div className={styles.heroCopy}>
             <p className={styles.eyebrow}>{t('archive.sequencingCue')}</p>
-            <p className={styles.heroMeta}>{t('seq.round', { round: String(roundNumber).padStart(2, '0'), total: progress?.total_rounds ?? 20 })} // {t('seq.phase', { phase })}</p>
+            <p className={styles.heroMeta}>
+              {t('seq.round', { round: String(roundNumber).padStart(2, '0'), total: progress?.total_rounds ?? 20 })}
+              {' // '}
+              {t('seq.phase', { phase })}
+            </p>
           </div>
           <div className={styles.header}>
             <PhaseIndicator phase={phase} round={roundNumber} totalRounds={progress?.total_rounds ?? 20} />

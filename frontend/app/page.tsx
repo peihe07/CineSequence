@@ -64,7 +64,7 @@ function useTerminalSequence(lines: string[], start: boolean, stepDelay = 220) {
     return () => {
       timers.forEach((timer) => window.clearTimeout(timer))
     }
-  }, [sequenceKey, start, stepDelay])
+  }, [lines, sequenceKey, start, stepDelay])
 
   return visibleCount
 }

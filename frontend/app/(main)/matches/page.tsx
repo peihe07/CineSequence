@@ -172,7 +172,7 @@ function MatchesContent() {
     }
 
     void loadPrefs()
-  }, [fetchMatches])
+  }, [fetchMatches, t])
 
   const savePrefs = useCallback((updated: Partial<MatchPrefs>) => {
     const previous = prefs
