@@ -12,6 +12,24 @@ function resolveApiUrl(): string {
 
 const API_URL = resolveApiUrl()
 
+async function parseSuccessBody<T>(response: Response): Promise<T> {
+  if (response.status === 204) {
+    return undefined as T
+  }
+
+  const raw = await response.text()
+  if (!raw.trim()) {
+    return undefined as T
+  }
+
+  const contentType = response.headers.get('content-type') || ''
+  if (contentType.includes('application/json')) {
+    return JSON.parse(raw) as T
+  }
+
+  return raw as T
+}
+
 export function getToken(): string | null {
   return null
 }
@@ -54,7 +72,7 @@ export async function api<T>(
     throw new ApiError(response.status, body.detail || 'Request failed')
   }
 
-  return response.json()
+  return parseSuccessBody<T>(response)
 }
 
 /**
@@ -79,5 +97,5 @@ export async function apiUpload<T>(
     throw new ApiError(response.status, body.detail || 'Upload failed')
   }
 
-  return response.json()
+  return parseSuccessBody<T>(response)
 }
