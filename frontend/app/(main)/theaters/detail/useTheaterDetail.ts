@@ -25,8 +25,15 @@ export function useTheaterDetail(groupId: string) {
   }, [groupId])
 
   useEffect(() => {
+    if (!groupId) {
+      setGroup(null)
+      setError(translateStatic('common.error'))
+      setIsLoading(false)
+      return
+    }
+
     void loadGroup()
-  }, [loadGroup])
+  }, [groupId, loadGroup])
 
   const mutateMembership = useCallback(async (action: 'join' | 'leave') => {
     setIsMutating(true)

@@ -1,0 +1,177 @@
+.container {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.hero,
+.section {
+  position: relative;
+  padding: 1.25rem;
+  background: rgba(255, 255, 255, 0.04);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+.eyebrow,
+.label,
+.meta,
+.backLink,
+.supporterBadge,
+.memberBadge,
+.inlineBtn {
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+}
+
+.backLink {
+  display: inline-flex;
+  width: fit-content;
+  margin-bottom: 1rem;
+  color: rgba(255, 220, 192, 0.92);
+  text-decoration: none;
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+}
+
+.eyebrow {
+  margin: 0 0 0.45rem;
+  font-size: 0.68rem;
+  letter-spacing: 0.16em;
+  color: rgba(192, 98, 35, 0.82);
+}
+
+.titleRow,
+.actionRow,
+.itemRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.9rem;
+}
+
+.title {
+  margin: 0;
+  font-size: clamp(1.8rem, 4vw, 2.4rem);
+  line-height: 0.95;
+  color: rgba(255, 255, 255, 0.96);
+}
+
+.subtitle,
+.message,
+.state,
+.itemTitle,
+.detailText {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.subtitle,
+.message {
+  margin: 0.4rem 0 0;
+}
+
+.memberBadge,
+.supporterBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.5rem;
+  font-size: 0.64rem;
+  letter-spacing: 0.12em;
+  color: rgba(255, 220, 192, 0.92);
+  background: rgba(192, 98, 35, 0.16);
+}
+
+.primaryBtn,
+.secondaryBtn,
+.inlineBtn {
+  border: none;
+  cursor: pointer;
+}
+
+.primaryBtn,
+.secondaryBtn {
+  padding: 0.75rem 1rem;
+}
+
+.primaryBtn {
+  background: linear-gradient(180deg, rgba(214, 112, 44, 0.96), rgba(176, 81, 24, 0.96));
+  color: rgba(255, 248, 242, 0.98);
+}
+
+.secondaryBtn,
+.inlineBtn {
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.84);
+}
+
+.tags,
+.list,
+.composer {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.tag {
+  display: inline-flex;
+  width: fit-content;
+  padding: 0.3rem 0.45rem;
+  margin: 0 0.4rem 0.4rem 0;
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 0.72rem;
+}
+
+.item {
+  padding: 0.9rem;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.itemTitle,
+.label {
+  margin: 0;
+}
+
+.label {
+  margin-bottom: 0.65rem;
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  color: rgba(255, 220, 192, 0.76);
+}
+
+.meta {
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  color: rgba(255, 255, 255, 0.42);
+}
+
+.textarea {
+  min-height: 6rem;
+  padding: 0.9rem;
+  resize: vertical;
+  border: none;
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.errorText {
+  margin: 0.75rem 0 0;
+  color: var(--error);
+}
+
+.state {
+  display: grid;
+  gap: 0.75rem;
+}
+
+@media (max-width: 640px) {
+  .hero,
+  .section {
+    padding: 1rem;
+  }
+
+  .titleRow,
+  .actionRow,
+  .itemRow {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

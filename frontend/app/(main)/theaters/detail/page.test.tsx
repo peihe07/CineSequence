@@ -1,13 +1,13 @@
 import { cleanup, render, screen, waitFor } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-const { apiMock, paramsState } = vi.hoisted(() => ({
+const { apiMock, searchParamsState } = vi.hoisted(() => ({
   apiMock: vi.fn(),
-  paramsState: { id: 'mobius_loop' },
+  searchParamsState: new URLSearchParams('id=mobius_loop'),
 }))
 
 vi.mock('next/navigation', () => ({
-  useParams: () => paramsState,
+  useSearchParams: () => searchParamsState,
 }))
 
 vi.mock('@/lib/api', () => ({
