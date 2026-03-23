@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import Link from 'next/link'
 import { useI18n } from '@/lib/i18n'
 import styles from './page.module.css'
@@ -40,15 +40,46 @@ function useTypewriter(text: string, speed = 60, delay = 800) {
   return { displayed, done }
 }
 
+function useTerminalSequence(lines: string[], start: boolean, stepDelay = 220) {
+  const [visibleCount, setVisibleCount] = useState(0)
+  const sequenceKey = lines.join('||')
+
+  useEffect(() => {
+    if (!start) {
+      setVisibleCount(0)
+      return
+    }
+
+    setVisibleCount(0)
+    const timers = lines.map((_, index) =>
+      window.setTimeout(() => {
+        setVisibleCount(index + 1)
+      }, index * stepDelay),
+    )
+
+    return () => {
+      timers.forEach((timer) => window.clearTimeout(timer))
+    }
+  }, [sequenceKey, start, stepDelay])
+
+  return visibleCount
+}
+
 export default function Home() {
   const { t } = useI18n()
   const headlineText = t('landing.termLine4')
   const { displayed, done } = useTypewriter(headlineText)
+  const terminalLines = useMemo(() => [
+    t('landing.termLine1'),
+    t('landing.termLine2'),
+    t('landing.termLine3'),
+    t('landing.step2Desc'),
+  ], [t])
+  const visibleTerminalLines = useTerminalSequence(terminalLines, done)
 
   return (
     <main className={styles.main}>
       <section className={styles.hero}>
-        {/* Panel strip */}
         <div className={styles.panelStrip}>
           {PANELS.map((panel, i) => (
             <div key={i} className={styles.panel} data-index={i}>
@@ -67,7 +98,6 @@ export default function Home() {
           ))}
         </div>
 
-        {/* Mobile gallery */}
         <div className={styles.mobileGallery} aria-hidden="true">
           <div className={styles.mobileGalleryTrack}>
             {PANELS.map((panel, i) => (
@@ -81,27 +111,39 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Logo */}
         <Link href="/" className={styles.logo}>
           <span className={styles.logoMain}>Cine</span>
           <span className={styles.logoSub}>Sequence</span>
         </Link>
 
-        {/* Text overlay */}
         <div className={styles.heroOverlay}>
-          <h1 className={styles.heroHeadline}>
-            <span>{displayed}</span>
-            <span className={`${styles.cursor} ${done ? styles.cursorBlink : ''}`}>|</span>
-          </h1>
-          <div className={`${styles.heroCta} ${done ? styles.heroCtaVisible : ''}`}>
-            <Link href="/register" className={styles.ctaPrimary}>
-              {t('landing.start')}
-            </Link>
-            <Link href="/login" className={styles.ctaSecondary}>
-              {t('landing.login')}
-            </Link>
+          <span className={styles.sideLabel}>FILE 00</span>
+          <div className={styles.manifest}>
+            <h1 className={styles.heroHeadline}>
+              <span>{displayed}</span>
+              <span className={`${styles.cursor} ${done ? styles.cursorBlink : ''}`}>|</span>
+            </h1>
+            <div className={styles.terminal}>
+              {terminalLines.map((line, index) => (
+                <span
+                  key={line}
+                  className={`${styles.terminalLine} ${index < visibleTerminalLines ? styles.terminalLineVisible : ''}`}
+                >
+                  {line}
+                </span>
+              ))}
+            </div>
+            <div className={`${styles.heroCta} ${done ? styles.heroCtaVisible : ''}`}>
+              <Link href="/register" className={styles.ctaPrimary}>
+                {t('landing.start')}
+              </Link>
+              <Link href="/login" className={styles.ctaSecondary}>
+                {t('landing.login')}
+              </Link>
+            </div>
           </div>
         </div>
+
       </section>
 
       <footer className={styles.footer}>

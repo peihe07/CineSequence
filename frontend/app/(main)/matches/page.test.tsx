@@ -97,6 +97,7 @@ import MatchesPage from './page'
 
 describe('MatchesPage', () => {
   beforeEach(() => {
+    vi.stubGlobal('scrollTo', vi.fn())
     apiMock.mockReset()
     fetchMatchesMock.mockReset()
     discoverMatchesMock.mockReset()
@@ -111,6 +112,7 @@ describe('MatchesPage', () => {
   })
 
   afterEach(() => {
+    vi.unstubAllGlobals()
     cleanup()
   })
 

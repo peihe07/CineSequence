@@ -1,34 +1,38 @@
 .stack {
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 1.5rem;
   width: 100%;
 }
 
 .title {
-  font-size: 1.4rem;
+  font-size: clamp(1.7rem, 5vw, 2.4rem);
   font-weight: 600;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.04em;
+  line-height: 0.96;
+  text-transform: uppercase;
 }
 
 .subtitle {
-  color: var(--muted);
-  font-size: 0.85rem;
+  color: var(--foreground-soft);
+  font-size: 0.92rem;
+  line-height: 1.8;
 }
 
 .field {
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
+  gap: 0.45rem;
   text-align: left;
 }
 
 .label {
-  font-size: 0.7rem;
+  font-size: 0.66rem;
   font-weight: 500;
   color: var(--muted);
-  letter-spacing: 0.08em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
+  font-family: var(--font-mono);
 }
 
 .genderGrid {
@@ -39,26 +43,25 @@
 
 .genderOption {
   padding: 0.6rem;
-  background: rgba(68, 81, 75, 0.06);
+  background: rgba(255, 255, 255, 0.72);
   color: var(--muted);
-  border: none;
-  border-radius: 8px;
-  font-size: 0.8rem;
-  font-family: inherit;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 0.76rem;
+  font-family: var(--font-mono);
   cursor: pointer;
   transition: all 0.15s ease;
 }
 
 .genderOption:hover {
   color: var(--foreground);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border-color: var(--border-strong);
 }
 
 .genderActive {
-  color: var(--accent);
+  color: var(--accent-ink);
   border-color: var(--accent);
-  background: var(--accent-light);
+  background: rgba(192, 98, 35, 0.08);
 }
 
 /* Consent checkbox */
@@ -67,9 +70,9 @@
   align-items: flex-start;
   gap: 0.5rem;
   font-size: 0.8rem;
-  color: var(--muted);
+  color: var(--foreground-soft);
   cursor: pointer;
-  line-height: 1.4;
+  line-height: 1.7;
 }
 
 .checkbox {
@@ -79,16 +82,21 @@
 }
 
 .error {
-  font-size: 0.8rem;
+  font-size: 0.76rem;
   color: var(--error);
+  font-family: var(--font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .footer {
+  padding-top: 0.6rem;
+  border-top: 1px solid rgba(221, 217, 208, 0.7);
   font-size: 0.8rem;
   color: var(--muted);
 }
 
 .link {
-  color: var(--accent);
+  color: var(--accent-ink);
   text-decoration: underline;
 }

@@ -73,48 +73,56 @@ export default function TicketPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <h1 className={styles.title}>{t('ticket.title')}</h1>
+        <section className={`${styles.section} ${styles.heroSection}`}>
+          <span className={styles.sideLabel}>FILE 07</span>
+          <span className={styles.scriptWord} aria-hidden="true">Reveal</span>
+          <h1 className={styles.title}>{t('ticket.title')}</h1>
+        </section>
 
-        <TicketCard
-          ticketImageUrl={match.ticket_image_url}
-          partnerName={match.partner_name}
-          similarityScore={match.similarity_score}
-        />
+        <section className={`${styles.section} ${styles.ticketSection}`}>
+          <TicketCard
+            ticketImageUrl={match.ticket_image_url}
+            partnerName={match.partner_name}
+            similarityScore={match.similarity_score}
+          />
+        </section>
 
-        <div className={styles.details}>
-          <div className={styles.stat}>
-            <span className={styles.statLabel}>{t('ticket.similarity')}</span>
-            <span className={styles.statValue}>
-              {Math.round(match.similarity_score * 100)}%
-            </span>
+        <section className={`${styles.section} ${styles.detailsSection}`}>
+          <div className={styles.details}>
+            <div className={styles.stat}>
+              <span className={styles.statLabel}>{t('ticket.similarity')}</span>
+              <span className={styles.statValue}>
+                {Math.round(match.similarity_score * 100)}%
+              </span>
+            </div>
+
+            {match.shared_tags.length > 0 && (
+              <div className={styles.sectionBlock}>
+                <h3 className={styles.sectionTitle}>{t('ticket.sharedTags')}</h3>
+                <div className={styles.tags}>
+                  {match.shared_tags.map((tag) => (
+                    <span key={tag} className={styles.tag}>{tag}</span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {match.ice_breakers.length > 0 && (
+              <div className={styles.sectionBlock}>
+                <h3 className={styles.sectionTitle}>{t('ticket.iceBreakers')}</h3>
+                <ul className={styles.breakers}>
+                  {match.ice_breakers.map((b, i) => (
+                    <li key={i} className={styles.breaker}>{b}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
 
-          {match.shared_tags.length > 0 && (
-            <div className={styles.section}>
-              <h3 className={styles.sectionTitle}>{t('ticket.sharedTags')}</h3>
-              <div className={styles.tags}>
-                {match.shared_tags.map((tag) => (
-                  <span key={tag} className={styles.tag}>{tag}</span>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {match.ice_breakers.length > 0 && (
-            <div className={styles.section}>
-              <h3 className={styles.sectionTitle}>{t('ticket.iceBreakers')}</h3>
-              <ul className={styles.breakers}>
-                {match.ice_breakers.map((b, i) => (
-                  <li key={i} className={styles.breaker}>{b}</li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </div>
-
-        <Button variant="secondary" onClick={() => router.push('/matches')}>
-          <i className="ri-arrow-left-line" /> {t('ticket.backToMatches')}
-        </Button>
+          <Button variant="secondary" onClick={() => router.push('/matches')}>
+            <i className="ri-arrow-left-line" /> {t('ticket.backToMatches')}
+          </Button>
+        </section>
       </motion.div>
     </main>
   )

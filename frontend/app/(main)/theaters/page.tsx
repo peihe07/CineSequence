@@ -109,51 +109,60 @@ function TheatersContent() {
   return (
     <div className={styles.container}>
       <div className={styles.content}>
-        <div className={styles.header}>
-          <h1 className={styles.title}>{t('theaters.title')}</h1>
-          <button
-            className={styles.assignBtn}
-            onClick={autoAssign}
-            disabled={isLoading}
-          >
-            <i className="ri-magic-line" />
-            {isLoading ? t('common.loading') : t('theaters.autoAssign')}
-          </button>
-        </div>
-
-        {isLoading && (
-          <div className={styles.loading}>
-            <i className="ri-loader-4-line ri-spin ri-2x" />
-          </div>
-        )}
-
-        {!isLoading && groups.length === 0 && (
-          <div className={styles.empty}>
-            <i className="ri-film-line ri-3x" />
-            <p>{t('theaters.empty')}</p>
-            <p className={styles.emptyHint}>{t('theaters.emptyHint')}</p>
+        <section className={`${styles.section} ${styles.heroSection}`}>
+          <span className={styles.sideLabel}>FILE 06</span>
+          <span className={styles.scriptWord} aria-hidden="true">Theaters</span>
+          <div className={styles.header}>
+            <h1 className={styles.title}>{t('theaters.title')}</h1>
             <button
               className={styles.assignBtn}
               onClick={autoAssign}
               disabled={isLoading}
-              style={{ marginTop: '0.5rem' }}
             >
               <i className="ri-magic-line" />
-              {t('theaters.autoAssign')}
+              {isLoading ? t('common.loading') : t('theaters.autoAssign')}
             </button>
           </div>
-        )}
+          <p className={styles.deck}>
+            Shared viewing rooms arranged by cinematic DNA, ready for assignment, entry, and reveal.
+          </p>
+        </section>
 
-        <div className={styles.grid}>
-          {groups.map((group) => (
-            <GroupCard
-              key={group.id}
-              group={group}
-              onJoin={() => joinGroup(group.id)}
-              onLeave={() => setLeaveTarget(group.id)}
-            />
-          ))}
-        </div>
+        <section className={`${styles.section} ${styles.resultsSection}`}>
+          {isLoading && (
+            <div className={styles.loading}>
+              <i className="ri-loader-4-line ri-spin ri-2x" />
+            </div>
+          )}
+
+          {!isLoading && groups.length === 0 && (
+            <div className={styles.empty}>
+              <i className="ri-film-line ri-3x" />
+              <p>{t('theaters.empty')}</p>
+              <p className={styles.emptyHint}>{t('theaters.emptyHint')}</p>
+              <button
+                className={styles.assignBtn}
+                onClick={autoAssign}
+                disabled={isLoading}
+                style={{ marginTop: '0.5rem' }}
+              >
+                <i className="ri-magic-line" />
+                {t('theaters.autoAssign')}
+              </button>
+            </div>
+          )}
+
+          <div className={styles.grid}>
+            {groups.map((group) => (
+              <GroupCard
+                key={group.id}
+                group={group}
+                onJoin={() => joinGroup(group.id)}
+                onLeave={() => setLeaveTarget(group.id)}
+              />
+            ))}
+          </div>
+        </section>
       </div>
 
       <ConfirmDialog

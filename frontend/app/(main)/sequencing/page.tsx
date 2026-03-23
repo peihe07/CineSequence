@@ -104,34 +104,40 @@ export default function SequencingPage() {
     >
       <OnboardingOverlay />
 
-      {/* Ambient background glow */}
       <div className={styles.ambientGlow} />
 
-      {/* DNA liquid tube — fills as rounds progress */}
-      <LiquidTube
-        currentRound={roundNumber}
-        totalRounds={progress?.total_rounds ?? 20}
-        liquidColor={ambientColor || undefined}
-      />
+      <div className={styles.shell}>
+        <section className={`${styles.section} ${styles.heroSection}`}>
+          <span className={styles.sideLabel}>FILE 05</span>
+          <span className={styles.scriptWord} aria-hidden="true">Sequence</span>
+          <div className={styles.header}>
+            <PhaseIndicator phase={phase} round={roundNumber} totalRounds={progress?.total_rounds ?? 20} />
+          </div>
+        </section>
 
-      <div className={styles.header}>
-        <PhaseIndicator phase={phase} round={roundNumber} totalRounds={progress?.total_rounds ?? 20} />
-      </div>
-
-      <div className={styles.arena}>
-        {currentPair && !currentPair.completed && (
-          <SwipePair
-            key={roundNumber}
-            pair={currentPair}
-            onPick={handlePick}
-            isLoading={isLoading}
+        <section className={`${styles.section} ${styles.stageSection}`}>
+          <LiquidTube
+            currentRound={roundNumber}
+            totalRounds={progress?.total_rounds ?? 20}
+            liquidColor={ambientColor || undefined}
           />
-        )}
-      </div>
 
-      <div className={styles.footer}>
-        <LiveTagCloud tags={liveTags} />
-        <SkipActions onSkip={handleSkip} onReroll={handleReroll} disabled={isLoading} />
+          <div className={styles.arena}>
+            {currentPair && !currentPair.completed && (
+              <SwipePair
+                key={roundNumber}
+                pair={currentPair}
+                onPick={handlePick}
+                isLoading={isLoading}
+              />
+            )}
+          </div>
+        </section>
+
+        <section className={`${styles.section} ${styles.footerSection}`}>
+          <LiveTagCloud tags={liveTags} />
+          <SkipActions onSkip={handleSkip} onReroll={handleReroll} disabled={isLoading} />
+        </section>
       </div>
     </main>
   )
