@@ -82,7 +82,7 @@ function MatchFilter({ prefs, onChange }: {
                 })}
                 min={18}
                 max={99}
-                aria-label="Minimum age"
+                aria-label={t('matches.minAge')}
               />
               <span className={styles.ageDash}>—</span>
               <input
@@ -95,7 +95,7 @@ function MatchFilter({ prefs, onChange }: {
                 })}
                 min={18}
                 max={99}
-                aria-label="Maximum age"
+                aria-label={t('matches.maxAge')}
               />
             </div>
           </div>
@@ -167,7 +167,7 @@ function MatchesContent() {
         })
         setPrefsError(null)
       } catch (err) {
-        setPrefsError(err instanceof Error ? err.message : 'Failed to load match preferences')
+        setPrefsError(err instanceof Error ? err.message : t('matches.prefLoadError'))
       }
     }
 
@@ -184,9 +184,9 @@ function MatchesContent() {
       body: JSON.stringify(updated),
     }).catch((err) => {
       setPrefs(previous)
-      setPrefsError(err instanceof Error ? err.message : 'Failed to save match preferences')
+      setPrefsError(err instanceof Error ? err.message : t('matches.prefSaveError'))
     })
-  }, [prefs])
+  }, [prefs, t])
 
   const respondId = searchParams.get('respond')
   const matchId = searchParams.get('match')
@@ -247,9 +247,9 @@ function MatchesContent() {
         </section>
 
         {/* ── RESULTS SECTION ─────────────────────────── */}
-        <section className={`${styles.section} ${styles.resultsSection}`} aria-label="Match results">
+        <section className={`${styles.section} ${styles.resultsSection}`} aria-label={t('matches.results')}>
           {isLoading && (
-            <div className={styles.loading} aria-live="polite" aria-label="Loading matches">
+            <div className={styles.loading} aria-live="polite" aria-label={t('matches.loading')}>
               <i className="ri-loader-4-line ri-spin ri-2x" aria-hidden="true" />
             </div>
           )}

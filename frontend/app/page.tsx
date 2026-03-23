@@ -151,10 +151,16 @@ export default function Home() {
       <footer className={styles.footer}>
         <span className={styles.footerCopy}>&copy; {new Date().getFullYear()} peihe</span>
         <span className={styles.footerDot} aria-hidden="true" />
-        <a href="mailto:y450376@gmail.com" className={styles.footerIcon} aria-label="Email">
+        <a href="mailto:y450376@gmail.com" className={styles.footerIcon} aria-label={t('landing.contactEmail')}>
           <i className="ri-mail-line" />
         </a>
-        <a href="https://medium.com/@peihe07" target="_blank" rel="noopener noreferrer" className={styles.footerIcon} aria-label="Blog">
+        <a
+          href="https://medium.com/@peihe07"
+          target="_blank"
+          rel="noopener noreferrer"
+          className={styles.footerIcon}
+          aria-label={t('landing.contactBlog')}
+        >
           <i className="ri-article-line" />
         </a>
       </footer>

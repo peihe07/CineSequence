@@ -112,7 +112,7 @@ function FullCinemaTicket({
         </div>
 
         <div className={styles.similarityBlock}>
-          <span className={styles.similarityLabel}>{t('ticket.similarity') ?? 'SIMILARITY'}</span>
+          <span className={styles.similarityLabel}>{t('ticket.similarity')}</span>
           <span className={styles.similarityValue}>{pct}%</span>
           <div
             className={styles.progressBar}
@@ -138,7 +138,7 @@ function FullCinemaTicket({
         <div className={styles.partnerName}>{match.partner_name}</div>
 
         {match.shared_tags.length > 0 && (
-          <div className={styles.tags} aria-label={t('ticket.sharedTags') ?? 'Shared tags'}>
+          <div className={styles.tags} aria-label={t('ticket.sharedTags')}>
             {match.shared_tags.slice(0, 4).map((tag) => (
               <span key={tag} className={styles.tag}>
                 {getTagLabel(tag, locale)}

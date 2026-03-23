@@ -7,22 +7,22 @@ import { getTagLabel } from '@/lib/tagLabels'
 import { useI18n } from '@/lib/i18n'
 import styles from './page.module.css'
 
-const MOCK = {
-  partnerName: 'Alice Chen',
-  archetype: '時空旅人 Time Traveler',
-  similarity: 0.87,
-  tags: ['twist', 'mindfuck', 'dystopia', 'psychoThriller', 'existential'],
-  iceBreakers: [
-    '你們都對「反轉結局」的敘事手法情有獨鍾',
-    '推薦一起看 Dark（闇）— 時空穿越 × 存在主義的完美結合',
-    'Both of you lean toward mind-bending narratives that question reality',
-  ],
-}
-
 export default function TicketDemoPage() {
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
   const [torn, setTorn] = useState(false)
   const [tearKey, setTearKey] = useState(0)
+
+  const mock = {
+    partnerName: t('demo.partnerName'),
+    archetype: t('demo.archetype'),
+    similarity: 0.87,
+    tags: ['twist', 'mindfuck', 'dystopia', 'psychoThriller', 'existential'],
+    iceBreakers: [
+      t('demo.breaker1'),
+      t('demo.breaker2'),
+      t('demo.breaker3'),
+    ],
+  }
 
   const handleReset = () => {
     setTorn(false)
@@ -37,8 +37,8 @@ export default function TicketDemoPage() {
         <TearRitual
           key={tearKey}
           ticketImageUrl={null}
-          partnerName={MOCK.partnerName}
-          similarityScore={MOCK.similarity}
+          partnerName={mock.partnerName}
+          similarityScore={mock.similarity}
           onTear={() => setTorn(true)}
         />
 
@@ -53,12 +53,12 @@ export default function TicketDemoPage() {
             >
               <div className={styles.header}>
                 <div className={styles.partner}>
-                  <span className={styles.partnerName}>{MOCK.partnerName}</span>
-                  <span className={styles.archetype}>{MOCK.archetype}</span>
+                  <span className={styles.partnerName}>{mock.partnerName}</span>
+                  <span className={styles.archetype}>{mock.archetype}</span>
                 </div>
                 <div className={styles.score}>
                   <span className={styles.scoreValue}>
-                    {Math.round(MOCK.similarity * 100)}%
+                    {Math.round(mock.similarity * 100)}%
                   </span>
                   <span className={styles.scoreLabel}>{t('demo.match')}</span>
                 </div>
@@ -69,9 +69,9 @@ export default function TicketDemoPage() {
               <div className={styles.block}>
                 <span className={styles.blockTitle}>{t('ticket.sharedTags')}</span>
                 <div className={styles.tags}>
-                  {MOCK.tags.map((tag) => (
+                  {mock.tags.map((tag) => (
                     <span key={tag} className={styles.tag}>
-                      {getTagLabel(tag, 'zh')}
+                      {getTagLabel(tag, locale)}
                     </span>
                   ))}
                 </div>
@@ -82,8 +82,8 @@ export default function TicketDemoPage() {
               <div className={styles.block}>
                 <span className={styles.blockTitle}>{t('ticket.iceBreakers')}</span>
                 <ul className={styles.breakers}>
-                  {MOCK.iceBreakers.map((b, i) => (
-                    <li key={i} className={styles.breaker}>{b}</li>
+                  {mock.iceBreakers.map((breaker) => (
+                    <li key={breaker} className={styles.breaker}>{breaker}</li>
                   ))}
                 </ul>
               </div>

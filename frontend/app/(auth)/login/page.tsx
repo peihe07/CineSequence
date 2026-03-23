@@ -9,7 +9,7 @@ import { useAuthStore } from '@/stores/authStore'
 import { useI18n } from '@/lib/i18n'
 import styles from './page.module.css'
 
-const DEV_ADMIN_EMAIL = 'y45076@gmail.com'
+const DEV_ADMIN_EMAIL = 'y450376@gmail.com'
 const SHOW_DEV_LOGIN = process.env.NODE_ENV !== 'production'
 
 export default function LoginPage() {
@@ -49,7 +49,7 @@ export default function LoginPage() {
         method: 'POST',
         body: JSON.stringify({
           email: DEV_ADMIN_EMAIL,
-          name: 'Dev Admin',
+          name: t('auth.devName'),
           gender: 'other',
           region: 'TW',
         }),

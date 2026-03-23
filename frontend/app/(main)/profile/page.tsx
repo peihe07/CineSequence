@@ -145,7 +145,7 @@ export default function ProfilePage() {
             onLogout={async () => setShowLogoutConfirm(true)}
           />
           <p className={styles.deck}>
-            Identity, preference, and sequencing state arranged like a clean production dossier.
+            {t('profile.deck')}
           </p>
         </section>
 
@@ -160,6 +160,7 @@ export default function ProfilePage() {
             saveLabel={t('profile.save')}
             cancelLabel={t('profile.cancel')}
             changeAvatarLabel={t('profile.changeAvatar')}
+            editNameLabel={t('profile.editName')}
             editName={editName}
             isEditing={isEditing}
             saving={saving}

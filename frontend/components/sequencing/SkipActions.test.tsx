@@ -3,6 +3,18 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import SkipActions from './SkipActions'
 
+vi.mock('@/lib/i18n', () => ({
+  useI18n: () => ({
+    t: (key: string) => {
+      const dict: Record<string, string> = {
+        'seq.reroll': 'Swap this pair',
+        'seq.skipPair': 'Skip this pair',
+      }
+      return dict[key] ?? key
+    },
+  }),
+}))
+
 vi.mock('@/lib/sound', () => ({
   soundManager: {
     play: vi.fn(),

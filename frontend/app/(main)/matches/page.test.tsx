@@ -73,8 +73,14 @@ vi.mock('@/lib/i18n', () => ({
         'matches.prefMale': 'Male',
         'matches.prefOther': 'Other',
         'matches.prefAge': 'Age range',
+        'matches.minAge': 'Minimum age',
+        'matches.maxAge': 'Maximum age',
         'matches.pureTaste': 'Pure taste',
         'matches.pureTasteHint': 'Ignore gender and age',
+        'matches.prefLoadError': 'Failed to load match preferences',
+        'matches.prefSaveError': 'Failed to save match preferences',
+        'matches.results': 'Match results',
+        'matches.loading': 'Loading matches',
       }
       return dict[key] ?? key
     },

@@ -1,6 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
+import { useI18n } from '@/lib/i18n'
 import styles from './RadarChart.module.css'
 
 interface RadarChartProps {
@@ -13,9 +14,9 @@ interface RadarChartProps {
 
 // 3 axes: each 1-5, center is 3
 const AXES = [
-  { key: 'mainstream_independent', labelA: '主流', labelB: '獨立' },
-  { key: 'rational_emotional', labelA: '理性', labelB: '感性' },
-  { key: 'light_dark', labelA: '光明', labelB: '黑暗' },
+  { key: 'mainstream_independent', labelAKey: 'dna.axis.mainstream', labelBKey: 'dna.axis.independent' },
+  { key: 'rational_emotional', labelAKey: 'dna.axis.rational', labelBKey: 'dna.axis.emotional' },
+  { key: 'light_dark', labelAKey: 'dna.axis.light', labelBKey: 'dna.axis.dark' },
 ] as const
 
 const SIZE = 240
@@ -28,6 +29,7 @@ function polarToCart(angleDeg: number, r: number): [number, number] {
 }
 
 export default function RadarChart({ scores }: RadarChartProps) {
+  const { t } = useI18n()
   const angleStep = 360 / AXES.length
 
   // Build polygon points from scores (map 1-5 to 0-RADIUS)
@@ -46,7 +48,7 @@ export default function RadarChart({ scores }: RadarChartProps) {
   return (
     <div className={styles.container}>
       <h3 className={styles.title}>
-        <i className="ri-compass-3-line" /> Quadrant Map
+        <i className="ri-compass-3-line" /> {t('dna.quadrantMap')}
       </h3>
       <svg
         viewBox={`0 0 ${SIZE} ${SIZE}`}
@@ -122,7 +124,7 @@ export default function RadarChart({ scores }: RadarChartProps) {
           const pctB = Math.round(((value - 1) / 4) * 100)
           return (
             <div key={axis.key} className={styles.labelRow}>
-              <span className={styles.labelA}>{axis.labelA}</span>
+              <span className={styles.labelA}>{t(axis.labelAKey)}</span>
               <div className={styles.bar}>
                 <motion.div
                   className={styles.barFill}
@@ -131,7 +133,7 @@ export default function RadarChart({ scores }: RadarChartProps) {
                   transition={{ duration: 0.6, delay: 0.8 }}
                 />
               </div>
-              <span className={styles.labelB}>{axis.labelB}</span>
+              <span className={styles.labelB}>{t(axis.labelBKey)}</span>
             </div>
           )
         })}

@@ -39,6 +39,7 @@ vi.mock('@/lib/i18n', () => ({
         'profile.save': 'Save',
         'profile.cancel': 'Cancel',
         'profile.changeAvatar': 'Change avatar',
+        'profile.editName': 'Edit name',
         'profile.matchPref': 'Match Preferences',
         'profile.lookingFor': 'Looking for',
         'profile.ageRange': 'Age range',
@@ -57,6 +58,7 @@ vi.mock('@/lib/i18n', () => ({
         'profile.inProgress': 'In progress',
         'profile.completed': 'Completed',
         'profile.loadError': 'Could not load profile',
+        'profile.deck': 'Profile deck copy',
         'confirm.logout': 'Confirm logout',
       }
       return dict[key] ?? key
@@ -92,6 +94,7 @@ describe('ProfilePage', () => {
       pure_taste_match: false,
       sequencing_status: 'completed',
       archetype_id: 'dream-archive',
+      archetype_name: 'Dream Archive',
     })
 
     render(<ProfilePage />)
@@ -101,7 +104,7 @@ describe('ProfilePage', () => {
     })
 
     expect(screen.getByText('aster@example.com')).toBeTruthy()
-    expect(screen.getByText('dream-archive')).toBeTruthy()
+    expect(screen.getByText('Dream Archive')).toBeTruthy()
     expect(screen.getByText('Completed')).toBeTruthy()
   })
 })

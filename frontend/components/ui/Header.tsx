@@ -38,7 +38,7 @@ export default function Header() {
       </Link>
 
       {/* Center: recessed nav tray with pill-shaped active item */}
-      <nav className={styles.navTray} aria-label="Main navigation">
+      <nav className={styles.navTray} aria-label={t('nav.main')}>
         {NAV_ITEMS.map(({ href, labelKey }) => {
           const isActive = pathname.startsWith(href)
           return (
