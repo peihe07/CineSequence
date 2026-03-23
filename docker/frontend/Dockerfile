@@ -25,6 +25,6 @@ ENV ENVIRONMENT=$ENVIRONMENT
 
 RUN npm run build
 
-EXPOSE 3000
+EXPOSE ${PORT:-3000}
 
-CMD ["npm", "start"]
+CMD ["sh", "-c", "npx next start -p ${PORT:-3000}"]
