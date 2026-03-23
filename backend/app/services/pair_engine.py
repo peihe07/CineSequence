@@ -197,6 +197,7 @@ def get_reroll_pair_for_round(
     seed_movie_genres: list[str] | None = None,
     used_pair_ids: set[str] | None = None,
     exclude_tmdb_ids: set[int] | None = None,
+    reserved_tmdb_ids: set[int] | None = None,
 ) -> dict | None:
     """Return an alternate Phase 1 pair for the same round without consuming it."""
     if not 1 <= round_number <= 5:
@@ -204,6 +205,7 @@ def get_reroll_pair_for_round(
 
     used_pair_ids = used_pair_ids or set()
     exclude_tmdb_ids = exclude_tmdb_ids or set()
+    reserved_tmdb_ids = reserved_tmdb_ids or set()
     ordered_pairs = sorted(
         ALL_PAIRS,
         key=lambda pair: _score_pair_relevance(pair, seed_movie_genres or []),
@@ -218,6 +220,8 @@ def get_reroll_pair_for_round(
             pair["movie_b"]["tmdb_id"],
         }
         if pair_movie_ids & exclude_tmdb_ids:
+            continue
+        if pair_movie_ids & reserved_tmdb_ids:
             continue
         return pair
 

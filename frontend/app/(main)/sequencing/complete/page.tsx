@@ -45,7 +45,8 @@ export default function SequencingCompletePage() {
         transition={{ duration: 0.5 }}
       >
         <section className={`${styles.section} ${styles.heroSection}`}>
-          <span className={styles.sideLabel}>FILE 04</span>
+          <span className={styles.sideLabel}>{t('complete.fileLabel')}</span>
+          <p className={styles.eyebrow}>{t('complete.eyebrow')}</p>
           <div className={styles.icon}>
             <i className="ri-dna-line ri-3x" />
           </div>
@@ -53,6 +54,7 @@ export default function SequencingCompletePage() {
           <p className={styles.subtitle}>
             {t('complete.subtitle', { total: totalRounds })}
           </p>
+          <p className={styles.heroMeta}>{t('complete.heroMeta')}</p>
         </section>
 
         <section className={`${styles.section} ${styles.statsSection}`}>

@@ -7,6 +7,7 @@ import { api, apiUpload } from '@/lib/api'
 import { useI18n } from '@/lib/i18n'
 import { useAuthStore } from '@/stores/authStore'
 import ProfileBasicsCard from '@/components/profile/ProfileBasicsCard'
+import ProfileDnaSnapshot from '@/components/profile/ProfileDnaSnapshot'
 import ProfileHeader from '@/components/profile/ProfileHeader'
 import ProfilePreferencesCard from '@/components/profile/ProfilePreferencesCard'
 import ProfileSequencingCard from '@/components/profile/ProfileSequencingCard'
@@ -150,7 +151,7 @@ export default function ProfilePage() {
         transition={{ duration: 0.4 }}
       >
         <section className={`${styles.section} ${styles.heroSection}`}>
-          <span className={styles.sideLabel}>FILE 02</span>
+          <span className={styles.sideLabel}>{t('profile.fileLabel')}</span>
           <ProfileHeader
             title={t('profile.title')}
             logoutLabel={t('profile.logout')}
@@ -166,6 +167,10 @@ export default function ProfilePage() {
           <p className={styles.deck}>
             {t('profile.deck')}
           </p>
+        </section>
+
+        <section className={`${styles.section} ${styles.snapshotSection}`}>
+          <ProfileDnaSnapshot profile={profile} />
         </section>
 
         <section className={`${styles.section} ${styles.profileGrid}`}>

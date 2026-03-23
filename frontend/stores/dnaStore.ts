@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { ApiError, api } from '@/lib/api'
+import { translateStatic } from '@/lib/i18n'
 
 interface ArchetypeInfo {
   id: string
@@ -55,7 +56,7 @@ export const useDnaStore = create<DnaState>((set, get) => ({
     } catch (err) {
       set({
         isBuilding: false,
-        error: err instanceof Error ? err.message : 'Failed to build DNA',
+        error: err instanceof Error ? err.message : translateStatic('common.error'),
       })
     }
   },
@@ -74,7 +75,7 @@ export const useDnaStore = create<DnaState>((set, get) => ({
 
       set({
         isLoading: false,
-        error: err instanceof Error ? err.message : 'Failed to fetch DNA result',
+        error: err instanceof Error ? err.message : translateStatic('common.error'),
       })
       throw err
     }

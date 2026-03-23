@@ -82,7 +82,9 @@ export default function TicketPage() {
       >
         <section className={`${styles.section} ${styles.heroSection}`}>
           <span className={styles.sideLabel}>FILE 07</span>
+          <p className={styles.eyebrow}>[ ADMISSION_RECORD ]</p>
           <h1 className={styles.title}>{t('ticket.title')}</h1>
+          <p className={styles.heroMeta}>TICKET LINK: VERIFIED // ENTRY: CONFIRMED</p>
         </section>
 
         <section className={`${styles.section} ${styles.ticketSection}`}>

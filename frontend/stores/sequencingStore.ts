@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { api } from '@/lib/api'
+import { translateStatic } from '@/lib/i18n'
 
 interface MovieInfo {
   tmdb_id: number
@@ -51,7 +52,7 @@ interface SequencingState {
   fetchPair: () => Promise<Pair>
   rerollPair: () => Promise<void>
   fetchProgress: () => Promise<Progress>
-  submitPick: (tmdbId: number, pickMode: 'watched' | 'attracted', responseTimeMs?: number) => Promise<void>
+  submitPick: (tmdbId: number, pickMode?: 'watched' | 'attracted', responseTimeMs?: number) => Promise<void>
   skip: (responseTimeMs?: number) => Promise<void>
   setSeedMovie: (tmdbId: number) => Promise<void>
   extendSequencing: () => Promise<void>
@@ -76,7 +77,7 @@ export const useSequencingStore = create<SequencingState>((set, get) => ({
       set({ currentPair: pair, isLoading: false })
       return pair
     } catch (err) {
-      set({ isLoading: false, error: err instanceof Error ? err.message : 'Failed to fetch pair' })
+      set({ isLoading: false, error: err instanceof Error ? err.message : translateStatic('common.error') })
       throw err
     }
   },
@@ -102,7 +103,7 @@ export const useSequencingStore = create<SequencingState>((set, get) => ({
       set({
         currentPair,
         isLoading: false,
-        error: err instanceof Error ? err.message : 'Failed to reroll pair',
+        error: err instanceof Error ? err.message : translateStatic('common.error'),
       })
       throw err
     }
@@ -115,13 +116,13 @@ export const useSequencingStore = create<SequencingState>((set, get) => ({
       return progress
     } catch (err) {
       set({
-        error: err instanceof Error ? err.message : 'Failed to fetch sequencing progress',
+        error: err instanceof Error ? err.message : translateStatic('common.error'),
       })
       throw err
     }
   },
 
-  submitPick: async (tmdbId, pickMode, responseTimeMs) => {
+  submitPick: async (tmdbId, pickMode = 'watched', responseTimeMs) => {
     const { currentPair, liveTags, rerollExcludedTmdbIds } = get()
 
     if (currentPair?.test_dimension) {
@@ -154,7 +155,7 @@ export const useSequencingStore = create<SequencingState>((set, get) => ({
         liveTags,
         rerollExcludedTmdbIds,
         isLoading: false,
-        error: err instanceof Error ? err.message : 'Failed to submit pick',
+        error: err instanceof Error ? err.message : translateStatic('common.error'),
       })
     }
   },
@@ -182,7 +183,7 @@ export const useSequencingStore = create<SequencingState>((set, get) => ({
         currentPair,
         rerollExcludedTmdbIds,
         isLoading: false,
-        error: err instanceof Error ? err.message : 'Failed to skip',
+        error: err instanceof Error ? err.message : translateStatic('common.error'),
       })
     }
   },
@@ -196,7 +197,7 @@ export const useSequencingStore = create<SequencingState>((set, get) => ({
       })
       set({ isLoading: false })
     } catch (err) {
-      set({ isLoading: false, error: err instanceof Error ? err.message : 'Failed to set seed movie' })
+      set({ isLoading: false, error: err instanceof Error ? err.message : translateStatic('common.error') })
       throw err
     }
   },
@@ -221,7 +222,7 @@ export const useSequencingStore = create<SequencingState>((set, get) => ({
           : null,
       }))
     } catch (err) {
-      set({ isLoading: false, error: err instanceof Error ? err.message : 'Failed to extend' })
+      set({ isLoading: false, error: err instanceof Error ? err.message : translateStatic('common.error') })
     }
   },
 
@@ -237,7 +238,7 @@ export const useSequencingStore = create<SequencingState>((set, get) => ({
         rerollExcludedTmdbIds: [],
       })
     } catch (err) {
-      set({ isLoading: false, error: err instanceof Error ? err.message : 'Failed to start retest' })
+      set({ isLoading: false, error: err instanceof Error ? err.message : translateStatic('common.error') })
     }
   },
 

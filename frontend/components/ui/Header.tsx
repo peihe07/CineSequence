@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { useI18n } from '@/lib/i18n'
+import { soundManager } from '@/lib/sound'
 import LocaleToggle from './LocaleToggle'
 import MuteToggle from './MuteToggle'
 import styles from './Header.module.css'
@@ -30,10 +31,14 @@ export default function Header() {
     return () => window.removeEventListener('scroll', syncScroll)
   }, [])
 
+  function handleNavCue() {
+    soundManager.play('flip', { volume: 0.12, playbackRate: 1.08 })
+  }
+
   return (
     <header className={`${styles.header} ${isScrolled ? styles.scrolled : ''}`}>
       {/* Left: brand logo */}
-      <Link href="/sequencing" className={styles.brand}>
+      <Link href="/" className={styles.brand} onClick={handleNavCue}>
         <span className={styles.brandMain}>Cine</span>
         <span className={styles.brandSub}>Sequence</span>
       </Link>
@@ -47,6 +52,7 @@ export default function Header() {
               key={href}
               href={href}
               className={`${styles.navLink} ${isActive ? styles.navLinkActive : ''}`}
+              onClick={handleNavCue}
             >
               <span className={styles.navIndex}>{index}</span>
               <span>{t(labelKey)}</span>

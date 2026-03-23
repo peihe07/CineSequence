@@ -74,10 +74,6 @@ export default function SeedMoviePage() {
     }
   }
 
-  function handleSkipSeed() {
-    router.push('/sequencing')
-  }
-
   return (
     <main className={styles.container}>
       <div className={styles.content}>
@@ -185,9 +181,6 @@ export default function SeedMoviePage() {
             loading={isSubmitting}
           >
             <i className="ri-dna-line" /> {t('seed.confirm')}
-          </Button>
-          <Button variant="ghost" size="sm" onClick={handleSkipSeed}>
-            {t('seed.skip')}
           </Button>
         </div>
       </div>

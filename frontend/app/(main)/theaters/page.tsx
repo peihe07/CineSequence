@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { useGroupStore } from '@/stores/groupStore'
@@ -19,6 +20,34 @@ interface GroupItem {
   member_count: number
   is_active: boolean
   is_member: boolean
+  shared_tags: string[]
+  member_preview: Array<{
+    id: string
+    name: string
+    avatar_url: string | null
+  }>
+  recommended_movies: Array<{
+    tmdb_id: number
+    title_en: string
+    match_tags: string[]
+  }>
+  shared_watchlist: Array<{
+    tmdb_id: number
+    title_en: string
+    match_tags: string[]
+    supporter_count: number
+  }>
+  recent_messages: Array<{
+    id: string
+    body: string
+    created_at: string
+    can_delete: boolean
+    user: {
+      id: string
+      name: string
+      avatar_url: string | null
+    }
+  }>
 }
 
 function GroupCard({ group, onJoin, onLeave }: {
@@ -74,7 +103,63 @@ function GroupCard({ group, onJoin, onLeave }: {
         )}
       </div>
 
+      <div className={styles.detailGrid}>
+        <section className={styles.detailBlock}>
+          <p className={styles.detailLabel}>{t('theaters.fit')}</p>
+          {group.shared_tags.length > 0 ? (
+            <>
+              <p className={styles.detailText}>{t('theaters.fitHint')}</p>
+              <div className={styles.detailTags}>
+                {group.shared_tags.map((tag) => (
+                  <span key={tag} className={styles.detailTag}>
+                    {getTagLabel(tag, locale)}
+                  </span>
+                ))}
+              </div>
+            </>
+          ) : (
+            <p className={styles.detailText}>{t('theaters.noSharedTags')}</p>
+          )}
+        </section>
+
+        <section className={styles.detailBlock}>
+          <p className={styles.detailLabel}>{t('theaters.members')}</p>
+          {group.member_preview.length > 0 ? (
+            <div className={styles.memberList}>
+              {group.member_preview.map((member) => (
+                <span key={member.id} className={styles.memberChip}>
+                  {member.name}
+                </span>
+              ))}
+            </div>
+          ) : (
+            <p className={styles.detailText}>{t('theaters.membersEmpty')}</p>
+          )}
+        </section>
+
+        <section className={styles.detailBlock}>
+          <p className={styles.detailLabel}>{t('theaters.recommended')}</p>
+          <div className={styles.movieList}>
+            {group.recommended_movies.map((movie) => (
+              <article key={movie.tmdb_id} className={styles.movieItem}>
+                <p className={styles.movieTitle}>{movie.title_en}</p>
+                <div className={styles.movieTags}>
+                  {movie.match_tags.map((tag) => (
+                    <span key={`${movie.tmdb_id}-${tag}`} className={styles.movieTag}>
+                      {getTagLabel(tag, locale)}
+                    </span>
+                  ))}
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+      </div>
+
       <div className={styles.cardActions}>
+        <Link href={`/theaters/${group.id}`} className={styles.detailLink}>
+          <i className="ri-arrow-right-up-line" /> {t('theaters.open')}
+        </Link>
         {group.is_member ? (
           <button className={styles.leaveBtn} onClick={onLeave}>
             <i className="ri-logout-box-line" /> {t('theaters.leave')}
@@ -110,7 +195,7 @@ function TheatersContent() {
     <div className={styles.container}>
       <div className={styles.content}>
         <section className={`${styles.section} ${styles.heroSection}`}>
-          <span className={styles.sideLabel}>FILE 06</span>
+          <span className={styles.sideLabel}>{t('theaters.fileLabel')}</span>
           <p className={styles.eyebrow}>[ SCREENING_INDEX ]</p>
           <div className={styles.header}>
             <h1 className={styles.title}>{t('theaters.title')}</h1>

@@ -105,6 +105,6 @@ describe('ProfilePage', () => {
 
     expect(screen.getByText('aster@example.com')).toBeTruthy()
     expect(screen.getByText('Dream Archive')).toBeTruthy()
-    expect(screen.getByText('Completed')).toBeTruthy()
+    expect(screen.getAllByText('Completed').length).toBeGreaterThan(0)
   })
 })

@@ -1,5 +1,7 @@
 .shell {
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
   background:
     linear-gradient(180deg, rgba(18, 14, 13, 0.98) 0%, rgba(12, 10, 9, 1) 100%);
 }
@@ -7,4 +9,5 @@
 .page {
   position: relative;
   isolation: isolate;
+  flex: 1;
 }

@@ -47,6 +47,10 @@ export function VerifyContent({
 
   return (
     <div className={styles.content}>
+      <div className={styles.metaBlock}>
+        <span className={styles.eyebrow}>[ TOKEN_VERIFY ]</span>
+        <span className={styles.metaLine}>AUTH HANDSHAKE / SEQUENCE CHECK</span>
+      </div>
       {status === 'verifying' && (
         <>
           <i className="ri-loader-4-line ri-3x ri-spin" />

@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { ApiError, api, clearToken, setToken } from '@/lib/api'
+import { translateStatic } from '@/lib/i18n'
 import type {
   LoginRequest,
   RegisterRequest,
@@ -39,7 +40,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       })
       set({ isLoading: false })
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Registration failed'
+      const message = err instanceof Error ? err.message : translateStatic('common.error')
       set({ isLoading: false, error: message })
       throw err
     }
@@ -55,7 +56,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       })
       set({ isLoading: false })
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Login failed'
+      const message = err instanceof Error ? err.message : translateStatic('common.error')
       set({ isLoading: false, error: message })
       throw err
     }
@@ -72,7 +73,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       setToken(response.access_token)
       set({ isAuthenticated: true, isLoading: false })
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Verification failed'
+      const message = err instanceof Error ? err.message : translateStatic('common.error')
       set({ isLoading: false, error: message })
       throw err
     }
@@ -92,7 +93,7 @@ export const useAuthStore = create<AuthState>((set) => ({
 
       set({
         isLoading: false,
-        error: err instanceof Error ? err.message : 'Failed to fetch profile',
+        error: err instanceof Error ? err.message : translateStatic('common.error'),
       })
       throw err
     }

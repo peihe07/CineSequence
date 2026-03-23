@@ -4,7 +4,7 @@ import enum
 import uuid
 from datetime import datetime
 
-from sqlalchemy import Boolean, DateTime, Enum, ForeignKey, Integer, String, func
+from sqlalchemy import JSON, Boolean, DateTime, Enum, ForeignKey, Integer, String, func
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -52,6 +52,9 @@ class SequencingSession(Base):
 
     # Seed movie (moved from User)
     seed_movie_tmdb_id: Mapped[int | None] = mapped_column(Integer)
+    reroll_excluded_tmdb_ids: Mapped[list[int]] = mapped_column(JSON, default=list)
+    pending_pair_round_number: Mapped[int | None] = mapped_column(Integer)
+    pending_pair_payload: Mapped[dict | None] = mapped_column(JSON)
 
     # Optional label for UI display
     season_label: Mapped[str | None] = mapped_column(String(50))

@@ -38,6 +38,9 @@
   /* Cards — now glass-based */
   --card-bg: rgba(255, 255, 255, 0.48);
   --card-radius: 0.85rem;
+  --radius-structure: 2px;
+  --radius-component: 8px;
+  --radius-pill: 999px;
   --card-shadow: var(--glass-shadow);
   --card-shadow-hover: var(--glass-shadow-hover);
 

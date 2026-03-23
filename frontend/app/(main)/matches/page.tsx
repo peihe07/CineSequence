@@ -220,7 +220,7 @@ function MatchesContent() {
       <div className={styles.content}>
         {/* ── HERO SECTION ────────────────────────────── */}
         <section className={`${styles.section} ${styles.heroSection}`}>
-          <span className={styles.sideLabel}>FILE 03</span>
+          <span className={styles.sideLabel}>{t('matches.fileLabel')}</span>
           <p className={styles.eyebrow}>[ MATCH_RESOLUTION ]</p>
           <div className={styles.header}>
             <h1 className={styles.title}>{t('matches.title')}</h1>

@@ -179,6 +179,133 @@ class TestPair:
         result = await db_session.execute(select(Pick).where(Pick.user_id == user.id))
         assert result.scalars().all() == []
 
+    @pytest.mark.asyncio
+    @patch("app.routers.sequencing.get_ai_pair", new_callable=AsyncMock)
+    async def test_phase2_pair_excludes_reroll_history(
+        self, mock_get_ai_pair, client, auth_user, db_session
+    ):
+        user, headers = auth_user
+
+        await client.get("/sequencing/progress", headers=headers)
+        session_result = await db_session.execute(
+            select(SequencingSession).where(SequencingSession.user_id == user.id)
+        )
+        session = session_result.scalar_one()
+        session.reroll_excluded_tmdb_ids = [4101, 4102]
+
+        for round_number in range(1, 6):
+            db_session.add(Pick(
+                user_id=user.id,
+                session_id=session.id,
+                round_number=round_number,
+                phase=1,
+                pair_id=f"p1_0{round_number}",
+                movie_a_tmdb_id=1000 + round_number,
+                movie_b_tmdb_id=2000 + round_number,
+                chosen_tmdb_id=1000 + round_number,
+                pick_mode="watched",
+                test_dimension="mainstream_vs_independent",
+            ))
+        await db_session.commit()
+
+        mock_get_ai_pair.return_value = {
+            "movie_a": _fake_movie(5101, "Movie 5101"),
+            "movie_b": _fake_movie(5102, "Movie 5102"),
+            "test_dimension": "mindfuck",
+        }
+
+        response = await client.get("/sequencing/pair", headers=headers)
+        assert response.status_code == 200
+        mock_get_ai_pair.assert_awaited_once()
+        assert mock_get_ai_pair.await_args.kwargs["extra_excluded_tmdb_ids"] == [4101, 4102]
+
+    @pytest.mark.asyncio
+    @patch("app.routers.sequencing.get_ai_pair", new_callable=AsyncMock)
+    async def test_phase2_pair_is_reused_within_same_round(
+        self, mock_get_ai_pair, client, auth_user, db_session
+    ):
+        user, headers = auth_user
+
+        await client.get("/sequencing/progress", headers=headers)
+        session_result = await db_session.execute(
+            select(SequencingSession).where(SequencingSession.user_id == user.id)
+        )
+        session = session_result.scalar_one()
+
+        for round_number in range(1, 6):
+            db_session.add(Pick(
+                user_id=user.id,
+                session_id=session.id,
+                round_number=round_number,
+                phase=1,
+                pair_id=f"p1_0{round_number}",
+                movie_a_tmdb_id=1000 + round_number,
+                movie_b_tmdb_id=2000 + round_number,
+                chosen_tmdb_id=1000 + round_number,
+                pick_mode="watched",
+                test_dimension="mainstream_vs_independent",
+            ))
+        await db_session.commit()
+
+        mock_get_ai_pair.return_value = {
+            "movie_a": _fake_movie(5301, "Movie 5301"),
+            "movie_b": _fake_movie(5302, "Movie 5302"),
+            "test_dimension": "slowburn",
+        }
+
+        first_response = await client.get("/sequencing/pair", headers=headers)
+        second_response = await client.get("/sequencing/pair", headers=headers)
+
+        assert first_response.status_code == 200
+        assert second_response.status_code == 200
+        assert first_response.json() == second_response.json()
+        mock_get_ai_pair.assert_awaited_once()
+
+    @pytest.mark.asyncio
+    @patch("app.routers.sequencing.get_ai_pair", new_callable=AsyncMock)
+    async def test_phase2_reroll_persists_excluded_tmdb_ids(
+        self, mock_get_ai_pair, client, auth_user, db_session
+    ):
+        user, headers = auth_user
+
+        await client.get("/sequencing/progress", headers=headers)
+        session_result = await db_session.execute(
+            select(SequencingSession).where(SequencingSession.user_id == user.id)
+        )
+        session = session_result.scalar_one()
+
+        for round_number in range(1, 6):
+            db_session.add(Pick(
+                user_id=user.id,
+                session_id=session.id,
+                round_number=round_number,
+                phase=1,
+                pair_id=f"p1_0{round_number}",
+                movie_a_tmdb_id=1000 + round_number,
+                movie_b_tmdb_id=2000 + round_number,
+                chosen_tmdb_id=1000 + round_number,
+                pick_mode="watched",
+                test_dimension="mainstream_vs_independent",
+            ))
+        await db_session.commit()
+
+        mock_get_ai_pair.return_value = {
+            "movie_a": _fake_movie(5201, "Movie 5201"),
+            "movie_b": _fake_movie(5202, "Movie 5202"),
+            "test_dimension": "slowburn",
+        }
+
+        response = await client.post(
+            "/sequencing/reroll",
+            json={"exclude_tmdb_ids": [6101, 6102]},
+            headers=headers,
+        )
+        assert response.status_code == 200
+
+        await db_session.refresh(session)
+        assert session.reroll_excluded_tmdb_ids == [6101, 6102]
+        assert set(mock_get_ai_pair.await_args.kwargs["extra_excluded_tmdb_ids"]) == {6101, 6102}
+
 
 class TestPick:
     """POST /sequencing/pick"""

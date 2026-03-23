@@ -18,6 +18,28 @@ const I18nContext = createContext<I18nContextValue>({
 
 const STORAGE_KEY = 'cinesequence-locale'
 
+export function getStoredLocale(): Locale {
+  if (typeof window === 'undefined') {
+    return 'en'
+  }
+
+  const saved = localStorage.getItem(STORAGE_KEY)
+  return saved === 'zh' || saved === 'en' ? saved : 'en'
+}
+
+export function translateStatic(key: string, vars?: Record<string, string | number>): string {
+  const dict = translations[getStoredLocale()]
+  let text = dict[key] ?? key
+
+  if (vars) {
+    for (const [k, v] of Object.entries(vars)) {
+      text = text.replaceAll(`{{${k}}}`, String(v))
+    }
+  }
+
+  return text
+}
+
 export function I18nProvider({ children }: { children: React.ReactNode }) {
   const [locale, setLocaleState] = useState<Locale>('en')
 
@@ -71,7 +93,7 @@ const translations: Record<Locale, Record<string, string>> = {
     'locale.switchEn': '切換至英文',
 
     // Onboarding
-    'onboarding.title': '歡迎進入定序程序',
+    'onboarding.title': '歡迎進入定序流程',
     'onboarding.step1': '每輪呈現兩部作品，憑直覺選擇更吸引你的那一部。',
     'onboarding.step2': '系統將從你的抉擇中析出品味特徵，20 輪後生成你的基因圖譜。',
     'onboarding.step3': '不確定可以跳過，不影響最終鑑定結果。',
@@ -93,6 +115,12 @@ const translations: Record<Locale, Record<string, string>> = {
     'landing.termHint': '按下 [Y] 或點擊開始',
     'landing.contactEmail': '電子郵件',
     'landing.contactBlog': '部落格',
+    'landing.enter': '進入',
+    'landing.fileLabel': '檔案 {{id}}',
+    'footer.nav': '頁尾連結',
+    'footer.tagline': '用電影選擇，顯影你的品味輪廓。',
+    'footer.privacy': '隱私',
+    'footer.terms': '條款',
     'landing.howTitle': '鑑定流程',
     'landing.step1Title': '原點',
     'landing.step1Desc': '選一部代表你品味的作品，作為鑑定基準。',
@@ -117,7 +145,7 @@ const translations: Record<Locale, Record<string, string>> = {
     'notFound.backHome': '回到首頁',
 
     // Flow guard
-    'guard.needSequencing': '請先完成定序程序',
+    'guard.needSequencing': '請先完成定序流程',
     'guard.needDna': '請先完成基因鑑定',
 
     // Toast
@@ -166,9 +194,37 @@ const translations: Record<Locale, Record<string, string>> = {
     'auth.hasAccount': '已有帳號？',
     'auth.backToLogin': '返回登入',
     'auth.devTitle': '開發模式',
-    'auth.devHint': '使用本機管理員捷徑，直接進入後台儀表板。',
+    'auth.devHint': '使用本機管理員捷徑，直接進入管理儀表板。',
     'auth.devLogin': '管理員快速登入',
     'auth.devName': '開發管理員',
+    'auth.layoutAccess': '存取',
+    'auth.layoutKicker': '[ 檔案建置 ]',
+    'auth.layoutHeadline': '建立你的電影檔案。',
+    'auth.layoutCopy': '建立你的電影檔案後，系統才會開始定序、比對與邀約流程。',
+    'auth.layoutStatus': '檔案種子 / 必填',
+    'auth.layoutPath': 'ROOT > ACCESS > REGISTER',
+    'auth.layoutTimecode': '檔案 00 / 建置中',
+    'auth.layoutRuleTitle': '配對規則',
+    'auth.layoutRuleBody': '本站沒有站內私訊，只有在邀約被接受後，雙方才會取得彼此的 Email。',
+    'auth.layoutGateTitle': '定序入口',
+    'auth.layoutGateBody': '完成註冊後，你會先選一部起始電影，再進入正式象限掃描。',
+    'auth.layoutEyebrow': '[ 認證流程 ]',
+    'auth.layoutGateway': '入口 / 啟用中',
+    'auth.layoutFooterPath': 'ROOT > ACCESS',
+    'auth.layoutFooterFile': '檔案 00',
+    'auth.modalLabel': '登入視窗',
+    'auth.modalKicker': '[ 存取入口 ]',
+    'auth.modalHeadline': '回到定序軌道。',
+    'auth.modalCopy': '從首頁直接進入登入艙，保留你的定序節奏，不需要先跳到另一個頁面。',
+    'auth.modalStatus': 'Magic Link / 啟用中',
+    'auth.modalPath': 'ROOT > ACCESS > LOGIN',
+    'auth.modalTimecode': '掃描視窗 / 檔案 00',
+    'auth.modalRuleTitle': '登入規則',
+    'auth.modalRuleBody': '完成登入後即可回到定序、基因與配對流程。',
+    'auth.modalNoAccountTitle': '尚未建立帳號',
+    'auth.modalNoAccountPrefix': '需要建立新帳號時，可直接前往',
+    'auth.modalNoAccountSuffix': '。',
+    'auth.modalClose': '關閉登入視窗',
 
     // Register
     'register.title': '建立帳號',
@@ -216,7 +272,7 @@ const translations: Record<Locale, Record<string, string>> = {
 
     // Sequencing - Seed
     'seed.title': '選擇原點',
-    'seed.subtitle': '選一部代表你品味的作品，作為鑑定程序的校準基準。',
+    'seed.subtitle': '選一部代表你品味的作品，作為鑑定流程的校準基準。',
     'seed.placeholder': '搜尋作品名稱...',
     'seed.confirm': '開始定序',
     'seed.skip': '跳過此步驟',
@@ -224,13 +280,16 @@ const translations: Record<Locale, Record<string, string>> = {
 
     // Sequencing - Complete
     'complete.title': '定序完成',
-    'complete.subtitle': '已完成 {{total}} 輪定序程序，觀影基因已就緒。',
+    'complete.subtitle': '已完成 {{total}} 輪定序流程，觀影基因已就緒。',
     'complete.rounds': '輪數',
     'complete.extensions': '延伸',
     'complete.viewDna': '查看 DNA 結果',
     'complete.extend': '延伸分析（+5 輪）',
     'complete.extendHint': '追加 5 輪可提升分析精度，目前剩餘 {{remaining}} 次延伸機會。',
     'complete.maxReached': '已達延伸上限，目前 DNA 分析已是最高精度。',
+    'complete.fileLabel': '檔案 04',
+    'complete.eyebrow': '[ 定序完成 ]',
+    'complete.heroMeta': '本輪已結束 // 可進入分析',
 
     // DNA
     'dna.title': '觀影 DNA',
@@ -252,6 +311,9 @@ const translations: Record<Locale, Record<string, string>> = {
     'dna.idealDate': '理想的電影約會',
     'dna.share': '分享結果',
     'dna.findMatches': '尋找配對',
+    'dna.fileLabel': '檔案 01',
+    'dna.eyebrow': '[ 觀影基因檔案 ]',
+    'dna.heroMeta': 'GEN_SEQ: v2.0.4 // SIGNAL: STABLE',
 
     // Matches
     'matches.title': '配對',
@@ -306,9 +368,25 @@ const translations: Record<Locale, Record<string, string>> = {
     'theaters.hidden': '隱藏',
     'theaters.active': '已啟用',
     'theaters.inactive': '未達門檻',
+    'theaters.fit': '你和這裡的交集',
+    'theaters.fitHint': '這些標籤是你目前最貼近這個放映廳的地方。',
+    'theaters.noSharedTags': '你的品味向量已被分配到這裡，但還沒有明顯的主導交集。',
+    'theaters.members': '目前成員',
+    'theaters.membersEmpty': '還沒有成員名單可顯示。',
+    'theaters.recommended': '建議先看',
+    'theaters.watchlist': '共同片單',
+    'theaters.watchlistHint': '依目前成員重疊度排序，最像這個放映廳會一起看的片。',
+    'theaters.supporters': '{{count}} 人共振',
+    'theaters.messages': '留言板',
+    'theaters.messagesHint': '用一句話交換這個廳最近在看的方向。',
+    'theaters.messagesEmpty': '還沒有人開場，留下第一句吧。',
+    'theaters.messagePlaceholder': '寫下你最近最想拉這個廳一起看的片，或你對這個群的第一印象。',
+    'theaters.messageSend': '送出留言',
+    'theaters.messageDelete': '刪除',
+    'theaters.open': '進入放映廳',
 
     // Admin
-    'admin.title': '管理後台',
+    'admin.title': '管理儀表板',
     'admin.loadFailed': '載入失敗',
     'admin.totalUsers': '總使用者',
     'admin.today': '今日',
@@ -387,6 +465,7 @@ const translations: Record<Locale, Record<string, string>> = {
     'profile.loggingOut': '登出中...',
     'profile.deleteAccount': '刪除帳號',
     'profile.deletingAccount': '刪除中...',
+    'profile.fileLabel': '檔案 02',
 
     // Cookie consent
     'cookie.message': '本網站使用必要 Cookie 以維持登入狀態。繼續使用即表示你同意我們的 Cookie 使用方式。',
@@ -397,6 +476,29 @@ const translations: Record<Locale, Record<string, string>> = {
 
     // Matches disclaimer
     'matches.disclaimer': '配對結果基於觀影品味相似度分析。相容度分數僅反映電影偏好的重疊程度，不代表人際相容性。',
+    'matches.fileLabel': '檔案 03',
+    'theaters.fileLabel': '檔案 06',
+
+    // Archive
+    'archive.file': '檔案 {{id}}',
+    'archive.statusReady': '檔案已就緒',
+    'archive.scanComplete': '頁面掃描完成',
+    'archive.defaultCue': '檔案檢視',
+    'archive.defaultBreadcrumb': 'ROOT > ARCHIVE > VIEW',
+    'archive.sequencingCue': '定序流程',
+    'archive.sequencingBreadcrumb': 'ROOT > SEQUENCE > SESSION',
+    'archive.dnaCue': '電影基因報告',
+    'archive.dnaBreadcrumb': 'ROOT > SEQUENCE > DNA_REPORT',
+    'archive.matchesCue': '配對結果',
+    'archive.matchesBreadcrumb': 'ROOT > MATCHES > RESOLUTION',
+    'archive.theatersCue': '放映廳索引',
+    'archive.theatersBreadcrumb': 'ROOT > THEATERS > INDEX',
+    'archive.profileCue': '使用者檔案',
+    'archive.profileBreadcrumb': 'ROOT > DOSSIER > PROFILE',
+    'archive.ticketCue': '票券紀錄',
+    'archive.ticketBreadcrumb': 'ROOT > MATCHES > TICKET',
+    'archive.adminCue': '控制入口',
+    'archive.adminBreadcrumb': 'ROOT > CONTROL > ACCESS',
 
     // Terms of service
     'terms.title': '服務條款',
@@ -420,7 +522,7 @@ const translations: Record<Locale, Record<string, string>> = {
     'terms.warrantyTitle': '免責聲明',
     'terms.warrantyBody': '本服務以「現況」提供，不對配對品質或 AI 分析準確性做出任何明示或默示的保證。',
     'terms.contactTitle': '聯繫我們',
-    'terms.contactBody': '如對本服務條款有任何疑問，請透過應用程式內的設定頁面與我們聯繫。',
+    'terms.contactBody': '如對本服務條款有任何疑問，請使用首頁提供的聯絡方式與我們聯繫。',
 
     // Register consent
     'register.agreePrefix': '我已閱讀並同意',
@@ -431,7 +533,15 @@ const translations: Record<Locale, Record<string, string>> = {
     'register.birthYearRequired': '請輸入出生年份',
     'register.ageMinimum': '您必須年滿 18 歲方可使用本服務',
     'register.scrollToRead': '請滾動閱讀完整政策內容',
-    'register.disclaimer': '本服務僅供年滿 18 歲之使用者。註冊即表示您已閱讀並理解隱私政策的全部內容，並同意我們依據政策條款處理您的個人資料。',
+    'register.disclaimer': '本服務僅供年滿 18 歲之使用者。本站不提供站內直接聯絡；只有當配對對象接受你的邀約，或你接受對方的邀約後，雙方才會取得彼此的 email。註冊即表示您已閱讀並同意服務條款與隱私政策，並同意上述聯絡規則與資料處理方式。',
+    'register.metaEyebrow': '[ 檔案建置 ]',
+    'register.metaLine': '檔案種子 / 需同意條款',
+    'register.policySummaryLine1': '註冊前請先確認：本站沒有站內私訊功能，只有在邀約被接受後，雙方才會取得彼此的 Email。',
+    'register.policySummaryLine2': '我們會使用你的基本資料與觀影偏好來產生電影基因、配對結果與推薦內容。',
+    'register.policyExpand': '展開完整政策',
+    'register.policyCollapse': '收合完整政策',
+    'register.openTerms': '查看服務條款',
+    'register.openPrivacy': '查看隱私政策',
 
     // Privacy policy
     'privacy.title': '隱私政策',
@@ -450,19 +560,20 @@ const translations: Record<Locale, Record<string, string>> = {
     'privacy.sharedTags': '共同的品味標籤',
     'privacy.sharedIceBreakers': '由 AI 生成的對話方向',
     'privacy.sharedSimilarity': '品味相似度分數',
+    'privacy.sharedEmailAfterAccept': '只有在你接受邀約，或對方接受你的邀約後，雙方才會取得彼此的 Email 地址',
     'privacy.notSharedTitle': '不會揭露的資訊',
-    'privacy.notSharedIntro': '以下資訊永遠不會透露給配對對象：',
-    'privacy.notSharedEmail': 'Email 地址',
+    'privacy.notSharedIntro': '在配對尚未雙方成立前，以下資訊不會透露給配對對象：',
+    'privacy.notSharedEmail': 'Email 地址（僅於雙方成立配對後才會互相揭露）',
     'privacy.notSharedBirthYear': '出生年份',
     'privacy.notSharedGender': '性別',
     'privacy.storageTitle': '資料儲存',
-    'privacy.storageBody': '你的資料儲存於加密的雲端資料庫，我們不會將個人資料出售給第三方。',
+    'privacy.storageBody': '你的資料會儲存在本服務使用的資料庫與檔案儲存系統中，用於帳號、配對、定序與相關功能。我們不會將你的個人資料出售給第三方。',
     'privacy.thirdPartyTitle': '第三方服務',
-    'privacy.thirdPartyBody': '我們使用 TMDB 取得電影資訊、Google Gemini 生成 AI 分析。這些服務僅接收匿名化的品味數據，不包含你的個人識別資訊。',
+    'privacy.thirdPartyBody': '我們使用 TMDB 取得電影資料，並使用 Google Gemini 產生部分 AI 分析內容。在這些流程中，第三方服務可能會接收到電影查詢內容、片單脈絡或經整理後的偏好訊號；依目前實作，不會主動傳送你的 email、顯示名稱等帳號識別資訊。',
     'privacy.rightsTitle': '你的權利',
     'privacy.rightsBody': '你可以隨時要求匯出或刪除你的帳號與所有相關資料。',
     'privacy.contactTitle': '聯繫我們',
-    'privacy.contactBody': '如有隱私相關疑問，請透過應用程式內的設定頁面聯繫我們。',
+    'privacy.contactBody': '如有隱私相關疑問，請使用首頁提供的聯絡方式與我們聯繫。',
   },
 
   en: {
@@ -494,6 +605,13 @@ const translations: Record<Locale, Record<string, string>> = {
     'landing.termLine4': 'UNKNOWN CINEMATIC DNA STRAND DETECTED.',
     'landing.termLine5': 'BEGIN SEQUENCING?',
     'landing.termHint': 'PRESS [Y] OR CLICK TO START',
+    'landing.contactEmail': 'Email',
+    'landing.enter': 'Enter',
+    'landing.fileLabel': 'FILE {{id}}',
+    'footer.nav': 'Footer links',
+    'footer.tagline': 'Trace your taste through the films you choose.',
+    'footer.privacy': 'Privacy',
+    'footer.terms': 'Terms',
     'landing.howTitle': 'How It Works',
     'landing.step1Title': 'Origin',
     'landing.step1Desc': 'Choose one film that represents your taste as a calibration point.',
@@ -570,6 +688,34 @@ const translations: Record<Locale, Record<string, string>> = {
     'auth.devHint': 'Use the local admin shortcut and go straight to the dashboard.',
     'auth.devLogin': 'Dev Admin Login',
     'auth.devName': 'Dev Admin',
+    'auth.layoutAccess': 'Access',
+    'auth.layoutKicker': '[ DOSSIER_INTAKE ]',
+    'auth.layoutHeadline': 'Build the archive entry.',
+    'auth.layoutCopy': 'Once your film dossier exists, sequencing, matching, and invites can begin.',
+    'auth.layoutStatus': 'Profile Seed / Required',
+    'auth.layoutPath': 'ROOT > ACCESS > REGISTER',
+    'auth.layoutTimecode': 'FILE 00 / ACTIVE INTAKE',
+    'auth.layoutRuleTitle': 'Match Rule',
+    'auth.layoutRuleBody': 'There is no in-app messaging. Email addresses are revealed only after an invite is accepted.',
+    'auth.layoutGateTitle': 'Sequence Gate',
+    'auth.layoutGateBody': 'After registration, you will choose a seed film before entering the full quadrant scan.',
+    'auth.layoutEyebrow': '[ AUTH_SEQUENCE ]',
+    'auth.layoutGateway': 'GATEWAY / ACTIVE',
+    'auth.layoutFooterPath': 'ROOT > ACCESS',
+    'auth.layoutFooterFile': 'FILE 00',
+    'auth.modalLabel': 'Login dialog',
+    'auth.modalKicker': '[ ACCESS_PORTAL ]',
+    'auth.modalHeadline': 'Resume the sequence.',
+    'auth.modalCopy': 'Enter the login chamber directly from the home page without breaking your sequencing flow.',
+    'auth.modalStatus': 'Magic Link / Active',
+    'auth.modalPath': 'ROOT > ACCESS > LOGIN',
+    'auth.modalTimecode': 'SCAN WINDOW / FILE 00',
+    'auth.modalRuleTitle': 'Access Rule',
+    'auth.modalRuleBody': 'Once signed in, you can go straight back to sequencing, DNA, and matches.',
+    'auth.modalNoAccountTitle': 'No Account',
+    'auth.modalNoAccountPrefix': 'Need a new account? Go directly to the',
+    'auth.modalNoAccountSuffix': '.',
+    'auth.modalClose': 'Close login dialog',
 
     // Register
     'register.title': 'Create your account',
@@ -632,6 +778,9 @@ const translations: Record<Locale, Record<string, string>> = {
     'complete.extend': 'Extend analysis (+5 rounds)',
     'complete.extendHint': 'Add 5 rounds for higher precision. {{remaining}} extensions remaining.',
     'complete.maxReached': 'Maximum extensions reached. DNA analysis is already at full precision.',
+    'complete.fileLabel': 'FILE 04',
+    'complete.eyebrow': '[ SEQUENCE_COMPLETE ]',
+    'complete.heroMeta': 'RUN CLOSED // ANALYSIS READY',
 
     // DNA
     'dna.title': 'Cine DNA',
@@ -653,6 +802,9 @@ const translations: Record<Locale, Record<string, string>> = {
     'dna.idealDate': 'Ideal movie date',
     'dna.share': 'Share result',
     'dna.findMatches': 'Find matches',
+    'dna.fileLabel': 'FILE 01',
+    'dna.eyebrow': '[ MOVIE_DNA_PROFILE ]',
+    'dna.heroMeta': 'GEN_SEQ: v2.0.4 // SIGNAL: STABLE',
 
     // Matches
     'matches.title': 'Matches',
@@ -707,6 +859,22 @@ const translations: Record<Locale, Record<string, string>> = {
     'theaters.hidden': 'Hidden',
     'theaters.active': 'Active',
     'theaters.inactive': 'Not yet active',
+    'theaters.fit': 'Why You Fit',
+    'theaters.fitHint': 'These are the strongest tags connecting your taste to this room.',
+    'theaters.noSharedTags': 'You qualify for this room, but no single tag is dominating your overlap yet.',
+    'theaters.members': 'Members',
+    'theaters.membersEmpty': 'No visible members yet.',
+    'theaters.recommended': 'Start With',
+    'theaters.watchlist': 'Shared Watchlist',
+    'theaters.watchlistHint': 'Ranked by current member overlap, these are the films this room is most likely to rally around.',
+    'theaters.supporters': '{{count}} supporters',
+    'theaters.messages': 'Message Board',
+    'theaters.messagesHint': 'Trade one short note about what this room should watch next.',
+    'theaters.messagesEmpty': 'No one has opened the thread yet.',
+    'theaters.messagePlaceholder': 'Drop a short note about what this theater should watch next, or your first read on the room.',
+    'theaters.messageSend': 'Post Message',
+    'theaters.messageDelete': 'Delete',
+    'theaters.open': 'Open Theater',
 
     // Admin
     'admin.title': 'Admin Dashboard',
@@ -788,6 +956,7 @@ const translations: Record<Locale, Record<string, string>> = {
     'profile.loggingOut': 'Logging out...',
     'profile.deleteAccount': 'Delete Account',
     'profile.deletingAccount': 'Deleting...',
+    'profile.fileLabel': 'FILE 02',
     'locale.switchZh': 'Switch to Chinese',
     'locale.switchEn': 'Switch to English',
 
@@ -800,6 +969,29 @@ const translations: Record<Locale, Record<string, string>> = {
 
     // Matches disclaimer
     'matches.disclaimer': 'Matches are based on cinematic taste similarity analysis. Compatibility scores reflect shared movie preferences only and do not guarantee interpersonal compatibility.',
+    'matches.fileLabel': 'FILE 03',
+    'theaters.fileLabel': 'FILE 06',
+
+    // Archive
+    'archive.file': 'FILE {{id}}',
+    'archive.statusReady': 'ARCHIVE READY',
+    'archive.scanComplete': 'PAGE_SCAN_COMPLETE',
+    'archive.defaultCue': 'ARCHIVE VIEW',
+    'archive.defaultBreadcrumb': 'ROOT > ARCHIVE > VIEW',
+    'archive.sequencingCue': 'SEQUENCING PIPELINE',
+    'archive.sequencingBreadcrumb': 'ROOT > SEQUENCE > SESSION',
+    'archive.dnaCue': 'MOVIE DNA REPORT',
+    'archive.dnaBreadcrumb': 'ROOT > SEQUENCE > DNA_REPORT',
+    'archive.matchesCue': 'MATCH RESOLUTION',
+    'archive.matchesBreadcrumb': 'ROOT > MATCHES > RESOLUTION',
+    'archive.theatersCue': 'SCREENING INDEX',
+    'archive.theatersBreadcrumb': 'ROOT > THEATERS > INDEX',
+    'archive.profileCue': 'USER DOSSIER',
+    'archive.profileBreadcrumb': 'ROOT > DOSSIER > PROFILE',
+    'archive.ticketCue': 'ADMISSION RECORD',
+    'archive.ticketBreadcrumb': 'ROOT > MATCHES > TICKET',
+    'archive.adminCue': 'CONTROL ACCESS',
+    'archive.adminBreadcrumb': 'ROOT > CONTROL > ACCESS',
 
     // Terms of service
     'terms.title': 'Terms of Service',
@@ -823,7 +1015,7 @@ const translations: Record<Locale, Record<string, string>> = {
     'terms.warrantyTitle': 'Disclaimer of Warranties',
     'terms.warrantyBody': 'The service is provided "as is" without warranties of any kind, express or implied. We make no guarantees regarding match quality or the accuracy of AI-generated analysis.',
     'terms.contactTitle': 'Contact',
-    'terms.contactBody': 'For questions regarding these Terms of Service, please contact us through the settings page in the app.',
+    'terms.contactBody': 'For questions regarding these Terms of Service, please use the contact methods listed on the home page.',
 
     // Register consent
     'register.agreePrefix': 'I have read and agree to the',
@@ -834,7 +1026,15 @@ const translations: Record<Locale, Record<string, string>> = {
     'register.birthYearRequired': 'Birth year is required',
     'register.ageMinimum': 'You must be at least 18 years old to use this service',
     'register.scrollToRead': 'Please scroll to read the full policy',
-    'register.disclaimer': 'This service is available to users aged 18 and above. By registering, you confirm that you have read and understood the privacy policy in its entirety, and consent to the processing of your personal data as described therein.',
+    'register.disclaimer': 'This service is available only to users aged 18 and above. The site does not provide direct in-app contact. Email addresses are only revealed when the other person accepts your invite, or when you accept theirs. By registering, you agree to the Terms of Service, the Privacy Policy, and this contact disclosure rule.',
+    'register.metaEyebrow': '[ DOSSIER_INTAKE ]',
+    'register.metaLine': 'PROFILE SEED / CONSENT REQUIRED',
+    'register.policySummaryLine1': 'Before registering: there is no in-app DM system. Email addresses are revealed only after an invite is accepted.',
+    'register.policySummaryLine2': 'We use your basic profile and viewing preferences to generate cinematic DNA, matches, and recommendation outputs.',
+    'register.policyExpand': 'Expand full policy',
+    'register.policyCollapse': 'Collapse full policy',
+    'register.openTerms': 'View Terms of Service',
+    'register.openPrivacy': 'View Privacy Policy',
 
     // Privacy policy
     'privacy.title': 'Privacy Policy',
@@ -853,18 +1053,19 @@ const translations: Record<Locale, Record<string, string>> = {
     'privacy.sharedTags': 'Shared taste tags',
     'privacy.sharedIceBreakers': 'AI-generated conversation starters',
     'privacy.sharedSimilarity': 'Taste similarity score',
+    'privacy.sharedEmailAfterAccept': 'Email addresses are revealed to both sides only after you accept an invite or the other person accepts yours',
     'privacy.notSharedTitle': 'Information Never Shared',
-    'privacy.notSharedIntro': 'The following is never revealed to matches:',
-    'privacy.notSharedEmail': 'Email address',
+    'privacy.notSharedIntro': 'Before a match is mutually accepted, the following is not revealed to the other person:',
+    'privacy.notSharedEmail': 'Email address (shared only after both sides are connected through an accepted invite)',
     'privacy.notSharedBirthYear': 'Birth year',
     'privacy.notSharedGender': 'Gender',
     'privacy.storageTitle': 'Data Storage',
-    'privacy.storageBody': 'Your data is stored in encrypted cloud databases. We never sell personal data to third parties.',
+    'privacy.storageBody': 'Your data is stored in the databases and file storage systems used to operate the service for account, sequencing, matching, and related features. We do not sell your personal data to third parties.',
     'privacy.thirdPartyTitle': 'Third-Party Services',
-    'privacy.thirdPartyBody': 'We use TMDB for movie data and Google Gemini for AI analysis. These services only receive anonymized taste data, never your personal identifying information.',
+    'privacy.thirdPartyBody': 'We use TMDB for movie data and Google Gemini for some AI-generated analysis. In those flows, third-party services may receive movie queries, title context, or derived preference signals; under the current implementation, we do not intentionally send account identifiers such as your email address or display name.',
     'privacy.rightsTitle': 'Your Rights',
     'privacy.rightsBody': 'You may request to export or delete your account and all associated data at any time.',
     'privacy.contactTitle': 'Contact Us',
-    'privacy.contactBody': 'For privacy-related questions, please reach out through the settings page in the app.',
+    'privacy.contactBody': 'For privacy-related questions, please use the contact methods listed on the home page.',
   },
 }

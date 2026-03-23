@@ -107,26 +107,12 @@ vi.mock('@/components/sequencing/OnboardingOverlay', () => ({
 
 vi.mock('@/lib/i18n', () => ({
   useI18n: () => ({
-    t: (...args: [string, Record<string, string | number>?]) => {
-      const [key, vars] = args
+    t: (key: string) => {
       const dict: Record<string, string> = {
         'common.error': 'Something went wrong',
         'error.retry': 'Retry',
-        'common.cancel': 'Cancel',
-        'seq.pickMode.eyebrow': 'Selection Check',
-        'seq.pickMode.prompt': 'You picked {{title}}',
-        'seq.pickMode.body': 'Have you already seen this one, or is it just calling to you right now?',
-        'seq.pickMode.watched': 'Watched',
-        'seq.pickMode.attracted': 'Want to see',
-        'seq.pickMode.skip': 'Skip status',
       }
-      let text = dict[key] ?? key
-      if (vars) {
-        for (const [name, value] of Object.entries(vars)) {
-          text = text.replaceAll(`{{${name}}}`, String(value))
-        }
-      }
-      return text
+      return dict[key] ?? key
     },
   }),
 }))
@@ -200,7 +186,7 @@ describe('SequencingPage', () => {
     expect(fetchPairMock.mock.calls.length).toBeGreaterThanOrEqual(1)
   })
 
-  it('opens the pick-mode dialog before submitting a pick', async () => {
+  it('submits immediately when a movie is picked', async () => {
     sequencingState.progress = {
       completed: false,
       round_number: 2,
@@ -220,17 +206,11 @@ describe('SequencingPage', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Pick Inception' }))
 
-    expect(submitPickMock).not.toHaveBeenCalled()
-    expect(screen.getByRole('dialog')).toBeTruthy()
-    expect(screen.getByText('You picked Inception')).toBeTruthy()
-
-    fireEvent.click(screen.getByRole('button', { name: 'Watched' }))
-
     expect(submitPickMock).toHaveBeenCalledTimes(1)
     expect(submitPickMock).toHaveBeenCalledWith(10, 'watched', expect.any(Number))
   })
 
-  it('supports want-to-see and skip from the pick-mode dialog', async () => {
+  it('still supports skipping the pair directly', async () => {
     sequencingState.progress = {
       completed: false,
       round_number: 3,
@@ -246,18 +226,8 @@ describe('SequencingPage', () => {
       movie_b: { tmdb_id: 20, title_en: 'La La Land', title_zh: '樂來越愛你' },
     }
 
-    const { rerender } = render(<SequencingPage />)
-
-    fireEvent.click(screen.getByRole('button', { name: 'Pick 樂來越愛你' }))
-    fireEvent.click(screen.getByRole('button', { name: 'Want to see' }))
-
-    expect(submitPickMock).toHaveBeenCalledWith(20, 'attracted', expect.any(Number))
-
-    submitPickMock.mockReset()
-
-    rerender(<SequencingPage />)
-    fireEvent.click(screen.getByRole('button', { name: 'Pick Inception' }))
-    fireEvent.click(screen.getByRole('button', { name: 'Skip status' }))
+    render(<SequencingPage />)
+    fireEvent.click(screen.getByRole('button', { name: 'SkipActions' }))
 
     expect(skipMock).toHaveBeenCalledTimes(1)
     expect(skipMock).toHaveBeenCalledWith(expect.any(Number))

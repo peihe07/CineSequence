@@ -9,6 +9,7 @@ from app.services.pair_engine import (
     compute_quadrant_from_picks,
     get_pair_for_round,
     get_phase1_pairs,
+    get_reroll_pair_for_round,
 )
 
 
@@ -107,6 +108,36 @@ class TestGetPairForRound:
             pair = get_pair_for_round(r, session_seed="unique-rounds-test")
             pair_ids.append(pair["id"])
         assert len(pair_ids) == len(set(pair_ids))
+
+
+class TestPhase1Reroll:
+    """Test reroll behavior for Phase 1 alternates."""
+
+    def test_reroll_can_avoid_reserved_future_movies(self):
+        pairs = get_phase1_pairs(session_seed="reroll-reserved-test")
+        current_pair = pairs[0]
+        reserved_tmdb_ids = {
+            tmdb_id
+            for pair in pairs[1:]
+            for tmdb_id in (pair["movie_a"]["tmdb_id"], pair["movie_b"]["tmdb_id"])
+        }
+
+        reroll_pair = get_reroll_pair_for_round(
+            1,
+            used_pair_ids={current_pair["id"]},
+            exclude_tmdb_ids={
+                current_pair["movie_a"]["tmdb_id"],
+                current_pair["movie_b"]["tmdb_id"],
+            },
+            reserved_tmdb_ids=reserved_tmdb_ids,
+        )
+
+        assert reroll_pair is not None
+        reroll_ids = {
+            reroll_pair["movie_a"]["tmdb_id"],
+            reroll_pair["movie_b"]["tmdb_id"],
+        }
+        assert not (reroll_ids & reserved_tmdb_ids)
 
 
 class TestComputeQuadrantFromPicks:

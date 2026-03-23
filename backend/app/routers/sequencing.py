@@ -27,6 +27,7 @@ from app.schemas.sequencing import (
 from app.services.ai_pair_engine import get_ai_pair
 from app.services.pair_engine import (
     compute_quadrant_from_picks,
+    get_phase1_pairs,
     get_pair_for_round,
     get_reroll_pair_for_round,
 )
@@ -130,6 +131,64 @@ def _build_progress(session, pick_count: int) -> ProgressResponse:
     )
 
 
+def _merge_tmdb_ids(*groups: list[int] | set[int] | None) -> list[int]:
+    merged: set[int] = set()
+    for group in groups:
+        if not group:
+            continue
+        merged.update(tmdb_id for tmdb_id in group if tmdb_id)
+    return list(merged)
+
+
+def _serialize_pair_payload(
+    round_number: int,
+    phase: int,
+    movie_a_tmdb_id: int,
+    movie_b_tmdb_id: int,
+    test_dimension: str | None = None,
+    pair_id: str | None = None,
+) -> dict:
+    return {
+        "round_number": round_number,
+        "phase": phase,
+        "movie_a_tmdb_id": movie_a_tmdb_id,
+        "movie_b_tmdb_id": movie_b_tmdb_id,
+        "test_dimension": test_dimension,
+        "pair_id": pair_id,
+    }
+
+
+def _get_pending_pair_payload(session, round_number: int) -> dict | None:
+    payload = session.pending_pair_payload
+    if not payload:
+        return None
+    if session.pending_pair_round_number != round_number:
+        return None
+    if payload.get("round_number") != round_number:
+        return None
+    return payload
+
+
+async def _pair_response_from_payload(payload: dict) -> PairResponse:
+    movie_a = await get_movie(payload["movie_a_tmdb_id"])
+    movie_b = await get_movie(payload["movie_b_tmdb_id"])
+    if not movie_a or not movie_b:
+        raise HTTPException(status_code=502, detail="Failed to fetch movie data from TMDB")
+
+    return PairResponse(
+        round_number=payload["round_number"],
+        phase=payload["phase"],
+        movie_a=await _movie_to_info(movie_a),
+        movie_b=await _movie_to_info(movie_b),
+        test_dimension=payload.get("test_dimension"),
+    )
+
+
+def _clear_pending_pair(session) -> None:
+    session.pending_pair_round_number = None
+    session.pending_pair_payload = None
+
+
 @router.post("/seed-movie")
 async def set_seed_movie(
     body: SeedMovieRequest,
@@ -143,6 +202,7 @@ async def set_seed_movie(
 
     session = await get_or_create_session(db, user.id)
     session.seed_movie_tmdb_id = body.tmdb_id
+    _clear_pending_pair(session)
 
     # Keep user-level fields in sync for backwards compatibility
     user.seed_movie_tmdb_id = body.tmdb_id
@@ -193,6 +253,10 @@ async def get_pair(
             completed=True,
         )
 
+    pending_payload = _get_pending_pair_payload(session, round_number)
+    if pending_payload:
+        return await _pair_response_from_payload(pending_payload)
+
     if phase == 1:
         seed_genres: list[str] = []
         if session.seed_movie_tmdb_id:
@@ -201,34 +265,41 @@ async def get_pair(
                 seed_genres = seed_movie.genres
 
         pair = get_pair_for_round(round_number, seed_genres, session_seed=str(session.id))
-        movie_a = await get_movie(pair["movie_a"]["tmdb_id"])
-        movie_b = await get_movie(pair["movie_b"]["tmdb_id"])
-
-        if not movie_a or not movie_b:
-            raise HTTPException(status_code=502, detail="Failed to fetch movie data from TMDB")
-
-        return PairResponse(
+        session.pending_pair_round_number = round_number
+        session.pending_pair_payload = _serialize_pair_payload(
             round_number=round_number,
             phase=phase,
-            movie_a=await _movie_to_info(movie_a),
-            movie_b=await _movie_to_info(movie_b),
+            movie_a_tmdb_id=pair["movie_a"]["tmdb_id"],
+            movie_b_tmdb_id=pair["movie_b"]["tmdb_id"],
             test_dimension=pair.get("dimension"),
+            pair_id=pair["id"],
         )
+        await db.commit()
+        return await _pair_response_from_payload(session.pending_pair_payload)
 
     else:
         quadrant = compute_quadrant_from_picks(picks)
-        result = await get_ai_pair(phase, round_number, picks, quadrant)
+        result = await get_ai_pair(
+            phase,
+            round_number,
+            picks,
+            quadrant,
+            extra_excluded_tmdb_ids=session.reroll_excluded_tmdb_ids,
+        )
 
         if not result:
             raise HTTPException(status_code=502, detail="Failed to generate movie pair")
 
-        return PairResponse(
+        session.pending_pair_round_number = round_number
+        session.pending_pair_payload = _serialize_pair_payload(
             round_number=round_number,
             phase=phase,
-            movie_a=await _movie_to_info(result["movie_a"]),
-            movie_b=await _movie_to_info(result["movie_b"]),
+            movie_a_tmdb_id=result["movie_a"].tmdb_id,
+            movie_b_tmdb_id=result["movie_b"].tmdb_id,
             test_dimension=result.get("test_dimension"),
         )
+        await db.commit()
+        return await _pair_response_from_payload(session.pending_pair_payload)
 
 
 @router.post("/reroll", response_model=PairResponse)
@@ -256,48 +327,73 @@ async def reroll_pair(
                 seed_genres = seed_movie.genres
 
         used_pair_ids = {pick["pair_id"] for pick in picks if pick.get("pair_id")}
+        used_tmdb_ids = {
+            tmdb_id
+            for pick in picks
+            for tmdb_id in (pick.get("movie_a_tmdb_id"), pick.get("movie_b_tmdb_id"))
+            if tmdb_id
+        }
+        scheduled_pairs = get_phase1_pairs(seed_genres, session_seed=str(session.id))
+        reserved_tmdb_ids = {
+            tmdb_id
+            for index, scheduled_pair in enumerate(scheduled_pairs, start=1)
+            if index != round_number
+            for tmdb_id in (
+                scheduled_pair["movie_a"]["tmdb_id"],
+                scheduled_pair["movie_b"]["tmdb_id"],
+            )
+        } | used_tmdb_ids
         pair = get_reroll_pair_for_round(
             round_number,
             seed_genres,
             used_pair_ids=used_pair_ids,
             exclude_tmdb_ids=exclude_tmdb_ids,
+            reserved_tmdb_ids=reserved_tmdb_ids,
         )
         if not pair:
             raise HTTPException(status_code=409, detail="No alternate pair available")
-
-        movie_a = await get_movie(pair["movie_a"]["tmdb_id"])
-        movie_b = await get_movie(pair["movie_b"]["tmdb_id"])
-
-        if not movie_a or not movie_b:
-            raise HTTPException(status_code=502, detail="Failed to fetch movie data from TMDB")
-
-        return PairResponse(
+        session.pending_pair_round_number = round_number
+        session.pending_pair_payload = _serialize_pair_payload(
             round_number=round_number,
             phase=phase,
-            movie_a=await _movie_to_info(movie_a),
-            movie_b=await _movie_to_info(movie_b),
+            movie_a_tmdb_id=pair["movie_a"]["tmdb_id"],
+            movie_b_tmdb_id=pair["movie_b"]["tmdb_id"],
             test_dimension=pair.get("dimension"),
+            pair_id=pair["id"],
         )
+        await db.commit()
+        return await _pair_response_from_payload(session.pending_pair_payload)
 
+    session.reroll_excluded_tmdb_ids = _merge_tmdb_ids(
+        session.reroll_excluded_tmdb_ids,
+        exclude_tmdb_ids,
+    )
     quadrant = compute_quadrant_from_picks(picks)
     result = await get_ai_pair(
         phase,
         round_number,
         picks,
         quadrant,
-        extra_excluded_tmdb_ids=list(exclude_tmdb_ids),
+        extra_excluded_tmdb_ids=_merge_tmdb_ids(
+            session.reroll_excluded_tmdb_ids,
+            exclude_tmdb_ids,
+        ),
     )
 
     if not result:
         raise HTTPException(status_code=502, detail="Failed to generate alternate movie pair")
 
-    return PairResponse(
+    session.pending_pair_round_number = round_number
+    session.pending_pair_payload = _serialize_pair_payload(
         round_number=round_number,
         phase=phase,
-        movie_a=await _movie_to_info(result["movie_a"]),
-        movie_b=await _movie_to_info(result["movie_b"]),
+        movie_a_tmdb_id=result["movie_a"].tmdb_id,
+        movie_b_tmdb_id=result["movie_b"].tmdb_id,
         test_dimension=result.get("test_dimension"),
     )
+    await db.commit()
+
+    return await _pair_response_from_payload(session.pending_pair_payload)
 
 
 @router.post("/pick", response_model=ProgressResponse)
@@ -315,9 +411,15 @@ async def submit_pick(
         raise HTTPException(status_code=400, detail="Sequencing already completed")
 
     phase = _get_phase(round_number)
+    pending_payload = _get_pending_pair_payload(session, round_number)
 
     # Determine pair info based on phase
-    if phase == 1:
+    if pending_payload:
+        pair_id = pending_payload.get("pair_id")
+        movie_a_tmdb_id = pending_payload["movie_a_tmdb_id"]
+        movie_b_tmdb_id = pending_payload["movie_b_tmdb_id"]
+        test_dimension = pending_payload.get("test_dimension")
+    elif phase == 1:
         seed_genres: list[str] = []
         if session.seed_movie_tmdb_id:
             seed_movie = await get_movie(session.seed_movie_tmdb_id)
@@ -353,6 +455,7 @@ async def submit_pick(
         response_time_ms=body.response_time_ms,
     )
     db.add(pick)
+    _clear_pending_pair(session)
 
     # Update session status based on completion
     if round_number >= session.total_rounds:
@@ -385,8 +488,14 @@ async def skip_pair(
         raise HTTPException(status_code=400, detail="Sequencing already completed")
 
     phase = _get_phase(round_number)
+    pending_payload = _get_pending_pair_payload(session, round_number)
 
-    if phase == 1:
+    if pending_payload:
+        pair_id = pending_payload.get("pair_id")
+        movie_a_tmdb_id = pending_payload["movie_a_tmdb_id"]
+        movie_b_tmdb_id = pending_payload["movie_b_tmdb_id"]
+        skip_dimension = pending_payload.get("test_dimension")
+    elif phase == 1:
         seed_genres: list[str] = []
         if session.seed_movie_tmdb_id:
             seed_movie = await get_movie(session.seed_movie_tmdb_id)
@@ -396,17 +505,13 @@ async def skip_pair(
         pair_id = pair["id"]
         movie_a_tmdb_id = pair["movie_a"]["tmdb_id"]
         movie_b_tmdb_id = pair["movie_b"]["tmdb_id"]
+        skip_dimension = pair.get("dimension")
     else:
         if body.movie_a_tmdb_id is None or body.movie_b_tmdb_id is None:
             raise HTTPException(status_code=400, detail="Phase 2-3 skips require full pair context")
         pair_id = None
         movie_a_tmdb_id = body.movie_a_tmdb_id
         movie_b_tmdb_id = body.movie_b_tmdb_id
-
-    # Determine test_dimension
-    if phase == 1:
-        skip_dimension = pair.get("dimension")
-    else:
         skip_dimension = body.test_dimension
 
     pick = Pick(
@@ -423,6 +528,7 @@ async def skip_pair(
         response_time_ms=body.response_time_ms,
     )
     db.add(pick)
+    _clear_pending_pair(session)
 
     if round_number >= session.total_rounds:
         if session.status == SessionStatus.extending:
@@ -466,6 +572,7 @@ async def extend_sequencing(
 
     # Reset user status to in_progress for the extension
     user.sequencing_status = SequencingStatus.in_progress
+    _clear_pending_pair(session)
     await db.commit()
 
     return ExtendResponse(

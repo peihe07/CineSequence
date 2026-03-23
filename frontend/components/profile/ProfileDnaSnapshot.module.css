@@ -1,0 +1,174 @@
+.panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding: clamp(1.2rem, 2.6vw, 1.7rem);
+  background:
+    linear-gradient(180deg, rgba(18, 18, 20, 0.88), rgba(12, 12, 14, 0.72)),
+    rgba(20, 20, 20, 0.58);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.22);
+  overflow: hidden;
+}
+
+.panel::before {
+  content: '';
+  position: absolute;
+  top: 14px;
+  bottom: 14px;
+  left: 0;
+  width: 3px;
+  background: linear-gradient(180deg, rgba(192, 98, 35, 0.95) 0%, rgba(192, 98, 35, 0.12) 100%);
+}
+
+.panel::after {
+  content: '';
+  position: absolute;
+  inset: 14px;
+  pointer-events: none;
+  background:
+    linear-gradient(rgba(255,255,255,0.18), rgba(255,255,255,0.18)) top left / 18px 1px no-repeat,
+    linear-gradient(rgba(255,255,255,0.18), rgba(255,255,255,0.18)) top left / 1px 18px no-repeat,
+    linear-gradient(rgba(255,255,255,0.18), rgba(255,255,255,0.18)) bottom right / 18px 1px no-repeat,
+    linear-gradient(rgba(255,255,255,0.18), rgba(255,255,255,0.18)) bottom right / 1px 18px no-repeat;
+  opacity: 0.55;
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(192, 98, 35, 0.82);
+}
+
+.title {
+  margin-top: 0.35rem;
+  font-size: clamp(1.1rem, 2vw, 1.45rem);
+  line-height: 1;
+  color: rgba(255, 255, 255, 0.94);
+}
+
+.stamp {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.3rem 0.65rem;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  transform: rotate(-5deg);
+}
+
+.stampVerified {
+  border: 1px solid rgba(192, 98, 35, 0.42);
+  color: rgba(255, 220, 192, 0.92);
+}
+
+.scanBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.scanMeta,
+.metricHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.scanLabel,
+.metricLabel {
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.48);
+}
+
+.scanState,
+.metricValue {
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.62);
+}
+
+.scanValueWrap {
+  position: relative;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.scanBeam {
+  position: absolute;
+  inset: 0;
+  width: 38%;
+  background: linear-gradient(90deg, transparent 0%, rgba(192, 98, 35, 0.16) 50%, transparent 100%);
+  pointer-events: none;
+}
+
+.scanValue {
+  position: relative;
+  padding: 0.9rem 1rem;
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.92);
+  min-height: 3rem;
+  display: flex;
+  align-items: center;
+}
+
+.metrics {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.metricRow {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.metricTrack {
+  width: 100%;
+  height: 6px;
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.04) 100%);
+  overflow: hidden;
+}
+
+.metricFill {
+  height: 100%;
+  background:
+    linear-gradient(90deg, rgba(192, 98, 35, 0.95) 0%, rgba(255, 210, 168, 0.9) 100%);
+}
+
+.note {
+  font-size: 0.84rem;
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+@media (max-width: 768px) {
+  .header,
+  .scanMeta,
+  .metricHeader {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .stamp {
+    align-self: flex-start;
+  }
+}

@@ -3,7 +3,7 @@
   flex-direction: column;
   min-height: 100vh;
   overflow-x: hidden;
-  background: linear-gradient(180deg, #faf8f3 0%, #eceae3 100%);
+  background: linear-gradient(180deg, #171210 0%, #0d0b0a 100%);
 }
 
 .hero {
@@ -46,7 +46,11 @@
   flex: 1;
   position: relative;
   overflow: hidden;
-  transition: flex 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  cursor: pointer;
+  transition: flex 0.45s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .panel:last-child {
@@ -57,11 +61,11 @@
 }
 
 .panelStrip:hover .panel {
-  flex: 0.42;
+  flex: 0.72;
 }
 
 .panelStrip .panel:hover {
-  flex: 2.9;
+  flex: 1.7;
 }
 
 .panel[data-index='0'] {
@@ -112,8 +116,8 @@
 
 .panel:hover .panelPhoto {
   opacity: 0.98;
-  transform: scale(1.1) translateY(-1.5%);
-  filter: brightness(1) contrast(1.06) saturate(1.12);
+  transform: scale(1.045) translateY(-0.5%);
+  filter: brightness(0.98) contrast(1.04) saturate(1.06);
 }
 
 .panelIconWrap {
@@ -139,8 +143,8 @@
 
 .panel:hover .panelIcon {
   color: rgba(255, 255, 255, 0.38);
-  scale: 1.16;
-  transform: translateY(-8px);
+  scale: 1.06;
+  transform: translateY(-3px);
   opacity: 1;
 }
 
@@ -157,8 +161,8 @@
 }
 
 .panelStrip:hover .panel .panelLabel {
-  opacity: 0.52;
-  transform: translateY(10px);
+  opacity: 0.64;
+  transform: translateY(5px);
 }
 
 .panelLabelTitle {
@@ -185,6 +189,24 @@
   transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
+.panelCta {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  margin-top: 0.3rem;
+  padding: 0.32rem 0.52rem;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(255, 220, 192, 0.92);
+  background: rgba(255, 255, 255, 0.06);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+}
+
 .panel:hover .panelLabel {
   opacity: 1;
   transform: translateY(0);
@@ -192,12 +214,24 @@
 
 .panel:hover .panelLabelTitle {
   color: rgba(255, 255, 255, 0.92);
-  transform: translateY(-2px);
+  transform: translateY(-1px);
 }
 
 .panel:hover .panelLabelDesc {
   opacity: 1;
   transform: translateY(0);
+}
+
+.panel:hover .panelCta,
+.panel:focus-visible .panelCta {
+  opacity: 1;
+  transform: translateY(0);
+  box-shadow: inset 0 0 0 1px rgba(192, 98, 35, 0.28);
+}
+
+.panel:focus-visible {
+  outline: 1px solid rgba(192, 98, 35, 0.5);
+  outline-offset: -1px;
 }
 
 .logo {
@@ -208,6 +242,7 @@
   display: flex;
   flex-direction: column;
   text-decoration: none;
+  pointer-events: auto;
 }
 
 .logoMain {
@@ -237,6 +272,7 @@
   display: flex;
   align-items: center;
   padding: clamp(5rem, 10vw, 8rem) clamp(1.25rem, 4vw, 3rem) 12rem;
+  pointer-events: none;
 }
 
 .manifest {
@@ -245,6 +281,7 @@
   flex-direction: column;
   gap: 1.15rem;
   max-width: 34rem;
+  pointer-events: auto;
 }
 
 .sideLabel {
@@ -340,6 +377,7 @@
   justify-content: center;
   min-width: 9.5rem;
   padding: 0.82rem 1.35rem;
+  appearance: none;
   border-radius: 999px;
   text-decoration: none;
   font-family: var(--font-sans), sans-serif;
@@ -347,6 +385,7 @@
   font-weight: 600;
   letter-spacing: 0.1em;
   text-transform: uppercase;
+  cursor: pointer;
   transition: all 0.18s ease;
 }
 
@@ -451,10 +490,13 @@
     flex: 0 0 78vw;
     scroll-snap-align: center;
     position: relative;
+    display: block;
+  text-decoration: none;
+  color: inherit;
     border: 1px solid rgba(255, 255, 255, 0.1);
-    background: rgba(10, 10, 10, 0.28);
-    overflow: hidden;
-  }
+  background: rgba(10, 10, 10, 0.28);
+  overflow: hidden;
+}
 
   .mobileCardPhoto {
     position: absolute;
@@ -462,6 +504,11 @@
     background-size: cover;
     background-position: center;
     filter: brightness(0.84) contrast(1.05) saturate(1.05);
+  }
+
+  .panelCta {
+    opacity: 1;
+    transform: translateY(0);
   }
 
   .heroOverlay {

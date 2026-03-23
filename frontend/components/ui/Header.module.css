@@ -13,22 +13,28 @@
   padding: 0.75rem 1.5rem;
   background:
     linear-gradient(180deg, rgba(18, 14, 13, 0.9) 0%, rgba(12, 10, 9, 0.78) 100%);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-  backdrop-filter: blur(var(--glass-blur-light));
-  -webkit-backdrop-filter: blur(var(--glass-blur-light));
+  overflow: hidden;
   transition:
     background 0.28s ease,
-    border-color 0.28s ease,
-    backdrop-filter 0.28s ease,
     box-shadow 0.28s ease;
+}
+
+.header::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  opacity: 0.55;
+  background:
+    linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.22) 15%, rgba(192, 98, 35, 0.46) 50%, rgba(255, 255, 255, 0.22) 85%, transparent 100%);
+  pointer-events: none;
 }
 
 .scrolled {
   background:
     linear-gradient(180deg, rgba(18, 14, 13, 0.96) 0%, rgba(12, 10, 9, 0.88) 100%);
-  border-bottom-color: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(var(--glass-blur));
-  -webkit-backdrop-filter: blur(var(--glass-blur));
   box-shadow: 0 12px 28px rgba(0, 0, 0, 0.22);
 }
 
@@ -80,12 +86,9 @@
   gap: 0.25rem;
   min-height: 42px;
   padding: 4px;
-  border-radius: 0.95rem;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 0;
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.03) 100%);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.04),
     inset 0 -1px 0 rgba(0, 0, 0, 0.18);
@@ -107,7 +110,7 @@
   text-transform: uppercase;
   color: var(--archive-text-muted);
   text-decoration: none;
-  border-radius: 0.8rem;
+  border-radius: var(--radius-component);
   transition:
     color 0.2s ease,
     background 0.2s ease,
@@ -153,8 +156,11 @@
   color: #fff;
   background:
     linear-gradient(180deg, rgba(192, 98, 35, 0.92) 0%, rgba(163, 84, 32, 0.92) 100%);
-  box-shadow: 0 8px 20px rgba(192, 98, 35, 0.16);
+  box-shadow:
+    0 8px 20px rgba(192, 98, 35, 0.16),
+    inset 0 0 18px rgba(255, 226, 204, 0.08);
   font-weight: 600;
+  border-radius: var(--radius-pill);
 }
 
 .navLinkActive .navIndex {

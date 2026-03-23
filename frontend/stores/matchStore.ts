@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { api } from '@/lib/api'
+import { translateStatic } from '@/lib/i18n'
 
 export interface MatchItem {
   id: string
@@ -39,7 +40,7 @@ export const useMatchStore = create<MatchState>((set, get) => ({
     } catch (err) {
       set({
         isLoading: false,
-        error: err instanceof Error ? err.message : 'Failed to fetch matches',
+        error: err instanceof Error ? err.message : translateStatic('common.error'),
       })
     }
   },
@@ -64,7 +65,7 @@ export const useMatchStore = create<MatchState>((set, get) => ({
     } catch (err) {
       set({
         isDiscovering: false,
-        error: err instanceof Error ? err.message : 'Failed to discover matches',
+        error: err instanceof Error ? err.message : translateStatic('common.error'),
       })
     }
   },
@@ -79,7 +80,7 @@ export const useMatchStore = create<MatchState>((set, get) => ({
         matches: get().matches.map((m) => (m.id === matchId ? updated : m)),
       })
     } catch (err) {
-      set({ error: err instanceof Error ? err.message : 'Failed to send invite' })
+      set({ error: err instanceof Error ? err.message : translateStatic('common.error') })
     }
   },
 
@@ -93,7 +94,7 @@ export const useMatchStore = create<MatchState>((set, get) => ({
         matches: get().matches.map((m) => (m.id === matchId ? updated : m)),
       })
     } catch (err) {
-      set({ error: err instanceof Error ? err.message : 'Failed to respond to invite' })
+      set({ error: err instanceof Error ? err.message : translateStatic('common.error') })
     }
   },
 }))

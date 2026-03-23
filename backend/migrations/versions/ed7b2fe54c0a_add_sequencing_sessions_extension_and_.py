@@ -31,6 +31,7 @@ def upgrade() -> None:
     sa.Column('max_extension_batches', sa.Integer(), nullable=False),
     sa.Column('total_rounds', sa.Integer(), nullable=False),
     sa.Column('seed_movie_tmdb_id', sa.Integer(), nullable=True),
+    sa.Column('reroll_excluded_tmdb_ids', postgresql.JSON(astext_type=sa.Text()), server_default=sa.text("'[]'::json"), nullable=False),
     sa.Column('season_label', sa.String(length=50), nullable=True),
     sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
     sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),

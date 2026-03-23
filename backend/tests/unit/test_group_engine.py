@@ -4,7 +4,10 @@ from app.services.group_engine import (
     AUTO_ASSIGN_THRESHOLD,
     TAG_INDEX,
     TAG_KEYS,
+    build_shared_watchlist,
     compute_group_affinity,
+    get_shared_tags,
+    recommend_movies_for_group,
     should_activate_group,
 )
 
@@ -102,6 +105,40 @@ class TestThresholdBoundary:
         vector[TAG_INDEX["mindfuck"]] = AUTO_ASSIGN_THRESHOLD - 0.01
         score = compute_group_affinity(vector, ["mindfuck"])
         assert score < AUTO_ASSIGN_THRESHOLD
+
+
+class TestSharedTagsAndRecommendations:
+    def test_shared_tags_returns_strongest_overlap(self):
+        vector = [0.0] * len(TAG_KEYS)
+        vector[TAG_INDEX["mindfuck"]] = 0.9
+        vector[TAG_INDEX["twist"]] = 0.6
+        vector[TAG_INDEX["timeTravel"]] = 0.3
+
+        shared = get_shared_tags(vector, ["twist", "mindfuck", "dialogue", "timeTravel"])
+        assert shared == ["mindfuck", "twist", "timeTravel"]
+
+    def test_recommend_movies_uses_group_tags(self):
+        vector = [0.0] * len(TAG_KEYS)
+        vector[TAG_INDEX["mindfuck"]] = 0.9
+        vector[TAG_INDEX["twist"]] = 0.8
+
+        movies = recommend_movies_for_group(["mindfuck", "twist"], vector, limit=3)
+        assert len(movies) == 3
+        assert all(movie["match_tags"] for movie in movies)
+        assert any("mindfuck" in movie["match_tags"] or "twist" in movie["match_tags"] for movie in movies)
+
+    def test_shared_watchlist_uses_member_overlap(self):
+        member_a = [0.0] * len(TAG_KEYS)
+        member_b = [0.0] * len(TAG_KEYS)
+        member_a[TAG_INDEX["mindfuck"]] = 0.9
+        member_a[TAG_INDEX["twist"]] = 0.8
+        member_b[TAG_INDEX["mindfuck"]] = 0.7
+        member_b[TAG_INDEX["twist"]] = 0.6
+
+        watchlist = build_shared_watchlist(["mindfuck", "twist"], [member_a, member_b], limit=4)
+        assert len(watchlist) == 4
+        assert watchlist[0]["supporter_count"] >= 1
+        assert any("mindfuck" in movie["match_tags"] or "twist" in movie["match_tags"] for movie in watchlist)
 
 
 class TestShouldActivateGroup:

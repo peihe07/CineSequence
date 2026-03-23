@@ -6,6 +6,10 @@
 const STORAGE_KEY = 'cineseq-muted'
 
 type SoundName = 'pick' | 'skip' | 'flip' | 'tear' | 'complete' | 'match'
+type PlayOptions = {
+  volume?: number
+  playbackRate?: number
+}
 
 const SOUND_FILES: Record<SoundName, string> = {
   pick: '/sounds/pick.mp3',
@@ -43,7 +47,7 @@ class SoundManager {
     return this._muted
   }
 
-  play(name: SoundName): void {
+  play(name: SoundName, options?: PlayOptions): void {
     if (this._muted || typeof window === 'undefined') return
 
     let audio = this.cache.get(name)
@@ -55,6 +59,8 @@ class SoundManager {
 
     // Reset and play — allow overlapping by cloning if already playing
     audio.currentTime = 0
+    audio.volume = options?.volume ?? 0.3
+    audio.playbackRate = options?.playbackRate ?? 1
     audio.play().catch(() => {
       // Ignore autoplay policy errors
     })

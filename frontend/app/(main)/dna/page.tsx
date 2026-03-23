@@ -91,8 +91,8 @@ function DnaResultContent() {
           animate={{ opacity: 1, y: 0 }}
           transition={sectionTransition}
         >
-          <span className={styles.sideLabel}>FILE 01</span>
-          <p className={styles.eyebrow}>[ MOVIE_DNA_PROFILE ]</p>
+          <span className={styles.sideLabel}>{t('dna.fileLabel')}</span>
+          <p className={styles.eyebrow}>{t('dna.eyebrow')}</p>
           <motion.h1
             className={styles.title}
             initial={{ opacity: 0, y: -20 }}
@@ -104,7 +104,7 @@ function DnaResultContent() {
           <p className={styles.deck}>
             {t('dna.deck')}
           </p>
-          <p className={styles.heroMeta}>GEN_SEQ: v2.0.4 // SIGNAL: STABLE</p>
+          <p className={styles.heroMeta}>{t('dna.heroMeta')}</p>
         </motion.section>
 
         <motion.section

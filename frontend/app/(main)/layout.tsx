@@ -3,6 +3,7 @@
 import Header from '@/components/ui/Header'
 import ArchiveWrapper from '@/components/ui/ArchiveWrapper'
 import AuthGuard from '@/components/guards/AuthGuard'
+import Footer from '@/components/ui/Footer'
 import styles from './layout.module.css'
 
 export default function MainLayout({ children }: { children: React.ReactNode }) {
@@ -13,6 +14,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
         <div className={styles.page}>
           <ArchiveWrapper>{children}</ArchiveWrapper>
         </div>
+        <Footer />
       </div>
     </AuthGuard>
   )

@@ -1,17 +1,20 @@
 'use client'
 
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useCallback } from 'react'
 import Link from 'next/link'
+import LoginModal from '@/components/auth/LoginModal'
+import { getToken } from '@/lib/api'
 import { useI18n } from '@/lib/i18n'
 import FloatingLocaleToggle from '@/components/ui/FloatingLocaleToggle'
+import Footer from '@/components/ui/Footer'
 import styles from './page.module.css'
 
 const PANELS = [
-  { titleKey: 'landing.step1Title', descKey: 'landing.step1Desc', icon: 'ri-film-line',       photo: '/landing/panel-01.svg' },
-  { titleKey: 'landing.step2Title', descKey: 'landing.step2Desc', icon: 'ri-git-branch-line', photo: '/landing/panel-02.svg' },
-  { titleKey: 'landing.step3Title', descKey: 'landing.step3Desc', icon: 'ri-dna-line',      photo: '/landing/panel-03.svg' },
-  { titleKey: 'landing.step4Title', descKey: 'landing.step4Desc', icon: 'ri-group-line',    photo: '/landing/panel-04.svg' },
-  { titleKey: 'landing.step5Title', descKey: 'landing.step5Desc', icon: 'ri-ticket-2-line', photo: '/landing/panel-05.svg' },
+  { href: '/sequencing/seed', titleKey: 'landing.step1Title', descKey: 'landing.step1Desc', icon: 'ri-film-line',       photo: '/landing/panel-01.svg' },
+  { href: '/sequencing', titleKey: 'landing.step2Title', descKey: 'landing.step2Desc', icon: 'ri-git-branch-line', photo: '/landing/panel-02.svg' },
+  { href: '/dna', titleKey: 'landing.step3Title', descKey: 'landing.step3Desc', icon: 'ri-dna-line',      photo: '/landing/panel-03.svg' },
+  { href: '/matches', titleKey: 'landing.step4Title', descKey: 'landing.step4Desc', icon: 'ri-group-line',    photo: '/landing/panel-04.svg' },
+  { href: '/ticket', titleKey: 'landing.step5Title', descKey: 'landing.step5Desc', icon: 'ri-ticket-2-line', photo: '/landing/panel-05.svg' },
 ]
 
 function useTypewriter(text: string, speed = 60, delay = 800) {
@@ -68,6 +71,8 @@ function useTerminalSequence(lines: string[], start: boolean, stepDelay = 220) {
 
 export default function Home() {
   const { t } = useI18n()
+  const [loginOpen, setLoginOpen] = useState(false)
+  const [authMode, setAuthMode] = useState<'login' | 'register'>('login')
   const headlineText = t('landing.termLine4')
   const { displayed, done } = useTypewriter(headlineText)
   const terminalLines = useMemo(() => [
@@ -78,13 +83,30 @@ export default function Home() {
   ], [t])
   const visibleTerminalLines = useTerminalSequence(terminalLines, done)
 
+  const handleProtectedEntry = useCallback((event: React.MouseEvent<HTMLElement>) => {
+    if (getToken()) {
+      return
+    }
+
+    event.preventDefault()
+    setAuthMode('login')
+    setLoginOpen(true)
+  }, [])
+
   return (
     <main className={styles.main}>
+      <LoginModal open={loginOpen} mode={authMode} onClose={() => setLoginOpen(false)} />
       <FloatingLocaleToggle />
       <section className={styles.hero}>
         <div className={styles.panelStrip}>
           {PANELS.map((panel, i) => (
-            <div key={i} className={styles.panel} data-index={i}>
+            <Link
+              key={i}
+              href={panel.href}
+              className={styles.panel}
+              data-index={i}
+              onClick={handleProtectedEntry}
+            >
               <div
                 className={styles.panelPhoto}
                 style={{ backgroundImage: `url(${panel.photo})` }}
@@ -96,19 +118,25 @@ export default function Home() {
                 <span className={styles.panelLabelTitle}>{t(panel.titleKey)}</span>
                 {panel.descKey && <p className={styles.panelLabelDesc}>{t(panel.descKey)}</p>}
               </div>
-            </div>
+            </Link>
           ))}
         </div>
 
         <div className={styles.mobileGallery} aria-hidden="true">
           <div className={styles.mobileGalleryTrack}>
             {PANELS.map((panel, i) => (
-              <div key={i} className={styles.mobileCard} data-index={i}>
+              <Link
+                key={i}
+                href={panel.href}
+                className={styles.mobileCard}
+                data-index={i}
+                onClick={handleProtectedEntry}
+              >
                 <div
                   className={styles.mobileCardPhoto}
                   style={{ backgroundImage: `url(${panel.photo})` }}
                 />
-              </div>
+              </Link>
             ))}
           </div>
         </div>
@@ -119,7 +147,7 @@ export default function Home() {
         </Link>
 
         <div className={styles.heroOverlay}>
-          <span className={styles.sideLabel}>FILE 00</span>
+          <span className={styles.sideLabel}>{t('landing.fileLabel', { id: '00' })}</span>
           <div className={styles.manifest}>
             <h1 className={styles.heroHeadline}>
               <span className={styles.headlineText}>{displayed}</span>
@@ -136,33 +164,32 @@ export default function Home() {
               ))}
             </div>
             <div className={`${styles.heroCta} ${done ? styles.heroCtaVisible : ''}`}>
-              <Link href="/register" className={styles.ctaPrimary}>
+              <button
+                type="button"
+                className={styles.ctaPrimary}
+                onClick={() => {
+                  setAuthMode('register')
+                  setLoginOpen(true)
+                }}
+              >
                 {t('landing.start')}
-              </Link>
-              <Link href="/login" className={styles.ctaSecondary}>
+              </button>
+              <button
+                type="button"
+                className={styles.ctaSecondary}
+                onClick={() => {
+                  setAuthMode('login')
+                  setLoginOpen(true)
+                }}
+              >
                 {t('landing.login')}
-              </Link>
+              </button>
             </div>
           </div>
         </div>
       </section>
 
-      <footer className={styles.footer}>
-        <span className={styles.footerCopy}>&copy; {new Date().getFullYear()} peihe</span>
-        <span className={styles.footerDot} aria-hidden="true" />
-        <a href="mailto:y450376@gmail.com" className={styles.footerIcon} aria-label={t('landing.contactEmail')}>
-          <i className="ri-mail-line" />
-        </a>
-        <a
-          href="https://medium.com/@peihe07"
-          target="_blank"
-          rel="noopener noreferrer"
-          className={styles.footerIcon}
-          aria-label={t('landing.contactBlog')}
-        >
-          <i className="ri-article-line" />
-        </a>
-      </footer>
+      <Footer />
     </main>
   )
 }

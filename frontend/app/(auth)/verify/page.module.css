@@ -7,6 +7,32 @@
   text-align: center;
 }
 
+.metaBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  width: 100%;
+  text-align: left;
+}
+
+.eyebrow,
+.metaLine {
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+}
+
+.eyebrow {
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  color: rgba(192, 98, 35, 0.82);
+}
+
+.metaLine {
+  font-size: 0.64rem;
+  letter-spacing: 0.16em;
+  color: rgba(255, 255, 255, 0.48);
+}
+
 .title {
   font-family: var(--font-zh), sans-serif;
   font-size: clamp(1.75rem, 5vw, 2.4rem);
@@ -14,16 +40,17 @@
   letter-spacing: -0.04em;
   line-height: 0.96;
   text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.96);
 }
 
 .subtitle {
-  color: var(--foreground-soft);
+  color: rgba(255, 255, 255, 0.72);
   font-size: 0.92rem;
   line-height: 1.8;
 }
 
 .link {
-  color: var(--accent-ink);
+  color: rgba(255, 220, 192, 0.92);
   text-decoration: underline;
   font-size: 0.84rem;
   font-family: var(--font-mono);

@@ -1,8 +1,7 @@
 .pill {
   display: inline-flex;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.08);
   background: rgba(255, 255, 255, 0.04);
   cursor: pointer;
 }
@@ -22,12 +21,10 @@
 }
 
 .option:first-child {
-  border-radius: 999px 0 0 999px;
   padding-left: 0.85rem;
 }
 
 .option:last-child {
-  border-radius: 0 999px 999px 0;
   padding-right: 0.85rem;
 }
 

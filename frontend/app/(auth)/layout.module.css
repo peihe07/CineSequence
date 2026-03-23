@@ -4,25 +4,81 @@
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  padding: 3rem 1.2rem;
-  background-color: var(--background);
-  background-image:
-    radial-gradient(at 0% 0%, rgba(192, 98, 35, 0.03) 0px, transparent 50%),
-    radial-gradient(at 100% 100%, rgba(192, 98, 35, 0.05) 0px, transparent 50%);
+  padding: 2rem 1.2rem;
+  background:
+    radial-gradient(circle at top left, rgba(192, 98, 35, 0.12), transparent 22%),
+    radial-gradient(circle at bottom right, rgba(96, 43, 18, 0.12), transparent 26%),
+    linear-gradient(180deg, #14100c 0%, #0c0a09 100%);
   overflow: hidden;
 }
 
 .card {
   position: relative;
-  width: 100%;
-  max-width: 28rem;
-  padding: clamp(1.5rem, 5vw, 2.5rem);
-  border: none;
-  background: var(--glass-bg-strong);
-  backdrop-filter: blur(var(--glass-blur));
-  -webkit-backdrop-filter: blur(var(--glass-blur));
-  box-shadow: var(--glass-shadow), var(--glass-inset);
-  border-radius: var(--card-radius);
+  width: min(100%, clamp(24rem, 34vw, 36rem));
+  padding: clamp(1.25rem, 4vw, 2rem);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  background:
+    linear-gradient(180deg, rgba(19, 18, 20, 0.72), rgba(12, 12, 14, 0.56)),
+    rgba(20, 20, 20, 0.52);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.22);
+  border-radius: 28px;
+  overflow: hidden;
+}
+
+.cardWide {
+  width: min(100%, 54rem);
+  padding: 0;
+}
+
+.card::after {
+  content: '';
+  position: absolute;
+  inset: 14px;
+  pointer-events: none;
+  background:
+    linear-gradient(rgba(255,255,255,0.18), rgba(255,255,255,0.18)) top left / 18px 1px no-repeat,
+    linear-gradient(rgba(255,255,255,0.18), rgba(255,255,255,0.18)) top left / 1px 18px no-repeat,
+    linear-gradient(rgba(255,255,255,0.18), rgba(255,255,255,0.18)) top right / 18px 1px no-repeat,
+    linear-gradient(rgba(255,255,255,0.18), rgba(255,255,255,0.18)) top right / 1px 18px no-repeat,
+    linear-gradient(rgba(255,255,255,0.18), rgba(255,255,255,0.18)) bottom left / 18px 1px no-repeat,
+    linear-gradient(rgba(255,255,255,0.18), rgba(255,255,255,0.18)) bottom left / 1px 18px no-repeat,
+    linear-gradient(rgba(255,255,255,0.18), rgba(255,255,255,0.18)) bottom right / 18px 1px no-repeat,
+    linear-gradient(rgba(255,255,255,0.18), rgba(255,255,255,0.18)) bottom right / 1px 18px no-repeat;
+  opacity: 0.6;
+}
+
+.cardMeta,
+.footerMeta {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  font-family: var(--font-mono);
+  font-size: 0.64rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.cardMeta {
+  margin-bottom: 1.25rem;
+  color: rgba(255, 255, 255, 0.48);
+}
+
+.footerMeta {
+  margin-top: 1.25rem;
+  color: rgba(255, 255, 255, 0.36);
+}
+
+.eyebrow {
+  color: rgba(192, 98, 35, 0.82);
+}
+
+.status {
+  color: rgba(255, 255, 255, 0.48);
 }
 
 .backdrop {
@@ -31,7 +87,7 @@
   width: 32rem;
   aspect-ratio: 1;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(192, 98, 35, 0.08) 0%, rgba(192, 98, 35, 0) 70%);
+  background: radial-gradient(circle, rgba(192, 98, 35, 0.12) 0%, rgba(192, 98, 35, 0) 70%);
   pointer-events: none;
 }
 
@@ -48,11 +104,11 @@
 
 .sideLabel {
   writing-mode: vertical-rl;
-  font-family: var(--font-sans), sans-serif;
-  font-size: 0.7rem;
-  font-weight: 600;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 500;
   letter-spacing: 0.25em;
-  color: var(--muted);
+  color: rgba(255, 255, 255, 0.42);
   text-transform: uppercase;
   margin-top: 3rem;
 }
@@ -60,16 +116,34 @@
 .sideLine {
   width: 1px;
   height: clamp(6rem, 20vh, 12rem);
-  background: linear-gradient(to bottom, rgba(192, 98, 35, 0.15), transparent);
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      rgba(255, 255, 255, 0.18) 0 3px,
+      transparent 3px 8px
+    );
 }
 
 .brand {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
-  margin-bottom: 3.5rem;
+  gap: 0.2rem;
+  margin-bottom: 2rem;
   border-left: 3px solid var(--accent);
-  padding-left: 1.25rem;
+  padding-left: 1rem;
+  text-decoration: none;
+  width: fit-content;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.brand:hover,
+.brand:focus-visible {
+  opacity: 0.88;
+  transform: translateX(2px);
+}
+
+.brand:focus-visible {
+  outline: none;
 }
 
 .brandScript {
@@ -79,35 +153,161 @@
   letter-spacing: 0.12em;
   text-transform: uppercase;
   line-height: 1;
-  color: var(--foreground);
+  color: rgba(255, 255, 255, 0.96);
 }
 
 .brandMono {
-  font-family: var(--font-sans), sans-serif;
+  font-family: var(--font-mono);
   font-size: 0.75rem;
   font-weight: 500;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--muted);
+  color: rgba(255, 255, 255, 0.5);
 }
 
 .content {
   position: relative;
 }
 
+.cardSplit {
+  display: grid;
+  grid-template-columns: minmax(18rem, 0.96fr) minmax(20rem, 0.9fr);
+  max-height: min(42rem, 80vh);
+}
+
+.intro {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 2rem;
+  padding: 1.8rem 1.8rem 1.6rem;
+  background:
+    linear-gradient(180deg, rgba(26, 18, 13, 0.84), rgba(16, 12, 10, 0.4)),
+    radial-gradient(circle at top left, rgba(192, 98, 35, 0.2), transparent 34%);
+}
+
+.intro::after {
+  content: '';
+  position: absolute;
+  top: 1.4rem;
+  bottom: 1.4rem;
+  right: 0;
+  width: 1px;
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      rgba(255, 255, 255, 0.16) 0 4px,
+      transparent 4px 10px
+    );
+}
+
+.introTop,
+.introNotes,
+.introNote,
+.introMeta {
+  display: flex;
+  flex-direction: column;
+}
+
+.introTop {
+  gap: 1rem;
+}
+
+.introNotes {
+  gap: 0.7rem;
+}
+
+.introNote {
+  gap: 0.22rem;
+}
+
+.introMeta {
+  gap: 0.55rem;
+}
+
+.introKicker,
+.introStatus,
+.introPath,
+.introTimecode,
+.introNoteLabel {
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+}
+
+.introKicker {
+  font-size: 0.68rem;
+  letter-spacing: 0.18em;
+  color: rgba(255, 220, 192, 0.84);
+}
+
+.introHeadline {
+  margin: 0;
+  max-width: 11ch;
+  font-size: clamp(1.8rem, 3.2vw, 2.7rem);
+  line-height: 0.92;
+  letter-spacing: -0.05em;
+  color: rgba(255, 255, 255, 0.96);
+  text-transform: uppercase;
+}
+
+.introCopy {
+  max-width: 34ch;
+  margin: 0;
+  font-size: 0.86rem;
+  line-height: 1.65;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.introStatus {
+  display: inline-flex;
+  width: fit-content;
+  padding: 0.32rem 0.5rem;
+  font-size: 0.64rem;
+  letter-spacing: 0.16em;
+  color: rgba(255, 220, 192, 0.92);
+  background: rgba(192, 98, 35, 0.16);
+  box-shadow: inset 0 0 0 1px rgba(192, 98, 35, 0.24);
+}
+
+.introPath,
+.introTimecode {
+  font-size: 0.64rem;
+  letter-spacing: 0.16em;
+  color: rgba(255, 255, 255, 0.44);
+}
+
+.introNoteLabel {
+  font-size: 0.62rem;
+  letter-spacing: 0.16em;
+  color: rgba(255, 220, 192, 0.72);
+}
+
+.introNoteText {
+  font-size: 0.78rem;
+  line-height: 1.58;
+  color: rgba(255, 255, 255, 0.62);
+}
+
+.formPane {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 1.5rem 1.4rem 1.4rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
 @media (max-width: 640px) {
   .shell {
     align-items: flex-start;
-    padding: 1.25rem 1rem 2rem;
-    background-image: none;
+    padding: 1rem 1rem 1.5rem;
   }
 
   .card {
-    padding: 1.5rem;
-    background: transparent;
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-    box-shadow: none;
+    max-width: 100%;
+    padding: 1.25rem;
+    border-radius: 22px;
   }
 
   .sideLabelGroup {
@@ -115,6 +315,74 @@
   }
 
   .brand {
-    margin-bottom: 2.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .cardMeta,
+  .footerMeta {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .intro {
+    gap: 0.9rem;
+    padding: 1.15rem 1.15rem 0.85rem;
+  }
+
+  .introTop {
+    gap: 0.6rem;
+  }
+
+  .introHeadline {
+    max-width: none;
+    font-size: 1.55rem;
+  }
+
+  .introCopy {
+    max-width: none;
+    font-size: 0.8rem;
+    line-height: 1.5;
+  }
+
+  .introNotes {
+    display: none;
+  }
+
+  .introMeta {
+    gap: 0.35rem;
+  }
+
+  .introPath,
+  .introTimecode {
+    display: none;
+  }
+}
+
+@media (max-width: 860px) {
+  .cardWide {
+    width: min(100%, 36rem);
+    padding: clamp(1.25rem, 4vw, 2rem);
+  }
+
+  .cardSplit {
+    grid-template-columns: 1fr;
+    max-height: none;
+  }
+
+  .intro {
+    gap: 1.4rem;
+    padding: 1.5rem 1.5rem 1.2rem;
+  }
+
+  .intro::after {
+    display: none;
+  }
+
+  .introHeadline {
+    max-width: none;
+  }
+
+  .formPane {
+    padding: 1.2rem 1.4rem 1.4rem;
   }
 }
