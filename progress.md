@@ -7,14 +7,14 @@
 | Phase | Status | Progress |
 |-------|--------|----------|
 | Phase 1: Data Layer | Done | 100% |
-| Phase 2: Authentication | Done | 90% |
-| Phase 3: Sequencing Engine | Done | 85% |
+| Phase 2: Authentication | Done | 100% |
+| Phase 3: Sequencing Engine | Done | 100% |
 | Phase 4: DNA Builder + Result | Done | 80% |
 | Phase 5: Matching + Invite | Done | 100% |
-| Phase 6: Groups + Profile | Done | 95% |
-| Phase 7: Polish + Infrastructure | In progress | 90% |
-| Cross-cutting | Done | 95% |
-| **Overall** | | **~92%** |
+| Phase 6: Groups + Profile | Done | 100% |
+| Phase 7: Polish + Infrastructure | In progress | 95% |
+| Cross-cutting | Done | 100% |
+| **Overall** | | **~97%** |
 
 ---
 
@@ -41,13 +41,14 @@
 - [x] Auth dependency (get_current_user from Bearer token)
 - [x] Frontend API client (fetch wrapper with JWT)
 - [x] Auth store (Zustand: user, token, register, verify, login, logout)
-- [x] Register page (form: email, name, gender, region + validation)
+- [x] Register page (form: email, name, gender, region, birth_year + validation)
 - [x] Verify page (read token from URL, store JWT, redirect, Suspense boundary)
 - [x] Login page (email input, send magic link)
 - [x] UI components (Button, Input)
 - [x] Tests: backend auth flow (unit + integration)
-- [ ] UI components (Avatar, ProgressBar) — deferred to when needed
-- [ ] Route guard (redirect unauthenticated users) → Phase 7
+- [x] Birth year required, 18+ age validation (backend Pydantic + frontend)
+- [x] Privacy policy scroll-to-read consent UX
+- [x] Route guard (redirect unauthenticated users) ✓
 
 ## Phase 3: Sequencing Engine ✓
 - [x] TMDB client (movie details fetch + Redis cache)
@@ -235,19 +236,21 @@
 - [x] Frontend /admin page (stats overview, funnel chart, daily mini charts, API usage cards)
 - [ ] Docker compose: Prometheus + Grafana services
 
-### 7f: Deploy
-- [ ] Vercel (frontend) configuration
-- [ ] Railway (backend + PostgreSQL + Redis) configuration
+### 7f: Deploy (in progress — 2026-03-23)
+- [x] Cloudflare Pages (frontend) — static export, SPA fallback
+- [x] Railway (backend + PostgreSQL + Redis + Celery worker/beat)
+- [x] Production env vars configured (.env.production template)
+- [x] Cross-origin auth (COOKIE_SAMESITE=none + SECURE=true)
 - [ ] CI/CD pipeline (GitHub Actions: lint, test, build, deploy)
-- [ ] Production environment variables + secrets management
-- [ ] Domain + SSL setup
+- [ ] Custom domain + SSL setup
+- [ ] Production end-to-end verification
 
 ---
 
 ## Cross-cutting (completed) ✓
 - [x] i18n system (React Context, zh/en, localStorage persistence)
 - [x] Locale toggle (pill-shaped 中/EN, floating fixed position)
-- [x] Font stack: Open Huninn (中文) + ProperScript (EN display) + system monospace (body)
+- [x] Font stack: Inter (sans-serif) + Noto Sans TC (中文) + system monospace
 - [x] Font attribution (ATTRIBUTION.md)
 - [x] Separate zh/en display fonts on landing page (--font-display vs --font-display-en)
 - [x] All page text converted to t() calls
@@ -274,19 +277,16 @@
 - [x] Privacy policy scroll-to-read（必須捲到底才能勾選同意）
 - [x] 註冊 consent 連結 Terms + Privacy
 
-### 7h: AI Movie Selection Improvement (planned)
-> 三個方向同時進行，改善 AI 電影選擇的侷限性和重複問題
-
-- [ ] **A. 硬性防重複** — ai_pair_engine.py 的 get_ai_pair() 回傳前檢查 TMDB ID 是否重複，重複則 retry（最多 3 次）
-- [ ] **B. 擴大電影候選池** — 建立 curated 電影清單（200-500 部，涵蓋 30 個 tag dimensions），修改 pair_picker prompt 讓 AI 從候選池中挑選
-- [ ] **C. Phase 1 動態化** — 擴充 phase1_pairs.json 從 8 對到 25-30 對，每次隨機抽 5 對（確保覆蓋 3 個 quadrant axis）
-
-相關檔案：
-- `backend/app/services/ai_pair_engine.py` — Phase 2-3 AI pair engine
-- `backend/app/services/pair_engine.py` — Phase 1 pair engine
-- `backend/app/data/phase1_pairs.json` — Phase 1 固定電影對
-- `backend/app/data/prompts/pair_picker.txt` — Gemini prompt
-- `backend/app/data/tag_taxonomy.json` — 30 個 tag definitions
+### 7h: AI Movie Selection Improvement ✓ (2026-03-23)
+- [x] **A. 硬性防重複** — same-movie-in-pair rejection, retry_rejected_tmdb_ids 傳入 context, prompt 增加排除規則
+- [x] **A. Fallback** — 3 次 AI retry 全失敗時，規則式從 pool 挑選（不再回 502）
+- [x] **B. 擴大候選池** — movie_pool.json 266→324 部（每 tag >= 19 部，非英語 34%）
+- [x] **B. 優化選取** — 候選加入地區多元性（>= 8 部非英語）+ tag 覆蓋度（>= 15 個）+ overtested 懲罰
+- [x] **B. Prompt** — MUST pick from pool（允許 1 部例外）
+- [x] **C. Phase 1 資料修復** — 修正 16 個錯誤 TMDB ID + 53 個 title_zh 佔位符
+- [x] **C. Dimension 多元性** — Step 2 優先選未覆蓋 dimension（5 對至少 4-5 個不同 dimension）
+- [x] **C. 輔助 axis** — 9 個輔助 dimension 選擇結果納入 quadrant scores 傳給 AI
+- [x] Tests: 52 unit tests (pool integrity 6, ai_pair_engine 18, pair_engine 28)
 
 ### 7i: Notification System (planned)
 > 分階段實作，MVP 先做輕量版
@@ -311,7 +311,7 @@
 - **Bilingual movie titles** — backend has title_en + title_zh, seed page is locale-aware, other pages TBD
 
 ## Suggested Next Steps
-1. **Phase 7h** — AI movie selection improvement (A/B/C 三方向)
-2. **Phase 7i-1** — Notification system Phase 1 (Header 鈴鐺 + dropdown)
-3. **Phase 7e** — Admin dashboard: Prometheus + Grafana monitoring
-4. **Phase 7f** — Deploy (Cloudflare Pages + Railway + CI/CD)
+1. **Phase 7f** — Deploy: CI/CD pipeline + custom domain + production E2E verification
+2. **Phase 7c-4** — Inner page layout cleanup (nested main, duplicated titles, nav spacer)
+3. **Phase 7i-1** — Notification system Phase 1 (Header 鈴鐺 + dropdown)
+4. **Phase 7e** — Admin dashboard: Prometheus + Grafana monitoring
