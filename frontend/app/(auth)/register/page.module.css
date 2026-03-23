@@ -43,9 +43,12 @@
 
 .genderOption {
   padding: 0.6rem;
-  background: rgba(255, 255, 255, 0.72);
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 1px 4px rgba(45, 54, 50, 0.06);
   color: var(--muted);
-  border: 1px solid var(--border);
+  border: none;
   border-radius: 6px;
   font-size: 0.76rem;
   font-family: var(--font-mono);
@@ -55,13 +58,13 @@
 
 .genderOption:hover {
   color: var(--foreground);
-  border-color: var(--border-strong);
+  box-shadow: 0 2px 8px rgba(45, 54, 50, 0.1);
 }
 
 .genderActive {
   color: var(--accent-ink);
-  border-color: var(--accent);
-  background: rgba(192, 98, 35, 0.08);
+  background: rgba(192, 98, 35, 0.1);
+  box-shadow: 0 1px 4px rgba(45, 54, 50, 0.06);
 }
 
 /* Consent checkbox */
@@ -81,6 +84,61 @@
   cursor: pointer;
 }
 
+/* Policy scroll box */
+.policySection {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.policyBox {
+  max-height: 160px;
+  overflow-y: auto;
+  padding: 0.8rem;
+  background: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-radius: 6px;
+  font-size: 0.72rem;
+  line-height: 1.7;
+  color: var(--foreground-soft);
+}
+
+.policyBox p {
+  margin-bottom: 0.5rem;
+}
+
+.policyBox ul {
+  margin-bottom: 0.5rem;
+  padding-left: 1.2rem;
+}
+
+.policyBox li {
+  margin-bottom: 0.2rem;
+}
+
+.policyHint {
+  font-size: 0.68rem;
+  color: var(--muted);
+  font-style: italic;
+}
+
+.consentDisabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.consentDisabled .checkbox {
+  cursor: not-allowed;
+}
+
+.disclaimer {
+  font-size: 0.7rem;
+  color: var(--muted);
+  line-height: 1.7;
+  padding: 0.5rem 0;
+}
+
 .error {
   font-size: 0.76rem;
   color: var(--error);
@@ -91,7 +149,6 @@
 
 .footer {
   padding-top: 0.6rem;
-  border-top: 1px solid rgba(221, 217, 208, 0.7);
   font-size: 0.8rem;
   color: var(--muted);
 }
@@ -99,4 +156,33 @@
 .link {
   color: var(--accent-ink);
   text-decoration: underline;
+}
+
+@media (max-width: 640px) {
+  .stack {
+    gap: 1.2rem;
+  }
+
+  .genderGrid {
+    gap: 0.45rem;
+  }
+
+  .genderOption {
+    min-height: 2.8rem;
+  }
+
+  .policyBox {
+    max-height: 128px;
+    padding: 0.75rem;
+    font-size: 0.76rem;
+  }
+
+  .consent {
+    gap: 0.65rem;
+    font-size: 0.76rem;
+  }
+
+  .disclaimer {
+    font-size: 0.74rem;
+  }
 }
