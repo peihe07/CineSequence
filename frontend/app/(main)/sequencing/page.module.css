@@ -31,10 +31,10 @@
 }
 
 .stageSection {
-  display: grid;
-  grid-template-columns: minmax(84px, 120px) minmax(0, 1fr);
-  gap: clamp(1rem, 3vw, 2rem);
+  position: relative;
+  display: block;
   align-items: center;
+  padding-left: clamp(5.5rem, 10vw, 8rem);
   background: rgba(255, 255, 255, 0.58);
 }
 
@@ -85,6 +85,7 @@
   position: relative;
   z-index: 1;
   min-height: 28rem;
+  width: 100%;
 }
 
 .errorState {
@@ -96,6 +97,91 @@
   gap: 1rem;
   text-align: center;
   padding: 2rem;
+}
+
+.pickModeOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+  background: rgba(24, 28, 25, 0.42);
+  backdrop-filter: blur(6px);
+}
+
+.pickModeDialog {
+  width: min(100%, 28rem);
+  padding: 1.4rem;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 24px;
+  background:
+    linear-gradient(180deg, rgba(255, 251, 245, 0.96) 0%, rgba(241, 235, 225, 0.96) 100%);
+  box-shadow: 0 24px 80px rgba(32, 20, 10, 0.2);
+  text-align: center;
+}
+
+.pickModeEyebrow {
+  margin: 0 0 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.pickModeTitle {
+  margin: 0;
+  font-size: clamp(1.4rem, 4vw, 1.9rem);
+  line-height: 1.1;
+}
+
+.pickModeBody {
+  margin: 0.85rem 0 1.25rem;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.pickModeActions {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.pickModeBtn {
+  width: 100%;
+  min-height: 3rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid rgba(65, 74, 67, 0.12);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.72);
+  color: var(--foreground);
+  font: inherit;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.pickModeBtn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 30px rgba(51, 40, 22, 0.08);
+}
+
+.pickModePrimary {
+  background: linear-gradient(135deg, rgba(193, 103, 46, 0.16) 0%, rgba(255, 255, 255, 0.92) 100%);
+}
+
+.pickModeGhost {
+  color: var(--muted);
+  background: rgba(68, 81, 75, 0.05);
+}
+
+.pickModeCancel {
+  margin-top: 0.95rem;
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  cursor: pointer;
 }
 
 /* Mobile */
@@ -110,7 +196,7 @@
   }
 
   .stageSection {
-    grid-template-columns: 1fr;
+    padding-left: clamp(1.1rem, 4vw, 2.25rem);
   }
 
   .arena {
@@ -119,5 +205,10 @@
 
   .sideLabel {
     display: none;
+  }
+
+  .pickModeDialog {
+    padding: 1.1rem;
+    border-radius: 20px;
   }
 }

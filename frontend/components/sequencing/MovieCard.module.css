@@ -103,56 +103,10 @@
   letter-spacing: 0.02em;
 }
 
-.pickModeToggle {
-  display: flex;
-  gap: 0.5rem;
-  padding: 0.8rem 1rem;
-  border-top: 1px solid var(--border);
-}
-
-.modeBtn {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.3rem;
-  padding: 0.4rem;
-  font-size: 0.7rem;
-  font-family: inherit;
-  background: rgba(68, 81, 75, 0.06);
-  color: var(--muted);
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-
-.modeBtn:hover {
-  color: var(--foreground);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-}
-
-.modeBtn:active {
-  transform: scale(0.95);
-}
-
-.modeActive {
-  color: var(--accent);
-  border-color: var(--accent);
-  background: var(--accent-light);
-}
-
 /* Mobile: fluid card width */
 @media (max-width: 640px) {
   .card {
     width: 100%;
     max-width: 260px;
-  }
-
-  .modeBtn {
-    min-height: 44px;
-    padding: 0.5rem;
-    font-size: 0.75rem;
   }
 }

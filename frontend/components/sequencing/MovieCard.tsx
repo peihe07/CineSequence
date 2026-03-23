@@ -1,6 +1,5 @@
 'use client'
 
-import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { useSequencingStore } from '@/stores/sequencingStore'
 import { soundManager } from '@/lib/sound'
@@ -34,12 +33,11 @@ interface MovieCardProps {
     year: number | null
     genres: string[]
   }
-  onPick: (pickMode: 'watched' | 'attracted') => void
+  onPick: () => void
   side: 'left' | 'right'
 }
 
 export default function MovieCard({ movie, onPick, side }: MovieCardProps) {
-  const [pickMode, setPickMode] = useState<'watched' | 'attracted'>('attracted')
   const setAmbientColor = useSequencingStore((s) => s.setAmbientColor)
 
   function handleMouseEnter() {
@@ -68,7 +66,7 @@ export default function MovieCard({ movie, onPick, side }: MovieCardProps) {
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       whileHover={{ scale: 1.02, y: -4 }}
-      onClick={() => { soundManager.play('pick'); onPick(pickMode) }}
+      onClick={() => { soundManager.play('pick'); onPick() }}
     >
       {/* Card back face (visible during flip) */}
       <div className={styles.cardBack}>
@@ -95,21 +93,6 @@ export default function MovieCard({ movie, onPick, side }: MovieCardProps) {
             <span key={g} className={styles.genre}>{g}</span>
           ))}
         </div>
-      </div>
-
-      <div className={styles.pickModeToggle}>
-        <button
-          className={`${styles.modeBtn} ${pickMode === 'watched' ? styles.modeActive : ''}`}
-          onClick={(e) => { e.stopPropagation(); setPickMode('watched') }}
-        >
-          <i className="ri-eye-line" /> Watched
-        </button>
-        <button
-          className={`${styles.modeBtn} ${pickMode === 'attracted' ? styles.modeActive : ''}`}
-          onClick={(e) => { e.stopPropagation(); setPickMode('attracted') }}
-        >
-          <i className="ri-heart-line" /> Want to see
-        </button>
       </div>
     </motion.div>
   )

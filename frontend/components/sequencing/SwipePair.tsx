@@ -1,6 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
+import { useI18n } from '@/lib/i18n'
 import MovieCard from './MovieCard'
 import styles from './SwipePair.module.css'
 
@@ -25,11 +26,13 @@ interface SwipePairProps {
       genres: string[]
     }
   }
-  onPick: (tmdbId: number, pickMode: 'watched' | 'attracted') => void
+  onPick: (tmdbId: number) => void
   isLoading: boolean
 }
 
 export default function SwipePair({ pair, onPick, isLoading }: SwipePairProps) {
+  const { t } = useI18n()
+
   return (
     <motion.div
       className={styles.pairContainer}
@@ -39,18 +42,18 @@ export default function SwipePair({ pair, onPick, isLoading }: SwipePairProps) {
     >
       <MovieCard
         movie={pair.movie_a}
-        onPick={(mode) => !isLoading && onPick(pair.movie_a.tmdb_id, mode)}
+        onPick={() => !isLoading && onPick(pair.movie_a.tmdb_id)}
         side="left"
       />
 
       <div className={styles.vsContainer}>
-        <span className={styles.vs}>VS</span>
+        <span className={styles.vs}>{t('seq.vs')}</span>
         <div className={styles.vsGlow} />
       </div>
 
       <MovieCard
         movie={pair.movie_b}
-        onPick={(mode) => !isLoading && onPick(pair.movie_b.tmdb_id, mode)}
+        onPick={() => !isLoading && onPick(pair.movie_b.tmdb_id)}
         side="right"
       />
     </motion.div>

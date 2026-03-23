@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 const {
   pushMock,
+  replaceMock,
   sequencingState,
   fetchProgressMock,
   fetchPairMock,
@@ -11,8 +12,15 @@ const {
   skipMock,
 } = vi.hoisted(() => ({
   pushMock: vi.fn(),
+  replaceMock: vi.fn(),
   sequencingState: {
-    currentPair: null as null | { completed: boolean; round_number: number; phase: number },
+    currentPair: null as null | {
+      completed: boolean
+      round_number: number
+      phase: number
+      movie_a?: { tmdb_id: number; title_en: string; title_zh: string | null }
+      movie_b?: { tmdb_id: number; title_en: string; title_zh: string | null }
+    },
     progress: null as null | {
       completed: boolean
       round_number: number
@@ -33,7 +41,7 @@ const {
 }))
 
 vi.mock('next/navigation', () => ({
-  useRouter: () => ({ push: pushMock }),
+  useRouter: () => ({ push: pushMock, replace: replaceMock }),
 }))
 
 vi.mock('@/stores/sequencingStore', () => ({
@@ -53,7 +61,23 @@ vi.mock('@/stores/sequencingStore', () => ({
 }))
 
 vi.mock('@/components/sequencing/SwipePair', () => ({
-  default: () => <div>SwipePair</div>,
+  default: ({ pair, onPick }: {
+    pair: {
+      movie_a: { tmdb_id: number; title_en: string; title_zh: string | null }
+      movie_b: { tmdb_id: number; title_en: string; title_zh: string | null }
+    }
+    onPick: (tmdbId: number) => void
+  }) => (
+    <>
+      <div>SwipePair</div>
+      <button type="button" onClick={() => onPick(pair.movie_a.tmdb_id)}>
+        Pick {pair.movie_a.title_zh || pair.movie_a.title_en}
+      </button>
+      <button type="button" onClick={() => onPick(pair.movie_b.tmdb_id)}>
+        Pick {pair.movie_b.title_zh || pair.movie_b.title_en}
+      </button>
+    </>
+  ),
 }))
 
 vi.mock('@/components/sequencing/LiquidTube', () => ({
@@ -83,12 +107,26 @@ vi.mock('@/components/sequencing/OnboardingOverlay', () => ({
 
 vi.mock('@/lib/i18n', () => ({
   useI18n: () => ({
-    t: (key: string) => {
+    t: (...args: [string, Record<string, string | number>?]) => {
+      const [key, vars] = args
       const dict: Record<string, string> = {
         'common.error': 'Something went wrong',
         'error.retry': 'Retry',
+        'common.cancel': 'Cancel',
+        'seq.pickMode.eyebrow': 'Selection Check',
+        'seq.pickMode.prompt': 'You picked {{title}}',
+        'seq.pickMode.body': 'Have you already seen this one, or is it just calling to you right now?',
+        'seq.pickMode.watched': 'Watched',
+        'seq.pickMode.attracted': 'Want to see',
+        'seq.pickMode.skip': 'Skip status',
       }
-      return dict[key] ?? key
+      let text = dict[key] ?? key
+      if (vars) {
+        for (const [name, value] of Object.entries(vars)) {
+          text = text.replaceAll(`{{${name}}}`, String(value))
+        }
+      }
+      return text
     },
   }),
 }))
@@ -98,6 +136,7 @@ import SequencingPage from './page'
 describe('SequencingPage', () => {
   beforeEach(() => {
     pushMock.mockReset()
+    replaceMock.mockReset()
     fetchProgressMock.mockReset()
     fetchPairMock.mockReset()
     rerollPairMock.mockReset()
@@ -144,6 +183,8 @@ describe('SequencingPage', () => {
         completed: false,
         round_number: 2,
         phase: 1,
+        movie_a: { tmdb_id: 10, title_en: 'Inception', title_zh: null },
+        movie_b: { tmdb_id: 20, title_en: 'La La Land', title_zh: null },
       }
     })
 
@@ -157,5 +198,68 @@ describe('SequencingPage', () => {
     })
     expect(fetchProgressMock.mock.calls.length).toBeGreaterThanOrEqual(2)
     expect(fetchPairMock.mock.calls.length).toBeGreaterThanOrEqual(1)
+  })
+
+  it('opens the pick-mode dialog before submitting a pick', async () => {
+    sequencingState.progress = {
+      completed: false,
+      round_number: 2,
+      phase: 1,
+      total_rounds: 20,
+      seed_movie_tmdb_id: 10,
+    }
+    sequencingState.currentPair = {
+      completed: false,
+      round_number: 2,
+      phase: 1,
+      movie_a: { tmdb_id: 10, title_en: 'Inception', title_zh: null },
+      movie_b: { tmdb_id: 20, title_en: 'La La Land', title_zh: '樂來越愛你' },
+    }
+
+    render(<SequencingPage />)
+
+    fireEvent.click(screen.getByRole('button', { name: 'Pick Inception' }))
+
+    expect(submitPickMock).not.toHaveBeenCalled()
+    expect(screen.getByRole('dialog')).toBeTruthy()
+    expect(screen.getByText('You picked Inception')).toBeTruthy()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Watched' }))
+
+    expect(submitPickMock).toHaveBeenCalledTimes(1)
+    expect(submitPickMock).toHaveBeenCalledWith(10, 'watched', expect.any(Number))
+  })
+
+  it('supports want-to-see and skip from the pick-mode dialog', async () => {
+    sequencingState.progress = {
+      completed: false,
+      round_number: 3,
+      phase: 1,
+      total_rounds: 20,
+      seed_movie_tmdb_id: 10,
+    }
+    sequencingState.currentPair = {
+      completed: false,
+      round_number: 3,
+      phase: 1,
+      movie_a: { tmdb_id: 10, title_en: 'Inception', title_zh: null },
+      movie_b: { tmdb_id: 20, title_en: 'La La Land', title_zh: '樂來越愛你' },
+    }
+
+    const { rerender } = render(<SequencingPage />)
+
+    fireEvent.click(screen.getByRole('button', { name: 'Pick 樂來越愛你' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Want to see' }))
+
+    expect(submitPickMock).toHaveBeenCalledWith(20, 'attracted', expect.any(Number))
+
+    submitPickMock.mockReset()
+
+    rerender(<SequencingPage />)
+    fireEvent.click(screen.getByRole('button', { name: 'Pick Inception' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Skip status' }))
+
+    expect(skipMock).toHaveBeenCalledTimes(1)
+    expect(skipMock).toHaveBeenCalledWith(expect.any(Number))
   })
 })
