@@ -46,6 +46,37 @@ services:
         condition: service_healthy
     restart: unless-stopped
 
+  # ---- Celery Worker ----
+  celery-worker:
+    container_name: cinesequence-celery-prod
+    build:
+      context: .
+      dockerfile: docker/backend/Dockerfile
+      target: prod
+    command: celery -A app.tasks.celery_app worker --loglevel=info --concurrency=4
+    env_file:
+      - .env.production
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
+  celery-beat:
+    container_name: cinesequence-beat-prod
+    build:
+      context: .
+      dockerfile: docker/backend/Dockerfile
+      target: prod
+    command: celery -A app.tasks.celery_app beat --loglevel=info
+    env_file:
+      - .env.production
+    depends_on:
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
   # ---- Frontend ----
   frontend:
     container_name: cinesequence-frontend-prod
