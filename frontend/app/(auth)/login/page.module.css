@@ -52,7 +52,6 @@
 
 .footer {
   padding-top: 0.6rem;
-  border-top: 1px solid rgba(221, 217, 208, 0.7);
   font-size: 0.8rem;
   color: var(--muted);
 }
@@ -60,4 +59,14 @@
 .link {
   color: var(--accent-ink);
   text-decoration: underline;
+}
+
+@media (max-width: 640px) {
+  .stack {
+    gap: 1.15rem;
+  }
+
+  .devCard {
+    padding: 0.9rem;
+  }
 }

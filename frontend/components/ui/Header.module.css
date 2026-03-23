@@ -1,4 +1,4 @@
-/* Unified single-row header — Studio CBR warm organic style */
+/* Unified single-row header — glassmorphism floating style */
 /* Logo (left) | recessed nav tray (center) | locale toggle (right) */
 
 .header {
@@ -11,25 +11,27 @@
   width: 100%;
   height: 60px;
   padding: 0 1.5rem;
-  background: rgba(245, 243, 237, 0.55);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
+  background: rgba(245, 243, 237, 0.4);
+  backdrop-filter: blur(var(--glass-blur-light));
+  -webkit-backdrop-filter: blur(var(--glass-blur-light));
   transition:
     background 0.28s ease,
-    backdrop-filter 0.28s ease;
+    backdrop-filter 0.28s ease,
+    box-shadow 0.28s ease;
 }
 
 .scrolled {
-  background: rgba(245, 243, 237, 0.92);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  background: rgba(245, 243, 237, 0.82);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  box-shadow: 0 1px 24px rgba(45, 54, 50, 0.06);
 }
 
 /* ─── Left: Brand logo ────────────────────────────── */
 
 .brand {
   flex-shrink: 0;
-  font-family: var(--font-display-script), var(--font-sans), sans-serif;
+  font-family: var(--font-sans), sans-serif;
   font-size: 0.95rem;
   font-weight: 600;
   letter-spacing: 0.14em;
@@ -54,9 +56,10 @@
   height: 40px;
   padding: 4px;
   border-radius: 2rem;
-  /* Inset / recessed look — darker than surrounding header */
-  background: rgba(221, 217, 208, 0.45);
-  box-shadow: inset 0 1px 3px rgba(45, 54, 50, 0.08);
+  background: rgba(221, 217, 208, 0.3);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: inset 0 1px 3px rgba(45, 54, 50, 0.06);
 }
 
 /* Nav items — flat text inside the tray */
@@ -113,30 +116,42 @@
 
 @media (max-width: 640px) {
   .header {
-    grid-template-columns: 1fr;
-    grid-template-rows: auto auto;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      "brand right"
+      "nav nav";
     height: auto;
     padding: 0.5rem 0.75rem;
-    gap: 0.35rem;
+    gap: 0.45rem;
   }
 
   .brand {
+    grid-area: brand;
     font-size: 0.82rem;
-    grid-column: 1;
   }
 
   .right {
-    position: absolute;
-    right: 0.75rem;
-    top: 0.6rem;
+    grid-area: right;
+    position: static;
+    justify-self: end;
   }
 
   .navTray {
-    justify-self: center;
+    grid-area: nav;
+    justify-self: stretch;
+    width: 100%;
     height: 38px;
+    overflow-x: auto;
+    justify-content: flex-start;
+    scrollbar-width: none;
+  }
+
+  .navTray::-webkit-scrollbar {
+    display: none;
   }
 
   .navLink {
+    flex: 0 0 auto;
     font-size: 0.65rem;
     letter-spacing: 0.06em;
     padding: 0 0.7rem;

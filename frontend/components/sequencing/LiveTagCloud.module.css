@@ -10,8 +10,11 @@
   padding: 0.3rem 0.65rem;
   font-size: 0.68rem;
   color: var(--accent-ink);
-  background: rgba(255, 255, 255, 0.7);
-  border: 1px solid rgba(171, 163, 151, 0.75);
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 1px 4px rgba(45, 54, 50, 0.06);
+  border: none;
   border-radius: 999px;
   letter-spacing: 0.08em;
   font-family: var(--font-mono);

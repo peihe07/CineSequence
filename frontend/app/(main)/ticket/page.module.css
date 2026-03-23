@@ -18,11 +18,9 @@
   position: relative;
   width: 100%;
   padding: var(--section-space) clamp(1.1rem, 4vw, 2.25rem);
-  border-top: 1px solid var(--border);
 }
 
 .section:last-of-type {
-  border-bottom: 1px solid var(--border);
 }
 
 .heroSection {
@@ -89,8 +87,12 @@
   justify-content: center;
   gap: 0.35rem;
   padding: 1.4rem 1rem;
-  border: 1px solid var(--border);
-  background: rgba(255, 255, 255, 0.72);
+  border: none;
+  background: var(--glass-bg-strong);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  box-shadow: var(--glass-shadow);
+  border-radius: var(--card-radius);
 }
 
 .statLabel {
@@ -112,7 +114,6 @@
   flex-direction: column;
   gap: 0.6rem;
   padding-top: 1rem;
-  border-top: 1px solid rgba(221, 217, 208, 0.7);
 }
 
 .sectionTitle {
@@ -133,8 +134,11 @@
   font-size: 0.68rem;
   padding: 0.28rem 0.62rem;
   color: var(--accent-ink);
-  background: rgba(255, 255, 255, 0.7);
-  border: 1px solid rgba(171, 163, 151, 0.75);
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 1px 4px rgba(45, 54, 50, 0.06);
+  border: none;
   border-radius: 999px;
   font-family: var(--font-mono);
 }

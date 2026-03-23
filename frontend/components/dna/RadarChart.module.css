@@ -5,8 +5,11 @@
   gap: 1.5rem;
   min-height: 100%;
   padding: clamp(1.5rem, 3vw, 2.4rem);
-  background: rgba(255, 255, 255, 0.92);
-  border: 1px solid var(--border);
+  background: var(--glass-bg-strong);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: none;
+  box-shadow: var(--glass-shadow);
 }
 
 .title {

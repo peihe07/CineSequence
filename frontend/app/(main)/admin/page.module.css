@@ -39,8 +39,12 @@
 
 .statCard {
   padding: 1.2rem;
-  background: var(--card-bg);
-  border: 1px solid var(--border);
+  background: var(--glass-bg-strong);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: none;
+  border-radius: var(--card-radius);
+  box-shadow: var(--glass-shadow);
   display: flex;
   flex-direction: column;
   gap: 0.3rem;
@@ -125,7 +129,7 @@
   padding: 0.5rem 0.8rem;
   text-align: left;
   font-size: 0.8rem;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid rgba(45, 54, 50, 0.06);
 }
 
 .table th {
@@ -180,8 +184,12 @@
 
 .apiCard {
   padding: 1rem;
-  background: var(--card-bg);
-  border: 1px solid var(--border);
+  background: var(--glass-bg-strong);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: none;
+  border-radius: var(--card-radius);
+  box-shadow: var(--glass-shadow);
   display: flex;
   flex-direction: column;
   gap: 0.6rem;
@@ -213,6 +221,6 @@
 
 .apiTotal {
   padding-top: 0.4rem;
-  border-top: 1px solid var(--border);
+  border-top: 1px solid rgba(45, 54, 50, 0.06);
   font-weight: 600;
 }

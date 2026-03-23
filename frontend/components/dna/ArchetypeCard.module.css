@@ -6,10 +6,12 @@
   gap: 0.9rem;
   min-height: 100%;
   padding: clamp(2rem, 3vw, 3rem);
-  background: var(--card-bg);
-  border: 1px solid var(--border);
+  background: var(--glass-bg-strong);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: none;
   border-radius: var(--card-radius);
-  box-shadow: var(--card-shadow);
+  box-shadow: var(--glass-shadow);
   text-align: left;
 }
 

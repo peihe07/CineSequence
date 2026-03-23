@@ -9,9 +9,9 @@ import styles from './page.module.css'
 const PANELS = [
   { titleKey: 'landing.step1Title', descKey: 'landing.step1Desc', icon: 'ri-film-line',       photo: '/landing/panel-01.svg' },
   { titleKey: 'landing.step2Title', descKey: 'landing.step2Desc', icon: 'ri-git-branch-line', photo: '/landing/panel-02.svg' },
-  { titleKey: 'landing.step3Title', icon: 'ri-dna-line',        photo: '/landing/panel-03.svg' },
-  { titleKey: 'landing.step4Title', icon: 'ri-group-line',      photo: '/landing/panel-04.svg' },
-  { titleKey: 'landing.step5Title', icon: 'ri-ticket-2-line',   photo: '/landing/panel-05.svg' },
+  { titleKey: 'landing.step3Title', descKey: 'landing.step3Desc', icon: 'ri-dna-line',      photo: '/landing/panel-03.svg' },
+  { titleKey: 'landing.step4Title', descKey: 'landing.step4Desc', icon: 'ri-group-line',    photo: '/landing/panel-04.svg' },
+  { titleKey: 'landing.step5Title', descKey: 'landing.step5Desc', icon: 'ri-ticket-2-line', photo: '/landing/panel-05.svg' },
 ]
 
 function useTypewriter(text: string, speed = 60, delay = 800) {

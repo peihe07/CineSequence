@@ -9,15 +9,16 @@
   width: min(360px, 78vw);
   min-height: 520px;
   /* Paper texture via subtle noise gradient */
-  background: var(--card-bg);
-  border: 1px solid var(--border);
+  background: var(--glass-bg-strong);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
   /* Left accent strip — ticket number colour block */
+  border: none;
   border-left: 4px solid var(--accent);
   /* No border-radius — real tickets are rectangular */
   border-radius: 0;
   box-shadow:
-    0 2px 8px rgba(0, 0, 0, 0.06),
-    0 8px 24px rgba(0, 0, 0, 0.08),
+    var(--glass-shadow),
     inset 0 0 0 0.5px rgba(255, 255, 255, 0.6);
   display: flex;
   flex-direction: column;
@@ -36,8 +37,8 @@
 
 .ticketWrapper:hover {
   box-shadow:
-    0 4px 16px rgba(0, 0, 0, 0.09),
-    0 16px 40px rgba(0, 0, 0, 0.12),
+    var(--glass-shadow-hover),
+    0 0 32px rgba(192, 98, 35, 0.06),
     inset 0 0 0 0.5px rgba(255, 255, 255, 0.7);
 }
 
@@ -172,8 +173,11 @@
   font-family: var(--font-mono);
   letter-spacing: 0.08em;
   color: var(--accent-ink);
-  background: rgba(255, 255, 255, 0.68);
-  border: 1px solid rgba(171, 163, 151, 0.7);
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 1px 4px rgba(45, 54, 50, 0.06);
+  border: none;
   border-radius: 999px;
 }
 
@@ -199,7 +203,6 @@
 /* Action area */
 .actionArea {
   padding-top: 0.5rem;
-  border-top: 1px solid var(--border);
 }
 
 .inviteBtn {
@@ -268,9 +271,12 @@
   align-items: center;
   gap: 0.3rem;
   padding: 0.6rem 0.9rem;
-  background: transparent;
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 1px 4px rgba(45, 54, 50, 0.06);
   color: var(--muted);
-  border: 1px solid var(--border);
+  border: none;
   border-radius: 6px;
   font-size: 0.73rem;
   font-family: var(--font-mono);
@@ -283,7 +289,7 @@
 
 .declineBtn:hover {
   color: var(--foreground);
-  border-color: var(--border-dark, #c8c3b8);
+  box-shadow: 0 2px 8px rgba(45, 54, 50, 0.1);
 }
 
 .declineBtn:active {

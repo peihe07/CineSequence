@@ -1,6 +1,6 @@
 :root {
   --background: #f5f3ed;
-  --background-alt: #eceae3;
+  --background-alt: #edeae3;
   --foreground: #2d3632;
   --foreground-soft: #44514b;
   --accent: #c06223;
@@ -9,13 +9,28 @@
   --accent-hover: #a35420;
   --muted: #8a9189;
   --muted-light: #b5bab3;
+
+  /* Functional borders only (inputs, spinners) */
   --border: #ddd9d0;
   --border-dark: #c5c0b7;
   --border-strong: #aba397;
-  --card-bg: #faf8f3;
-  --card-radius: 0.55rem;
-  --card-shadow: 0 1px 0 rgba(45, 54, 50, 0.04);
-  --card-shadow-hover: 0 10px 20px rgba(45, 54, 50, 0.05);
+
+  /* Glassmorphism system */
+  --glass-bg: rgba(255, 255, 255, 0.42);
+  --glass-bg-strong: rgba(255, 255, 255, 0.58);
+  --glass-blur: 16px;
+  --glass-blur-light: 8px;
+  --glass-shadow: 0 4px 24px rgba(45, 54, 50, 0.06), 0 1px 3px rgba(45, 54, 50, 0.04);
+  --glass-shadow-hover: 0 8px 32px rgba(45, 54, 50, 0.1), 0 2px 6px rgba(45, 54, 50, 0.06);
+  --glass-glow: 0 0 40px rgba(192, 98, 35, 0.06);
+  --glass-inset: inset 0 1px 0 rgba(255, 255, 255, 0.5);
+
+  /* Cards — now glass-based */
+  --card-bg: rgba(255, 255, 255, 0.48);
+  --card-radius: 0.85rem;
+  --card-shadow: var(--glass-shadow);
+  --card-shadow-hover: var(--glass-shadow-hover);
+
   --error: #b33a3a;
   --success: #2d8659;
   --content-max-width: 380px;
@@ -41,7 +56,10 @@
 
 body {
   font-family: var(--font-sans), var(--font-zh);
-  background: var(--background);
+  background:
+    radial-gradient(ellipse at 20% 0%, rgba(192, 98, 35, 0.04) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 100%, rgba(192, 98, 35, 0.03) 0%, transparent 50%),
+    var(--background);
   color: var(--foreground);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -50,7 +68,20 @@ body {
   letter-spacing: 0.02em;
 }
 
-/* Subtle grain texture on body */
+/* Ambient warm glow — gives glass elements something to "see through" */
+body::before {
+  content: '';
+  position: fixed;
+  top: -20%;
+  left: -10%;
+  width: 60%;
+  height: 60%;
+  background: radial-gradient(circle, rgba(192, 98, 35, 0.035) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Subtle grain texture */
 body::after {
   content: '';
   position: fixed;
@@ -95,7 +126,6 @@ a {
 .divider {
   width: 100%;
   border: none;
-  border-top: 1px solid var(--border);
-  background: none;
-  height: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, rgba(45, 54, 50, 0.06) 20%, rgba(45, 54, 50, 0.06) 80%, transparent 100%);
 }

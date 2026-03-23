@@ -19,11 +19,9 @@
   position: relative;
   width: 100%;
   padding: var(--section-space) clamp(1.1rem, 4vw, 2.25rem);
-  border-top: 1px solid var(--border);
 }
 
 .section:last-child {
-  border-bottom: 1px solid var(--border);
 }
 
 .heroSection {
@@ -116,6 +114,15 @@
   .sideLabel {
     display: none;
   }
+}
+
+/* Disclaimer */
+.disclaimer {
+  font-size: 0.72rem;
+  color: var(--muted-light, var(--muted));
+  line-height: 1.7;
+  max-width: 42rem;
+  opacity: 0.75;
 }
 
 /* Loading */

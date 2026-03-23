@@ -18,10 +18,12 @@
 
 .readingBox {
   padding: clamp(1.5rem, 3vw, 2.4rem);
-  background: var(--card-bg);
-  border: 1px solid var(--border);
+  background: var(--glass-bg-strong);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: none;
   border-radius: var(--card-radius);
-  box-shadow: var(--card-shadow);
+  box-shadow: var(--glass-shadow);
 }
 
 .reading {
@@ -52,7 +54,6 @@
   flex-direction: column;
   gap: 0.6rem;
   padding: 1rem 0 0;
-  border-top: 1px solid var(--border);
 }
 
 .sectionTitle {
@@ -83,7 +84,10 @@
   font-size: 0.72rem;
   font-family: var(--font-mono);
   color: var(--accent-ink);
-  background: transparent;
-  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 1px 4px rgba(45, 54, 50, 0.06);
+  border: none;
   border-radius: 999px;
 }
