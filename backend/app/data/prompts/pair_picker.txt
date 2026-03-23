@@ -10,7 +10,7 @@ You will receive:
 - `picks`: list of movies the user CHOSE (with pick_mode: "watched" or "attracted")
 - `skips`: list of movies the user DID NOT choose or skipped entirely
 - `current_tags`: accumulated tag frequency map
-- `quadrant_vector`: {mainstream, independent, rational, emotional, light, dark} scores from Phase 1
+- `quadrant_vector`: scores from Phase 1 choices (1-5 scale, 3=neutral). Core axes: `mainstream_independent`, `rational_emotional`, `light_dark`. May also include supplementary axes: `fast_slow`, `ensemble_solo`, `visual_dialogue`, `western_eastern`, `spectacle_intimate`, `straightforward_meta`, `realism_fantasy`, `contemporary_period`, `cynical_sincere`. Use supplementary axes to fine-tune pair selection when available.
 - `already_seen_tmdb_ids`: list of tmdb_ids already shown — NEVER reuse these
 - `candidate_pool`: curated list of movies with their tags — STRONGLY PREFER picking from this pool
 
@@ -38,7 +38,7 @@ Respond with ONLY this JSON, no other text:
 CRITICAL: `test_dimension` MUST be one of the 30 tag keys listed above. Do NOT use free-form descriptions.
 
 ## Rules
-- **STRONGLY PREFER** movies from the `candidate_pool` — these are curated for diversity and relevance. You may pick movies outside the pool only when no good candidates exist for the target dimension.
+- You **MUST** pick both movies from the `candidate_pool`. These movies have verified TMDB IDs and are curated for diversity. Only if you cannot find ANY suitable pair in the pool for the target dimension, you may pick ONE movie outside the pool — but never both.
 - Only use movies available on TMDB (released before 2025)
 - **NEVER** repeat a movie from `already_seen_tmdb_ids` — this is a hard constraint
 - Both movies should be genuinely good/notable — no obvious "bad" options
@@ -46,3 +46,5 @@ CRITICAL: `test_dimension` MUST be one of the 30 tag keys listed above. Do NOT u
 - movie_a should lean INTO the test_dimension tag, movie_b should lean AWAY from it
 - Actively diversify regions: include East Asian (台灣、日本、韓國、香港), European, and Latin American cinema — do not default to Hollywood
 - Avoid repeatedly picking from the same director or franchise
+- If `retry_rejected_tmdb_ids` is present, these IDs were rejected by the system in previous attempts for this same round — do NOT use them under any circumstances
+- Both movie_a and movie_b MUST have different tmdb_ids — never return the same movie for both slots

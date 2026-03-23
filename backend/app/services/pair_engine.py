@@ -24,6 +24,19 @@ DIMENSION_TO_AXIS = {
     "light_vs_dark": "light_dark",
 }
 
+# Supplementary axes from auxiliary dimensions (C4)
+SUPPLEMENTARY_AXIS = {
+    "fast_vs_slow": "fast_slow",
+    "ensemble_vs_solo": "ensemble_solo",
+    "visual_vs_dialogue": "visual_dialogue",
+    "western_vs_eastern": "western_eastern",
+    "spectacle_vs_intimate": "spectacle_intimate",
+    "straightforward_vs_meta": "straightforward_meta",
+    "realism_vs_fantasy": "realism_fantasy",
+    "contemporary_vs_period": "contemporary_period",
+    "cynical_vs_sincere": "cynical_sincere",
+}
+
 # The 3 required quadrant axes — each session must include at least 1 pair per axis
 REQUIRED_AXES = ["mainstream_vs_independent", "rational_vs_emotional", "light_vs_dark"]
 
@@ -116,10 +129,11 @@ def get_phase1_pairs(
         used_tmdb_ids.add(chosen["movie_a"]["tmdb_id"])
         used_tmdb_ids.add(chosen["movie_b"]["tmdb_id"])
 
-    # Step 2: Fill remaining slots from all unused pairs (no movie overlap)
+    # Step 2: Fill remaining slots, prioritizing uncovered dimensions
     remaining_slots = PHASE1_COUNT - len(selected)
     if remaining_slots > 0:
         selected_ids = {p["id"] for p in selected}
+        covered_dims = {p.get("dimension") for p in selected}
         pool = [
             p for p in ALL_PAIRS
             if p["id"] not in selected_ids
@@ -127,32 +141,37 @@ def get_phase1_pairs(
             and p["movie_b"]["tmdb_id"] not in used_tmdb_ids
         ]
 
-        weights = [
-            _score_pair_relevance(p, seed_movie_genres or []) + 1.0
-            for p in pool
-        ]
+        def _compute_weights(
+            candidates: list[dict],
+            genres: list[str],
+            covered: set[str],
+        ) -> list[float]:
+            """Weight candidates: bonus for uncovered dimensions."""
+            ws = []
+            for p in candidates:
+                base = _score_pair_relevance(p, genres) + 1.0
+                dim_bonus = 3.0 if p.get("dimension") not in covered else 0.0
+                ws.append(base + dim_bonus)
+            return ws
 
         while remaining_slots > 0 and pool:
+            weights = _compute_weights(pool, seed_movie_genres or [], covered_dims)
             chosen = rng.choices(pool, weights=weights, k=1)[0]
             selected.append(chosen)
             used_tmdb_ids.add(chosen["movie_a"]["tmdb_id"])
             used_tmdb_ids.add(chosen["movie_b"]["tmdb_id"])
+            covered_dims.add(chosen.get("dimension"))
 
             # Remove chosen and any overlapping pairs from pool
             idx = pool.index(chosen)
             pool.pop(idx)
-            weights.pop(idx)
 
             # Filter out pairs that share movies with the newly selected pair
-            new_pool = []
-            new_weights = []
-            for p, w in zip(pool, weights):
+            pool = [
+                p for p in pool
                 if (p["movie_a"]["tmdb_id"] not in used_tmdb_ids
-                        and p["movie_b"]["tmdb_id"] not in used_tmdb_ids):
-                    new_pool.append(p)
-                    new_weights.append(w)
-            pool = new_pool
-            weights = new_weights
+                    and p["movie_b"]["tmdb_id"] not in used_tmdb_ids)
+            ]
             remaining_slots -= 1
 
     # Shuffle final order (deterministic)
@@ -211,6 +230,9 @@ def compute_quadrant_from_picks(picks: list[dict]) -> dict:
     Each pick shifts the score on the relevant axis.
     Choosing movie_a shifts toward one end, movie_b toward the other.
     Scale: 1-5 where 3 is neutral.
+
+    Includes both core axes (3) and supplementary axes (up to 9)
+    from auxiliary dimensions, giving the AI richer taste signals.
     """
     scores = {
         "mainstream_independent": 3.0,
@@ -228,7 +250,9 @@ def compute_quadrant_from_picks(picks: list[dict]) -> dict:
             continue
 
         dimension = pair.get("dimension", "")
-        axis = DIMENSION_TO_AXIS.get(dimension)
+
+        # Check core axes first, then supplementary
+        axis = DIMENSION_TO_AXIS.get(dimension) or SUPPLEMENTARY_AXIS.get(dimension)
         if not axis:
             continue
 
@@ -236,8 +260,11 @@ def compute_quadrant_from_picks(picks: list[dict]) -> dict:
         if chosen is None:
             continue
 
-        # movie_a is typically the "mainstream/rational/light" option
-        # movie_b is typically the "independent/emotional/dark" option
+        # Initialize supplementary axis on first encounter
+        if axis not in scores:
+            scores[axis] = 3.0
+
+        # movie_a leans toward first side, movie_b toward second side
         movie_a_id = pair["movie_a"]["tmdb_id"]
         shift = -0.5 if chosen == movie_a_id else 0.5
         scores[axis] = max(1.0, min(5.0, scores[axis] + shift))

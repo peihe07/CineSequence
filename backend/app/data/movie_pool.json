@@ -2794,6 +2794,625 @@
         "comingOfAge"
       ],
       "region": "jp"
+    },
+    {
+      "tmdb_id": 985,
+      "title_en": "Carrie",
+      "tags": [
+        "revenge",
+        "psychoThriller",
+        "darkTone"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 14574,
+      "title_en": "The Count of Monte Cristo",
+      "tags": [
+        "revenge",
+        "trueStory"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 1542,
+      "title_en": "Blue Velvet",
+      "tags": [
+        "revenge",
+        "cult",
+        "experimental",
+        "darkTone",
+        "psychoThriller"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 12244,
+      "title_en": "Sleepers",
+      "tags": [
+        "revenge",
+        "darkTone",
+        "ensemble"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 1933,
+      "title_en": "The Princess Bride",
+      "tags": [
+        "revenge",
+        "uplifting",
+        "cult",
+        "romanticCore"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 10674,
+      "title_en": "Payback",
+      "tags": [
+        "revenge",
+        "antiHero",
+        "darkTone"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 301528,
+      "title_en": "The Handmaiden",
+      "tags": [
+        "revenge",
+        "twist",
+        "visualFeast",
+        "nonEnglish"
+      ],
+      "region": "kr"
+    },
+    {
+      "tmdb_id": 72190,
+      "title_en": "World War Z",
+      "tags": [
+        "dystopia",
+        "survival",
+        "ensemble"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 72105,
+      "title_en": "Elysium",
+      "tags": [
+        "dystopia",
+        "socialCritique",
+        "visualFeast"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 131631,
+      "title_en": "The Maze Runner",
+      "tags": [
+        "dystopia",
+        "survival",
+        "comingOfAge"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 335983,
+      "title_en": "Venom",
+      "tags": [
+        "antiHero",
+        "darkTone"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 170,
+      "title_en": "28 Days Later",
+      "tags": [
+        "dystopia",
+        "survival",
+        "darkTone",
+        "experimental"
+      ],
+      "region": "uk"
+    },
+    {
+      "tmdb_id": 72313,
+      "title_en": "Looper",
+      "tags": [
+        "dystopia",
+        "timeTravel",
+        "mindfuck",
+        "twist"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 441282,
+      "title_en": "Night Is Short Walk on Girl",
+      "tags": [
+        "absurdist",
+        "romanticCore",
+        "visualFeast",
+        "nonEnglish"
+      ],
+      "region": "jp"
+    },
+    {
+      "tmdb_id": 10515,
+      "title_en": "Castle in the Sky",
+      "tags": [
+        "uplifting",
+        "visualFeast",
+        "nonEnglish"
+      ],
+      "region": "jp"
+    },
+    {
+      "tmdb_id": 83542,
+      "title_en": "Cloud Atlas",
+      "tags": [
+        "dystopia",
+        "philosophical",
+        "ensemble",
+        "visualFeast"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 160,
+      "title_en": "Equilibrium",
+      "tags": [
+        "dystopia",
+        "violentAesthetic",
+        "socialCritique"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 76170,
+      "title_en": "Snowpiercer",
+      "tags": [
+        "dystopia",
+        "socialCritique",
+        "violentAesthetic",
+        "nonEnglish"
+      ],
+      "region": "kr"
+    },
+    {
+      "tmdb_id": 10528,
+      "title_en": "Sherlock Holmes",
+      "tags": [
+        "heist",
+        "dialogue",
+        "ensemble"
+      ],
+      "region": "uk"
+    },
+    {
+      "tmdb_id": 4108,
+      "title_en": "The Thomas Crown Affair",
+      "tags": [
+        "heist",
+        "romanticCore"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 4057,
+      "title_en": "The Bank Job",
+      "tags": [
+        "heist",
+        "trueStory"
+      ],
+      "region": "uk"
+    },
+    {
+      "tmdb_id": 274855,
+      "title_en": "Baby Driver",
+      "tags": [
+        "heist",
+        "visualFeast",
+        "cult"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 8363,
+      "title_en": "Frequency",
+      "tags": [
+        "timeTravel",
+        "tearjerker"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 59967,
+      "title_en": "Looper",
+      "tags": [
+        "timeTravel",
+        "mindfuck",
+        "twist"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 557,
+      "title_en": "Spider-Man",
+      "tags": [
+        "uplifting",
+        "comingOfAge"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 49519,
+      "title_en": "Source Code",
+      "tags": [
+        "timeTravel",
+        "mindfuck",
+        "psychoThriller",
+        "twist"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 10191,
+      "title_en": "How to Train Your Dragon",
+      "tags": [
+        "uplifting",
+        "comingOfAge",
+        "visualFeast"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 11232,
+      "title_en": "About Time",
+      "tags": [
+        "timeTravel",
+        "romanticCore",
+        "tearjerker",
+        "uplifting"
+      ],
+      "region": "uk"
+    },
+    {
+      "tmdb_id": 638,
+      "title_en": "The Time Machine",
+      "tags": [
+        "timeTravel",
+        "visualFeast"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 16234,
+      "title_en": "Sin City",
+      "tags": [
+        "violentAesthetic",
+        "cult",
+        "visualFeast",
+        "darkTone",
+        "ensemble"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 1884,
+      "title_en": "The Machinist",
+      "tags": [
+        "mindfuck",
+        "psychoThriller",
+        "darkTone",
+        "solo"
+      ],
+      "region": "es"
+    },
+    {
+      "tmdb_id": 11399,
+      "title_en": "Waking Life",
+      "tags": [
+        "experimental",
+        "philosophical",
+        "visualFeast",
+        "cult"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 14710,
+      "title_en": "Synecdoche New York",
+      "tags": [
+        "experimental",
+        "existential",
+        "absurdist",
+        "darkTone"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 434405,
+      "title_en": "A Sun",
+      "tags": [
+        "darkTone",
+        "ensemble",
+        "socialCritique",
+        "tearjerker",
+        "nonEnglish"
+      ],
+      "region": "tw"
+    },
+    {
+      "tmdb_id": 459581,
+      "title_en": "Dear Ex",
+      "tags": [
+        "tearjerker",
+        "romanticCore",
+        "nonEnglish"
+      ],
+      "region": "tw"
+    },
+    {
+      "tmdb_id": 505954,
+      "title_en": "Detention",
+      "tags": [
+        "darkTone",
+        "psychoThriller",
+        "socialCritique",
+        "nonEnglish"
+      ],
+      "region": "tw"
+    },
+    {
+      "tmdb_id": 19726,
+      "title_en": "Cape No. 7",
+      "tags": [
+        "romanticCore",
+        "uplifting",
+        "ensemble",
+        "nonEnglish"
+      ],
+      "region": "tw"
+    },
+    {
+      "tmdb_id": 662768,
+      "title_en": "A Leg",
+      "tags": [
+        "satirical",
+        "absurdist",
+        "darkTone",
+        "nonEnglish"
+      ],
+      "region": "tw"
+    },
+    {
+      "tmdb_id": 10835,
+      "title_en": "Chungking Express",
+      "tags": [
+        "romanticCore",
+        "experimental",
+        "nonEnglish",
+        "cult"
+      ],
+      "region": "hk"
+    },
+    {
+      "tmdb_id": 654,
+      "title_en": "In the Mood for Love",
+      "tags": [
+        "romanticCore",
+        "slowburn",
+        "visualFeast",
+        "nonEnglish"
+      ],
+      "region": "hk"
+    },
+    {
+      "tmdb_id": 696374,
+      "title_en": "The Lunchbox",
+      "tags": [
+        "romanticCore",
+        "slowburn",
+        "nonEnglish"
+      ],
+      "region": "in"
+    },
+    {
+      "tmdb_id": 15997,
+      "title_en": "Amores Perros",
+      "tags": [
+        "ensemble",
+        "violentAesthetic",
+        "darkTone",
+        "nonEnglish",
+        "socialCritique"
+      ],
+      "region": "mx"
+    },
+    {
+      "tmdb_id": 261023,
+      "title_en": "Wild Tales",
+      "tags": [
+        "satirical",
+        "darkTone",
+        "ensemble",
+        "nonEnglish",
+        "absurdist",
+        "revenge"
+      ],
+      "region": "ar"
+    },
+    {
+      "tmdb_id": 83201,
+      "title_en": "No",
+      "tags": [
+        "trueStory",
+        "socialCritique",
+        "nonEnglish"
+      ],
+      "region": "cl"
+    },
+    {
+      "tmdb_id": 46738,
+      "title_en": "Waltz with Bashir",
+      "tags": [
+        "experimental",
+        "trueStory",
+        "darkTone",
+        "nonEnglish",
+        "visualFeast"
+      ],
+      "region": "il"
+    },
+    {
+      "tmdb_id": 283445,
+      "title_en": "Under the Shadow",
+      "tags": [
+        "psychoThriller",
+        "darkTone",
+        "nonEnglish",
+        "survival"
+      ],
+      "region": "ir"
+    },
+    {
+      "tmdb_id": 310,
+      "title_en": "Stalker",
+      "tags": [
+        "experimental",
+        "philosophical",
+        "slowburn",
+        "nonEnglish",
+        "cult"
+      ],
+      "region": "ru"
+    },
+    {
+      "tmdb_id": 119049,
+      "title_en": "Ida",
+      "tags": [
+        "slowburn",
+        "existential",
+        "nonEnglish",
+        "visualFeast"
+      ],
+      "region": "pl"
+    },
+    {
+      "tmdb_id": 1271,
+      "title_en": "Nostalgia",
+      "tags": [
+        "slowburn",
+        "experimental",
+        "visualFeast",
+        "nonEnglish",
+        "existential"
+      ],
+      "region": "it"
+    },
+    {
+      "tmdb_id": 87414,
+      "title_en": "Jagten",
+      "tags": [
+        "psychoThriller",
+        "socialCritique",
+        "nonEnglish",
+        "darkTone"
+      ],
+      "region": "dk"
+    },
+    {
+      "tmdb_id": 2675,
+      "title_en": "Let the Right One In",
+      "tags": [
+        "darkTone",
+        "comingOfAge",
+        "nonEnglish",
+        "romanticCore"
+      ],
+      "region": "se"
+    },
+    {
+      "tmdb_id": 11517,
+      "title_en": "Departures",
+      "tags": [
+        "tearjerker",
+        "nonEnglish",
+        "slowburn",
+        "uplifting"
+      ],
+      "region": "jp"
+    },
+    {
+      "tmdb_id": 315837,
+      "title_en": "Your Name",
+      "tags": [
+        "romanticCore",
+        "visualFeast",
+        "nonEnglish",
+        "tearjerker",
+        "timeTravel"
+      ],
+      "region": "jp"
+    },
+    {
+      "tmdb_id": 508883,
+      "title_en": "Shoplifters",
+      "tags": [
+        "socialCritique",
+        "ensemble",
+        "nonEnglish",
+        "tearjerker"
+      ],
+      "region": "jp"
+    },
+    {
+      "tmdb_id": 3989,
+      "title_en": "Grave of the Fireflies",
+      "tags": [
+        "tearjerker",
+        "darkTone",
+        "nonEnglish",
+        "survival"
+      ],
+      "region": "jp"
+    },
+    {
+      "tmdb_id": 504253,
+      "title_en": "Memories of Murder",
+      "tags": [
+        "psychoThriller",
+        "darkTone",
+        "nonEnglish",
+        "trueStory"
+      ],
+      "region": "kr"
+    },
+    {
+      "tmdb_id": 381289,
+      "title_en": "A Taxi Driver",
+      "tags": [
+        "trueStory",
+        "socialCritique",
+        "nonEnglish",
+        "tearjerker"
+      ],
+      "region": "kr"
+    },
+    {
+      "tmdb_id": 16662,
+      "title_en": "Cleo from 5 to 7",
+      "tags": [
+        "experimental",
+        "existential",
+        "nonEnglish",
+        "slowburn"
+      ],
+      "region": "fr"
     }
   ]
 }

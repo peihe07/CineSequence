@@ -5,6 +5,7 @@ import pytest
 from app.services.pair_engine import (
     ALL_PAIRS,
     REQUIRED_AXES,
+    SUPPLEMENTARY_AXIS,
     compute_quadrant_from_picks,
     get_pair_for_round,
     get_phase1_pairs,
@@ -202,3 +203,65 @@ class TestPhase1PairsData:
             assert dim_counts[axis] >= 5, (
                 f"Axis {axis} only has {dim_counts[axis]} pairs, need at least 5"
             )
+
+    def test_title_zh_no_placeholder(self):
+        """C6: No title_zh should contain placeholder patterns."""
+        for pair in ALL_PAIRS:
+            for side in ["movie_a", "movie_b"]:
+                zh = pair[side].get("title_zh", "")
+                assert "乘夢" not in zh, (
+                    f"{pair['id']} {side}: title_zh still has placeholder '{zh}'"
+                )
+                assert "乘勝" not in zh, (
+                    f"{pair['id']} {side}: title_zh still has placeholder '{zh}'"
+                )
+
+
+class TestDimensionDiversity:
+    """C3/C6: Test that Phase 1 selections cover diverse dimensions."""
+
+    def test_five_pairs_cover_at_least_four_dimensions(self):
+        """Selected pairs should span at least 4 different dimensions."""
+        for i in range(30):
+            pairs = get_phase1_pairs(session_seed=f"diversity-{i}")
+            dimensions = {p["dimension"] for p in pairs}
+            assert len(dimensions) >= 4, (
+                f"Seed diversity-{i}: only {len(dimensions)} dimensions: {dimensions}"
+            )
+
+    def test_auxiliary_dimensions_appear_sometimes(self):
+        """Across many seeds, auxiliary dimensions should sometimes be selected."""
+        auxiliary_dims = set(SUPPLEMENTARY_AXIS.keys())
+        seen_aux = set()
+        for i in range(50):
+            pairs = get_phase1_pairs(session_seed=f"aux-{i}")
+            for p in pairs:
+                if p["dimension"] in auxiliary_dims:
+                    seen_aux.add(p["dimension"])
+        assert len(seen_aux) >= 3, (
+            f"Only {len(seen_aux)} auxiliary dimensions appeared across 50 seeds"
+        )
+
+
+class TestSupplementaryAxisScoring:
+    """C4/C6: Test that supplementary axes are included in quadrant scores."""
+
+    def test_supplementary_axis_appears_in_scores(self):
+        """Picks from auxiliary dimensions should add supplementary axes to scores."""
+        # Find a pair with an auxiliary dimension
+        aux_pair = None
+        for pair in ALL_PAIRS:
+            if pair["dimension"] in SUPPLEMENTARY_AXIS:
+                aux_pair = pair
+                break
+        assert aux_pair is not None, "No auxiliary dimension pairs found"
+
+        picks = [{
+            "phase": 1,
+            "pair_id": aux_pair["id"],
+            "chosen_tmdb_id": aux_pair["movie_a"]["tmdb_id"],
+        }]
+        scores = compute_quadrant_from_picks(picks)
+        axis_key = SUPPLEMENTARY_AXIS[aux_pair["dimension"]]
+        assert axis_key in scores, f"Expected {axis_key} in scores"
+        assert scores[axis_key] != 3.0, f"Expected {axis_key} to be shifted from neutral"

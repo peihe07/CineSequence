@@ -32,6 +32,10 @@ with open(DATA_DIR / "movie_pool.json") as _f:
 _CANDIDATE_LIMIT = 40
 
 
+_MIN_NON_ENGLISH = 8  # Minimum non-US/UK candidates
+_MIN_TAG_COVERAGE = 15  # Minimum distinct tags across candidates
+
+
 def _select_candidates(
     tag_freq: dict[str, int],
     seen_ids: set[int],
@@ -39,8 +43,9 @@ def _select_candidates(
 ) -> list[dict]:
     """Select relevant candidate movies from the pool.
 
-    Prioritizes movies tagged with undertested dimensions and filters
-    out already-seen movies. Returns up to _CANDIDATE_LIMIT candidates.
+    Prioritizes movies tagged with undertested dimensions, ensures
+    region diversity and tag coverage, and filters out already-seen movies.
+    Returns up to _CANDIDATE_LIMIT candidates.
     """
     # Identify undertested tags (low or zero frequency)
     all_tags = list(_VALID_TAGS)
@@ -54,28 +59,82 @@ def _select_candidates(
         soul_tags = {"existential", "antiHero", "romanticCore", "socialCritique", "philosophical", "absurdist"}
         priority_tags.update(soul_tags - tested_tags)
 
-    # Score each movie by relevance
+    # Penalize overtested tags
+    overtested_tags = {t for t, c in tag_freq.items() if c >= 3}
+
+    # Score each available movie by relevance
+    available: list[dict] = []
     scored: list[tuple[float, dict]] = []
     for movie in _MOVIE_POOL:
         if movie["tmdb_id"] in seen_ids:
             continue
+        available.append(movie)
 
         movie_tags = set(movie.get("tags", []))
-        # Higher score for movies matching priority tags
         priority_overlap = len(movie_tags & priority_tags)
-        # Small bonus for non-English diversity
+        overtested_overlap = len(movie_tags & overtested_tags)
         region_bonus = 0.5 if movie.get("region") not in ("us", "uk") else 0.0
-        score = priority_overlap * 2.0 + len(movie_tags) * 0.3 + region_bonus
-
+        score = (
+            priority_overlap * 2.0
+            + len(movie_tags) * 0.3
+            + region_bonus
+            - overtested_overlap * 0.5
+        )
         scored.append((score, movie))
 
-    # Sort by score descending, take top candidates
+    # Sort by score descending, take top pool
     scored.sort(key=lambda x: x[0], reverse=True)
     top = [m for _, m in scored[:_CANDIDATE_LIMIT * 2]]
 
     # Shuffle within top candidates for variety, then trim
     random.shuffle(top)
-    return top[:_CANDIDATE_LIMIT]
+    candidates = top[:_CANDIDATE_LIMIT]
+
+    # B4: Ensure region diversity — at least _MIN_NON_ENGLISH non-US/UK
+    non_english_count = sum(
+        1 for m in candidates if m.get("region") not in ("us", "uk")
+    )
+    if non_english_count < _MIN_NON_ENGLISH:
+        # Find non-English movies not already in candidates
+        candidate_ids = {m["tmdb_id"] for m in candidates}
+        non_english_pool = [
+            m for m in available
+            if m.get("region") not in ("us", "uk")
+            and m["tmdb_id"] not in candidate_ids
+        ]
+        random.shuffle(non_english_pool)
+        needed = _MIN_NON_ENGLISH - non_english_count
+        # Replace lowest-scored English candidates
+        english_candidates = [
+            m for m in candidates if m.get("region") in ("us", "uk")
+        ]
+        for replacement in non_english_pool[:needed]:
+            if english_candidates:
+                to_remove = english_candidates.pop()
+                candidates.remove(to_remove)
+                candidates.append(replacement)
+
+    # B4: Ensure tag coverage — at least _MIN_TAG_COVERAGE distinct tags
+    covered_tags = set()
+    for m in candidates:
+        covered_tags.update(m.get("tags", []))
+    if len(covered_tags) < _MIN_TAG_COVERAGE:
+        candidate_ids = {m["tmdb_id"] for m in candidates}
+        missing_tags = _VALID_TAGS - covered_tags
+        for tag in missing_tags:
+            tagged_movies = [
+                m for m in available
+                if tag in m.get("tags", []) and m["tmdb_id"] not in candidate_ids
+            ]
+            if tagged_movies and len(candidates) < _CANDIDATE_LIMIT + 5:
+                pick = random.choice(tagged_movies)
+                candidates.append(pick)
+                candidate_ids.add(pick["tmdb_id"])
+                covered_tags.update(pick.get("tags", []))
+            if len(covered_tags) >= _MIN_TAG_COVERAGE:
+                break
+
+    return candidates[:_CANDIDATE_LIMIT + 5]
 
 
 def _build_user_context(
@@ -84,6 +143,7 @@ def _build_user_context(
     picks: list[dict],
     quadrant_scores: dict,
     candidates: list[dict] | None = None,
+    retry_rejected_tmdb_ids: list[int] | None = None,
 ) -> str:
     """Build the context string from user's pick history."""
     chosen_movies = []
@@ -129,6 +189,10 @@ def _build_user_context(
             for m in candidates
         ]
 
+    # A2: Explicitly tell Gemini which IDs were rejected in previous retry attempts
+    if retry_rejected_tmdb_ids:
+        context["retry_rejected_tmdb_ids"] = retry_rejected_tmdb_ids
+
     return json.dumps(context, ensure_ascii=False)
 
 
@@ -146,6 +210,58 @@ def _collect_seen_ids(picks: list[dict]) -> set[int]:
 
 
 MAX_RETRIES = 3
+
+
+async def _pool_fallback(
+    tag_freq: dict[str, int],
+    excluded_ids: set[int],
+    phase: int,
+) -> dict | None:
+    """Rule-based fallback: pick a pair from the pool when AI retries all fail.
+
+    Finds the least-tested tag, then picks two movies from the pool —
+    one that has the tag (movie_a) and one that doesn't (movie_b).
+    """
+    available = [m for m in _MOVIE_POOL if m["tmdb_id"] not in excluded_ids]
+    if len(available) < 2:
+        return None
+
+    # Find least-tested tag
+    all_tags = sorted(_VALID_TAGS)
+    tag_counts = {t: tag_freq.get(t, 0) for t in all_tags}
+    target_tag = min(tag_counts, key=tag_counts.get)
+
+    # Split pool: movies with vs without the target tag
+    with_tag = [m for m in available if target_tag in m.get("tags", [])]
+    without_tag = [m for m in available if target_tag not in m.get("tags", [])]
+
+    if not with_tag or not without_tag:
+        # Fallback: just pick any two different movies
+        random.shuffle(available)
+        pick_a, pick_b = available[0], available[1]
+        target_tag = ""
+    else:
+        pick_a = random.choice(with_tag)
+        pick_b = random.choice(without_tag)
+
+    # Validate both movies exist on TMDB
+    movie_a = await get_movie(pick_a["tmdb_id"])
+    movie_b = await get_movie(pick_b["tmdb_id"])
+    if not movie_a or not movie_b:
+        return None
+
+    logger.info(
+        "Pool fallback: A=%s B=%s dimension=%s",
+        pick_a["tmdb_id"], pick_b["tmdb_id"], target_tag,
+    )
+
+    return {
+        "movie_a_tmdb_id": pick_a["tmdb_id"],
+        "movie_b_tmdb_id": pick_b["tmdb_id"],
+        "movie_a": movie_a,
+        "movie_b": movie_b,
+        "test_dimension": target_tag,
+    }
 
 
 async def _call_gemini(user_context: str, round_number: int) -> dict | None:
@@ -242,7 +358,8 @@ async def get_ai_pair(
         candidates = _select_candidates(tag_freq, all_excluded, phase)
 
         user_context = _build_user_context(
-            phase, round_number, attempt_picks, quadrant_scores, candidates
+            phase, round_number, attempt_picks, quadrant_scores,
+            candidates, retry_excluded if retry_excluded else None,
         )
         result = await _call_gemini(user_context, round_number)
 
@@ -254,6 +371,15 @@ async def get_ai_pair(
 
         if not movie_a_id or not movie_b_id:
             logger.error("Gemini returned missing tmdb_ids: %s", result)
+            continue
+
+        # A1: Reject same movie in both slots
+        if movie_a_id == movie_b_id:
+            logger.warning(
+                "Attempt %d/%d: Gemini returned same movie for A and B (tmdb_id=%s), retrying",
+                attempt, MAX_RETRIES, movie_a_id,
+            )
+            retry_excluded.append(movie_a_id)
             continue
 
         # Hard duplicate check
@@ -293,5 +419,14 @@ async def get_ai_pair(
             "test_dimension": test_dim,
         }
 
-    logger.error("All %d attempts failed for round %s", MAX_RETRIES, round_number)
+    # A4: Rule-based fallback when all AI retries fail
+    logger.warning(
+        "All %d AI attempts failed for round %s, using pool fallback",
+        MAX_RETRIES, round_number,
+    )
+    fallback = await _pool_fallback(tag_freq, seen_ids | set(retry_excluded), phase)
+    if fallback:
+        return fallback
+
+    logger.error("Pool fallback also failed for round %s", round_number)
     return None
