@@ -5,6 +5,7 @@ from unittest.mock import AsyncMock, patch
 import pytest
 
 from app.services.ai_pair_engine import (
+    _TASTE_TAGS,
     _VALID_TAGS,
     _build_user_context,
     _collect_seen_ids,
@@ -119,6 +120,35 @@ class TestBuildUserContext:
         data = json.loads(ctx)
         assert "retry_rejected_tmdb_ids" not in data
 
+    def test_excludes_non_english_from_current_tags(self):
+        import json
+        ctx = _build_user_context(
+            phase=2,
+            round_number=6,
+            picks=[
+                {
+                    "movie_a_tmdb_id": 1,
+                    "movie_b_tmdb_id": 2,
+                    "chosen_tmdb_id": 1,
+                    "round_number": 1,
+                    "pick_mode": "watched",
+                    "test_dimension": "nonEnglish",
+                },
+                {
+                    "movie_a_tmdb_id": 3,
+                    "movie_b_tmdb_id": 4,
+                    "chosen_tmdb_id": 3,
+                    "round_number": 2,
+                    "pick_mode": "watched",
+                    "test_dimension": "slowburn",
+                },
+            ],
+            quadrant_scores={},
+        )
+        data = json.loads(ctx)
+        assert "nonEnglish" not in data["current_tags"]
+        assert data["current_tags"]["slowburn"] == 1
+
 
 class TestPoolFallback:
     """A4: Test rule-based fallback when AI retries fail."""
@@ -201,6 +231,28 @@ class TestGetAiPairDuplicateRejection:
         assert result is not None
         assert result["movie_a_tmdb_id"] != result["movie_b_tmdb_id"]
 
+    @pytest.mark.asyncio
+    async def test_discards_non_english_as_test_dimension(self):
+        async def mock_gemini(_user_context, _round_number):
+            return {
+                "movie_a": {"tmdb_id": 680, "reason": "test"},
+                "movie_b": {"tmdb_id": 807, "reason": "test"},
+                "test_dimension": "nonEnglish",
+            }
+
+        mock_movie = {"id": 1, "title": "Test", "overview": "", "poster_path": ""}
+        with (
+            patch("app.services.ai_pair_engine._call_gemini", side_effect=mock_gemini),
+            patch(
+                "app.services.ai_pair_engine.get_movie",
+                new_callable=AsyncMock, return_value=mock_movie,
+            ),
+        ):
+            result = await get_ai_pair(phase=2, round_number=6, picks=[], quadrant_scores={})
+
+        assert result is not None
+        assert result["test_dimension"] == ""
+
 
 class TestValidTags:
     """Verify tag taxonomy is loaded correctly."""
@@ -211,3 +263,7 @@ class TestValidTags:
     def test_known_tags_present(self):
         expected = {"twist", "mindfuck", "slowburn", "existential", "antiHero", "romanticCore"}
         assert expected.issubset(_VALID_TAGS)
+
+    def test_non_english_is_not_a_taste_tag(self):
+        assert "nonEnglish" in _VALID_TAGS
+        assert "nonEnglish" not in _TASTE_TAGS

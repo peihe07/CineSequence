@@ -3,12 +3,14 @@ import json
 from app.services.ai_personality import _build_context
 
 
-def test_build_context_includes_titles_and_pick_mode():
+def test_build_context_strips_movie_titles_and_keeps_abstract_signals():
     picks = [
         {
             "round_number": 1,
+            "phase": 1,
             "chosen_tmdb_id": 10,
             "pick_mode": "watched",
+            "test_dimension": "mindfuck",
             "chosen_title": "Inception",
             "movie_a_tmdb_id": 10,
             "movie_a_title": "Inception",
@@ -17,8 +19,10 @@ def test_build_context_includes_titles_and_pick_mode():
         },
         {
             "round_number": 2,
+            "phase": 2,
             "chosen_tmdb_id": None,
             "pick_mode": None,
+            "test_dimension": "slowburn",
             "movie_a_tmdb_id": 30,
             "movie_a_title": "The Matrix",
             "movie_b_tmdb_id": 40,
@@ -39,21 +43,21 @@ def test_build_context_includes_titles_and_pick_mode():
 
     assert payload["picks"] == [
         {
-            "tmdb_id": 10,
-            "title": "Inception",
             "round": 1,
+            "phase": 1,
             "pick_mode": "watched",
-            "movie_a_title": "Inception",
-            "movie_b_title": "La La Land",
+            "test_dimension": "mindfuck",
         }
     ]
     assert payload["skips"] == [
         {
-            "tmdb_id": 30,
-            "title": "The Matrix",
             "round": 2,
+            "phase": 2,
             "pick_mode": None,
-            "movie_a_title": "The Matrix",
-            "movie_b_title": "Spirited Away",
+            "test_dimension": "slowburn",
         }
     ]
+    assert "title" not in context
+    assert "chosen_title" not in context
+    assert "movie_a_title" not in context
+    assert "movie_b_title" not in context

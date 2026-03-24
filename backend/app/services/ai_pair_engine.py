@@ -23,6 +23,8 @@ SYSTEM_PROMPT = PROMPT_FILE.read_text(encoding="utf-8")
 # Valid tag keys for test_dimension validation
 with open(DATA_DIR / "tag_taxonomy.json") as _f:
     _VALID_TAGS = set(json.load(_f)["tags"].keys())
+_NON_TASTE_TAGS = {"nonEnglish"}
+_TASTE_TAGS = _VALID_TAGS - _NON_TASTE_TAGS
 
 # Curated movie pool for candidate suggestions
 with open(DATA_DIR / "movie_pool.json") as _f:
@@ -48,7 +50,7 @@ def _select_candidates(
     Returns up to _CANDIDATE_LIMIT candidates.
     """
     # Identify undertested tags (low or zero frequency)
-    all_tags = list(_VALID_TAGS)
+    all_tags = list(_TASTE_TAGS)
     tested_tags = set(tag_freq.keys())
     untested_tags = [t for t in all_tags if t not in tested_tags]
     low_tags = [t for t, c in tag_freq.items() if c <= 1]
@@ -123,7 +125,7 @@ def _select_candidates(
         covered_tags.update(m.get("tags", []))
     if len(covered_tags) < _MIN_TAG_COVERAGE:
         candidate_ids = {m["tmdb_id"] for m in candidates}
-        missing_tags = _VALID_TAGS - covered_tags
+        missing_tags = _TASTE_TAGS - covered_tags
         for tag in missing_tags:
             tagged_movies = [
                 m for m in available
@@ -165,6 +167,8 @@ def _build_user_context(
             skipped_movies.append(movie_info)
 
         dim = pick.get("test_dimension")
+        if dim in _NON_TASTE_TAGS:
+            continue
         if dim:
             tag_freq[dim] = tag_freq.get(dim, 0) + 1
 
@@ -230,7 +234,7 @@ async def _pool_fallback(
         return None
 
     # Find least-tested tag
-    all_tags = sorted(_VALID_TAGS)
+    all_tags = sorted(_TASTE_TAGS)
     tag_counts = {t: tag_freq.get(t, 0) for t in all_tags}
     target_tag = min(tag_counts, key=tag_counts.get)
 
@@ -335,6 +339,8 @@ async def get_ai_pair(
     tag_freq: dict[str, int] = {}
     for pick in picks:
         dim = pick.get("test_dimension")
+        if dim in _NON_TASTE_TAGS:
+            continue
         if dim:
             tag_freq[dim] = tag_freq.get(dim, 0) + 1
 
@@ -410,7 +416,7 @@ async def get_ai_pair(
 
         # Validate test_dimension is a known tag key
         test_dim = result.get("test_dimension", "")
-        if test_dim not in _VALID_TAGS:
+        if test_dim not in _TASTE_TAGS:
             logger.warning("Gemini returned invalid test_dimension '%s', discarding", test_dim)
             test_dim = ""
 

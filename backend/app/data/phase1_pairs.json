@@ -1,7 +1,7 @@
 [
   {
     "id": "p1_01",
-    "label": "硬核英雄 vs 階級寓言",
+    "label": "超級英雄大片 vs 親密成長片",
     "dimension": "mainstream_vs_independent",
     "movie_a": {
       "tmdb_id": 155,
@@ -9,14 +9,14 @@
       "title_zh": "黑暗騎士"
     },
     "movie_b": {
-      "tmdb_id": 496243,
-      "title_en": "Parasite",
-      "title_zh": "寄生上流"
+      "tmdb_id": 376867,
+      "title_en": "Moonlight",
+      "title_zh": "月光下的藍色男孩"
     }
   },
   {
     "id": "p1_02",
-    "label": "超級英雄宇宙 vs 墨西哥魔幻寫實",
+    "label": "宇宙級 franchise vs 青春獨立小品",
     "dimension": "mainstream_vs_independent",
     "movie_a": {
       "tmdb_id": 299536,
@@ -24,14 +24,14 @@
       "title_zh": "復仇者聯盟3：無限之戰"
     },
     "movie_b": {
-      "tmdb_id": 1417,
-      "title_en": "Pan's Labyrinth",
-      "title_zh": "羊男的迷宮"
+      "tmdb_id": 391713,
+      "title_en": "Lady Bird",
+      "title_zh": "淑女鳥"
     }
   },
   {
     "id": "p1_03",
-    "label": "票房巨獸 vs 手持鏡頭寫實",
+    "label": "世界建構鉅片 vs 邊緣寫實獨立片",
     "dimension": "mainstream_vs_independent",
     "movie_a": {
       "tmdb_id": 19995,
@@ -39,14 +39,14 @@
       "title_zh": "阿凡達"
     },
     "movie_b": {
-      "tmdb_id": 153,
-      "title_en": "Lost in Translation",
-      "title_zh": "愛情不用翻譯"
+      "tmdb_id": 393457,
+      "title_en": "The Florida Project",
+      "title_zh": "歡迎光臨奇幻城堡"
     }
   },
   {
     "id": "p1_04",
-    "label": "迪士尼奇幻 vs 伊朗家庭劇",
+    "label": "迪士尼主流動畫 vs 公路獨立喜劇",
     "dimension": "mainstream_vs_independent",
     "movie_a": {
       "tmdb_id": 109445,
@@ -54,14 +54,14 @@
       "title_zh": "冰雪奇緣"
     },
     "movie_b": {
-      "tmdb_id": 60243,
-      "title_en": "A Separation",
-      "title_zh": "分居風暴"
+      "tmdb_id": 773,
+      "title_en": "Little Miss Sunshine",
+      "title_zh": "小太陽的願望"
     }
   },
   {
     "id": "p1_05",
-    "label": "間諜動作 vs 羅馬尼亞新浪潮",
+    "label": "間諜 franchise vs 對話導向愛情片",
     "dimension": "mainstream_vs_independent",
     "movie_a": {
       "tmdb_id": 37724,
@@ -69,14 +69,14 @@
       "title_zh": "007：空降危機"
     },
     "movie_b": {
-      "tmdb_id": 2009,
-      "title_en": "4 Months, 3 Weeks and 2 Days",
-      "title_zh": "4月3週又2天"
+      "tmdb_id": 76,
+      "title_en": "Before Sunrise",
+      "title_zh": "愛在黎明破曉時"
     }
   },
   {
     "id": "p1_06",
-    "label": "皮克斯闔家歡 vs 韓國底層悲歌",
+    "label": "情緒系主流佳作 vs 記憶感獨立電影",
     "dimension": "mainstream_vs_independent",
     "movie_a": {
       "tmdb_id": 150540,
@@ -84,14 +84,14 @@
       "title_zh": "腦筋急轉彎"
     },
     "movie_b": {
-      "tmdb_id": 491584,
-      "title_en": "Burning",
-      "title_zh": "燃燒烈愛"
+      "tmdb_id": 965150,
+      "title_en": "Aftersun",
+      "title_zh": "日麗"
     }
   },
   {
     "id": "p1_07",
-    "label": "諾蘭燒腦 vs 歌舞浪漫",
+    "label": "機關式燒腦 vs 記憶式情感",
     "dimension": "rational_vs_emotional",
     "movie_a": {
       "tmdb_id": 27205,
@@ -99,14 +99,14 @@
       "title_zh": "全面啟動"
     },
     "movie_b": {
-      "tmdb_id": 313369,
-      "title_en": "La La Land",
-      "title_zh": "樂來越愛你"
+      "tmdb_id": 38,
+      "title_en": "Eternal Sunshine of the Spotless Mind",
+      "title_zh": "王牌冤家"
     }
   },
   {
     "id": "p1_08",
-    "label": "硬科幻壯闘 vs 純愛私語",
+    "label": "硬科幻推演 vs 親密科幻想像",
     "dimension": "rational_vs_emotional",
     "movie_a": {
       "tmdb_id": 157336,
@@ -114,14 +114,14 @@
       "title_zh": "星際效應"
     },
     "movie_b": {
-      "tmdb_id": 398818,
-      "title_en": "Call Me by Your Name",
-      "title_zh": "以你的名字呼喚我"
+      "tmdb_id": 152601,
+      "title_en": "Her",
+      "title_zh": "雲端情人"
     }
   },
   {
     "id": "p1_09",
-    "label": "數學天才 vs 鋼琴詩人",
+    "label": "智性傳記 vs 傷痛家庭劇",
     "dimension": "rational_vs_emotional",
     "movie_a": {
       "tmdb_id": 453,
@@ -129,14 +129,14 @@
       "title_zh": "美麗境界"
     },
     "movie_b": {
-      "tmdb_id": 423,
-      "title_en": "The Pianist",
-      "title_zh": "戰地琴人"
+      "tmdb_id": 334543,
+      "title_en": "Manchester by the Sea",
+      "title_zh": "海邊的曼徹斯特"
     }
   },
   {
     "id": "p1_10",
-    "label": "駭客解謎 vs 初戀悸動",
+    "label": "哲學動作 vs 靜水流深的情感戲",
     "dimension": "rational_vs_emotional",
     "movie_a": {
       "tmdb_id": 603,
@@ -144,14 +144,14 @@
       "title_zh": "駭客任務"
     },
     "movie_b": {
-      "tmdb_id": 194,
-      "title_en": "Amélie",
-      "title_zh": "艾蜜莉的異想世界"
+      "tmdb_id": 666277,
+      "title_en": "Past Lives",
+      "title_zh": "之前的我們"
     }
   },
   {
     "id": "p1_11",
-    "label": "法庭攻防 vs 童年回憶",
+    "label": "審議辯證 vs 家庭餘韻",
     "dimension": "rational_vs_emotional",
     "movie_a": {
       "tmdb_id": 389,
@@ -159,14 +159,14 @@
       "title_zh": "十二怒漢"
     },
     "movie_b": {
-      "tmdb_id": 637,
-      "title_en": "Life Is Beautiful",
-      "title_zh": "美麗人生"
+      "tmdb_id": 399106,
+      "title_en": "The Farewell",
+      "title_zh": "別告訴她"
     }
   },
   {
     "id": "p1_12",
-    "label": "密碼破譯 vs 青春書信",
+    "label": "解碼敘事 vs 家庭情感",
     "dimension": "rational_vs_emotional",
     "movie_a": {
       "tmdb_id": 205596,
@@ -174,14 +174,14 @@
       "title_zh": "模仿遊戲"
     },
     "movie_b": {
-      "tmdb_id": 296096,
-      "title_en": "Me Before You",
-      "title_zh": "我就要你好好的"
+      "tmdb_id": 615643,
+      "title_en": "Minari",
+      "title_zh": "夢想之地"
     }
   },
   {
     "id": "p1_13",
-    "label": "太空求生 vs 家書情深",
+    "label": "問題解決導向 vs 情緒回聲導向",
     "dimension": "rational_vs_emotional",
     "movie_a": {
       "tmdb_id": 286217,
@@ -189,19 +189,34 @@
       "title_zh": "絕地救援"
     },
     "movie_b": {
-      "tmdb_id": 11036,
-      "title_en": "The Notebook",
-      "title_zh": "手札情緣"
+      "tmdb_id": 376867,
+      "title_en": "Moonlight",
+      "title_zh": "月光下的藍色男孩"
     }
   },
   {
     "id": "p1_14",
-    "label": "經典史詩 vs 反體制暴力",
+    "label": "希望史詩 vs 崩解肖像",
     "dimension": "light_vs_dark",
     "movie_a": {
       "tmdb_id": 120,
       "title_en": "The Lord of the Rings: The Fellowship of the Ring",
       "title_zh": "魔戒首部曲"
+    },
+    "movie_b": {
+      "tmdb_id": 475557,
+      "title_en": "Joker",
+      "title_zh": "小丑"
+    }
+  },
+  {
+    "id": "p1_15",
+    "label": "開放溫暖 vs 腐蝕性黑暗",
+    "dimension": "light_vs_dark",
+    "movie_a": {
+      "tmdb_id": 13,
+      "title_en": "Forrest Gump",
+      "title_zh": "阿甘正傳"
     },
     "movie_b": {
       "tmdb_id": 550,
@@ -210,23 +225,8 @@
     }
   },
   {
-    "id": "p1_15",
-    "label": "勵志追夢 vs 連環殺手",
-    "dimension": "light_vs_dark",
-    "movie_a": {
-      "tmdb_id": 13,
-      "title_en": "Forrest Gump",
-      "title_zh": "阿甘正傳"
-    },
-    "movie_b": {
-      "tmdb_id": 562,
-      "title_en": "Die Hard",
-      "title_zh": "終極警探"
-    }
-  },
-  {
     "id": "p1_16",
-    "label": "溫馨冒險 vs 末日荒涼",
+    "label": "童趣溫度 vs 哥德不安",
     "dimension": "light_vs_dark",
     "movie_a": {
       "tmdb_id": 862,
@@ -234,14 +234,14 @@
       "title_zh": "玩具總動員"
     },
     "movie_b": {
-      "tmdb_id": 274,
-      "title_en": "The Silence of the Lambs",
-      "title_zh": "沉默的羔羊"
+      "tmdb_id": 14836,
+      "title_en": "Coraline",
+      "title_zh": "第十四道門"
     }
   },
   {
     "id": "p1_17",
-    "label": "監獄救贖 vs 犯罪深淵",
+    "label": "硬地希望 vs 歷史絕望",
     "dimension": "light_vs_dark",
     "movie_a": {
       "tmdb_id": 278,
@@ -249,14 +249,14 @@
       "title_zh": "刺激1995"
     },
     "movie_b": {
-      "tmdb_id": 769,
-      "title_en": "Goodfellas",
-      "title_zh": "四海好傢伙"
+      "tmdb_id": 36685,
+      "title_en": "The Pianist",
+      "title_zh": "戰地琴人"
     }
   },
   {
     "id": "p1_18",
-    "label": "奇幻冒險 vs 心理恐懼",
+    "label": "魔法奇想 vs 怪誕成人童話",
     "dimension": "light_vs_dark",
     "movie_a": {
       "tmdb_id": 671,
@@ -264,9 +264,9 @@
       "title_zh": "哈利波特：神秘的魔法石"
     },
     "movie_b": {
-      "tmdb_id": 694,
-      "title_en": "The Shining",
-      "title_zh": "鬼店"
+      "tmdb_id": 399055,
+      "title_en": "The Shape of Water",
+      "title_zh": "水底情深"
     }
   },
   {
@@ -286,7 +286,7 @@
   },
   {
     "id": "p1_20",
-    "label": "歡樂動畫 vs 戰爭殘酷",
+    "label": "闔家歡趣味 vs 冷調荒誕",
     "dimension": "light_vs_dark",
     "movie_a": {
       "tmdb_id": 585,
@@ -294,9 +294,9 @@
       "title_zh": "怪獸電力公司"
     },
     "movie_b": {
-      "tmdb_id": 857,
-      "title_en": "Saving Private Ryan",
-      "title_zh": "搶救雷恩大兵"
+      "tmdb_id": 481848,
+      "title_en": "The Lobster",
+      "title_zh": "單身動物園"
     }
   },
   {

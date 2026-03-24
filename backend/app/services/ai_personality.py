@@ -28,12 +28,10 @@ def _build_context(
 
     for pick in picks:
         entry = {
-            "tmdb_id": pick.get("chosen_tmdb_id") or pick.get("movie_a_tmdb_id"),
-            "title": pick.get("chosen_title") or pick.get("movie_a_title"),
             "round": pick.get("round_number"),
+            "phase": pick.get("phase"),
             "pick_mode": pick.get("pick_mode"),
-            "movie_a_title": pick.get("movie_a_title"),
-            "movie_b_title": pick.get("movie_b_title"),
+            "test_dimension": pick.get("test_dimension"),
         }
         if pick.get("chosen_tmdb_id"):
             chosen.append(entry)
