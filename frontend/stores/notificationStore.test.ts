@@ -41,6 +41,7 @@ describe('notificationStore', () => {
       notifications: [],
       unreadCount: 0,
       isLoading: false,
+      error: null,
     })
     mockApi.mockReset()
   })
@@ -50,6 +51,7 @@ describe('notificationStore', () => {
       notifications: [],
       unreadCount: 0,
       isLoading: false,
+      error: null,
     })
   })
 
@@ -66,10 +68,11 @@ describe('notificationStore', () => {
       expect(state.notifications).toHaveLength(2)
       expect(state.unreadCount).toBe(1)
       expect(state.isLoading).toBe(false)
+      expect(state.error).toBeNull()
       expect(mockApi).toHaveBeenCalledWith('/notifications')
     })
 
-    it('silently handles errors', async () => {
+    it('stores an error when fetch fails', async () => {
       mockApi.mockRejectedValueOnce(new Error('Network error'))
 
       await useNotificationStore.getState().fetchNotifications()
@@ -77,6 +80,7 @@ describe('notificationStore', () => {
       const state = useNotificationStore.getState()
       expect(state.notifications).toHaveLength(0)
       expect(state.isLoading).toBe(false)
+      expect(state.error).toBe('Network error')
     })
   })
 

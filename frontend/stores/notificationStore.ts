@@ -22,6 +22,7 @@ interface NotificationState {
   notifications: NotificationItem[]
   unreadCount: number
   isLoading: boolean
+  error: string | null
   /** Fetch notification list + unread count */
   fetchNotifications: () => Promise<void>
   /** Lightweight poll for unread count only */
@@ -36,17 +37,21 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
   notifications: [],
   unreadCount: 0,
   isLoading: false,
+  error: null,
 
   fetchNotifications: async () => {
-    set({ isLoading: true })
+    set({ isLoading: true, error: null })
     try {
       const data = await api<NotificationListResponse>('/notifications')
       set({
         notifications: data.notifications,
         unreadCount: data.unread_count,
+        error: null,
       })
-    } catch {
-      // Silently fail — polling will retry
+    } catch (err) {
+      set({
+        error: err instanceof Error ? err.message : 'Failed to load notifications',
+      })
     } finally {
       set({ isLoading: false })
     }

@@ -66,6 +66,7 @@ export default function NotificationsPage() {
     notifications,
     unreadCount,
     isLoading,
+    error,
     fetchNotifications,
     markAsRead,
     markAllAsRead,
@@ -116,6 +117,10 @@ export default function NotificationsPage() {
           {isLoading ? (
             <div className={styles.loading}>
               <i className="ri-loader-4-line ri-spin ri-2x" />
+            </div>
+          ) : error ? (
+            <div className={styles.empty}>
+              <p className={styles.emptyText}>{error}</p>
             </div>
           ) : notifications.length === 0 ? (
             <div className={styles.empty}>
