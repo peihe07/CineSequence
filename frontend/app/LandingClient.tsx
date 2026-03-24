@@ -131,20 +131,10 @@ export default function LandingClient() {
       return
     }
 
-    try {
-      await fetchProfile()
-      if (useAuthStore.getState().isAuthenticated) {
-        router.push(fallbackPath)
-        return
-      }
-    } catch {
-      // Continue to auth UI when no valid session exists.
-    }
-
     setAuthNextPath(nextPath)
     setAuthMode(mode)
     setLoginOpen(true)
-  }, [fetchProfile, isAuthenticated, router])
+  }, [isAuthenticated, router])
 
   const handleProtectedEntry = useCallback((event: React.MouseEvent<HTMLElement>) => {
     const target = event.currentTarget.getAttribute('href')

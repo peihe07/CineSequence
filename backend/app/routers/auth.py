@@ -5,8 +5,6 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from slowapi import Limiter
-
-from app.security import get_client_ip
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -19,7 +17,7 @@ from app.schemas.auth import (
     TokenResponse,
     VerifyRequest,
 )
-from app.security import validate_csrf_origin
+from app.security import get_client_ip, validate_csrf_origin
 from app.services.auth_cookies import clear_auth_cookie, set_auth_cookie
 from app.services.auth_utils import (
     create_access_token,

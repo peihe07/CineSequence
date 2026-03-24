@@ -8,7 +8,6 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
 from app.config import settings
-from app.models import Base
 from app.models.group import Group
 
 SEED_FILE = Path(__file__).resolve().parent.parent / "backend" / "app" / "data" / "groups_seed.json"
