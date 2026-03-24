@@ -5,9 +5,8 @@ Revises: add_pending_pair
 Create Date: 2026-03-24
 """
 
-from alembic import op
 import sqlalchemy as sa
-
+from alembic import op
 
 # revision identifiers, used by Alembic.
 revision = "add_bio_to_users"

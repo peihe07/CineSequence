@@ -1,5 +1,5 @@
 """Admin dashboard API — stats and metrics for project maintainers."""
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -7,9 +7,9 @@ from sqlalchemy import func, select, union_all
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.deps import get_current_user, get_db
-from app.models.user import User
 from app.models.dna_profile import DnaProfile
 from app.models.match import Match, MatchStatus
+from app.models.user import User
 
 router = APIRouter()
 
@@ -32,7 +32,7 @@ async def get_stats(
     db: Annotated[AsyncSession, Depends(get_db)],
 ):
     """Overview statistics: users, DNA, matches, funnel rates."""
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     day_ago = now - timedelta(days=1)
     week_ago = now - timedelta(days=7)
 
@@ -80,7 +80,11 @@ async def get_stats(
     match_breakdown = {row[0].value: row[1] for row in match_status_result.all()}
 
     # Invite/accept rate
-    invited_count = match_breakdown.get("invited", 0) + match_breakdown.get("accepted", 0) + match_breakdown.get("declined", 0)
+    invited_count = (
+        match_breakdown.get("invited", 0)
+        + match_breakdown.get("accepted", 0)
+        + match_breakdown.get("declined", 0)
+    )
     accepted_count = match_breakdown.get("accepted", 0)
     invite_rate = invited_count / total_matches if total_matches else 0
     accept_rate = accepted_count / invited_count if invited_count else 0
@@ -129,7 +133,7 @@ async def get_daily_stats(
 ):
     """Daily breakdown of registrations, DNA builds, and matches for the last N days."""
     days = min(days, 90)
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     start = now - timedelta(days=days)
 
     # Daily registrations

@@ -3,7 +3,7 @@
 import json
 import logging
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 from sqlalchemy import and_, or_, select, true
@@ -67,7 +67,7 @@ async def find_matches(
     if not user.pure_taste_match:
         if user.match_gender_pref and user.match_gender_pref != "any":
             q = q.where(User.gender == user.match_gender_pref)
-        current_year = datetime.now(tz=timezone.utc).year
+        current_year = datetime.now(tz=UTC).year
         if user.match_age_min:
             q = q.where(User.birth_year <= current_year - user.match_age_min)
         if user.match_age_max:
@@ -209,7 +209,7 @@ async def send_invite(
     }
 
     match.status = MatchStatus.invited
-    match.invited_at = datetime.now(tz=timezone.utc)
+    match.invited_at = datetime.now(tz=UTC)
     await db.commit()
     await db.refresh(match)
 
@@ -265,7 +265,7 @@ async def respond_to_invite(
         }
 
     match.status = MatchStatus.accepted if accept else MatchStatus.declined
-    match.responded_at = datetime.now(tz=timezone.utc)
+    match.responded_at = datetime.now(tz=UTC)
 
     # Generate ticket image on accept (fire-and-forget)
     if accept:
@@ -346,7 +346,7 @@ def _build_reciprocal_preference_clause(user: User):
 
 
 def _build_candidate_demographic_clause(user: User):
-    current_year = datetime.now(tz=timezone.utc).year
+    current_year = datetime.now(tz=UTC).year
     user_birth_year = getattr(user, "birth_year", None)
     user_gender = getattr(user, "gender", None)
     user_age = current_year - user_birth_year if user_birth_year is not None else None

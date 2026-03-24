@@ -1,15 +1,12 @@
 """Tests for admin dashboard API endpoints."""
 
-import uuid
-from unittest.mock import AsyncMock, patch
 
 import pytest
 from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models.user import User, Gender, SequencingStatus
-from app.models.dna_profile import DnaProfile
 from app.models.match import Match, MatchStatus
+from app.models.user import Gender, SequencingStatus, User
 from app.services.auth_utils import create_access_token
 
 

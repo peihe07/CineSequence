@@ -11,7 +11,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.models import Base
 
 
-class NotificationType(str, enum.Enum):
+class NotificationType(enum.StrEnum):
     dna_ready = "dna_ready"
     match_found = "match_found"
     invite_received = "invite_received"

@@ -3,8 +3,6 @@
 import json
 from pathlib import Path
 
-import pytest
-
 DATA_DIR = Path(__file__).resolve().parent.parent.parent / "app" / "data"
 
 with open(DATA_DIR / "movie_pool.json") as f:
@@ -36,12 +34,16 @@ class TestMoviePoolIntegrity:
 
     def test_no_duplicate_tmdb_ids(self):
         ids = [m["tmdb_id"] for m in POOL]
-        assert len(ids) == len(set(ids)), f"Duplicate IDs found: {[x for x in ids if ids.count(x) > 1]}"
+        dupes = [x for x in ids if ids.count(x) > 1]
+        assert len(ids) == len(set(ids)), f"Duplicate IDs: {dupes}"
 
     def test_all_tags_are_valid(self):
         for movie in POOL:
             for tag in movie["tags"]:
-                assert tag in VALID_TAGS, f"Invalid tag '{tag}' in {movie['title_en']} (tmdb_id={movie['tmdb_id']})"
+                assert tag in VALID_TAGS, (
+                    f"Invalid tag '{tag}' in "
+                    f"{movie['title_en']} (tmdb_id={movie['tmdb_id']})"
+                )
 
     def test_minimum_movies_per_tag(self):
         """Every tag should have at least 8 movies in the pool."""

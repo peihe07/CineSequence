@@ -62,7 +62,7 @@ def _get_font(size: int, bold: bool = False) -> ImageFont.FreeTypeFont:
         if bold:
             return ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", size)
         return ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", size)
-    except (OSError, IOError):
+    except OSError:
         return ImageFont.load_default()
 
 

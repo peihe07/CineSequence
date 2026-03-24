@@ -1,7 +1,7 @@
 """Tests for match email notification flow."""
 
 import uuid
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import MagicMock, patch
 
 import pytest
 
@@ -236,7 +236,7 @@ class TestGetArchetypeName:
         assert _get_archetype_name(mock_user) == "電影愛好者"
 
     def test_returns_correct_archetype_name(self):
-        from app.services.matcher import _get_archetype_name, ARCHETYPE_MAP
+        from app.services.matcher import ARCHETYPE_MAP, _get_archetype_name
 
         archetype_id = next(iter(ARCHETYPE_MAP))
         data = ARCHETYPE_MAP[archetype_id]

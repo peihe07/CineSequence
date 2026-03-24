@@ -1,7 +1,7 @@
 """JWT and magic link token utilities."""
 
 import uuid
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 from jose import JWTError, jwt
 
@@ -18,7 +18,7 @@ def email_has_admin_access(email: str) -> bool:
 
 def create_magic_link_token(email: str) -> tuple[str, datetime]:
     """Create a signed magic link token. Returns (token, expires_at)."""
-    expires_at = datetime.now(timezone.utc) + timedelta(minutes=settings.magic_link_expiry_minutes)
+    expires_at = datetime.now(UTC) + timedelta(minutes=settings.magic_link_expiry_minutes)
     payload = {
         "sub": email,
         "exp": expires_at,
@@ -42,7 +42,7 @@ def verify_magic_link_token(token: str) -> str | None:
 
 def create_access_token(user_id: uuid.UUID, auth_version: int) -> str:
     """Create a JWT access token for authenticated requests."""
-    expires = datetime.now(timezone.utc) + timedelta(days=ACCESS_TOKEN_EXPIRE_DAYS)
+    expires = datetime.now(UTC) + timedelta(days=ACCESS_TOKEN_EXPIRE_DAYS)
     payload = {
         "sub": str(user_id),
         "exp": expires,

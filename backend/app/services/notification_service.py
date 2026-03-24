@@ -126,8 +126,8 @@ async def notify_dna_ready(db: AsyncSession, user_id: uuid.UUID, archetype_id: s
         type=NotificationType.dna_ready,
         title_zh="你的電影 DNA 已解碼完成",
         title_en="Your Movie DNA is ready",
-        body_zh=f"你的觀影原型已揭曉。前往查看你的 DNA 分析報告。",
-        body_en=f"Your archetype has been revealed. View your DNA analysis report.",
+        body_zh="你的觀影原型已揭曉。前往查看你的 DNA 分析報告。",
+        body_en="Your archetype has been revealed. View your DNA analysis report.",
         link="/dna",
         ref_id=archetype_id,
     )
@@ -164,7 +164,7 @@ async def notify_invite_received(
         title_en="You received an invite",
         body_zh=f"{sender_name} 向你發出了觀影邀約。",
         body_en=f"{sender_name} sent you an invite.",
-        link=f"/matches",
+        link="/matches",
         ref_id=str(match_id),
     )
     logger.info("Notification created: invite_received for user %s", user_id)

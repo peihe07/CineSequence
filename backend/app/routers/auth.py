@@ -1,6 +1,6 @@
 """Authentication router: register, verify (magic link), login."""
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
@@ -9,15 +9,13 @@ from slowapi.util import get_remote_address
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.config import settings
 from app.deps import get_current_user, get_db
 from app.models.user import User
 from app.schemas.auth import (
     LoginRequest,
-    RegisterResponse,
     RegisterRequest,
+    RegisterResponse,
     TokenResponse,
-    UserResponse,
     VerifyRequest,
 )
 from app.security import validate_csrf_origin
@@ -76,7 +74,7 @@ async def register(
         region=body.region,
         birth_year=body.birth_year,
         is_admin=email_has_admin_access(body.email),
-        agreed_to_terms_at=datetime.now(timezone.utc),
+        agreed_to_terms_at=datetime.now(UTC),
     )
     db.add(user)
     await db.commit()
@@ -152,7 +150,7 @@ async def verify(
         )
     if (
         user.magic_link_expires_at is None
-        or user.magic_link_expires_at <= datetime.now(timezone.utc)
+        or user.magic_link_expires_at <= datetime.now(UTC)
     ):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

@@ -6,7 +6,7 @@ import pytest
 from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models.user import User, Gender, SequencingStatus
+from app.models.user import Gender, SequencingStatus, User
 from app.services.auth_utils import create_access_token
 
 
@@ -101,7 +101,9 @@ class TestUpdateProfile:
         assert data["match_age_max"] == 35
         assert data["pure_taste_match"] is True
 
-    async def test_update_empty_body_returns_400(self, client: AsyncClient, db_session: AsyncSession):
+    async def test_update_empty_body_returns_400(
+        self, client: AsyncClient, db_session: AsyncSession,
+    ):
         user = await create_user(db_session)
         response = await client.patch(
             "/profile",
@@ -110,7 +112,9 @@ class TestUpdateProfile:
         )
         assert response.status_code == 400
 
-    async def test_update_ignores_disallowed_fields(self, client: AsyncClient, db_session: AsyncSession):
+    async def test_update_ignores_disallowed_fields(
+        self, client: AsyncClient, db_session: AsyncSession,
+    ):
         user = await create_user(db_session)
         original_email = user.email
         response = await client.patch(

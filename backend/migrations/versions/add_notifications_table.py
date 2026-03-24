@@ -5,8 +5,8 @@ Revises: add_bio_to_users
 Create Date: 2026-03-24
 """
 
-from alembic import op
 import sqlalchemy as sa
+from alembic import op
 from sqlalchemy.dialects.postgresql import UUID
 
 revision = "add_notifications"

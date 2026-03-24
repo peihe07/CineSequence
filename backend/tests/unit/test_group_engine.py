@@ -125,7 +125,10 @@ class TestSharedTagsAndRecommendations:
         movies = recommend_movies_for_group(["mindfuck", "twist"], vector, limit=3)
         assert len(movies) == 3
         assert all(movie["match_tags"] for movie in movies)
-        assert any("mindfuck" in movie["match_tags"] or "twist" in movie["match_tags"] for movie in movies)
+        assert any(
+            "mindfuck" in movie["match_tags"] or "twist" in movie["match_tags"]
+            for movie in movies
+        )
 
     def test_shared_watchlist_uses_member_overlap(self):
         member_a = [0.0] * len(TAG_KEYS)
@@ -138,7 +141,10 @@ class TestSharedTagsAndRecommendations:
         watchlist = build_shared_watchlist(["mindfuck", "twist"], [member_a, member_b], limit=4)
         assert len(watchlist) == 4
         assert watchlist[0]["supporter_count"] >= 1
-        assert any("mindfuck" in movie["match_tags"] or "twist" in movie["match_tags"] for movie in watchlist)
+        assert any(
+            "mindfuck" in movie["match_tags"] or "twist" in movie["match_tags"]
+            for movie in watchlist
+        )
 
 
 class TestShouldActivateGroup:

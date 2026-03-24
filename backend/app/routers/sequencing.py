@@ -1,10 +1,9 @@
 """Sequencing router: pair retrieval, pick submission, progress tracking."""
 
 import logging
-
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -27,8 +26,8 @@ from app.schemas.sequencing import (
 from app.services.ai_pair_engine import get_ai_pair
 from app.services.pair_engine import (
     compute_quadrant_from_picks,
-    get_phase1_pairs,
     get_pair_for_round,
+    get_phase1_pairs,
     get_reroll_pair_for_round,
 )
 from app.services.session_service import (
@@ -65,7 +64,11 @@ async def _enqueue_dna_build(user_id) -> None:
         try:
             find_matches_task.delay(str(user_id))
         except Exception:
-            logger.exception("Failed to enqueue match build after inline DNA build for user %s", user_id)
+            logger.exception(
+                "Failed to enqueue match build after inline DNA build "
+                "for user %s",
+                user_id,
+            )
 
 
 def _get_phase(round_number: int) -> int:

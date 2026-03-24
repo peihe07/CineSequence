@@ -6,8 +6,6 @@ Create Date: 2026-03-23
 """
 
 from alembic import op
-import sqlalchemy as sa
-
 
 revision = "mrg_seq_repair_0323"
 down_revision = ("add_group_messages", "add_unordered_match_pair_index")

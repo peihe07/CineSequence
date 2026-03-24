@@ -1,6 +1,5 @@
 """Integration tests for match flow and visibility rules."""
 
-import uuid
 from unittest.mock import AsyncMock, patch
 
 import pytest
@@ -9,7 +8,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from app.models.dna_profile import DnaProfile, TAG_VECTOR_DIMENSIONS
+from app.models.dna_profile import TAG_VECTOR_DIMENSIONS, DnaProfile
 from app.models.match import Match, MatchStatus
 from app.models.user import Gender, GenderPref, SequencingStatus, User
 from app.services.auth_utils import create_access_token
@@ -94,12 +93,17 @@ class TestMatchVisibility:
         self, client: AsyncClient, db_session: AsyncSession
     ):
         inviter = await create_user_with_dna(
-            db_session, email="inviter@test.com", name="Inviter", gender=Gender.female, birth_year=1994
+            db_session, email="inviter@test.com", name="Inviter",
+            gender=Gender.female, birth_year=1994
         )
         recipient = await create_user_with_dna(
-            db_session, email="recipient@test.com", name="Recipient", gender=Gender.male, birth_year=1992
+            db_session, email="recipient@test.com", name="Recipient",
+            gender=Gender.male, birth_year=1992
         )
-        await create_match(db_session, user_a=inviter, user_b=recipient, status=MatchStatus.discovered)
+        await create_match(
+            db_session, user_a=inviter, user_b=recipient,
+            status=MatchStatus.discovered,
+        )
 
         inviter_response = await client.get("/matches", headers=auth_headers(inviter))
         recipient_response = await client.get("/matches", headers=auth_headers(recipient))
@@ -116,12 +120,17 @@ class TestInviteRespondPermissions:
         self, client: AsyncClient, db_session: AsyncSession
     ):
         inviter = await create_user_with_dna(
-            db_session, email="inviter@test.com", name="Inviter", gender=Gender.female, birth_year=1994
+            db_session, email="inviter@test.com", name="Inviter",
+            gender=Gender.female, birth_year=1994
         )
         recipient = await create_user_with_dna(
-            db_session, email="recipient@test.com", name="Recipient", gender=Gender.male, birth_year=1992
+            db_session, email="recipient@test.com", name="Recipient",
+            gender=Gender.male, birth_year=1992
         )
-        match = await create_match(db_session, user_a=inviter, user_b=recipient, status=MatchStatus.discovered)
+        match = await create_match(
+            db_session, user_a=inviter, user_b=recipient,
+            status=MatchStatus.discovered,
+        )
 
         response = await client.post(
             "/matches/invite",
@@ -136,12 +145,17 @@ class TestInviteRespondPermissions:
         self, client: AsyncClient, db_session: AsyncSession
     ):
         inviter = await create_user_with_dna(
-            db_session, email="inviter@test.com", name="Inviter", gender=Gender.female, birth_year=1994
+            db_session, email="inviter@test.com", name="Inviter",
+            gender=Gender.female, birth_year=1994
         )
         recipient = await create_user_with_dna(
-            db_session, email="recipient@test.com", name="Recipient", gender=Gender.male, birth_year=1992
+            db_session, email="recipient@test.com", name="Recipient",
+            gender=Gender.male, birth_year=1992
         )
-        match = await create_match(db_session, user_a=inviter, user_b=recipient, status=MatchStatus.invited)
+        match = await create_match(
+            db_session, user_a=inviter, user_b=recipient,
+            status=MatchStatus.invited,
+        )
 
         response = await client.post(
             "/matches/respond",
@@ -156,15 +170,23 @@ class TestInviteRespondPermissions:
         self, client: AsyncClient, db_session: AsyncSession
     ):
         inviter = await create_user_with_dna(
-            db_session, email="inviter@test.com", name="Inviter", gender=Gender.female, birth_year=1994
+            db_session, email="inviter@test.com", name="Inviter",
+            gender=Gender.female, birth_year=1994
         )
         recipient = await create_user_with_dna(
-            db_session, email="recipient@test.com", name="Recipient", gender=Gender.male, birth_year=1992
+            db_session, email="recipient@test.com", name="Recipient",
+            gender=Gender.male, birth_year=1992
         )
-        match = await create_match(db_session, user_a=inviter, user_b=recipient, status=MatchStatus.invited)
+        match = await create_match(
+            db_session, user_a=inviter, user_b=recipient,
+            status=MatchStatus.invited,
+        )
 
         with (
-            patch("app.services.matcher.generate_and_upload_ticket", new=AsyncMock(return_value="https://ticket.test/1.png")),
+            patch(
+                "app.services.matcher.generate_and_upload_ticket",
+                new=AsyncMock(return_value="https://ticket.test/1.png"),
+            ),
             patch("app.services.matcher.send_match_accepted_email", new=AsyncMock()),
         ):
             response = await client.post(

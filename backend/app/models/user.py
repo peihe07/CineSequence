@@ -9,21 +9,21 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.models import Base
 
 
-class Gender(str, enum.Enum):
+class Gender(enum.StrEnum):
     male = "male"
     female = "female"
     other = "other"
     prefer_not_to_say = "prefer_not_to_say"
 
 
-class GenderPref(str, enum.Enum):
+class GenderPref(enum.StrEnum):
     male = "male"
     female = "female"
     other = "other"
     any = "any"
 
 
-class SequencingStatus(str, enum.Enum):
+class SequencingStatus(enum.StrEnum):
     not_started = "not_started"
     in_progress = "in_progress"
     completed = "completed"

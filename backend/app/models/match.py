@@ -9,7 +9,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.models import Base
 
 
-class MatchStatus(str, enum.Enum):
+class MatchStatus(enum.StrEnum):
     discovered = "discovered"
     invited = "invited"
     accepted = "accepted"

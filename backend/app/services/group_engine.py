@@ -5,7 +5,7 @@ import logging
 import uuid
 from pathlib import Path
 
-from sqlalchemy import select, func, delete
+from sqlalchemy import delete, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.group import Group, group_members

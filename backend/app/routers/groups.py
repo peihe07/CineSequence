@@ -167,7 +167,10 @@ async def create_group_message(
 
     text = body.body.strip()
     if not text:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Message cannot be empty")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Message cannot be empty",
+        )
 
     message = GroupMessage(group_id=group_id, user_id=user.id, body=text[:500])
     db.add(message)
@@ -205,7 +208,10 @@ async def delete_group_message(
     if not message:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Message not found")
     if message.user_id != user.id:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="You can only delete your own messages")
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You can only delete your own messages",
+        )
 
     await db.delete(message)
     await db.commit()

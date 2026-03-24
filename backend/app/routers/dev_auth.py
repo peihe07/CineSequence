@@ -1,6 +1,6 @@
 """Development-only authentication helpers for local E2E and debugging."""
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Response, status
@@ -61,7 +61,7 @@ async def get_dev_magic_link(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Magic link not found",
         )
-    if user.magic_link_expires_at <= datetime.now(timezone.utc):
+    if user.magic_link_expires_at <= datetime.now(UTC):
         raise HTTPException(
             status_code=status.HTTP_410_GONE,
             detail="Magic link expired",

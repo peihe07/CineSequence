@@ -4,7 +4,7 @@ import enum
 import uuid
 from datetime import datetime
 
-from sqlalchemy import JSON, Boolean, DateTime, Enum, ForeignKey, Integer, String, func
+from sqlalchemy import JSON, DateTime, Enum, ForeignKey, Integer, String, func
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -15,12 +15,12 @@ EXTENSION_BATCH_SIZE = 5
 MAX_EXTENSION_BATCHES = 3
 
 
-class SessionType(str, enum.Enum):
+class SessionType(enum.StrEnum):
     initial = "initial"
     retest = "retest"
 
 
-class SessionStatus(str, enum.Enum):
+class SessionStatus(enum.StrEnum):
     in_progress = "in_progress"
     completed = "completed"      # base rounds done, can extend or finalize
     extending = "extending"      # extension batch in progress

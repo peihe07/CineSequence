@@ -1,8 +1,6 @@
-from unittest.mock import AsyncMock
 
 import pytest
 import pytest_asyncio
-from sqlalchemy import select
 
 from app.models.dna_profile import DnaProfile
 from app.models.group import Group, group_members
@@ -187,10 +185,14 @@ async def test_user_cannot_delete_others_group_message(client, auth_user, db_ses
     await db_session.commit()
     await db_session.refresh(other_user)
     await db_session.execute(group_members.insert().values(user_id=user.id, group_id=group.id))
-    await db_session.execute(group_members.insert().values(user_id=other_user.id, group_id=group.id))
+    await db_session.execute(
+        group_members.insert().values(user_id=other_user.id, group_id=group.id)
+    )
     await db_session.commit()
 
-    other_headers = {"Authorization": f"Bearer {create_access_token(other_user.id, other_user.auth_version)}"}
+    other_headers = {
+        "Authorization": f"Bearer {create_access_token(other_user.id, other_user.auth_version)}",
+    }
     create_response = await client.post(
         f"/groups/{group.id}/messages",
         json={"body": "Hands off."},

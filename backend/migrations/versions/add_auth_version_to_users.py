@@ -5,9 +5,8 @@ Revises: add_is_admin_to_users
 Create Date: 2026-03-22
 """
 
-from alembic import op
 import sqlalchemy as sa
-
+from alembic import op
 
 revision = "add_auth_version_to_users"
 down_revision = "b4g2d3e5f6c7"

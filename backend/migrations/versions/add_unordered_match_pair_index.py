@@ -7,7 +7,6 @@ Create Date: 2026-03-23
 
 from alembic import op
 
-
 revision = "add_unordered_match_pair_index"
 down_revision = "add_auth_version_to_users"
 branch_labels = None

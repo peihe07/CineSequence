@@ -1,7 +1,6 @@
 """Tests for DNA builder: tag vector, genre vector, archetype assignment."""
 
 from app.services.dna_builder import (
-    ARCHETYPES,
     TAG_INDEX,
     TAG_KEYS,
     assign_archetype,

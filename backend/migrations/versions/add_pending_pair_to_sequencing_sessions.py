@@ -5,10 +5,9 @@ Revises: mrg_seq_repair_0323
 Create Date: 2026-03-23
 """
 
-from alembic import op
 import sqlalchemy as sa
+from alembic import op
 from sqlalchemy.dialects import postgresql
-
 
 revision = "add_pending_pair"
 down_revision = "mrg_seq_repair_0323"

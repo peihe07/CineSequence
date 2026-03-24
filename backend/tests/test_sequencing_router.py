@@ -19,7 +19,7 @@ def _fake_movie(tmdb_id: int = 155, title: str = "Test Movie") -> MovieInfo:
         tmdb_id=tmdb_id,
         title_en=title,
         title_zh=f"{title}_zh",
-        poster_url=f"https://image.tmdb.org/t/p/w500/test.jpg",
+        poster_url="https://image.tmdb.org/t/p/w500/test.jpg",
         year=2020,
         genres=["Drama"],
         overview="A test movie",

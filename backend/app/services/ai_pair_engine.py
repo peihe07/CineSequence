@@ -56,7 +56,10 @@ def _select_candidates(
 
     # Phase 3 soul tags get extra priority
     if phase == 3:
-        soul_tags = {"existential", "antiHero", "romanticCore", "socialCritique", "philosophical", "absurdist"}
+        soul_tags = {
+            "existential", "antiHero", "romanticCore",
+            "socialCritique", "philosophical", "absurdist",
+        }
         priority_tags.update(soul_tags - tested_tags)
 
     # Penalize overtested tags

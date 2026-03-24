@@ -5,11 +5,11 @@ from unittest.mock import AsyncMock, patch
 import pytest
 
 from app.services.ai_pair_engine import (
+    _VALID_TAGS,
     _build_user_context,
     _collect_seen_ids,
     _pool_fallback,
     _select_candidates,
-    _VALID_TAGS,
     get_ai_pair,
 )
 
@@ -67,7 +67,10 @@ class TestSelectCandidates:
         candidate_tags = set()
         for c in candidates:
             candidate_tags.update(c.get("tags", []))
-        soul_tags = {"existential", "antiHero", "romanticCore", "socialCritique", "philosophical", "absurdist"}
+        soul_tags = {
+            "existential", "antiHero", "romanticCore",
+            "socialCritique", "philosophical", "absurdist",
+        }
         # At least some soul tags should be represented
         assert len(candidate_tags & soul_tags) >= 3
 
@@ -123,7 +126,10 @@ class TestPoolFallback:
     @pytest.mark.asyncio
     async def test_fallback_returns_valid_pair(self):
         mock_movie = {"id": 1, "title": "Test", "overview": "", "poster_path": ""}
-        with patch("app.services.ai_pair_engine.get_movie", new_callable=AsyncMock, return_value=mock_movie):
+        with patch(
+            "app.services.ai_pair_engine.get_movie",
+            new_callable=AsyncMock, return_value=mock_movie,
+        ):
             result = await _pool_fallback({}, set(), phase=2)
         assert result is not None
         assert result["movie_a_tmdb_id"] != result["movie_b_tmdb_id"]
@@ -140,7 +146,10 @@ class TestPoolFallback:
         excluded = all_ids - set(keep_ids)
 
         mock_movie = {"id": 1, "title": "Test", "overview": "", "poster_path": ""}
-        with patch("app.services.ai_pair_engine.get_movie", new_callable=AsyncMock, return_value=mock_movie):
+        with patch(
+            "app.services.ai_pair_engine.get_movie",
+            new_callable=AsyncMock, return_value=mock_movie,
+        ):
             result = await _pool_fallback({}, excluded, phase=2)
         if result:
             assert result["movie_a_tmdb_id"] not in excluded
@@ -181,7 +190,10 @@ class TestGetAiPairDuplicateRejection:
         mock_movie = {"id": 1, "title": "Test", "overview": "", "poster_path": ""}
         with (
             patch("app.services.ai_pair_engine._call_gemini", side_effect=mock_gemini),
-            patch("app.services.ai_pair_engine.get_movie", new_callable=AsyncMock, return_value=mock_movie),
+            patch(
+                "app.services.ai_pair_engine.get_movie",
+                new_callable=AsyncMock, return_value=mock_movie,
+            ),
         ):
             result = await get_ai_pair(phase=2, round_number=6, picks=[], quadrant_scores={})
 

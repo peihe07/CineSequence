@@ -133,12 +133,12 @@ async def update_profile(
             detail="No fields to update",
         )
 
-    ALLOWED_FIELDS = {
+    allowed_fields = {
         "name", "bio", "gender", "birth_year", "region",
         "match_gender_pref", "match_age_min", "match_age_max", "pure_taste_match",
     }
     for field, value in update_data.items():
-        if field not in ALLOWED_FIELDS:
+        if field not in allowed_fields:
             continue
         setattr(user, field, value)
 

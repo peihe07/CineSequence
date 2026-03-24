@@ -8,15 +8,14 @@ from httpx import AsyncClient
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models.user import User
 from app.config import settings
+from app.models.user import User
 from app.services.auth_utils import (
     create_access_token,
     create_magic_link_token,
     decode_access_token,
     verify_magic_link_token,
 )
-
 
 # --- Unit tests for auth_utils ---
 
