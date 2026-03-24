@@ -31,6 +31,13 @@ export const metadata: Metadata = {
     template: '%s',
   },
   description: 'Decode your cinematic DNA through movie choices',
+  icons: {
+    icon: [
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+    ],
+    shortcut: '/favicon.svg',
+    apple: '/favicon.svg',
+  },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

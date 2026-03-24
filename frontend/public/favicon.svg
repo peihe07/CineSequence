@@ -1,0 +1,20 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- 背景圓形：深藍夜色 -->
+  <circle cx="16" cy="16" r="15" fill="#0F172A"/>
+
+  <!-- 外圍的數據光圈 (模擬電影齒孔與數據傳輸) -->
+  <path d="M16 4C22.6274 4 28 9.37258 28 16C28 22.6274 22.6274 28 16 28C9.37258 28 4 22.6274 4 16C4 9.37258 9.37258 4 16 4Z"
+    stroke="#1E293B" stroke-width="2" stroke-dasharray="2 4"/>
+
+  <!-- 核心 DNA 脈衝：淺青色 -->
+  <!-- 左鏈 -->
+  <path d="M12 8C12 8 16 12 16 16C16 20 12 24 12 24"
+    stroke="#2DD4BF" stroke-width="2.5" stroke-linecap="round" stroke-opacity="0.9"/>
+
+  <!-- 右鏈 -->
+  <path d="M20 8C20 8 16 12 16 16C16 20 20 24 20 24"
+    stroke="#38BDF8" stroke-width="2.5" stroke-linecap="round" stroke-opacity="0.7"/>
+
+  <!-- 連接節點 (像數據點) -->
+  <circle cx="16" cy="16" r="1.5" fill="#2DD4BF"/>
+</svg>
