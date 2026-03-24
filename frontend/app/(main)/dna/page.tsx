@@ -11,6 +11,7 @@ import StarNebula from '@/components/dna/StarNebula'
 import TagCloud from '@/components/dna/TagCloud'
 import RadarChart from '@/components/dna/RadarChart'
 import AIReading from '@/components/dna/AIReading'
+import AtmosphereCanvas from '@/components/dna/AtmosphereCanvas'
 import Button from '@/components/ui/Button'
 import FlowGuard from '@/components/guards/FlowGuard'
 import styles from './page.module.css'
@@ -79,6 +80,7 @@ function DnaResultContent() {
 
   return (
     <div className={styles.container}>
+      <AtmosphereCanvas archetypeId={result.archetype.id} />
       <motion.div
         className={styles.content}
         initial={{ opacity: 0 }}
