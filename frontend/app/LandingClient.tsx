@@ -77,7 +77,7 @@ export default function LandingClient() {
   const [authMode, setAuthMode] = useState<'login' | 'register'>('login')
   const [authNextPath, setAuthNextPath] = useState<string | undefined>()
   const [activeSlide, setActiveSlide] = useState(0)
-  const { isAuthenticated, fetchProfile } = useAuthStore()
+  const { isAuthenticated } = useAuthStore()
   const heroRef = useRef<HTMLElement>(null)
   const galleryRef = useRef<HTMLDivElement>(null)
   const headlineText = t('landing.termLine4')

@@ -22,7 +22,7 @@ export default function LoginModal({ open, mode = 'login', nextPath, onClose }: 
   const router = useRouter()
   const [activeMode, setActiveMode] = useState<'login' | 'register'>(mode)
   const { t } = useI18n()
-  const { isAuthenticated, fetchProfile } = useAuthStore()
+  const { isAuthenticated } = useAuthStore()
   const resolvedNextPath = sanitizeNextPath(nextPath) ?? '/sequencing'
 
   useEffect(() => {
@@ -61,29 +61,8 @@ export default function LoginModal({ open, mode = 'login', nextPath, onClose }: 
     if (isAuthenticated) {
       onClose()
       router.replace(resolvedNextPath)
-      return
     }
-
-    let cancelled = false
-
-    async function checkAuth() {
-      try {
-        await fetchProfile()
-        if (!cancelled && useAuthStore.getState().isAuthenticated) {
-          onClose()
-          router.replace(resolvedNextPath)
-        }
-      } catch {
-        // Leave the modal open for unauthenticated users.
-      }
-    }
-
-    void checkAuth()
-
-    return () => {
-      cancelled = true
-    }
-  }, [fetchProfile, isAuthenticated, onClose, open, resolvedNextPath, router])
+  }, [isAuthenticated, onClose, open, resolvedNextPath, router])
 
   return (
     <AnimatePresence>
