@@ -44,7 +44,12 @@ class TestSecuritySettings:
 
     def test_production_rejects_default_secrets(self):
         with pytest.raises(ValueError):
-            Settings(environment="production")
+            Settings(
+                environment="production",
+                jwt_secret="change-me",
+                magic_link_secret="change-me",
+                _env_file=None,
+            )
 
     def test_csrf_origin_rejects_untrusted_origin(self):
         class DummyRequest:

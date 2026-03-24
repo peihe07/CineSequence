@@ -63,6 +63,7 @@ class TestRegisterEndpoint:
             "name": "Test User",
             "gender": "other",
             "region": "TW",
+            "birth_year": 1995,
             "agreed_to_terms": True,
         })
         assert response.status_code == 201
@@ -78,6 +79,7 @@ class TestRegisterEndpoint:
             "email": "dup@test.com",
             "name": "User A",
             "gender": "male",
+            "birth_year": 1995,
             "agreed_to_terms": True,
         }
         first = await client.post("/auth/register", json=payload)
@@ -103,6 +105,7 @@ class TestRegisterEndpoint:
                 "name": "Admin User",
                 "gender": "other",
                 "region": "TW",
+                "birth_year": 1995,
                 "agreed_to_terms": True,
             })
             assert response.status_code == 201
@@ -126,6 +129,7 @@ class TestVerifyEndpoint:
             "email": "verify@test.com",
             "name": "Verifier",
             "gender": "female",
+            "birth_year": 1995,
             "agreed_to_terms": True,
         })
 
@@ -150,6 +154,7 @@ class TestVerifyEndpoint:
             "email": "reused@test.com",
             "name": "Reuse",
             "gender": "female",
+            "birth_year": 1995,
             "agreed_to_terms": True,
         })
         result = await db_session.execute(
@@ -171,6 +176,7 @@ class TestVerifyEndpoint:
             "email": "superseded@test.com",
             "name": "Superseded",
             "gender": "female",
+            "birth_year": 1995,
             "agreed_to_terms": True,
         })
         result = await db_session.execute(
@@ -207,6 +213,7 @@ class TestLoginEndpoint:
             "email": "login@test.com",
             "name": "Login User",
             "gender": "male",
+            "birth_year": 1995,
             "agreed_to_terms": True,
         })
         mock_send.reset_mock()
@@ -232,6 +239,7 @@ class TestLoginEndpoint:
             "name": "Admin User",
             "gender": "other",
             "region": "TW",
+            "birth_year": 1995,
             "agreed_to_terms": True,
         })
 
@@ -327,6 +335,7 @@ class TestSessionEndpoints:
             "name": "Magic Link",
             "gender": "other",
             "region": "TW",
+            "birth_year": 1995,
             "agreed_to_terms": True,
         })
 
@@ -384,6 +393,7 @@ class TestProtectedEndpoint:
             "email": "auth@test.com",
             "name": "Auth User",
             "gender": "other",
+            "birth_year": 1995,
             "agreed_to_terms": True,
         })
         result = await db_session.execute(

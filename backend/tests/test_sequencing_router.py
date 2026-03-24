@@ -180,10 +180,12 @@ class TestPair:
         assert result.scalars().all() == []
 
     @pytest.mark.asyncio
+    @patch("app.routers.sequencing.get_movie", new_callable=AsyncMock)
     @patch("app.routers.sequencing.get_ai_pair", new_callable=AsyncMock)
     async def test_phase2_pair_excludes_reroll_history(
-        self, mock_get_ai_pair, client, auth_user, db_session
+        self, mock_get_ai_pair, mock_get_movie, client, auth_user, db_session
     ):
+        mock_get_movie.side_effect = lambda tmdb_id: _fake_movie(tmdb_id, f"Movie {tmdb_id}")
         user, headers = auth_user
 
         await client.get("/sequencing/progress", headers=headers)
@@ -220,10 +222,12 @@ class TestPair:
         assert mock_get_ai_pair.await_args.kwargs["extra_excluded_tmdb_ids"] == [4101, 4102]
 
     @pytest.mark.asyncio
+    @patch("app.routers.sequencing.get_movie", new_callable=AsyncMock)
     @patch("app.routers.sequencing.get_ai_pair", new_callable=AsyncMock)
     async def test_phase2_pair_is_reused_within_same_round(
-        self, mock_get_ai_pair, client, auth_user, db_session
+        self, mock_get_ai_pair, mock_get_movie, client, auth_user, db_session
     ):
+        mock_get_movie.side_effect = lambda tmdb_id: _fake_movie(tmdb_id, f"Movie {tmdb_id}")
         user, headers = auth_user
 
         await client.get("/sequencing/progress", headers=headers)
@@ -262,10 +266,12 @@ class TestPair:
         mock_get_ai_pair.assert_awaited_once()
 
     @pytest.mark.asyncio
+    @patch("app.routers.sequencing.get_movie", new_callable=AsyncMock)
     @patch("app.routers.sequencing.get_ai_pair", new_callable=AsyncMock)
     async def test_phase2_reroll_persists_excluded_tmdb_ids(
-        self, mock_get_ai_pair, client, auth_user, db_session
+        self, mock_get_ai_pair, mock_get_movie, client, auth_user, db_session
     ):
+        mock_get_movie.side_effect = lambda tmdb_id: _fake_movie(tmdb_id, f"Movie {tmdb_id}")
         user, headers = auth_user
 
         await client.get("/sequencing/progress", headers=headers)
@@ -313,7 +319,7 @@ class TestPick:
     @pytest.mark.asyncio
     @patch("app.routers.sequencing.get_movie", new_callable=AsyncMock)
     async def test_submit_pick_phase1(self, mock_get_movie, client, auth_user, db_session):
-        mock_get_movie.return_value = _fake_movie()
+        mock_get_movie.side_effect = lambda tmdb_id: _fake_movie(tmdb_id, f"Movie {tmdb_id}")
         user, headers = auth_user
 
         # First get the pair to know valid tmdb_ids
@@ -440,7 +446,7 @@ class TestPick:
     async def test_submit_pick_final_round_enqueues_dna_build(
         self, mock_get_movie, mock_enqueue_dna_build, client, auth_user, db_session
     ):
-        mock_get_movie.return_value = _fake_movie()
+        mock_get_movie.side_effect = lambda tmdb_id: _fake_movie(tmdb_id, f"Movie {tmdb_id}")
         user, headers = auth_user
 
         await client.get("/sequencing/progress", headers=headers)
@@ -451,10 +457,14 @@ class TestPick:
         session.total_rounds = 1
         await db_session.commit()
 
+        # Get the pair first so we know valid tmdb_ids
+        pair_resp = await client.get("/sequencing/pair", headers=headers)
+        chosen_id = pair_resp.json()["movie_a"]["tmdb_id"]
+
         response = await client.post(
             "/sequencing/pick",
             json={
-                "chosen_tmdb_id": 155,
+                "chosen_tmdb_id": chosen_id,
                 "pick_mode": "watched",
                 "response_time_ms": 2500,
             },
