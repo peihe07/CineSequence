@@ -2,8 +2,10 @@
 
 import { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import LoginModal from '@/components/auth/LoginModal'
 import { useI18n } from '@/lib/i18n'
+import { useAuthStore } from '@/stores/authStore'
 import FloatingLocaleToggle from '@/components/ui/FloatingLocaleToggle'
 import Footer from '@/components/ui/Footer'
 import styles from './page.module.css'
@@ -69,11 +71,13 @@ function useTerminalSequence(lines: string[], start: boolean, stepDelay = 220) {
 }
 
 export default function Home() {
+  const router = useRouter()
   const { t } = useI18n()
   const [loginOpen, setLoginOpen] = useState(false)
   const [authMode, setAuthMode] = useState<'login' | 'register'>('login')
   const [authNextPath, setAuthNextPath] = useState<string | undefined>()
   const [activeSlide, setActiveSlide] = useState(0)
+  const { isAuthenticated, fetchProfile } = useAuthStore()
   const heroRef = useRef<HTMLElement>(null)
   const galleryRef = useRef<HTMLDivElement>(null)
   const headlineText = t('landing.termLine4')
@@ -119,6 +123,29 @@ export default function Home() {
     return () => track.removeEventListener('scroll', handleScroll)
   }, [])
 
+  const openAuthFlow = useCallback(async (mode: 'login' | 'register', nextPath?: string) => {
+    const fallbackPath = nextPath ?? '/sequencing'
+
+    if (isAuthenticated) {
+      router.push(fallbackPath)
+      return
+    }
+
+    try {
+      await fetchProfile()
+      if (useAuthStore.getState().isAuthenticated) {
+        router.push(fallbackPath)
+        return
+      }
+    } catch {
+      // Continue to auth UI when no valid session exists.
+    }
+
+    setAuthNextPath(nextPath)
+    setAuthMode(mode)
+    setLoginOpen(true)
+  }, [fetchProfile, isAuthenticated, router])
+
   const handleProtectedEntry = useCallback((event: React.MouseEvent<HTMLElement>) => {
     const target = event.currentTarget.getAttribute('href')
     if (target === '/sequencing/seed' || target === '/sequencing') {
@@ -126,10 +153,8 @@ export default function Home() {
     }
 
     event.preventDefault()
-    setAuthNextPath(target || undefined)
-    setAuthMode('login')
-    setLoginOpen(true)
-  }, [])
+    void openAuthFlow('login', target || undefined)
+  }, [openAuthFlow])
 
   // Magnetic button effect
   const handleMagnet = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
@@ -239,11 +264,7 @@ export default function Home() {
                 className={styles.ctaPrimary}
                 onMouseMove={handleMagnet}
                 onMouseLeave={handleMagnetLeave}
-                onClick={() => {
-                  setAuthNextPath(undefined)
-                  setAuthMode('register')
-                  setLoginOpen(true)
-                }}
+                onClick={() => void openAuthFlow('register')}
               >
                 {t('landing.start')}
               </button>
@@ -252,11 +273,7 @@ export default function Home() {
                 className={styles.ctaSecondary}
                 onMouseMove={handleMagnet}
                 onMouseLeave={handleMagnetLeave}
-                onClick={() => {
-                  setAuthNextPath(undefined)
-                  setAuthMode('login')
-                  setLoginOpen(true)
-                }}
+                onClick={() => void openAuthFlow('login')}
               >
                 {t('landing.login')}
               </button>

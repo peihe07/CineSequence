@@ -8,14 +8,17 @@ const { pushMock, registerMock, clearErrorMock } = vi.hoisted(() => ({
 }))
 
 vi.mock('next/navigation', () => ({
-  useRouter: () => ({ push: pushMock }),
+  useRouter: () => ({ push: pushMock, replace: pushMock }),
+  useSearchParams: () => ({ get: () => null }),
 }))
 
 vi.mock('@/stores/authStore', () => ({
   useAuthStore: () => ({
     register: registerMock,
+    isAuthenticated: false,
     isLoading: false,
     error: null,
+    fetchProfile: vi.fn().mockResolvedValue(undefined),
     clearError: clearErrorMock,
   }),
 }))
@@ -92,7 +95,7 @@ describe('RegisterPage', () => {
   it('requires consent before submitting', async () => {
     render(<RegisterPage />)
 
-    fireEvent.change(screen.getByLabelText('Enter your email'), {
+    fireEvent.change(await screen.findByLabelText('Enter your email'), {
       target: { value: 'user@example.com' },
     })
     fireEvent.change(screen.getByLabelText('Display name'), {
@@ -113,7 +116,7 @@ describe('RegisterPage', () => {
 
     render(<RegisterPage />)
 
-    fireEvent.change(screen.getByLabelText('Enter your email'), {
+    fireEvent.change(await screen.findByLabelText('Enter your email'), {
       target: { value: 'user@example.com' },
     })
     fireEvent.change(screen.getByLabelText('Display name'), {
@@ -135,6 +138,7 @@ describe('RegisterPage', () => {
         region: 'TW',
         birth_year: 1990,
         agreed_to_terms: true,
+        next_path: '/sequencing',
       })
     })
     expect(await screen.findByText('sent:user@example.com')).toBeTruthy()

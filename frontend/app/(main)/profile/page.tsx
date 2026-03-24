@@ -32,20 +32,28 @@ export default function ProfilePage() {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [isDeletingAccount, setIsDeletingAccount] = useState(false)
   const [uploadingAvatar, setUploadingAvatar] = useState(false)
+  const [avatarError, setAvatarError] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handleAvatarUpload = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
     setUploadingAvatar(true)
+    setAvatarError(null)
     try {
       const updated = await apiUpload<Profile>('/profile/avatar', file)
       setProfile(updated)
+    } catch (error) {
+      if (error instanceof ApiError) {
+        setAvatarError(error.detail)
+      } else {
+        setAvatarError(t('common.error'))
+      }
     } finally {
       setUploadingAvatar(false)
       if (fileInputRef.current) fileInputRef.current.value = ''
     }
-  }, [])
+  }, [t])
 
   // Locale-aware label resolvers using t() — replaces hardcoded GENDER_LABELS / PREF_LABELS / STATUS_LABELS
   function getGenderLabel(value: string): string {
@@ -218,6 +226,8 @@ export default function ProfilePage() {
             saveLabel={t('profile.save')}
             cancelLabel={t('profile.cancel')}
             changeAvatarLabel={t('profile.changeAvatar')}
+            avatarHintLabel={t('profile.avatarHint')}
+            avatarError={avatarError}
             editNameLabel={t('profile.editName')}
             editBioLabel={t('profile.editBio')}
             editName={editName}

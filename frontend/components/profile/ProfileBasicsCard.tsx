@@ -18,6 +18,8 @@ interface ProfileBasicsCardProps {
   saveLabel: string
   cancelLabel: string
   changeAvatarLabel: string
+  avatarHintLabel: string
+  avatarError: string | null
   editNameLabel: string
   editBioLabel: string
   editName: string
@@ -53,6 +55,8 @@ export default function ProfileBasicsCard({
   saveLabel,
   cancelLabel,
   changeAvatarLabel,
+  avatarHintLabel,
+  avatarError,
   editNameLabel,
   editBioLabel,
   editName,
@@ -109,6 +113,8 @@ export default function ProfileBasicsCard({
           onChange={onAvatarUpload}
           className={styles.fileInput}
         />
+        <p className={styles.avatarHint}>{avatarHintLabel}</p>
+        {avatarError && <p className={styles.avatarError}>{avatarError}</p>}
       </div>
 
       <div className={styles.field}>

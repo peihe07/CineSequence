@@ -131,18 +131,33 @@ describe('MatchesPage', () => {
   })
 
   it('rolls back local preference changes when saving fails', async () => {
-    apiMock
-      .mockResolvedValueOnce({
-        match_gender_pref: null,
-        match_age_min: null,
-        match_age_max: null,
-        pure_taste_match: false,
-      })
-      .mockRejectedValueOnce(new Error('Save failed'))
+    apiMock.mockImplementation((path: string, options?: RequestInit) => {
+      if (path === '/profile' && !options) {
+        return Promise.resolve({
+          match_gender_pref: null,
+          match_age_min: null,
+          match_age_max: null,
+          pure_taste_match: false,
+        })
+      }
+
+      if (path === '/profile' && options?.method === 'PATCH') {
+        return Promise.reject(new Error('Save failed'))
+      }
+
+      return Promise.resolve(undefined)
+    })
 
     render(<MatchesPage />)
 
-    fireEvent.click(await screen.findByRole('button', { name: 'Match Preferences' }))
+    const filterToggle = await screen.findByRole('button', { name: 'Match Preferences' })
+    await waitFor(() => {
+      if (filterToggle.hasAttribute('disabled')) {
+        throw new Error('Filter toggle is still disabled')
+      }
+    })
+
+    fireEvent.click(filterToggle)
     fireEvent.click(screen.getByRole('button', { name: 'Female' }))
 
     await waitFor(() => {
@@ -152,8 +167,10 @@ describe('MatchesPage', () => {
       })
     })
 
-    expect(await screen.findByText('Save failed')).toBeTruthy()
-    expect(screen.queryByText('Profile load failed')).toBeNull()
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: 'Any' }).className).toContain('filterActive')
+      expect(screen.getByRole('button', { name: 'Female' }).className).not.toContain('filterActive')
+    })
   })
 
   it('renders match action errors from the store', async () => {

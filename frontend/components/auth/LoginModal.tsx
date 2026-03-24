@@ -2,10 +2,13 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { AnimatePresence, motion } from 'framer-motion'
 import LoginForm from '@/components/auth/LoginForm'
 import RegisterForm from '@/components/auth/RegisterForm'
+import { sanitizeNextPath } from '@/lib/authProtection'
 import { useI18n } from '@/lib/i18n'
+import { useAuthStore } from '@/stores/authStore'
 import styles from './LoginModal.module.css'
 
 interface LoginModalProps {
@@ -16,8 +19,11 @@ interface LoginModalProps {
 }
 
 export default function LoginModal({ open, mode = 'login', nextPath, onClose }: LoginModalProps) {
+  const router = useRouter()
   const [activeMode, setActiveMode] = useState<'login' | 'register'>(mode)
   const { t } = useI18n()
+  const { isAuthenticated, fetchProfile } = useAuthStore()
+  const resolvedNextPath = sanitizeNextPath(nextPath) ?? '/sequencing'
 
   useEffect(() => {
     if (!open) {
@@ -46,6 +52,38 @@ export default function LoginModal({ open, mode = 'login', nextPath, onClose }: 
       setActiveMode(mode)
     }
   }, [mode, open])
+
+  useEffect(() => {
+    if (!open) {
+      return
+    }
+
+    if (isAuthenticated) {
+      onClose()
+      router.replace(resolvedNextPath)
+      return
+    }
+
+    let cancelled = false
+
+    async function checkAuth() {
+      try {
+        await fetchProfile()
+        if (!cancelled && useAuthStore.getState().isAuthenticated) {
+          onClose()
+          router.replace(resolvedNextPath)
+        }
+      } catch {
+        // Leave the modal open for unauthenticated users.
+      }
+    }
+
+    void checkAuth()
+
+    return () => {
+      cancelled = true
+    }
+  }, [fetchProfile, isAuthenticated, onClose, open, resolvedNextPath, router])
 
   return (
     <AnimatePresence>

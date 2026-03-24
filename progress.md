@@ -12,9 +12,9 @@
 | Phase 4: DNA Builder + Result | In progress | 95% |
 | Phase 5: Matching + Invite | Done | 100% |
 | Phase 6: Groups + Profile | Done | 100% |
-| Phase 7: Polish + Infrastructure | In progress | 99% |
+| Phase 7: Polish + Infrastructure | In progress | 98% |
 | Cross-cutting | Done | 100% |
-| **Overall** | | **~99%** |
+| **Overall** | | **~98%** |
 
 ---
 
@@ -248,16 +248,16 @@
 - [x] Frontend component tests: toast (6), ConfirmDialog (6), FlowGuard (5), Onboarding (4) = 21 tests
 - [x] Fix: email test updated for ticket deep link URL
 
-### 7e: Admin Dashboard + Monitoring (in progress)
+### 7e: Admin Dashboard + Monitoring ✓
 - [x] Admin role field on User model + Alembic migration
 - [x] Admin auth middleware (require_admin dependency)
 - [x] GET /admin/stats endpoint (user count, DNA count, match count, invite/accept rates, funnel)
 - [x] GET /admin/stats/daily endpoint (daily registration, DNA builds, matches over time)
 - [x] GET /admin/api-usage endpoint (Gemini calls, TMDB queries, Resend emails)
-- [ ] Prometheus metrics endpoint (/metrics — request latency, error rate, Celery queue depth)
-- [ ] Grafana dashboard config (API health, user funnel, external API usage)
+- [x] Prometheus metrics endpoint (/metrics — request latency, error rate, in-flight, Celery queue depth, app gauges)
+- [x] Grafana dashboard config (request rate, latency percentiles, error rate, queue depth, user funnel)
 - [x] Frontend /admin page (stats overview, funnel chart, daily mini charts, API usage cards)
-- [ ] Docker compose: Prometheus + Grafana services
+- [x] Docker compose: Prometheus + Grafana services (dev + prod)
 
 ### 7f: Deploy (in progress — 2026-03-24)
 - [x] Cloudflare Workers (frontend runtime) — OpenNext + wrangler deployment
@@ -266,7 +266,7 @@
 - [x] Same-origin frontend `/api/*` proxy to Railway backend public origin
 - [x] Production auth cookie on `.cinesequence.xyz`
 - [x] Production login/session verified on `https://cinesequence.xyz`
-- [ ] CI/CD pipeline (GitHub Actions: lint, test, build, deploy)
+- [x] CI/CD pipeline (GitHub Actions: lint, test, build on push/PR to main)
 - [x] Frontend custom domain + SSL setup
 - [x] Production end-to-end verification
 - [ ] Separate public API hostname (`https://api.cinesequence.xyz`) cleanup
@@ -314,12 +314,12 @@
 - [x] **C. 輔助 axis** — 9 個輔助 dimension 選擇結果納入 quadrant scores 傳給 AI
 - [x] Tests: 52 unit tests (pool integrity 6, ai_pair_engine 18, pair_engine 28)
 
-### 7i: Notification System (planned)
+### 7i: Notification System
 > 分階段實作，MVP 先做輕量版
 
 | Phase | 做法 | 時機 |
 |-------|------|------|
-| Phase 1 | Header 鈴鐺 + dropdown（靜態 polling） | 近期可做 |
+| Phase 1 | Header 鈴鐺 + dropdown（靜態 polling） | ✓ 完成 |
 | Phase 2 | 獨立通知頁面 + 已讀管理 | 用戶量成長後 |
 | Phase 3 | 即時推播（WebSocket / SSE） | 需要即時性時 |
 
@@ -328,8 +328,16 @@
 - Sequencing 完成（DNA 分析結果出來）
 - 系統公告（維護、新功能）
 
-- [ ] **Phase 1**: Header 鈴鐺 icon + 未讀紅點 + dropdown list
-- [ ] **Phase 2**: 獨立 /notifications 頁面 + 已讀/未讀狀態 + notifications DB table
+- [x] **Phase 1**: Header 鈴鐺 icon + 未讀紅點 + dropdown list
+  - [x] Notification model + Alembic migration (notifications table)
+  - [x] Notification service (create, query, mark read, convenience creators)
+  - [x] Notification router (GET list, GET unread-count, PATCH read, PATCH read-all)
+  - [x] Hook: discover → notify_match_found, invite → notify_invite_received, accept → notify_match_accepted
+  - [x] Hook: DNA build task → notify_dna_ready
+  - [x] notificationStore (Zustand, 30s polling, optimistic updates)
+  - [x] NotificationBell component (bell icon, badge, glassmorphism dropdown, i18n)
+  - [x] Tests: backend 17 integration tests, frontend 5 unit tests
+- [ ] **Phase 2**: 獨立 /notifications 頁面 + 已讀/未讀狀態
 - [ ] **Phase 3**: WebSocket / SSE 即時推播
 
 ## Deferred Decisions
@@ -337,6 +345,6 @@
 - **Bilingual movie titles** — backend has title_en + title_zh, seed page is locale-aware, other pages TBD
 
 ## Suggested Next Steps
-1. **Phase 7f** — Deploy: CI/CD pipeline + optional `api.cinesequence.xyz` cleanup
-2. **Phase 7i-1** — Notification system Phase 1 (Header 鈴鐺 + dropdown)
-3. **Phase 7e** — Admin dashboard: Prometheus + Grafana monitoring
+1. **Phase 7e** — Admin dashboard: Prometheus + Grafana monitoring
+2. **Phase 7f** — Optional `api.cinesequence.xyz` hostname cleanup
+3. **Phase 7i-2** — Notification system Phase 2 (standalone page + read management)

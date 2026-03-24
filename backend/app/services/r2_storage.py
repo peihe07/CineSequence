@@ -2,6 +2,7 @@
 
 import logging
 from io import BytesIO
+from urllib.parse import urlsplit, urlunsplit
 
 import boto3
 from botocore.config import Config
@@ -9,6 +10,30 @@ from botocore.config import Config
 from app.config import settings
 
 logger = logging.getLogger(__name__)
+
+
+def _normalize_public_base_url() -> str:
+    """Return a public base URL compatible with both bucket and account-level R2 domains."""
+    base = settings.s3_public_url.rstrip("/")
+    if not base:
+        return base
+
+    parsed = urlsplit(base)
+    path = parsed.path.rstrip("/")
+    bucket_suffix = f"/{settings.s3_bucket}"
+
+    # Account-level public domains need the bucket name in the path.
+    if parsed.netloc.endswith(".r2.dev") and path != bucket_suffix:
+        path = f"{path}{bucket_suffix}" if path else bucket_suffix
+
+    return urlunsplit((parsed.scheme, parsed.netloc, path, "", ""))
+
+
+def get_public_url(key: str) -> str:
+    """Get the public URL for an object in R2."""
+    base = _normalize_public_base_url()
+    normalized_key = key.lstrip("/")
+    return f"{base}/{normalized_key}"
 
 
 def _get_client():
@@ -45,11 +70,6 @@ async def upload_bytes(
         key,
         ExtraArgs={"ContentType": content_type},
     )
-    public_url = f"{settings.s3_public_url}/{key}"
+    public_url = get_public_url(key)
     logger.info("Uploaded %s to R2: %s", key, public_url)
     return public_url
-
-
-def get_public_url(key: str) -> str:
-    """Get the public URL for an object in R2."""
-    return f"{settings.s3_public_url}/{key}"

@@ -17,9 +17,10 @@ interface MatchPrefs {
   pure_taste_match: boolean
 }
 
-function MatchFilter({ prefs, onChange }: {
+function MatchFilter({ prefs, onChange, disabled }: {
   prefs: MatchPrefs
   onChange: (updated: Partial<MatchPrefs>) => void
+  disabled?: boolean
 }) {
   const { t } = useI18n()
   const [open, setOpen] = useState(false)
@@ -38,6 +39,7 @@ function MatchFilter({ prefs, onChange }: {
         onClick={() => setOpen(!open)}
         aria-expanded={open}
         aria-controls="filter-panel"
+        disabled={disabled}
       >
         <i className="ri-filter-3-line" aria-hidden="true" />
         {t('matches.filterLabel')}
@@ -62,6 +64,7 @@ function MatchFilter({ prefs, onChange }: {
                     (prefs.match_gender_pref || '') === opt.value ? styles.filterActive : ''
                   }`}
                   onClick={() => onChange({ match_gender_pref: opt.value || null })}
+                  disabled={disabled}
                 >
                   {opt.label}
                 </button>
@@ -83,6 +86,7 @@ function MatchFilter({ prefs, onChange }: {
                 min={18}
                 max={99}
                 aria-label={t('matches.minAge')}
+                disabled={disabled}
               />
               <span className={styles.ageDash}>—</span>
               <input
@@ -96,6 +100,7 @@ function MatchFilter({ prefs, onChange }: {
                 min={18}
                 max={99}
                 aria-label={t('matches.maxAge')}
+                disabled={disabled}
               />
             </div>
           </div>
@@ -105,6 +110,7 @@ function MatchFilter({ prefs, onChange }: {
               type="checkbox"
               checked={prefs.pure_taste_match}
               onChange={(e) => onChange({ pure_taste_match: e.target.checked })}
+              disabled={disabled}
             />
             <span>{t('matches.pureTaste')}</span>
           </label>
@@ -149,6 +155,7 @@ function MatchesContent() {
     pure_taste_match: false,
   })
   const [prefsError, setPrefsError] = useState<string | null>(null)
+  const [prefsReady, setPrefsReady] = useState(false)
   const [activeIndex, setActiveIndex] = useState(0)
 
   const carouselRef = useRef<HTMLDivElement>(null)
@@ -168,6 +175,8 @@ function MatchesContent() {
         setPrefsError(null)
       } catch (err) {
         setPrefsError(err instanceof Error ? err.message : t('matches.prefLoadError'))
+      } finally {
+        setPrefsReady(true)
       }
     }
 
@@ -175,18 +184,26 @@ function MatchesContent() {
   }, [fetchMatches, t])
 
   const savePrefs = useCallback((updated: Partial<MatchPrefs>) => {
+    if (!prefsReady) {
+      return
+    }
+
     const previous = prefs
     const next = { ...prefs, ...updated }
     setPrefs(next)
     setPrefsError(null)
-    void api('/profile', {
-      method: 'PATCH',
-      body: JSON.stringify(updated),
-    }).catch((err) => {
-      setPrefs(previous)
-      setPrefsError(err instanceof Error ? err.message : t('matches.prefSaveError'))
-    })
-  }, [prefs, t])
+    void (async () => {
+      try {
+        await api('/profile', {
+          method: 'PATCH',
+          body: JSON.stringify(updated),
+        })
+      } catch (err) {
+        setPrefs(previous)
+        setPrefsError(err instanceof Error ? err.message : t('matches.prefSaveError'))
+      }
+    })()
+  }, [prefs, prefsReady, t])
 
   const respondId = searchParams.get('respond')
   const matchId = searchParams.get('match')
@@ -245,7 +262,7 @@ function MatchesContent() {
           {(prefsError || error) && (
             <p className={styles.errorText} role="alert">{prefsError || error}</p>
           )}
-          <MatchFilter prefs={prefs} onChange={savePrefs} />
+          <MatchFilter prefs={prefs} onChange={savePrefs} disabled={!prefsReady} />
         </section>
 
         {/* ── DISCLAIMER SECTION ──────────────────────── */}
