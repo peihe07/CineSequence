@@ -121,7 +121,7 @@ describe('SequencingCompletePage', () => {
     })
 
     expect(replaceMock).not.toHaveBeenCalledWith('/dna')
-    expect(screen.getByRole('button', { name: 'Retry' })).toBeTruthy()
+    expect(await screen.findByRole('button', { name: 'Retry' })).toBeTruthy()
   })
 
   it('retries dna generation manually after the automatic build fails', async () => {
