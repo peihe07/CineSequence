@@ -1,11 +1,21 @@
 import { cleanup, render, screen, waitFor } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-const { replaceMock, logoutMock, apiMock, apiUploadMock } = vi.hoisted(() => ({
+const { replaceMock, logoutMock, apiMock, apiUploadMock, ApiErrorMock } = vi.hoisted(() => ({
   replaceMock: vi.fn(),
   logoutMock: vi.fn(),
   apiMock: vi.fn(),
   apiUploadMock: vi.fn(),
+  ApiErrorMock: class ApiError extends Error {
+    status: number
+    detail: string
+
+    constructor(status: number, detail: string) {
+      super(detail)
+      this.status = status
+      this.detail = detail
+    }
+  },
 }))
 
 vi.mock('next/navigation', () => ({
@@ -13,6 +23,7 @@ vi.mock('next/navigation', () => ({
 }))
 
 vi.mock('@/lib/api', () => ({
+  ApiError: ApiErrorMock,
   api: apiMock,
   apiUpload: apiUploadMock,
 }))
@@ -81,9 +92,10 @@ describe('ProfilePage', () => {
   })
 
   it('renders the loaded profile in the section layout', async () => {
-    apiMock.mockResolvedValueOnce({
+    apiMock.mockResolvedValue({
       name: 'Aster',
       email: 'aster@example.com',
+      bio: 'Dreaming in long takes.',
       gender: 'female',
       region: 'TW',
       birth_year: 1996,
@@ -104,7 +116,19 @@ describe('ProfilePage', () => {
     })
 
     expect(screen.getByText('aster@example.com')).toBeTruthy()
+    expect(screen.getByText('Dreaming in long takes.')).toBeTruthy()
     expect(screen.getByText('Dream Archive')).toBeTruthy()
     expect(screen.getAllByText('Completed').length).toBeGreaterThan(0)
+  })
+
+  it('logs out and redirects to login when the profile request is unauthorized', async () => {
+    apiMock.mockRejectedValue(new ApiErrorMock(401, 'Unauthorized'))
+
+    render(<ProfilePage />)
+
+    await waitFor(() => {
+      expect(logoutMock).toHaveBeenCalledTimes(1)
+      expect(replaceMock).toHaveBeenCalledWith('/login')
+    })
   })
 })

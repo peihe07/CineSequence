@@ -2,6 +2,7 @@ export interface Profile {
   id: string
   email: string
   name: string
+  bio: string | null
   avatar_url: string | null
   gender: string
   birth_year: number | null

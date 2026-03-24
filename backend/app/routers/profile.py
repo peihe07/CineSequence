@@ -19,6 +19,7 @@ from app.models.match import Match
 from app.models.pick import Pick
 from app.models.sequencing_session import SequencingSession
 from app.models.user import User
+from app.services.auth_cookies import clear_auth_cookie
 from app.services.dna_builder import ARCHETYPES
 
 logger = logging.getLogger(__name__)
@@ -27,6 +28,11 @@ AVATAR_MAX_BYTES = 2 * 1024 * 1024  # 2 MB
 AVATAR_ALLOWED_TYPES = {"image/jpeg", "image/png", "image/webp"}
 
 router = APIRouter()
+
+
+def _with_avatar_version(url: str) -> str:
+    separator = "&" if "?" in url else "?"
+    return f"{url}{separator}v={uuid.uuid4().hex}"
 
 
 def _matches_avatar_signature(data: bytes, content_type: str) -> bool:
@@ -43,6 +49,7 @@ class ProfileOut(BaseModel):
     id: uuid.UUID
     email: str
     name: str
+    bio: str | None = None
     avatar_url: str | None = None
     gender: str
     birth_year: int | None = None
@@ -63,6 +70,7 @@ class ProfileOut(BaseModel):
 
 class ProfileUpdate(BaseModel):
     name: str | None = None
+    bio: str | None = None
     gender: str | None = None
     birth_year: int | None = None
     region: str | None = None
@@ -85,6 +93,7 @@ def _user_to_profile(user: User) -> ProfileOut:
         id=user.id,
         email=user.email,
         name=user.name,
+        bio=user.bio,
         avatar_url=user.avatar_url,
         gender=user.gender.value,
         birth_year=user.birth_year,
@@ -125,7 +134,7 @@ async def update_profile(
         )
 
     ALLOWED_FIELDS = {
-        "name", "gender", "birth_year", "region",
+        "name", "bio", "gender", "birth_year", "region",
         "match_gender_pref", "match_age_min", "match_age_max", "pure_taste_match",
     }
     for field, value in update_data.items():
@@ -177,7 +186,7 @@ async def upload_avatar(
         from app.services.r2_storage import upload_bytes
         url = await upload_bytes(data, key, content_type=file.content_type)
 
-    user.avatar_url = url
+    user.avatar_url = _with_avatar_version(url)
     await db.commit()
     await db.refresh(user)
     return _user_to_profile(user)
@@ -309,10 +318,5 @@ async def delete_account(
         media_type="application/json",
         status_code=status.HTTP_200_OK,
     )
-    response.delete_cookie(
-        key=settings.auth_cookie_name,
-        httponly=True,
-        samesite=settings.auth_cookie_samesite,
-        secure=settings.resolved_auth_cookie_secure,
-    )
+    clear_auth_cookie(response)
     return response

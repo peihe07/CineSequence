@@ -59,6 +59,16 @@ class TestUpdateProfile:
         assert response.status_code == 200
         assert response.json()["name"] == "New Name"
 
+    async def test_update_bio(self, client: AsyncClient, db_session: AsyncSession):
+        user = await create_user(db_session)
+        response = await client.patch(
+            "/profile",
+            json={"bio": "Long walks, quiet cinemas, and difficult endings."},
+            headers=auth_headers(user),
+        )
+        assert response.status_code == 200
+        assert response.json()["bio"] == "Long walks, quiet cinemas, and difficult endings."
+
     async def test_update_multiple_fields(self, client: AsyncClient, db_session: AsyncSession):
         user = await create_user(db_session)
         response = await client.patch(
@@ -131,6 +141,31 @@ class TestAvatarUpload:
         data = response.json()
         assert data["avatar_url"] is not None
         assert "avatar" in data["avatar_url"]
+
+    async def test_reupload_returns_cache_busting_avatar_url(
+        self, client: AsyncClient, db_session: AsyncSession
+    ):
+        user = await create_user(db_session)
+        fake_png_a = b"\x89PNG\r\n\x1a\n" + b"\x00" * 64
+        fake_png_b = b"\x89PNG\r\n\x1a\n" + b"\x01" * 64
+
+        first = await client.post(
+            "/profile/avatar",
+            headers=auth_headers(user),
+            files={"file": ("avatar.png", io.BytesIO(fake_png_a), "image/png")},
+        )
+        second = await client.post(
+            "/profile/avatar",
+            headers=auth_headers(user),
+            files={"file": ("avatar.png", io.BytesIO(fake_png_b), "image/png")},
+        )
+
+        assert first.status_code == 200
+        assert second.status_code == 200
+        first_url = first.json()["avatar_url"]
+        second_url = second.json()["avatar_url"]
+        assert first_url != second_url
+        assert first_url.split("?")[0] == second_url.split("?")[0]
 
     async def test_upload_rejects_invalid_type(self, client: AsyncClient, db_session: AsyncSession):
         user = await create_user(db_session)

@@ -7,6 +7,9 @@ import type { Profile } from './types'
 interface ProfileBasicsCardProps {
   profile: Profile
   nameLabel: string
+  bioLabel: string
+  bioPlaceholder: string
+  addBioLabel: string
   emailLabel: string
   genderLabel: string
   birthYearLabel: string
@@ -15,22 +18,33 @@ interface ProfileBasicsCardProps {
   cancelLabel: string
   changeAvatarLabel: string
   editNameLabel: string
+  editBioLabel: string
   editName: string
+  editBio: string
   isEditing: boolean
+  isEditingBio: boolean
   saving: boolean
+  savingBio: boolean
   uploadingAvatar: boolean
   fileInputRef: RefObject<HTMLInputElement | null>
   onAvatarUpload: (e: ChangeEvent<HTMLInputElement>) => Promise<void>
   onEditNameChange: (value: string) => void
+  onEditBioChange: (value: string) => void
   onEditStart: () => void
   onEditCancel: () => void
   onSave: () => Promise<void>
+  onBioEditStart: () => void
+  onBioEditCancel: () => void
+  onBioSave: () => Promise<void>
   getGenderLabel: (value: string) => string
 }
 
 export default function ProfileBasicsCard({
   profile,
   nameLabel,
+  bioLabel,
+  bioPlaceholder,
+  addBioLabel,
   emailLabel,
   genderLabel,
   birthYearLabel,
@@ -39,16 +53,24 @@ export default function ProfileBasicsCard({
   cancelLabel,
   changeAvatarLabel,
   editNameLabel,
+  editBioLabel,
   editName,
+  editBio,
   isEditing,
+  isEditingBio,
   saving,
+  savingBio,
   uploadingAvatar,
   fileInputRef,
   onAvatarUpload,
   onEditNameChange,
+  onEditBioChange,
   onEditStart,
   onEditCancel,
   onSave,
+  onBioEditStart,
+  onBioEditCancel,
+  onBioSave,
   getGenderLabel,
 }: ProfileBasicsCardProps) {
   return (
@@ -112,6 +134,39 @@ export default function ProfileBasicsCard({
       <div className={styles.field}>
         <span className={styles.label}>{emailLabel}</span>
         <span className={styles.value}>{profile.email}</span>
+      </div>
+
+      <div className={styles.field}>
+        <span className={styles.label}>{bioLabel}</span>
+        {isEditingBio ? (
+          <div className={styles.bioEditStack}>
+            <textarea
+              className={styles.editTextarea}
+              value={editBio}
+              onChange={(e) => onEditBioChange(e.target.value)}
+              maxLength={280}
+              rows={4}
+              placeholder={bioPlaceholder}
+            />
+            <div className={styles.editRow}>
+              <button className={styles.saveBtn} onClick={onBioSave} disabled={savingBio}>
+                {savingBio ? '...' : saveLabel}
+              </button>
+              <button className={styles.cancelBtn} onClick={onBioEditCancel}>
+                {cancelLabel}
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className={styles.valueRow}>
+            <p className={styles.bioText}>
+              {profile.bio?.trim() ? profile.bio : addBioLabel}
+            </p>
+            <button className={styles.editBtn} onClick={onBioEditStart} aria-label={editBioLabel}>
+              <i className="ri-pencil-line" />
+            </button>
+          </div>
+        )}
       </div>
 
       <div className={styles.field}>

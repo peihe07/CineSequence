@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
-import { api, apiUpload } from '@/lib/api'
+import { ApiError, api, apiUpload } from '@/lib/api'
 import { useI18n } from '@/lib/i18n'
 import { useAuthStore } from '@/stores/authStore'
 import ProfileBasicsCard from '@/components/profile/ProfileBasicsCard'
@@ -23,7 +23,10 @@ export default function ProfilePage() {
   const [isLoading, setIsLoading] = useState(true)
   const [isEditing, setIsEditing] = useState(false)
   const [editName, setEditName] = useState('')
+  const [isEditingBio, setIsEditingBio] = useState(false)
+  const [editBio, setEditBio] = useState('')
   const [saving, setSaving] = useState(false)
+  const [savingBio, setSavingBio] = useState(false)
   const [isLoggingOut, setIsLoggingOut] = useState(false)
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
@@ -79,9 +82,17 @@ export default function ProfilePage() {
       .then((data) => {
         setProfile(data)
         setEditName(data.name)
+        setEditBio(data.bio ?? '')
+      })
+      .catch(async (error) => {
+        if (error instanceof ApiError && (error.status === 401 || error.status === 403)) {
+          await logout()
+          router.replace('/login')
+          return
+        }
       })
       .finally(() => setIsLoading(false))
-  }, [])
+  }, [logout, router])
 
   const handleSave = async () => {
     if (!editName.trim() || editName === profile?.name) {
@@ -98,6 +109,26 @@ export default function ProfilePage() {
       setIsEditing(false)
     } finally {
       setSaving(false)
+    }
+  }
+
+  const handleBioSave = async () => {
+    const nextBio = editBio.trim()
+    if (nextBio === (profile?.bio ?? '')) {
+      setIsEditingBio(false)
+      return
+    }
+    setSavingBio(true)
+    try {
+      const updated = await api<Profile>('/profile', {
+        method: 'PATCH',
+        body: JSON.stringify({ bio: nextBio || null }),
+      })
+      setProfile(updated)
+      setEditBio(updated.bio ?? '')
+      setIsEditingBio(false)
+    } finally {
+      setSavingBio(false)
     }
   }
 
@@ -177,6 +208,9 @@ export default function ProfilePage() {
           <ProfileBasicsCard
             profile={profile}
             nameLabel={t('profile.name')}
+            bioLabel={t('profile.bio')}
+            bioPlaceholder={t('profile.bioPlaceholder')}
+            addBioLabel={t('profile.bioEmpty')}
             emailLabel={t('profile.email')}
             genderLabel={t('profile.gender')}
             birthYearLabel={t('profile.birthYear')}
@@ -185,16 +219,27 @@ export default function ProfilePage() {
             cancelLabel={t('profile.cancel')}
             changeAvatarLabel={t('profile.changeAvatar')}
             editNameLabel={t('profile.editName')}
+            editBioLabel={t('profile.editBio')}
             editName={editName}
+            editBio={editBio}
             isEditing={isEditing}
+            isEditingBio={isEditingBio}
             saving={saving}
+            savingBio={savingBio}
             uploadingAvatar={uploadingAvatar}
             fileInputRef={fileInputRef}
             onAvatarUpload={handleAvatarUpload}
             onEditNameChange={setEditName}
+            onEditBioChange={setEditBio}
             onEditStart={() => setIsEditing(true)}
             onEditCancel={() => setIsEditing(false)}
             onSave={handleSave}
+            onBioEditStart={() => setIsEditingBio(true)}
+            onBioEditCancel={() => {
+              setEditBio(profile.bio ?? '')
+              setIsEditingBio(false)
+            }}
+            onBioSave={handleBioSave}
             getGenderLabel={getGenderLabel}
           />
 
