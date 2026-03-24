@@ -446,7 +446,8 @@
   flex: 1;
   padding: 0.4rem 0.6rem;
   background: rgba(255, 255, 255, 0.04);
-  color: rgba(255, 255, 255, 0.92);
+  color: var(--archive-input-text);
+  caret-color: var(--archive-input-caret);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 6px 6px 0 0;
   font-size: 0.9rem;
@@ -461,7 +462,8 @@
   padding: 0.7rem 0.85rem;
   resize: vertical;
   background: rgba(255, 255, 255, 0.04);
-  color: rgba(255, 255, 255, 0.92);
+  color: var(--archive-input-text);
+  caret-color: var(--archive-input-caret);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 10px;
   font-size: 0.92rem;
@@ -469,6 +471,11 @@
   line-height: 1.7;
   outline: none;
   transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.editInput::placeholder,
+.editTextarea::placeholder {
+  color: var(--archive-input-placeholder);
 }
 
 .editTextarea:focus {

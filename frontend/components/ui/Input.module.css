@@ -16,7 +16,8 @@
 .input {
   padding: 0.8rem 0;
   background: transparent;
-  color: rgba(255, 255, 255, 0.92);
+  color: var(--archive-input-text);
+  caret-color: var(--archive-input-caret);
   border: none;
   border-bottom: 1px solid rgba(255, 255, 255, 0.12);
   font-size: 0.9rem;
@@ -30,7 +31,7 @@
 }
 
 .input::placeholder {
-  color: rgba(255, 255, 255, 0.32);
+  color: var(--archive-input-placeholder);
   letter-spacing: 0.01em;
 }
 

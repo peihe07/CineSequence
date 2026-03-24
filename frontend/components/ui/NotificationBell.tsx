@@ -1,7 +1,6 @@
 'use client'
 
 import { useCallback, useEffect, useRef, useState } from 'react'
-import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useI18n } from '@/lib/i18n'
 import { useNotificationStore, type NotificationItem } from '@/stores/notificationStore'
@@ -125,6 +124,11 @@ export default function NotificationBell() {
     markAllAsRead()
   }, [markAllAsRead])
 
+  const handleViewAll = useCallback(() => {
+    setIsOpen(false)
+    router.push('/notifications')
+  }, [router])
+
   if (!isAuthenticated) return null
 
   return (
@@ -181,13 +185,13 @@ export default function NotificationBell() {
             )}
           </div>
 
-          <Link
-            href="/notifications"
+          <button
+            type="button"
             className={styles.viewAll}
-            onClick={() => setIsOpen(false)}
+            onClick={handleViewAll}
           >
             {t('notification.viewAll')}
-          </Link>
+          </button>
         </div>
       )}
     </div>

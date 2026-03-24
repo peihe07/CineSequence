@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
+import { useI18n } from '@/lib/i18n'
 import type { Profile } from './types'
 import styles from './ProfileDnaSnapshot.module.css'
 
@@ -18,7 +19,7 @@ function clamp(value: number, min: number, max: number) {
   return Math.min(max, Math.max(min, value))
 }
 
-function buildMetrics(profile: Profile): Metric[] {
+function buildMetrics(profile: Profile, t: (key: string) => string): Metric[] {
   const readiness =
     profile.sequencing_status === 'completed'
       ? 96
@@ -51,15 +52,16 @@ function buildMetrics(profile: Profile): Metric[] {
   )
 
   return [
-    { label: 'SEQUENCE READINESS', value: readiness },
-    { label: 'MATCH SCOPE', value: matchScope },
-    { label: 'CURATION STRICTNESS', value: curationStrictness },
+    { label: t('profile.snapshotReadiness'), value: readiness },
+    { label: t('profile.snapshotMatchScope'), value: matchScope },
+    { label: t('profile.snapshotCurationStrictness'), value: curationStrictness },
   ]
 }
 
 export default function ProfileDnaSnapshot({ profile }: ProfileDnaSnapshotProps) {
+  const { t } = useI18n()
   const [scanComplete, setScanComplete] = useState(false)
-  const metrics = useMemo(() => buildMetrics(profile), [profile])
+  const metrics = useMemo(() => buildMetrics(profile, t), [profile, t])
 
   useEffect(() => {
     setScanComplete(false)
@@ -67,7 +69,7 @@ export default function ProfileDnaSnapshot({ profile }: ProfileDnaSnapshotProps)
     return () => window.clearTimeout(timer)
   }, [profile.archetype_id, profile.sequencing_status, profile.match_gender_pref, profile.match_age_min, profile.match_age_max, profile.pure_taste_match])
 
-  const archetypeName = profile.archetype_name || profile.archetype_id || 'Pending sequence'
+  const archetypeName = profile.archetype_name || profile.archetype_id || t('profile.snapshotPending')
   const showVerifiedStamp = Boolean(
     profile.archetype_id
     || profile.archetype_name
@@ -75,19 +77,19 @@ export default function ProfileDnaSnapshot({ profile }: ProfileDnaSnapshotProps)
   )
 
   return (
-    <section className={styles.panel} aria-label="DNA Snapshot">
+    <section className={styles.panel} aria-label={t('profile.snapshotAriaLabel')}>
       <div className={styles.header}>
         <div>
           <p className={styles.eyebrow}>[ DNA_SNAPSHOT ]</p>
-          <h2 className={styles.title}>Preference Matrix</h2>
+          <h2 className={styles.title}>{t('profile.snapshotTitle')}</h2>
         </div>
-        {showVerifiedStamp ? <span className={`${styles.stamp} ${styles.stampVerified}`}>VERIFIED</span> : null}
+        {showVerifiedStamp ? <span className={`${styles.stamp} ${styles.stampVerified}`}>{t('profile.snapshotVerified')}</span> : null}
       </div>
 
       <div className={styles.scanBlock}>
         <div className={styles.scanMeta}>
-          <span className={styles.scanLabel}>ARCHETYPE</span>
-          <span className={styles.scanState}>{scanComplete ? 'SCAN COMPLETE' : 'SCANNING...'}</span>
+          <span className={styles.scanLabel}>{t('profile.snapshotArchetype')}</span>
+          <span className={styles.scanState}>{scanComplete ? t('profile.snapshotScanComplete') : t('profile.snapshotScanning')}</span>
         </div>
         <div className={styles.scanValueWrap}>
           <motion.div
@@ -96,7 +98,7 @@ export default function ProfileDnaSnapshot({ profile }: ProfileDnaSnapshotProps)
             animate={{ x: scanComplete ? '105%' : ['-105%', '105%'] }}
             transition={scanComplete ? { duration: 0.45 } : { duration: 1.1, repeat: Infinity, ease: 'linear' }}
           />
-          <div className={styles.scanValue}>{scanComplete ? archetypeName : 'Resolving profile signature'}</div>
+          <div className={styles.scanValue}>{scanComplete ? archetypeName : t('profile.snapshotResolving')}</div>
         </div>
       </div>
 

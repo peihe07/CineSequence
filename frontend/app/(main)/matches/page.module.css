@@ -309,11 +309,16 @@
   border: none;
   border-bottom: 1px solid rgba(45, 54, 50, 0.1);
   border-radius: 6px 6px 0 0;
-  color: rgba(255, 255, 255, 0.92);
+  color: var(--archive-input-text);
+  caret-color: var(--archive-input-caret);
   font-size: 0.8rem;
   font-family: inherit;
   outline: none;
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.ageInput::placeholder {
+  color: var(--archive-input-placeholder);
 }
 
 .ageInput:focus {

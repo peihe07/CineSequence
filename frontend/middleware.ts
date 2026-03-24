@@ -25,6 +25,7 @@ export const config = {
     '/admin/:path*',
     '/dna/:path*',
     '/matches/:path*',
+    '/notifications/:path*',
     '/profile/:path*',
     '/sequencing/:path*',
     '/theaters/:path*',

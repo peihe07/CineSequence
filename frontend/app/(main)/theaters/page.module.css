@@ -530,12 +530,13 @@
   padding: 0.8rem 0.9rem;
   border: 1px solid rgba(255, 255, 255, 0.08);
   background: rgba(0, 0, 0, 0.25);
-  color: rgba(255, 255, 255, 0.92);
+  color: var(--archive-input-text);
+  caret-color: var(--archive-input-caret);
   resize: vertical;
 }
 
 .messageInput::placeholder {
-  color: rgba(255, 255, 255, 0.34);
+  color: var(--archive-input-placeholder);
 }
 
 /* Card actions */

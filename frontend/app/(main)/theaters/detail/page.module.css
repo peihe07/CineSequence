@@ -151,7 +151,12 @@
   resize: vertical;
   border: none;
   background: rgba(255, 255, 255, 0.04);
-  color: rgba(255, 255, 255, 0.9);
+  color: var(--archive-input-text);
+  caret-color: var(--archive-input-caret);
+}
+
+.textarea::placeholder {
+  color: var(--archive-input-placeholder);
 }
 
 .errorText {

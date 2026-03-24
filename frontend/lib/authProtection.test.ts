@@ -5,6 +5,7 @@ import { buildLoginRedirect, requiresAuth, sanitizeNextPath } from './authProtec
 describe('auth protection helpers', () => {
   it('marks protected routes correctly', () => {
     expect(requiresAuth('/profile')).toBe(true)
+    expect(requiresAuth('/notifications')).toBe(true)
     expect(requiresAuth('/theaters/123')).toBe(true)
     expect(requiresAuth('/sequencing/seed')).toBe(true)
     expect(requiresAuth('/login')).toBe(false)

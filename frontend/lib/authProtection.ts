@@ -2,6 +2,7 @@ const PROTECTED_PREFIXES = [
   '/admin',
   '/dna',
   '/matches',
+  '/notifications',
   '/profile',
   '/sequencing',
   '/theaters',
