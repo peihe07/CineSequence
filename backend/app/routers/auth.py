@@ -44,6 +44,7 @@ def sync_admin_flag(user: User) -> bool:
 
 
 REGISTER_SUCCESS_MESSAGE = "If this email is eligible, a magic link has been sent."
+LOGIN_UNKNOWN_EMAIL_MESSAGE = "Account not found. Please register first."
 
 
 @router.post("/register", response_model=RegisterResponse, status_code=status.HTTP_201_CREATED)
@@ -99,21 +100,25 @@ async def login(
     body: LoginRequest,
     db: Annotated[AsyncSession, Depends(get_db)],
 ):
-    """Send a magic link to an existing user."""
+    """Send a magic link to an existing user, or reject unknown emails."""
     validate_csrf_origin(request)
     result = await db.execute(select(User).where(User.email == body.email))
     user = result.scalar_one_or_none()
-    # Always return same message to prevent user enumeration
-    if user:
-        if sync_admin_flag(user):
-            await db.flush()
-        token, expires_at = create_magic_link_token(body.email)
-        user.magic_link_token = token
-        user.magic_link_expires_at = expires_at
-        await db.commit()
-        await send_magic_link(body.email, token, body.next_path)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=LOGIN_UNKNOWN_EMAIL_MESSAGE,
+        )
 
-    return {"message": "If this email is registered, a magic link has been sent."}
+    if sync_admin_flag(user):
+        await db.flush()
+    token, expires_at = create_magic_link_token(body.email)
+    user.magic_link_token = token
+    user.magic_link_expires_at = expires_at
+    await db.commit()
+    await send_magic_link(body.email, token, body.next_path)
+
+    return {"message": "A magic link has been sent."}
 
 
 @router.post("/verify", response_model=TokenResponse)

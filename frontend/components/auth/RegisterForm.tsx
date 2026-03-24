@@ -258,30 +258,32 @@ export default function RegisterForm({ mode = 'page', nextPath, onLoginClick }: 
       </label>
       {errors.consent && <span className={styles.error}>{errors.consent}</span>}
 
-      <p className={styles.disclaimer}>{t('register.disclaimer')}</p>
+      <div className={styles.submitSection}>
+        <p className={styles.disclaimer}>{t('register.disclaimer')}</p>
 
-      {error && <p className={styles.error}>{error}</p>}
+        {error && <p className={styles.error}>{error}</p>}
 
-      <Button type="submit" size="lg" loading={isLoading}>
-        {t('register.submit')}
-      </Button>
+        <Button type="submit" size="lg" loading={isLoading}>
+          {t('register.submit')}
+        </Button>
 
-      <p className={styles.footer}>
-        {t('auth.hasAccount')}{' '}
-        {onLoginClick ? (
-          <button type="button" className={styles.textButton} onClick={onLoginClick}>
-            {t('auth.signIn')}
-          </button>
-        ) : (
-          <Link
-            href={nextPath ? `/login?next=${encodeURIComponent(nextPath)}` : '/login'}
-            prefetch={false}
-            className={styles.link}
-          >
-            {t('auth.signIn')}
-          </Link>
-        )}
-      </p>
+        <p className={styles.footer}>
+          {t('auth.hasAccount')}{' '}
+          {onLoginClick ? (
+            <button type="button" className={styles.textButton} onClick={onLoginClick}>
+              {t('auth.signIn')}
+            </button>
+          ) : (
+            <Link
+              href={nextPath ? `/login?next=${encodeURIComponent(nextPath)}` : '/login'}
+              prefetch={false}
+              className={styles.link}
+            >
+              {t('auth.signIn')}
+            </Link>
+          )}
+        </p>
+      </div>
     </form>
   )
 }

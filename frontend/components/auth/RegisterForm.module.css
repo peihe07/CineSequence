@@ -203,6 +203,26 @@
   padding: 0.2rem 0;
 }
 
+.submitSection {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  margin-top: 0.4rem;
+  padding: 0.9rem 0 0;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(12, 12, 14, 0) 0%,
+      rgba(12, 12, 14, 0.92) 18%,
+      rgba(12, 12, 14, 0.98) 100%
+    );
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
 .error {
   font-size: 0.76rem;
   color: var(--error);
@@ -270,6 +290,11 @@
     max-height: 92px;
     padding: 0.75rem;
     font-size: 0.76rem;
+  }
+
+  .submitSection {
+    padding-top: 1rem;
+    padding-bottom: max(0.25rem, env(safe-area-inset-bottom));
   }
 
   .consent {

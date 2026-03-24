@@ -219,9 +219,9 @@ class TestLoginEndpoint:
 
     async def test_login_unknown_email(self, client: AsyncClient):
         response = await client.post("/auth/login", json={"email": "unknown@test.com"})
-        assert response.status_code == 200
+        assert response.status_code == 404
         assert response.json() == {
-            "message": "If this email is registered, a magic link has been sent."
+            "detail": "Account not found. Please register first."
         }
 
     @patch("app.routers.auth.send_magic_link", new_callable=AsyncMock)

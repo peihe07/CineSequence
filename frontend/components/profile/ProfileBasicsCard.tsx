@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import type { ChangeEvent, RefObject } from 'react'
 import styles from '@/app/(main)/profile/page.module.css'
 import type { Profile } from './types'
@@ -83,7 +84,13 @@ export default function ProfileBasicsCard({
           aria-label={changeAvatarLabel}
         >
           {profile.avatar_url ? (
-            <img src={profile.avatar_url} alt="" className={styles.avatarImg} />
+            <Image
+              src={profile.avatar_url}
+              alt=""
+              fill
+              sizes="80px"
+              className={styles.avatarImg}
+            />
           ) : (
             <i className="ri-user-line" />
           )}

@@ -1,6 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useRef, useState } from 'react'
+import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { api } from '@/lib/api'
@@ -118,10 +119,12 @@ export default function SeedMoviePage() {
                       onClick={() => handleSelect(movie)}
                     >
                       {movie.poster_url ? (
-                        <img
+                        <Image
                           className={styles.poster}
                           src={movie.poster_url}
                           alt={movie.title_en}
+                          width={34}
+                          height={51}
                         />
                       ) : (
                         <div className={styles.posterPlaceholder}>
@@ -154,10 +157,12 @@ export default function SeedMoviePage() {
             animate={{ opacity: 1, scale: 1 }}
           >
             {selected.poster_url && (
-              <img
+              <Image
                 className={styles.selectedPoster}
                 src={selected.poster_url}
                 alt={selected.title_en}
+                width={44}
+                height={66}
               />
             )}
             <div className={styles.selectedInfo}>

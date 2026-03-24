@@ -1,6 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
+import Image from 'next/image'
 import { useSequencingStore } from '@/stores/sequencingStore'
 import { soundManager } from '@/lib/sound'
 import styles from './MovieCard.module.css'
@@ -74,7 +75,13 @@ export default function MovieCard({ movie, onPick, side }: MovieCardProps) {
       </div>
       <div className={styles.poster}>
         {movie.poster_url ? (
-          <img src={movie.poster_url} alt={movie.title_en} className={styles.posterImage} />
+          <Image
+            src={movie.poster_url}
+            alt={movie.title_en}
+            fill
+            sizes="(max-width: 640px) 260px, 260px"
+            className={styles.posterImage}
+          />
         ) : (
           <div className={styles.posterPlaceholder}>
             <i className="ri-film-line ri-3x" />

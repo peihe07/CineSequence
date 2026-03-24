@@ -2,6 +2,7 @@
 
 import { useRef } from 'react'
 import { motion, useMotionValue, useTransform } from 'framer-motion'
+import Image from 'next/image'
 import { useI18n } from '@/lib/i18n'
 import { getTagLabel } from '@/lib/tagLabels'
 import { MatchItem } from '@/stores/matchStore'
@@ -257,9 +258,11 @@ function LegacyImageTicket({ ticketImageUrl, partnerName, similarityScore }: Leg
     >
       <div className={styles.legacyInner}>
         {ticketImageUrl ? (
-          <img
+          <Image
             src={ticketImageUrl}
             alt={`${t('matches.matched')} - ${partnerName}`}
+            fill
+            sizes="100vw"
             className={styles.legacyImage}
           />
         ) : (

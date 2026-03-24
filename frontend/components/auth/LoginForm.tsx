@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import Button from '@/components/ui/Button'
 import Input from '@/components/ui/Input'
-import { api } from '@/lib/api'
+import { ApiError, api } from '@/lib/api'
 import { useAuthStore } from '@/stores/authStore'
 import { useI18n } from '@/lib/i18n'
 import styles from './LoginForm.module.css'
@@ -34,12 +34,14 @@ export default function LoginForm({
   const [email, setEmail] = useState('')
   const [sent, setSent] = useState(false)
   const [emailError, setEmailError] = useState('')
+  const [showRegisterPrompt, setShowRegisterPrompt] = useState(false)
   const [devLoading, setDevLoading] = useState(false)
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     clearError()
     setEmailError('')
+    setShowRegisterPrompt(false)
 
     if (!email.includes('@')) {
       setEmailError(t('auth.invalidEmail'))
@@ -50,7 +52,14 @@ export default function LoginForm({
       await login(email, nextPath)
       setSent(true)
       onMagicLinkSent?.()
-    } catch {
+    } catch (err) {
+      if (err instanceof ApiError && err.status === 404) {
+        clearError()
+        setEmailError(t('auth.accountNotFound'))
+        setShowRegisterPrompt(true)
+        return
+      }
+
       // Error is handled by the store
     }
   }
@@ -109,11 +118,34 @@ export default function LoginForm({
         type="email"
         placeholder={t('auth.emailPlaceholder')}
         value={email}
-        onChange={(e) => setEmail(e.target.value)}
+        onChange={(e) => {
+          setEmail(e.target.value)
+          if (showRegisterPrompt) {
+            setShowRegisterPrompt(false)
+          }
+        }}
         error={emailError}
       />
 
       {error && <p className={styles.error}>{error}</p>}
+      {showRegisterPrompt && (
+        <div className={styles.registerPrompt}>
+          <p className={styles.registerPromptText}>{t('auth.registerHint')}</p>
+          {onRegisterClick ? (
+            <Button type="button" variant="secondary" onClick={onRegisterClick}>
+              {t('auth.signUp')}
+            </Button>
+          ) : (
+            <Link
+              href={nextPath ? `/register?next=${encodeURIComponent(nextPath)}` : '/register'}
+              prefetch={false}
+              className={styles.registerPromptLink}
+            >
+              {t('auth.signUp')}
+            </Link>
+          )}
+        </div>
+      )}
 
       <Button type="submit" size="lg" loading={isLoading}>
         {isLoading ? t('auth.sending') : t('auth.sendLink')}
