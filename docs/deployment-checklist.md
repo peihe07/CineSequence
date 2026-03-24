@@ -1,5 +1,7 @@
 # Deployment Checklist
 
+Use [production-deployment.md](/Users/peihe/Personal_Projects/movie-dna/docs/production-deployment.md) as the primary deployment guide. This file is the short verification checklist.
+
 ## Production env
 
 1. Copy `.env.production.example` to `.env.production`.

@@ -9,7 +9,7 @@ A movie-taste-based social matching platform. Users go through a 20-round binary
 - **Database**: PostgreSQL 16 (pgvector) + Redis 7
 - **External**: TMDB API, Gemini API (Google), Resend (email)
 - **Storage**: Cloudflare R2 (S3-compatible)
-- **Deploy**: Vercel (frontend) + Railway (backend + DB + Redis)
+- **Deploy**: Cloudflare Workers (frontend) + Railway (backend + DB + Redis + Celery)
 - **i18n**: Traditional Chinese / English (React Context-based)
 
 ## Core Flow
@@ -107,9 +107,9 @@ cp .env.production.example .env.production
 npm run docker:prod
 ```
 
-For production Next runtime deploys, prefer serving the frontend and API under the same
-site, with the frontend proxying `/api/*` to the backend. Set `NEXT_PUBLIC_API_URL=/api`
-and `API_PROXY_TARGET` to the real backend origin.
+For production, use the Cloudflare Workers + Railway setup documented in
+`docs/production-deployment.md`. The frontend should serve `/api/*` same-origin and
+proxy those requests to the Railway backend origin.
 
 ### Environment Variables
 
@@ -125,7 +125,8 @@ For cookie auth in production:
 
 If your frontend and API are on different sites, do not rely on the default cookie policy.
 
-See `docs/deployment-checklist.md` for the full production checklist.
+See `docs/production-deployment.md` for the current production deployment guide and
+`docs/deployment-checklist.md` for the short verification checklist.
 
 ## Project Structure
 
