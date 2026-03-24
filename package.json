@@ -4,6 +4,9 @@
   "scripts": {
     "dev:frontend": "cd frontend && npm run dev",
     "dev:backend": "cd backend && alembic upgrade head && uvicorn app.main:app --reload",
+    "loadtest:home": "k6 run loadtest/home.js",
+    "loadtest:profile": "k6 run loadtest/api-profile.js",
+    "loadtest:sequencing": "k6 run loadtest/sequencing-progress.js",
     "typecheck:frontend": "cd frontend && npx tsc --noEmit",
     "test:frontend": "cd frontend && npx vitest run stores/authStore.test.ts 'app/(auth)/register/page.test.tsx' 'app/(auth)/verify/page.test.tsx'",
     "test:backend": "cd backend && ./.venv/bin/python -m pytest tests",

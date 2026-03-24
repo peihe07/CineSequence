@@ -100,6 +100,20 @@ npm run test:backend:security
 If Postgres is unavailable in the current environment, integration tests will be skipped
 instead of failing during fixture setup.
 
+### Load Testing
+
+Basic `k6` load scripts live under [loadtest/README.md](/Users/peihe/Personal_Projects/movie-dna/loadtest/README.md).
+
+Typical starting runs:
+
+```bash
+npm run loadtest:home
+npm run loadtest:profile
+npm run loadtest:sequencing
+```
+
+Override the target deployment with `BASE_URL=...` when testing staging instead of production.
+
 ### Production
 
 ```bash
