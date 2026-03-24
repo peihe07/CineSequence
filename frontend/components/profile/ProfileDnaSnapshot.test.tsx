@@ -63,6 +63,7 @@ const profile = {
   archetype_id: 'time-traveler',
   archetype_name: 'Time Traveler',
   personality_reading: 'A profile reading',
+  ticket_style: 'classic',
   match_gender_pref: 'any',
   match_age_min: 24,
   match_age_max: 36,
