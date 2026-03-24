@@ -87,6 +87,16 @@ body {
   letter-spacing: 0.02em;
 }
 
+body.cookieConsentVisible {
+  padding-bottom: calc(6.5rem + env(safe-area-inset-bottom));
+}
+
+@media (max-width: 480px) {
+  body.cookieConsentVisible {
+    padding-bottom: calc(8.5rem + env(safe-area-inset-bottom));
+  }
+}
+
 /* Ambient warm glow — gives glass elements something to "see through" */
 body::before {
   content: '';

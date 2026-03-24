@@ -1,6 +1,8 @@
 'use client'
 
 import { AnimatePresence, motion } from 'framer-motion'
+import { useI18n } from '@/lib/i18n'
+import { getTagLabel } from '@/lib/tagLabels'
 import styles from './LiveTagCloud.module.css'
 
 interface LiveTagCloudProps {
@@ -8,6 +10,8 @@ interface LiveTagCloudProps {
 }
 
 export default function LiveTagCloud({ tags }: LiveTagCloudProps) {
+  const { locale } = useI18n()
+
   if (tags.length === 0) return null
 
   return (
@@ -22,7 +26,7 @@ export default function LiveTagCloud({ tags }: LiveTagCloudProps) {
             exit={{ scale: 0, opacity: 0 }}
             transition={{ type: 'spring', stiffness: 300, damping: 20 }}
           >
-            {tag}
+            {getTagLabel(tag, locale)}
           </motion.span>
         ))}
       </AnimatePresence>

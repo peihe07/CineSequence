@@ -52,8 +52,10 @@ export default function MovieCard({ movie, onPick, side }: MovieCardProps) {
   }
 
   return (
-    <motion.div
+    <motion.button
+      type="button"
       className={styles.card}
+      aria-label={movie.title_zh || movie.title_en}
       style={{ transformStyle: 'preserve-3d' }}
       initial={{ rotateY: 180, y: 30, scale: 0.9, opacity: 0 }}
       animate={{ rotateY: 0, y: 0, scale: 1, opacity: 1 }}
@@ -101,6 +103,6 @@ export default function MovieCard({ movie, onPick, side }: MovieCardProps) {
           ))}
         </div>
       </div>
-    </motion.div>
+    </motion.button>
   )
 }

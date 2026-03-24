@@ -4,7 +4,43 @@ import { buildApiUrl, resolveApiUrl } from './api-origin'
 
 describe('api origin helpers', () => {
   it('defaults to the same-origin api path in the browser', () => {
+    const originalWindow = globalThis.window
+    Object.defineProperty(globalThis, 'window', {
+      value: {
+        location: {
+          hostname: 'app.cinesequence.xyz',
+          protocol: 'https:',
+        },
+      },
+      configurable: true,
+    })
+
     expect(resolveApiUrl({}, true)).toBe('/api')
+
+    Object.defineProperty(globalThis, 'window', {
+      value: originalWindow,
+      configurable: true,
+    })
+  })
+
+  it('uses the local backend directly in browser localhost development', () => {
+    const originalWindow = globalThis.window
+    Object.defineProperty(globalThis, 'window', {
+      value: {
+        location: {
+          hostname: 'localhost',
+          protocol: 'http:',
+        },
+      },
+      configurable: true,
+    })
+
+    expect(resolveApiUrl({}, true)).toBe('http://localhost:8000')
+
+    Object.defineProperty(globalThis, 'window', {
+      value: originalWindow,
+      configurable: true,
+    })
   })
 
   it('prefers an explicit public api url when configured', () => {

@@ -58,6 +58,8 @@ vi.mock('@/lib/i18n', () => ({
         'complete.viewDna': 'View DNA',
         'complete.extend': 'Extend',
         'complete.maxReached': 'Max reached',
+        'dna.retry': 'Retry',
+        'dna.analyzing': 'Analyzing DNA...',
       }
       return dict[key] ?? key
     },
@@ -92,7 +94,7 @@ describe('SequencingCompletePage', () => {
   })
 
   it('renders completion stats and routes to dna', async () => {
-    buildDnaMock.mockResolvedValue(undefined)
+    buildDnaMock.mockResolvedValue({ archetype: { id: 'archivist' } })
 
     render(<SequencingCompletePage />)
 
@@ -103,10 +105,38 @@ describe('SequencingCompletePage', () => {
     expect(fetchProgressMock).toHaveBeenCalled()
     expect(playSoundMock).toHaveBeenCalledWith('complete')
 
-    fireEvent.click(screen.getByRole('button', { name: /View DNA/i }))
+    await waitFor(() => {
+      expect(buildDnaMock).toHaveBeenCalled()
+      expect(replaceMock).toHaveBeenCalledWith('/dna')
+    })
+  })
+
+  it('shows a retry action when building the report fails', async () => {
+    buildDnaMock.mockResolvedValue(null)
+
+    render(<SequencingCompletePage />)
 
     await waitFor(() => {
       expect(buildDnaMock).toHaveBeenCalled()
+    })
+
+    expect(replaceMock).not.toHaveBeenCalledWith('/dna')
+    expect(screen.getByRole('button', { name: 'Retry' })).toBeTruthy()
+  })
+
+  it('retries dna generation manually after the automatic build fails', async () => {
+    buildDnaMock
+      .mockResolvedValueOnce(null)
+      .mockResolvedValueOnce({ archetype: { id: 'archivist' } })
+
+    render(<SequencingCompletePage />)
+
+    expect(await screen.findByRole('button', { name: 'Retry' })).toBeTruthy()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Retry' }))
+
+    await waitFor(() => {
+      expect(buildDnaMock).toHaveBeenCalledTimes(2)
       expect(replaceMock).toHaveBeenCalledWith('/dna')
     })
   })

@@ -35,7 +35,7 @@ interface DnaState {
   isLoading: boolean
   error: string | null
 
-  buildDna: () => Promise<void>
+  buildDna: () => Promise<DnaResult | null>
   fetchResult: () => Promise<DnaResult | null>
 }
 
@@ -49,15 +49,19 @@ export const useDnaStore = create<DnaState>((set, get) => ({
     set({ isBuilding: true, error: null })
     try {
       const res = await api<{ status: string }>('/dna/build', { method: 'POST' })
-      set({ isBuilding: false })
       if (res.status === 'ready') {
-        get().fetchResult()
+        const result = await get().fetchResult()
+        set({ isBuilding: false })
+        return result
       }
+      set({ isBuilding: false })
+      return null
     } catch (err) {
       set({
         isBuilding: false,
         error: err instanceof Error ? err.message : translateStatic('common.error'),
       })
+      return null
     }
   },
 

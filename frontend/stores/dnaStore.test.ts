@@ -55,4 +55,40 @@ describe('dnaStore', () => {
     expect(useDnaStore.getState().error).toBe('Server error')
     expect(useDnaStore.getState().isLoading).toBe(false)
   })
+
+  it('builds dna and hydrates the current result before resolving', async () => {
+    const result = {
+      archetype: {
+        id: 'archivist',
+        name: 'Archivist',
+        name_en: 'Archivist',
+        icon: 'film',
+        description: 'Test archetype',
+      },
+      tag_vector: [],
+      tag_labels: {},
+      genre_vector: {},
+      quadrant_scores: {
+        mainstream_independent: 0.4,
+        rational_emotional: 0.5,
+        light_dark: 0.6,
+      },
+      personality_reading: null,
+      hidden_traits: [],
+      conversation_style: null,
+      ideal_movie_date: null,
+      ticket_style: 'classic',
+    }
+
+    apiMock
+      .mockResolvedValueOnce({ status: 'ready' })
+      .mockResolvedValueOnce(result)
+
+    await expect(useDnaStore.getState().buildDna()).resolves.toEqual(result)
+
+    expect(apiMock).toHaveBeenNthCalledWith(1, '/dna/build', { method: 'POST' })
+    expect(apiMock).toHaveBeenNthCalledWith(2, '/dna/result')
+    expect(useDnaStore.getState().result).toEqual(result)
+    expect(useDnaStore.getState().isBuilding).toBe(false)
+  })
 })

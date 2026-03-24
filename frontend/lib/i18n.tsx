@@ -165,6 +165,9 @@ const translations: Record<Locale, Record<string, string>> = {
     'nav.profile': '檔案',
     'nav.admin': '管理',
     'nav.main': '主導覽',
+    'header.openMenu': '開啟選單',
+    'header.closeMenu': '關閉選單',
+    'header.mobileMenu': '手機選單',
 
     // Sound
     'sound.mute': '靜音音效',
@@ -690,6 +693,9 @@ const translations: Record<Locale, Record<string, string>> = {
     'nav.profile': 'Profile',
     'nav.admin': 'Admin',
     'nav.main': 'Main navigation',
+    'header.openMenu': 'Open menu',
+    'header.closeMenu': 'Close menu',
+    'header.mobileMenu': 'Mobile menu',
 
     // Sound
     'sound.mute': 'Mute sound effects',

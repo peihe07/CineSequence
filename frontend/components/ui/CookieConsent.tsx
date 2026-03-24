@@ -16,6 +16,11 @@ export default function CookieConsent() {
     }
   }, [])
 
+  useEffect(() => {
+    document.body.classList.toggle('cookieConsentVisible', visible)
+    return () => document.body.classList.remove('cookieConsentVisible')
+  }, [visible])
+
   const handleAccept = () => {
     localStorage.setItem(CONSENT_KEY, '1')
     setVisible(false)

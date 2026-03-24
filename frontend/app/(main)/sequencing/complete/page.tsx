@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { useSequencingStore } from '@/stores/sequencingStore'
@@ -14,15 +14,41 @@ export default function SequencingCompletePage() {
   const { t } = useI18n()
   const { progress, fetchProgress, extendSequencing } = useSequencingStore()
   const { buildDna } = useDnaStore()
+  const hasAttemptedAutoBuild = useRef(false)
+  const [isPreparingDna, setIsPreparingDna] = useState(true)
 
   useEffect(() => {
     fetchProgress()
     soundManager.play('complete')
   }, [fetchProgress])
 
+  useEffect(() => {
+    if (hasAttemptedAutoBuild.current) {
+      return
+    }
+
+    hasAttemptedAutoBuild.current = true
+
+    void (async () => {
+      const result = await buildDna()
+      if (result) {
+        router.replace('/dna')
+        return
+      }
+
+      setIsPreparingDna(false)
+    })()
+  }, [buildDna, router])
+
   const handleViewDna = async () => {
-    await buildDna()
-    router.replace('/dna')
+    setIsPreparingDna(true)
+    const result = await buildDna()
+    if (result) {
+      router.replace('/dna')
+      return
+    }
+
+    setIsPreparingDna(false)
   }
 
   const handleExtend = async () => {
@@ -72,9 +98,11 @@ export default function SequencingCompletePage() {
 
         <section className={`${styles.section} ${styles.actionsSection}`}>
           <div className={styles.actions}>
-            <button className={styles.primaryBtn} onClick={handleViewDna}>
-              <i className="ri-eye-line" /> {t('complete.viewDna')}
-            </button>
+            {!isPreparingDna && (
+              <button className={styles.primaryBtn} onClick={handleViewDna}>
+                <i className="ri-refresh-line" /> {t('dna.retry')}
+              </button>
+            )}
 
             {canExtend && (
               <button className={styles.secondaryBtn} onClick={handleExtend}>
@@ -82,6 +110,12 @@ export default function SequencingCompletePage() {
               </button>
             )}
           </div>
+
+          {isPreparingDna && (
+            <p className={styles.hint}>
+              {t('dna.analyzing')}
+            </p>
+          )}
 
           {canExtend && (
             <p className={styles.hint}>
