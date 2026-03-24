@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { ApiError } from '@/lib/api'
 import { useDnaStore } from '@/stores/dnaStore'
+import { useSequencingStore } from '@/stores/sequencingStore'
 import { useI18n } from '@/lib/i18n'
 import ArchetypeCard from '@/components/dna/ArchetypeCard'
 import StarNebula from '@/components/dna/StarNebula'
@@ -28,6 +29,7 @@ function DnaResultContent() {
   const router = useRouter()
   const { t } = useI18n()
   const { result, isBuilding, isLoading, error, buildDna, fetchResult } = useDnaStore()
+  const { progress, fetchProgress, extendSequencing } = useSequencingStore()
   const sectionTransition = { duration: 0.65, ease: 'easeOut' as const }
 
   useEffect(() => {
@@ -37,6 +39,12 @@ function DnaResultContent() {
       }
     })
   }, [fetchResult, buildDna])
+
+  useEffect(() => {
+    void fetchProgress().catch(() => {
+      // Keep the DNA result visible even if progress refresh fails.
+    })
+  }, [fetchProgress])
 
   // Building state — loading animation
   if (isBuilding || (isLoading && !result)) {
@@ -77,6 +85,13 @@ function DnaResultContent() {
   }
 
   if (!result) return null
+
+  const canExtend = progress?.can_extend ?? result.can_extend
+
+  async function handleExtend() {
+    await extendSequencing()
+    router.push('/sequencing')
+  }
 
   return (
     <div className={styles.container}>
@@ -152,13 +167,24 @@ function DnaResultContent() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ ...sectionTransition, delay: 0.28 }}
         >
-          <Button
-            variant="primary"
-            size="lg"
-            onClick={() => router.push('/matches')}
-          >
-            <i className="ri-group-line" /> {t('dna.findMatches')}
-          </Button>
+          <>
+            <Button
+              variant="primary"
+              size="lg"
+              onClick={() => router.push('/matches')}
+            >
+              <i className="ri-group-line" /> {t('dna.findMatches')}
+            </Button>
+            {canExtend && (
+              <Button
+                variant="secondary"
+                size="lg"
+                onClick={() => void handleExtend()}
+              >
+                <i className="ri-add-line" /> {t('complete.extend')}
+              </Button>
+            )}
+          </>
         </motion.section>
 
         <motion.section

@@ -1,11 +1,14 @@
-import { cleanup, render, screen, waitFor } from '@testing-library/react'
+import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 const {
   pushMock,
   fetchResultMock,
   buildDnaMock,
+  fetchProgressMock,
+  extendSequencingMock,
   dnaState,
+  sequencingState,
   MockApiError,
 } = vi.hoisted(() => {
   class HoistedApiError extends Error {
@@ -24,6 +27,8 @@ const {
     pushMock: vi.fn(),
     fetchResultMock: vi.fn(),
     buildDnaMock: vi.fn(),
+    fetchProgressMock: vi.fn(),
+    extendSequencingMock: vi.fn(),
     dnaState: {
       result: null as null | {
         archetype: { id: string }
@@ -34,10 +39,16 @@ const {
         hidden_traits: string[]
         conversation_style: string | null
         ideal_movie_date: string | null
+        can_extend?: boolean
       },
       isBuilding: false,
       isLoading: false,
       error: null as string | null,
+    },
+    sequencingState: {
+      progress: null as null | {
+        can_extend: boolean
+      },
     },
     MockApiError: HoistedApiError,
   }
@@ -55,6 +66,14 @@ vi.mock('@/stores/dnaStore', () => ({
   }),
 }))
 
+vi.mock('@/stores/sequencingStore', () => ({
+  useSequencingStore: () => ({
+    ...sequencingState,
+    fetchProgress: fetchProgressMock,
+    extendSequencing: extendSequencingMock,
+  }),
+}))
+
 vi.mock('@/lib/api', () => ({
   ApiError: MockApiError,
 }))
@@ -68,6 +87,7 @@ vi.mock('@/lib/i18n', () => ({
         'dna.title': 'Your Cine DNA',
         'dna.deck': 'DNA deck copy',
         'dna.findMatches': 'Find matches',
+        'complete.extend': 'Extend analysis (+5 rounds)',
       }
       return dict[key] ?? key
     },
@@ -98,6 +118,10 @@ vi.mock('@/components/dna/AIReading', () => ({
   default: () => <div>AIReading</div>,
 }))
 
+vi.mock('@/components/dna/AtmosphereCanvas', () => ({
+  default: () => <div>AtmosphereCanvas</div>,
+}))
+
 import DnaResultPage from './page'
 
 describe('DnaResultPage', () => {
@@ -105,10 +129,17 @@ describe('DnaResultPage', () => {
     pushMock.mockReset()
     fetchResultMock.mockReset()
     buildDnaMock.mockReset()
+    fetchProgressMock.mockReset()
+    extendSequencingMock.mockReset()
+    fetchResultMock.mockResolvedValue(null)
+    buildDnaMock.mockResolvedValue(null)
+    fetchProgressMock.mockResolvedValue(null)
+    extendSequencingMock.mockResolvedValue(undefined)
     dnaState.result = null
     dnaState.isBuilding = false
     dnaState.isLoading = false
     dnaState.error = null
+    sequencingState.progress = null
   })
 
   afterEach(() => {
@@ -133,5 +164,48 @@ describe('DnaResultPage', () => {
 
     expect(await screen.findByText('Server error')).toBeTruthy()
     expect(buildDnaMock).not.toHaveBeenCalled()
+  })
+
+  it('shows extend action on dna results when sequencing can be extended', async () => {
+    dnaState.result = {
+      archetype: { id: 'archivist' },
+      genre_vector: {},
+      quadrant_scores: {},
+      tag_labels: {},
+      personality_reading: null,
+      hidden_traits: [],
+      conversation_style: null,
+      ideal_movie_date: null,
+      can_extend: true,
+    }
+
+    render(<DnaResultPage />)
+
+    expect(await screen.findByRole('button', { name: 'Extend analysis (+5 rounds)' })).toBeTruthy()
+    expect(fetchProgressMock).toHaveBeenCalledTimes(1)
+  })
+
+  it('extends sequencing from the dna results page and routes back into sequencing', async () => {
+    dnaState.result = {
+      archetype: { id: 'archivist' },
+      genre_vector: {},
+      quadrant_scores: {},
+      tag_labels: {},
+      personality_reading: null,
+      hidden_traits: [],
+      conversation_style: null,
+      ideal_movie_date: null,
+      can_extend: true,
+    }
+    extendSequencingMock.mockResolvedValue(undefined)
+
+    render(<DnaResultPage />)
+
+    fireEvent.click(screen.getByRole('button', { name: 'Extend analysis (+5 rounds)' }))
+
+    await waitFor(() => {
+      expect(extendSequencingMock).toHaveBeenCalledTimes(1)
+      expect(pushMock).toHaveBeenCalledWith('/sequencing')
+    })
   })
 })

@@ -27,6 +27,7 @@ interface DnaResult {
   conversation_style: string | null
   ideal_movie_date: string | null
   ticket_style: string
+  can_extend: boolean
 }
 
 interface DnaState {
