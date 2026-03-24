@@ -107,9 +107,9 @@ cp .env.production.example .env.production
 npm run docker:prod
 ```
 
-For production Docker deploys, the frontend build now reads `NEXT_PUBLIC_API_URL` from
-`.env.production` at image build time. Do not rely on runtime-only env injection for
-Next.js public variables.
+For production Next runtime deploys, prefer serving the frontend and API under the same
+site, with the frontend proxying `/api/*` to the backend. Set `NEXT_PUBLIC_API_URL=/api`
+and `API_PROXY_TARGET` to the real backend origin.
 
 ### Environment Variables
 
@@ -117,7 +117,9 @@ Copy `.env.example` to `.env` and fill in your API keys.
 
 For cookie auth in production:
 
-- Same-site deployments can keep `AUTH_COOKIE_SAMESITE=lax`
+- Same-site or shared-parent-domain deployments can keep `AUTH_COOKIE_SAMESITE=lax`
+- If Next middleware must read the auth cookie, set `AUTH_COOKIE_DOMAIN` to the shared
+  parent domain, for example `.cinesequence.xyz`
 - Cross-site deployments must use `AUTH_COOKIE_SAMESITE=none`
 - `AUTH_COOKIE_SAMESITE=none` requires `AUTH_COOKIE_SECURE=true`
 

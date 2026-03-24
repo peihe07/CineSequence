@@ -86,6 +86,7 @@ services:
       target: prod
       args:
         NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
+        API_PROXY_TARGET: ${API_PROXY_TARGET}
         ENVIRONMENT: ${ENVIRONMENT}
     ports:
       - "3000:3000"
