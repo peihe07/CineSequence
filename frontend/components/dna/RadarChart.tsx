@@ -94,7 +94,7 @@ export default function RadarChart({ scores }: RadarChartProps) {
         {/* Data polygon */}
         <motion.polygon
           points={polygonStr}
-          fill="rgba(192, 98, 35, 0.1)"
+          fill="rgba(229, 126, 49, 0.1)"
           stroke="var(--accent)"
           strokeWidth={2}
           initial={{ opacity: 0 }}

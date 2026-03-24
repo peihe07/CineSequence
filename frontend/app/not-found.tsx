@@ -13,7 +13,7 @@ export default function NotFound() {
       <h1 className={styles.title}>{t('notFound.title')}</h1>
       <p className={styles.description}>{t('notFound.description')}</p>
       <div className={styles.actions}>
-        <Link href="/" className={`${styles.btn} ${styles.btnPrimary}`}>
+        <Link href="/" prefetch={false} className={`${styles.btn} ${styles.btnPrimary}`}>
           {t('notFound.backHome')}
         </Link>
       </div>

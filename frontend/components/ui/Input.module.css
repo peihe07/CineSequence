@@ -7,7 +7,7 @@
 .label {
   font-size: 0.66rem;
   font-weight: 500;
-  color: var(--muted);
+  color: rgba(255, 255, 255, 0.52);
   letter-spacing: 0.14em;
   text-transform: uppercase;
   font-family: var(--font-mono);
@@ -16,9 +16,9 @@
 .input {
   padding: 0.8rem 0;
   background: transparent;
-  color: var(--foreground);
+  color: rgba(255, 255, 255, 0.92);
   border: none;
-  border-bottom: 1px solid rgba(45, 54, 50, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
   font-size: 0.9rem;
   font-family: inherit;
   outline: none;
@@ -30,7 +30,7 @@
 }
 
 .input::placeholder {
-  color: var(--muted-light);
+  color: rgba(255, 255, 255, 0.32);
   letter-spacing: 0.01em;
 }
 

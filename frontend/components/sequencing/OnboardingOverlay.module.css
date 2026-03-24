@@ -95,7 +95,7 @@
 .startBtn:hover {
   opacity: 1;
   transform: translateY(-1px);
-  box-shadow: 0 12px 24px rgba(192, 98, 35, 0.18);
+  box-shadow: 0 12px 24px rgba(229, 126, 49, 0.18);
 }
 
 .startBtn:active {

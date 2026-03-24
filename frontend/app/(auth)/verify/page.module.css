@@ -24,7 +24,7 @@
 .eyebrow {
   font-size: 0.7rem;
   letter-spacing: 0.18em;
-  color: rgba(192, 98, 35, 0.82);
+  color: rgba(229, 126, 49, 0.82);
 }
 
 .metaLine {
@@ -50,7 +50,7 @@
 }
 
 .link {
-  color: rgba(255, 220, 192, 0.92);
+  color: rgba(255, 255, 255, 0.88);
   text-decoration: underline;
   font-size: 0.84rem;
   font-family: var(--font-mono);

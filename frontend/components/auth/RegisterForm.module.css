@@ -20,7 +20,7 @@
 .eyebrow {
   font-size: 0.7rem;
   letter-spacing: 0.18em;
-  color: rgba(192, 98, 35, 0.82);
+  color: rgba(255, 255, 255, 0.62);
 }
 
 .metaLine {
@@ -89,13 +89,13 @@
 
 .genderOption:hover {
   color: rgba(255, 255, 255, 0.92);
-  box-shadow: inset 0 0 0 1px rgba(192, 98, 35, 0.28);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.16);
 }
 
 .genderActive {
-  color: rgba(255, 220, 192, 0.92);
-  background: rgba(192, 98, 35, 0.14);
-  box-shadow: inset 0 0 0 1px rgba(192, 98, 35, 0.28);
+  color: rgba(255, 255, 255, 0.88);
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.16);
 }
 
 .consent {
@@ -134,7 +134,7 @@
   font-size: 0.66rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: rgba(255, 220, 192, 0.92);
+  color: rgba(255, 255, 255, 0.88);
   cursor: pointer;
   list-style: none;
 }
@@ -147,7 +147,7 @@
   content: '+';
   display: inline-block;
   margin-right: 0.45rem;
-  color: rgba(192, 98, 35, 0.9);
+  color: rgba(255, 255, 255, 0.7);
 }
 
 .policyDetails[open] .policyToggle::before {
@@ -219,7 +219,7 @@
 
 .link,
 .textButton {
-  color: rgba(255, 220, 192, 0.92);
+  color: rgba(255, 255, 255, 0.88);
   text-decoration: underline;
 }
 
@@ -240,7 +240,7 @@
 
 .sentIcon {
   font-size: 2rem;
-  color: rgba(255, 220, 192, 0.92);
+  color: rgba(255, 255, 255, 0.88);
 }
 
 .modal .title {

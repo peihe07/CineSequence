@@ -25,7 +25,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
             <aside className={styles.intro}>
               <div className={styles.introTop}>
                 <span className={styles.introKicker}>{t('auth.layoutKicker')}</span>
-                <Link href="/" className={styles.brand}>
+                <Link href="/" prefetch={false} className={styles.brand}>
                   <span className={styles.brandScript}>Cine</span>
                   <span className={styles.brandMono}>Sequence</span>
                 </Link>
@@ -66,7 +66,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
               <span className={styles.eyebrow}>{t('auth.layoutEyebrow')}</span>
               <span className={styles.status}>{t('auth.layoutGateway')}</span>
             </div>
-            <Link href="/" className={styles.brand}>
+            <Link href="/" prefetch={false} className={styles.brand}>
               <span className={styles.brandScript}>Cine</span>
               <span className={styles.brandMono}>Sequence</span>
             </Link>

@@ -75,7 +75,7 @@ export default function SeedMoviePage() {
   }
 
   return (
-    <main className={styles.container}>
+    <div className={styles.container}>
       <div className={styles.content}>
         <div className={styles.header}>
           <i className="ri-film-line" style={{ fontSize: '2rem' }} />
@@ -184,6 +184,6 @@ export default function SeedMoviePage() {
           </Button>
         </div>
       </div>
-    </main>
+    </div>
   )
 }

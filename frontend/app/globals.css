@@ -3,16 +3,16 @@
   --background-alt: #edeae3;
   --foreground: #2d3632;
   --foreground-soft: #44514b;
-  --accent: #c06223;
-  --accent-light: rgba(192, 98, 35, 0.06);
-  --accent-ink: #7d3f1b;
-  --accent-hover: #a35420;
-  --archive-bg: #0c0a09;
-  --archive-bg-alt: #120e0d;
+  --accent: #e57e31;
+  --accent-light: rgba(229, 126, 49, 0.06);
+  --accent-ink: #b5611f;
+  --accent-hover: #f3924a;
+  --archive-bg: #0a0b0c;
+  --archive-bg-alt: #111214;
   --archive-border: rgba(255, 255, 255, 0.08);
   --archive-text: rgba(255, 255, 255, 0.85);
   --archive-text-muted: rgba(255, 255, 255, 0.45);
-  --archive-glow: rgba(192, 98, 35, 0.12);
+  --archive-glow: rgba(255, 255, 255, 0.06);
   --archive-scanline: rgba(255, 255, 255, 0.028);
   --archive-bracket: rgba(255, 255, 255, 0.12);
   --archive-label-bg: rgba(255, 255, 255, 0.05);
@@ -32,7 +32,7 @@
   --glass-blur-light: 8px;
   --glass-shadow: 0 4px 24px rgba(45, 54, 50, 0.06), 0 1px 3px rgba(45, 54, 50, 0.04);
   --glass-shadow-hover: 0 8px 32px rgba(45, 54, 50, 0.1), 0 2px 6px rgba(45, 54, 50, 0.06);
-  --glass-glow: 0 0 40px rgba(192, 98, 35, 0.06);
+  --glass-glow: 0 0 40px rgba(255, 255, 255, 0.04);
   --glass-inset: inset 0 1px 0 rgba(255, 255, 255, 0.5);
 
   /* Cards — now glass-based */
@@ -41,6 +41,7 @@
   --radius-structure: 2px;
   --radius-component: 8px;
   --radius-pill: 999px;
+  --radius-button: 4px;
   --card-shadow: var(--glass-shadow);
   --card-shadow-hover: var(--glass-shadow-hover);
 
@@ -70,8 +71,8 @@
 body {
   font-family: var(--font-sans), var(--font-zh);
   background:
-    radial-gradient(ellipse at 20% 0%, rgba(192, 98, 35, 0.04) 0%, transparent 50%),
-    radial-gradient(ellipse at 80% 100%, rgba(192, 98, 35, 0.03) 0%, transparent 50%),
+    radial-gradient(ellipse at 20% 0%, rgba(255, 255, 255, 0.02) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 100%, rgba(255, 255, 255, 0.015) 0%, transparent 50%),
     var(--background);
   color: var(--foreground);
   -webkit-font-smoothing: antialiased;
@@ -89,7 +90,7 @@ body::before {
   left: -10%;
   width: 60%;
   height: 60%;
-  background: radial-gradient(circle, rgba(192, 98, 35, 0.035) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.02) 0%, transparent 70%);
   pointer-events: none;
   z-index: 0;
 }

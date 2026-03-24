@@ -84,19 +84,19 @@ export default function SequencingPage() {
 
   if (error && !currentPair && !isBootstrapping) {
     return (
-      <main className={styles.container}>
+      <div className={styles.container}>
         <div className={styles.errorState}>
           <p>{error}</p>
           <Button variant="secondary" onClick={() => void bootstrapSequencing()}>
             {t('error.retry')}
           </Button>
         </div>
-      </main>
+      </div>
     )
   }
 
   return (
-    <main
+    <div
       className={styles.container}
       style={{
         '--ambient-color': ambientColor || 'transparent',
@@ -146,6 +146,6 @@ export default function SequencingPage() {
           <SkipActions onSkip={handleSkip} onReroll={handleReroll} disabled={isLoading} />
         </section>
       </div>
-    </main>
+    </div>
   )
 }

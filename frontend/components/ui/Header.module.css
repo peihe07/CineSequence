@@ -12,7 +12,7 @@
   min-height: 68px;
   padding: 0.75rem 1.5rem;
   background:
-    linear-gradient(180deg, rgba(18, 14, 13, 0.9) 0%, rgba(12, 10, 9, 0.78) 100%);
+    linear-gradient(180deg, rgba(13, 14, 16, 0.9) 0%, rgba(10, 11, 12, 0.78) 100%);
   overflow: hidden;
   transition:
     background 0.28s ease,
@@ -28,13 +28,13 @@
   height: 1px;
   opacity: 0.55;
   background:
-    linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.22) 15%, rgba(192, 98, 35, 0.46) 50%, rgba(255, 255, 255, 0.22) 85%, transparent 100%);
+    linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.18) 15%, rgba(255, 255, 255, 0.28) 50%, rgba(255, 255, 255, 0.18) 85%, transparent 100%);
   pointer-events: none;
 }
 
 .scrolled {
   background:
-    linear-gradient(180deg, rgba(18, 14, 13, 0.96) 0%, rgba(12, 10, 9, 0.88) 100%);
+    linear-gradient(180deg, rgba(13, 14, 16, 0.96) 0%, rgba(10, 11, 12, 0.88) 100%);
   box-shadow: 0 12px 28px rgba(0, 0, 0, 0.22);
 }
 
@@ -105,7 +105,7 @@
   padding: 0.7rem 1rem;
   font-family: var(--font-mono);
   font-size: 0.72rem;
-  font-weight: 500;
+  font-weight: 400;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--archive-text-muted);
@@ -115,7 +115,8 @@
     color 0.2s ease,
     background 0.2s ease,
     box-shadow 0.2s ease,
-    transform 0.2s ease;
+    transform 0.2s ease,
+    font-weight 0.25s ease;
   white-space: nowrap;
 }
 
@@ -135,7 +136,7 @@
   background:
     repeating-linear-gradient(
       90deg,
-      rgba(192, 98, 35, 0.9) 0 4px,
+      rgba(255, 255, 255, 0.6) 0 4px,
       transparent 4px 8px
     );
   transition: opacity 0.2s ease;
@@ -143,6 +144,7 @@
 
 .navLink:hover {
   color: var(--archive-text);
+  font-weight: 500;
   transform: translateY(-1px);
 }
 
@@ -155,12 +157,12 @@
 .navLinkActive {
   color: #fff;
   background:
-    linear-gradient(180deg, rgba(192, 98, 35, 0.92) 0%, rgba(163, 84, 32, 0.92) 100%);
+    linear-gradient(180deg, rgba(243, 146, 74, 0.92) 0%, rgba(229, 126, 49, 0.92) 100%);
   box-shadow:
-    0 8px 20px rgba(192, 98, 35, 0.16),
-    inset 0 0 18px rgba(255, 226, 204, 0.08);
+    inset 0 1px 0 rgba(255, 255, 255, 0.15),
+    0 8px 20px rgba(229, 126, 49, 0.16);
   font-weight: 600;
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-button);
 }
 
 .navLinkActive .navIndex {

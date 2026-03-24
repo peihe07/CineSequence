@@ -22,7 +22,7 @@ export default function GlobalError({
           <i className="ri-refresh-line" />
           {t('error.retry')}
         </button>
-        <Link href="/" className={`${styles.btn} ${styles.btnSecondary}`}>
+        <Link href="/" prefetch={false} className={`${styles.btn} ${styles.btnSecondary}`}>
           {t('error.backHome')}
         </Link>
       </div>

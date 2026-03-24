@@ -6,8 +6,32 @@
   align-items: center;
   justify-content: center;
   padding: 1.5rem;
-  background: rgba(6, 5, 5, 0.62);
-  backdrop-filter: blur(10px);
+  background: rgba(6, 6, 8, 0.52);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* Scan-line entrance animation */
+@keyframes scanReveal {
+  0% {
+    clip-path: inset(50% 0 50% 0);
+    opacity: 0;
+  }
+  40% {
+    clip-path: inset(2% 0 2% 0);
+    opacity: 0.8;
+  }
+  100% {
+    clip-path: inset(0 0 0 0);
+    opacity: 1;
+  }
+}
+
+@keyframes scanLine {
+  0% { top: -2px; opacity: 0; }
+  5% { opacity: 1; }
+  95% { opacity: 1; }
+  100% { top: calc(100% + 2px); opacity: 0; }
 }
 
 .shell {
@@ -16,28 +40,49 @@
   grid-template-columns: minmax(0, 1.05fr) minmax(20rem, 0.95fr);
   width: min(100%, 62rem);
   min-height: min(42rem, 78vh);
-  background: linear-gradient(180deg, rgba(16, 12, 9, 0.98), rgba(10, 8, 7, 0.96));
-  box-shadow: 0 28px 80px rgba(0, 0, 0, 0.42);
+  background: rgba(14, 15, 17, 0.82);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow:
+    0 28px 80px rgba(0, 0, 0, 0.42),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.08);
   overflow: hidden;
+  animation: scanReveal 0.55s cubic-bezier(0.22, 0.68, 0.36, 1) forwards;
 }
 
+/* Scan line that sweeps on open */
+.shell::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.5) 30%, rgba(255, 255, 255, 0.5) 70%, transparent 100%);
+  z-index: 10;
+  pointer-events: none;
+  animation: scanLine 1.2s ease-in-out 0.2s forwards;
+  opacity: 0;
+}
+
+/* Corner brackets */
 .shell::before {
   content: '';
   position: absolute;
   inset: 18px;
   pointer-events: none;
   background:
-    linear-gradient(rgba(255,255,255,0.16), rgba(255,255,255,0.16)) top left / 22px 1px no-repeat,
-    linear-gradient(rgba(255,255,255,0.16), rgba(255,255,255,0.16)) top left / 1px 22px no-repeat,
-    linear-gradient(rgba(255,255,255,0.16), rgba(255,255,255,0.16)) top right / 22px 1px no-repeat,
-    linear-gradient(rgba(255,255,255,0.16), rgba(255,255,255,0.16)) top right / 1px 22px no-repeat,
-    linear-gradient(rgba(255,255,255,0.16), rgba(255,255,255,0.16)) bottom left / 22px 1px no-repeat,
-    linear-gradient(rgba(255,255,255,0.16), rgba(255,255,255,0.16)) bottom left / 1px 22px no-repeat,
-    linear-gradient(rgba(255,255,255,0.16), rgba(255,255,255,0.16)) bottom right / 22px 1px no-repeat,
-    linear-gradient(rgba(255,255,255,0.16), rgba(255,255,255,0.16)) bottom right / 1px 22px no-repeat;
+    linear-gradient(rgba(255,255,255,0.14), rgba(255,255,255,0.14)) top left / 22px 1px no-repeat,
+    linear-gradient(rgba(255,255,255,0.14), rgba(255,255,255,0.14)) top left / 1px 22px no-repeat,
+    linear-gradient(rgba(255,255,255,0.14), rgba(255,255,255,0.14)) top right / 22px 1px no-repeat,
+    linear-gradient(rgba(255,255,255,0.14), rgba(255,255,255,0.14)) top right / 1px 22px no-repeat,
+    linear-gradient(rgba(255,255,255,0.14), rgba(255,255,255,0.14)) bottom left / 22px 1px no-repeat,
+    linear-gradient(rgba(255,255,255,0.14), rgba(255,255,255,0.14)) bottom left / 1px 22px no-repeat,
+    linear-gradient(rgba(255,255,255,0.14), rgba(255,255,255,0.14)) bottom right / 22px 1px no-repeat,
+    linear-gradient(rgba(255,255,255,0.14), rgba(255,255,255,0.14)) bottom right / 1px 22px no-repeat;
   opacity: 0.55;
 }
 
+/* Intro pane — greyscale, monospace-decorated, lighter */
 .intro {
   position: relative;
   display: flex;
@@ -46,10 +91,10 @@
   gap: 2rem;
   padding: 2.2rem 2.2rem 2rem;
   background:
-    linear-gradient(180deg, rgba(26, 18, 13, 0.84), rgba(16, 12, 10, 0.4)),
-    radial-gradient(circle at top left, rgba(192, 98, 35, 0.2), transparent 34%);
+    linear-gradient(180deg, rgba(18, 19, 22, 0.6), rgba(12, 13, 15, 0.3));
 }
 
+/* Dashed vertical divider */
 .intro::after {
   content: '';
   position: absolute;
@@ -59,7 +104,7 @@
   width: 1px;
   background: repeating-linear-gradient(
     to bottom,
-    rgba(255, 255, 255, 0.16) 0 4px,
+    rgba(255, 255, 255, 0.12) 0 4px,
     transparent 4px 10px
   );
 }
@@ -74,25 +119,27 @@
   display: inline-flex;
   width: fit-content;
   background: rgba(255, 255, 255, 0.04);
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
 }
 
 .switchTab {
   padding: 0.45rem 0.8rem;
   border: none;
   background: transparent;
-  color: rgba(255, 255, 255, 0.56);
+  color: rgba(255, 255, 255, 0.46);
   font-family: var(--font-mono);
   font-size: 0.68rem;
   letter-spacing: 0.16em;
   text-transform: uppercase;
   cursor: pointer;
+  transition: color 0.18s ease, background 0.18s ease;
 }
 
+/* Active tab — neutral white, not warm */
 .switchTabActive {
-  background: rgba(192, 98, 35, 0.16);
-  box-shadow: inset 0 0 0 1px rgba(192, 98, 35, 0.24);
-  color: rgba(255, 220, 192, 0.92);
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.16);
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .kicker,
@@ -103,10 +150,11 @@
   text-transform: uppercase;
 }
 
+/* Kicker — neutral grey, not warm */
 .kicker {
   font-size: 0.68rem;
   letter-spacing: 0.18em;
-  color: rgba(255, 220, 192, 0.84);
+  color: rgba(255, 255, 255, 0.52);
 }
 
 .headline {
@@ -124,7 +172,7 @@
   margin: 0;
   font-size: 0.92rem;
   line-height: 1.75;
-  color: rgba(255, 255, 255, 0.72);
+  color: rgba(255, 255, 255, 0.62);
 }
 
 .introMeta {
@@ -132,22 +180,23 @@
   gap: 0.55rem;
 }
 
+/* Status badge — neutral grey, not warm */
 .status {
   display: inline-flex;
   width: fit-content;
   padding: 0.32rem 0.5rem;
   font-size: 0.64rem;
   letter-spacing: 0.16em;
-  color: rgba(255, 220, 192, 0.92);
-  background: rgba(192, 98, 35, 0.16);
-  box-shadow: inset 0 0 0 1px rgba(192, 98, 35, 0.24);
+  color: rgba(255, 255, 255, 0.76);
+  background: rgba(255, 255, 255, 0.06);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
 }
 
 .path,
 .timecode {
   font-size: 0.64rem;
   letter-spacing: 0.16em;
-  color: rgba(255, 255, 255, 0.44);
+  color: rgba(255, 255, 255, 0.36);
 }
 
 .notes {
@@ -160,22 +209,29 @@
   gap: 0.22rem;
 }
 
+/* Note labels — neutral grey monospace */
 .noteLabel {
   font-family: var(--font-mono);
   font-size: 0.62rem;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: rgba(255, 220, 192, 0.72);
+  color: rgba(255, 255, 255, 0.46);
 }
 
 .noteText {
   font-size: 0.82rem;
   line-height: 1.65;
-  color: rgba(255, 255, 255, 0.62);
+  color: rgba(255, 255, 255, 0.56);
 }
 
 .noteText a {
-  color: rgba(255, 220, 192, 0.92);
+  color: rgba(255, 255, 255, 0.82);
+  text-decoration-color: rgba(255, 255, 255, 0.24);
+  text-underline-offset: 2px;
+}
+
+.noteText a:hover {
+  color: rgba(255, 255, 255, 0.96);
 }
 
 .formPane {
@@ -199,8 +255,9 @@
   border: none;
   background: rgba(255, 255, 255, 0.05);
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
-  color: rgba(255, 255, 255, 0.72);
+  color: rgba(255, 255, 255, 0.62);
   cursor: pointer;
+  transition: color 0.15s ease, background 0.15s ease;
 }
 
 .close:hover {

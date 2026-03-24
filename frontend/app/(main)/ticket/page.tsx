@@ -43,7 +43,7 @@ export default function TicketPage() {
 
   if (isLoading) {
     return (
-      <main className={styles.container}>
+      <div className={styles.container}>
         <div className={styles.loading}>
           <motion.div
             animate={{ rotate: 360 }}
@@ -52,13 +52,13 @@ export default function TicketPage() {
             <i className="ri-ticket-2-line" style={{ fontSize: '2rem' }} />
           </motion.div>
         </div>
-      </main>
+      </div>
     )
   }
 
   if (error || !match) {
     return (
-      <main className={styles.container}>
+      <div className={styles.container}>
         <div className={styles.error}>
           <i className="ri-ticket-2-line" style={{ fontSize: '2.5rem', opacity: 0.3 }} />
           <p className={styles.errorText}>
@@ -68,12 +68,12 @@ export default function TicketPage() {
             {t('ticket.backToMatches')}
           </Button>
         </div>
-      </main>
+      </div>
     )
   }
 
   return (
-    <main className={styles.container}>
+    <div className={styles.container}>
       <motion.div
         className={styles.content}
         initial={{ opacity: 0, y: 16 }}
@@ -132,6 +132,6 @@ export default function TicketPage() {
           </Button>
         </section>
       </motion.div>
-    </main>
+    </div>
   )
 }

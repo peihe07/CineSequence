@@ -38,7 +38,7 @@ export default function Header() {
   return (
     <header className={`${styles.header} ${isScrolled ? styles.scrolled : ''}`}>
       {/* Left: brand logo */}
-      <Link href="/" className={styles.brand} onClick={handleNavCue}>
+      <Link href="/" prefetch={false} className={styles.brand} onClick={handleNavCue}>
         <span className={styles.brandMain}>Cine</span>
         <span className={styles.brandSub}>Sequence</span>
       </Link>
@@ -51,6 +51,7 @@ export default function Header() {
             <Link
               key={href}
               href={href}
+              prefetch={false}
               className={`${styles.navLink} ${isActive ? styles.navLinkActive : ''}`}
               onClick={handleNavCue}
             >

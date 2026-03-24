@@ -18,7 +18,7 @@
   bottom: 14px;
   left: 0;
   width: 3px;
-  background: linear-gradient(180deg, rgba(192, 98, 35, 0.95) 0%, rgba(192, 98, 35, 0.12) 100%);
+  background: linear-gradient(180deg, rgba(229, 126, 49, 0.95) 0%, rgba(229, 126, 49, 0.12) 100%);
 }
 
 .panel::after {
@@ -46,7 +46,7 @@
   font-size: 0.7rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: rgba(192, 98, 35, 0.82);
+  color: rgba(229, 126, 49, 0.82);
 }
 
 .title {
@@ -68,8 +68,8 @@
 }
 
 .stampVerified {
-  border: 1px solid rgba(192, 98, 35, 0.42);
-  color: rgba(255, 220, 192, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  color: rgba(255, 255, 255, 0.88);
 }
 
 .scanBlock {
@@ -114,7 +114,7 @@
   position: absolute;
   inset: 0;
   width: 38%;
-  background: linear-gradient(90deg, transparent 0%, rgba(192, 98, 35, 0.16) 50%, transparent 100%);
+  background: linear-gradient(90deg, transparent 0%, rgba(229, 126, 49, 0.16) 50%, transparent 100%);
   pointer-events: none;
 }
 
@@ -151,7 +151,7 @@
 .metricFill {
   height: 100%;
   background:
-    linear-gradient(90deg, rgba(192, 98, 35, 0.95) 0%, rgba(255, 210, 168, 0.9) 100%);
+    linear-gradient(90deg, rgba(229, 126, 49, 0.95) 0%, rgba(255, 210, 168, 0.9) 100%);
 }
 
 .note {

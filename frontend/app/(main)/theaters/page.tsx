@@ -157,7 +157,7 @@ function GroupCard({ group, onJoin, onLeave }: {
       </div>
 
       <div className={styles.cardActions}>
-        <Link href={`/theaters/detail?id=${group.id}`} className={styles.detailLink}>
+        <Link href={`/theaters/detail?id=${group.id}`} prefetch={false} className={styles.detailLink}>
           <i className="ri-arrow-right-up-line" /> {t('theaters.open')}
         </Link>
         {group.is_member ? (

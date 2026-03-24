@@ -1,9 +1,8 @@
 .container {
-  min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 3rem 2rem;
+  padding: 3rem 2rem 2rem;
 }
 
 .content {

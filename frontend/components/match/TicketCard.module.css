@@ -29,7 +29,7 @@
   transition: box-shadow 0.25s ease, transform 0.35s ease, opacity 0.35s ease;
   /* Paper-like subtle warm background noise */
   background-image:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.0) 0%, rgba(192, 98, 35, 0.05) 100%);
+    linear-gradient(135deg, rgba(255, 255, 255, 0.0) 0%, rgba(229, 126, 49, 0.05) 100%);
   /* Clip punch holes on the perforation edges using SVG-based clip-path is not
      feasible across all browsers without JS; we simulate with the perforationRow
      element instead (see below). */
@@ -52,7 +52,7 @@
 .ticketWrapper:hover {
   box-shadow:
     0 20px 48px rgba(0, 0, 0, 0.28),
-    0 0 32px rgba(192, 98, 35, 0.06),
+    0 0 32px rgba(229, 126, 49, 0.06),
     inset 0 0 0 0.5px rgba(255, 255, 255, 0.12);
 }
 
@@ -186,7 +186,7 @@
   font-size: 0.64rem;
   font-family: var(--font-mono);
   letter-spacing: 0.08em;
-  color: rgba(255, 220, 192, 0.92);
+  color: rgba(255, 255, 255, 0.88);
   background: rgba(255, 255, 255, 0.06);
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
   border: none;
@@ -225,20 +225,21 @@
   background: var(--accent);
   color: #ffffff;
   border: none;
-  border-radius: var(--radius-component);
+  border-radius: var(--radius-button);
   font-size: 0.73rem;
   font-family: var(--font-mono);
-  letter-spacing: 0.1em;
+  letter-spacing: 0.15em;
   text-transform: uppercase;
   cursor: pointer;
   min-height: 44px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 4px 12px rgba(229, 126, 49, 0.25);
   transition: background 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .inviteBtn:hover {
   background: var(--accent-hover);
   transform: translateY(-1px);
-  box-shadow: 0 12px 24px rgba(192, 98, 35, 0.18);
+  box-shadow: 0 12px 24px rgba(229, 126, 49, 0.18);
 }
 
 .inviteBtn:active {
@@ -258,13 +259,14 @@
   background: var(--accent);
   color: #ffffff;
   border: none;
-  border-radius: var(--radius-component);
+  border-radius: var(--radius-button);
   font-size: 0.73rem;
   font-family: var(--font-mono);
-  letter-spacing: 0.1em;
+  letter-spacing: 0.15em;
   text-transform: uppercase;
   cursor: pointer;
   min-height: 44px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 4px 12px rgba(229, 126, 49, 0.25);
   transition: background 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
 }
 
@@ -287,7 +289,7 @@
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
   color: rgba(255, 255, 255, 0.54);
   border: none;
-  border-radius: var(--radius-component);
+  border-radius: var(--radius-button);
   font-size: 0.73rem;
   font-family: var(--font-mono);
   letter-spacing: 0.1em;
@@ -299,7 +301,7 @@
 
 .declineBtn:hover {
   color: rgba(255, 255, 255, 0.92);
-  box-shadow: inset 0 0 0 1px rgba(192, 98, 35, 0.28);
+  box-shadow: inset 0 0 0 1px rgba(229, 126, 49, 0.28);
 }
 
 .declineBtn:active {
@@ -369,7 +371,7 @@
   box-shadow:
     0 2px 8px rgba(0, 0, 0, 0.06),
     0 8px 24px rgba(0, 0, 0, 0.08),
-    0 0 0 1.5px rgba(192, 98, 35, 0.35);
+    0 0 0 1.5px rgba(229, 126, 49, 0.35);
   animation: invitedPulse 2.4s ease-in-out infinite;
 }
 
@@ -378,14 +380,14 @@
     box-shadow:
       0 2px 8px rgba(0, 0, 0, 0.06),
       0 8px 24px rgba(0, 0, 0, 0.08),
-      0 0 0 1.5px rgba(192, 98, 35, 0.35);
+      0 0 0 1.5px rgba(229, 126, 49, 0.35);
   }
   50% {
     box-shadow:
       0 2px 8px rgba(0, 0, 0, 0.06),
       0 8px 24px rgba(0, 0, 0, 0.08),
-      0 0 0 3px rgba(192, 98, 35, 0.2),
-      0 0 16px rgba(192, 98, 35, 0.15);
+      0 0 0 3px rgba(229, 126, 49, 0.2),
+      0 0 16px rgba(229, 126, 49, 0.15);
   }
 }
 
@@ -394,7 +396,7 @@
 }
 
 .invited .statusText {
-  color: rgba(255, 220, 192, 0.92);
+  color: rgba(255, 255, 255, 0.88);
 }
 
 /* accepted — full color */

@@ -40,7 +40,7 @@ function DnaResultContent() {
   // Building state — loading animation
   if (isBuilding || (isLoading && !result)) {
     return (
-      <main className={styles.container}>
+      <div className={styles.container}>
         <div className={styles.loading}>
           <motion.div
             className={styles.dnaHelix}
@@ -57,13 +57,13 @@ function DnaResultContent() {
             {t('dna.analyzing')}
           </motion.p>
         </div>
-      </main>
+      </div>
     )
   }
 
   if (error && !result) {
     return (
-      <main className={styles.container}>
+      <div className={styles.container}>
         <div className={styles.error}>
           <i className="ri-error-warning-line" style={{ fontSize: '2rem' }} />
           <p>{error}</p>
@@ -71,14 +71,14 @@ function DnaResultContent() {
             {t('dna.retry')}
           </Button>
         </div>
-      </main>
+      </div>
     )
   }
 
   if (!result) return null
 
   return (
-    <main className={styles.container}>
+    <div className={styles.container}>
       <motion.div
         className={styles.content}
         initial={{ opacity: 0 }}
@@ -168,6 +168,6 @@ function DnaResultContent() {
           <p className={styles.disclaimer}>{t('dna.disclaimer')}</p>
         </motion.section>
       </motion.div>
-    </main>
+    </div>
   )
 }

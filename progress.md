@@ -12,7 +12,7 @@
 | Phase 4: DNA Builder + Result | In progress | 95% |
 | Phase 5: Matching + Invite | Done | 100% |
 | Phase 6: Groups + Profile | Done | 100% |
-| Phase 7: Polish + Infrastructure | In progress | 95% |
+| Phase 7: Polish + Infrastructure | In progress | 96% |
 | Cross-cutting | Done | 100% |
 | **Overall** | | **~97%** |
 
@@ -205,12 +205,31 @@
 - [x] Keyboard input (press Y to start)
 - [x] CSS custom properties for terminal palette (--terminal-bg, --terminal-line, etc.)
 
-### 7c-4: Inner Page Layout Review (identified 2026-03-22)
-- [ ] Fix nested `main` landmarks after shared `(main)` layout introduced global `<main>` wrapper
-- [ ] Remove duplicated page-level titles now that shared `Header` renders route title on inner pages
-- [ ] Reconcile fixed bottom nav spacer with `min-height: 100vh` page containers to avoid extra blank scroll space
-- [ ] Treat `/admin` as a root destination in shared `Header` navigation logic instead of showing a back button
-- [ ] Re-run browser walkthrough for `/dna`, `/matches`, `/theaters`, `/profile`, `/admin` after layout cleanup
+### 7c-4: Inner Page Layout Review ✓ (2026-03-24)
+- [x] Fix nested `main` landmarks — layout `.page` div → `<main>`, 4 pages `<main>` → `<div>`
+- [x] Header uses archive nav (no route titles / no back button) — duplicated titles & admin back button N/A
+- [x] Removed `min-height: 100vh` from all page containers (shell + archive already guarantee full height)
+- [x] Removed `calc(7rem + safe-area)` bottom padding from 6 pages (Footer is flow-positioned, not fixed)
+- [x] Fixed ArchiveWrapper min-height calc (72px → 68px to match actual header height)
+- [x] Build verification: all 16 routes export successfully, zero errors
+
+### 7c-5: Visual Overhaul — Cinematic Charcoal ✓ (2026-03-24)
+- [x] **配色系統** — `#0c0a09` → `#0a0b0c` (Obsidian Grey)，全站暖色光暈 → 中性白光/冰灰
+- [x] **globals.css** — archive-bg, archive-glow, glass-glow, body gradients 全部中性化
+- [x] **全頁面 CSS** — 8 個頁面 background gradient 從褐色 → 碳灰色
+- [x] **Header** — 背景色、底線、nav 下劃線全部中性化；font-weight hover transition
+- [x] **首頁 Spotlight** — 隨滑鼠移動的 radial-gradient 聚光燈
+- [x] **首頁 Parallax** — Panel hover 時圖片 translateX(2%) 視差位移
+- [x] **首頁景深模糊** — 非 hover 的 Panel 加 blur(2px) depth-of-field
+- [x] **Film-strip 指示器** — 行動版底部掃描線式進度條（scroll-driven）
+- [x] **Magnetic buttons** — CTA 按鈕隨滑鼠位置的磁吸微位移
+- [x] **LoginModal Glassmorphism** — backdrop-filter: blur(20px), 半透明背景, 內發光邊框
+- [x] **LoginModal Scan-line** — 開啟時 scanReveal clip-path + scanLine 垂直掃描動畫
+- [x] **LoginModal 灰階化** — intro 全灰階 monospace，移除暖色 kicker/status/note
+- [x] **Auth Forms** — LoginForm + RegisterForm 暖色 → 中性色
+- [x] **跨頁面過渡** — PageTransition 元件 (framer-motion fade + slide)
+- [x] **ArchiveWrapper 分級化** — full density (sequencing/dna/matches) vs minimal (profile/admin)
+- [x] Build verification: all 16 routes, zero errors
 
 ### 7d: Testing + Security (in progress)
 - [x] E2E tests: 17 passing (landing page 6, auth 5, protected routes 6)
@@ -316,6 +335,5 @@
 
 ## Suggested Next Steps
 1. **Phase 7f** — Deploy: CI/CD pipeline + custom domain + production E2E verification
-2. **Phase 7c-4** — Inner page layout cleanup (nested main, duplicated titles, nav spacer)
-3. **Phase 7i-1** — Notification system Phase 1 (Header 鈴鐺 + dropdown)
-4. **Phase 7e** — Admin dashboard: Prometheus + Grafana monitoring
+2. **Phase 7i-1** — Notification system Phase 1 (Header 鈴鐺 + dropdown)
+3. **Phase 7e** — Admin dashboard: Prometheus + Grafana monitoring

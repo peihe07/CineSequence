@@ -20,7 +20,7 @@
 .eyebrow {
   font-size: 0.7rem;
   letter-spacing: 0.18em;
-  color: rgba(192, 98, 35, 0.82);
+  color: rgba(255, 255, 255, 0.62);
 }
 
 .metaLine {
@@ -87,7 +87,7 @@
   letter-spacing: 0.18em;
   text-transform: uppercase;
   font-family: var(--font-mono);
-  color: rgba(192, 98, 35, 0.82);
+  color: rgba(255, 255, 255, 0.62);
 }
 
 .devText {
@@ -106,7 +106,7 @@
 
 .link,
 .textButton {
-  color: rgba(255, 220, 192, 0.92);
+  color: rgba(255, 255, 255, 0.88);
   text-decoration: underline;
 }
 
@@ -127,7 +127,7 @@
 
 .sentIcon {
   font-size: 2rem;
-  color: rgba(255, 220, 192, 0.92);
+  color: rgba(255, 255, 255, 0.88);
 }
 
 .modal .title {

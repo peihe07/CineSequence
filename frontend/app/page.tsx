@@ -1,9 +1,8 @@
 'use client'
 
-import { useState, useEffect, useMemo, useCallback } from 'react'
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import Link from 'next/link'
 import LoginModal from '@/components/auth/LoginModal'
-import { getToken } from '@/lib/api'
 import { useI18n } from '@/lib/i18n'
 import FloatingLocaleToggle from '@/components/ui/FloatingLocaleToggle'
 import Footer from '@/components/ui/Footer'
@@ -73,6 +72,10 @@ export default function Home() {
   const { t } = useI18n()
   const [loginOpen, setLoginOpen] = useState(false)
   const [authMode, setAuthMode] = useState<'login' | 'register'>('login')
+  const [authNextPath, setAuthNextPath] = useState<string | undefined>()
+  const [activeSlide, setActiveSlide] = useState(0)
+  const heroRef = useRef<HTMLElement>(null)
+  const galleryRef = useRef<HTMLDivElement>(null)
   const headlineText = t('landing.termLine4')
   const { displayed, done } = useTypewriter(headlineText)
   const terminalLines = useMemo(() => [
@@ -83,26 +86,82 @@ export default function Home() {
   ], [t])
   const visibleTerminalLines = useTerminalSequence(terminalLines, done)
 
+  // Spotlight cursor tracking
+  useEffect(() => {
+    const hero = heroRef.current
+    if (!hero) return
+
+    const handleMove = (e: MouseEvent) => {
+      const rect = hero.getBoundingClientRect()
+      const x = ((e.clientX - rect.left) / rect.width) * 100
+      const y = ((e.clientY - rect.top) / rect.height) * 100
+      hero.style.setProperty('--spotlight-x', `${x}%`)
+      hero.style.setProperty('--spotlight-y', `${y}%`)
+    }
+
+    hero.addEventListener('mousemove', handleMove, { passive: true })
+    return () => hero.removeEventListener('mousemove', handleMove)
+  }, [])
+
+  // Film-strip scroll tracking
+  useEffect(() => {
+    const track = galleryRef.current
+    if (!track) return
+
+    const handleScroll = () => {
+      const scrollLeft = track.scrollLeft
+      const cardWidth = track.scrollWidth / PANELS.length
+      const index = Math.round(scrollLeft / cardWidth)
+      setActiveSlide(Math.min(index, PANELS.length - 1))
+    }
+
+    track.addEventListener('scroll', handleScroll, { passive: true })
+    return () => track.removeEventListener('scroll', handleScroll)
+  }, [])
+
   const handleProtectedEntry = useCallback((event: React.MouseEvent<HTMLElement>) => {
-    if (getToken()) {
+    const target = event.currentTarget.getAttribute('href')
+    if (target === '/sequencing/seed' || target === '/sequencing') {
       return
     }
 
     event.preventDefault()
+    setAuthNextPath(target || undefined)
     setAuthMode('login')
     setLoginOpen(true)
   }, [])
 
+  // Magnetic button effect
+  const handleMagnet = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
+    const btn = e.currentTarget
+    const rect = btn.getBoundingClientRect()
+    const x = e.clientX - rect.left - rect.width / 2
+    const y = e.clientY - rect.top - rect.height / 2
+    btn.style.setProperty('--magnet-x', `${x * 0.15}px`)
+    btn.style.setProperty('--magnet-y', `${y * 0.15}px`)
+  }, [])
+
+  const handleMagnetLeave = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
+    e.currentTarget.style.setProperty('--magnet-x', '0')
+    e.currentTarget.style.setProperty('--magnet-y', '0')
+  }, [])
+
   return (
     <main className={styles.main}>
-      <LoginModal open={loginOpen} mode={authMode} onClose={() => setLoginOpen(false)} />
+      <LoginModal
+        open={loginOpen}
+        mode={authMode}
+        nextPath={authNextPath}
+        onClose={() => setLoginOpen(false)}
+      />
       <FloatingLocaleToggle />
-      <section className={styles.hero}>
+      <section className={styles.hero} ref={heroRef}>
         <div className={styles.panelStrip}>
           {PANELS.map((panel, i) => (
             <Link
               key={i}
               href={panel.href}
+              prefetch={false}
               className={styles.panel}
               data-index={i}
               onClick={handleProtectedEntry}
@@ -123,11 +182,12 @@ export default function Home() {
         </div>
 
         <div className={styles.mobileGallery} aria-hidden="true">
-          <div className={styles.mobileGalleryTrack}>
+          <div className={styles.mobileGalleryTrack} ref={galleryRef}>
             {PANELS.map((panel, i) => (
               <Link
                 key={i}
                 href={panel.href}
+                prefetch={false}
                 className={styles.mobileCard}
                 data-index={i}
                 onClick={handleProtectedEntry}
@@ -139,9 +199,19 @@ export default function Home() {
               </Link>
             ))}
           </div>
+
+          {/* Film-strip progress indicator */}
+          <div className={styles.filmStrip}>
+            {PANELS.map((_, i) => (
+              <div
+                key={i}
+                className={`${styles.filmFrame} ${i === activeSlide ? styles.filmFrameActive : ''}`}
+              />
+            ))}
+          </div>
         </div>
 
-        <Link href="/" className={styles.logo}>
+        <Link href="/" prefetch={false} className={styles.logo}>
           <span className={styles.logoMain}>Cine</span>
           <span className={styles.logoSub}>Sequence</span>
         </Link>
@@ -167,7 +237,10 @@ export default function Home() {
               <button
                 type="button"
                 className={styles.ctaPrimary}
+                onMouseMove={handleMagnet}
+                onMouseLeave={handleMagnetLeave}
                 onClick={() => {
+                  setAuthNextPath(undefined)
                   setAuthMode('register')
                   setLoginOpen(true)
                 }}
@@ -177,7 +250,10 @@ export default function Home() {
               <button
                 type="button"
                 className={styles.ctaSecondary}
+                onMouseMove={handleMagnet}
+                onMouseLeave={handleMagnetLeave}
                 onClick={() => {
+                  setAuthNextPath(undefined)
                   setAuthMode('login')
                   setLoginOpen(true)
                 }}

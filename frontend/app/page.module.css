@@ -3,16 +3,17 @@
   flex-direction: column;
   min-height: 100vh;
   overflow-x: hidden;
-  background: linear-gradient(180deg, #171210 0%, #0d0b0a 100%);
+  background: linear-gradient(180deg, #0d0e10 0%, #0a0b0c 100%);
 }
 
 .hero {
   position: relative;
   min-height: 100vh;
   overflow: hidden;
-  background: linear-gradient(180deg, rgba(20, 16, 12, 0.94) 0%, rgba(24, 18, 14, 0.88) 100%);
+  background: linear-gradient(180deg, rgba(13, 14, 16, 0.96) 0%, rgba(10, 11, 12, 0.92) 100%);
 }
 
+/* Spotlight that follows the cursor */
 .hero::before {
   content: '';
   position: absolute;
@@ -20,10 +21,16 @@
   z-index: 1;
   pointer-events: none;
   background:
-    linear-gradient(90deg, rgba(12, 10, 9, 0.82) 0%, rgba(12, 10, 9, 0.46) 36%, rgba(12, 10, 9, 0.1) 62%, rgba(12, 10, 9, 0.46) 100%),
+    radial-gradient(
+      600px circle at var(--spotlight-x, 50%) var(--spotlight-y, 40%),
+      rgba(255, 255, 255, 0.05) 0%,
+      transparent 60%
+    ),
+    linear-gradient(90deg, rgba(10, 11, 12, 0.82) 0%, rgba(10, 11, 12, 0.46) 36%, rgba(10, 11, 12, 0.1) 62%, rgba(10, 11, 12, 0.46) 100%),
     linear-gradient(180deg, rgba(0, 0, 0, 0.08) 0%, rgba(0, 0, 0, 0.28) 100%);
 }
 
+/* Film grain */
 .hero::after {
   content: '';
   position: absolute;
@@ -68,24 +75,25 @@
   flex: 1.7;
 }
 
+/* Panel backgrounds — cinematic charcoal tones, each with a subtle unique hue */
 .panel[data-index='0'] {
-  background: linear-gradient(165deg, #14100c 0%, #221810 55%, #100e0c 100%);
+  background: linear-gradient(165deg, #0d0e10 0%, #161718 55%, #0a0b0c 100%);
 }
 
 .panel[data-index='1'] {
-  background: linear-gradient(165deg, #0c1014 0%, #121a22 55%, #0a0e14 100%);
+  background: linear-gradient(165deg, #0c0d10 0%, #121418 55%, #0a0b0e 100%);
 }
 
 .panel[data-index='2'] {
-  background: linear-gradient(165deg, #080c14 0%, #0e1428 55%, #060a12 100%);
+  background: linear-gradient(165deg, #0a0c10 0%, #0e1118 55%, #080a0e 100%);
 }
 
 .panel[data-index='3'] {
-  background: linear-gradient(165deg, #14100a 0%, #261c0e 55%, #120e08 100%);
+  background: linear-gradient(165deg, #0d0e0c 0%, #16170e 55%, #0b0c0a 100%);
 }
 
 .panel[data-index='4'] {
-  background: linear-gradient(165deg, #0c1008 0%, #18220e 55%, #0a0e06 100%);
+  background: linear-gradient(165deg, #0c0e0c 0%, #141614 55%, #0a0c0a 100%);
 }
 
 .panelPhoto {
@@ -109,15 +117,17 @@
   background: linear-gradient(180deg, rgba(0, 0, 0, 0.06) 0%, rgba(0, 0, 0, 0.68) 100%);
 }
 
+/* Depth-of-field blur: non-hovered panels blur out */
 .panelStrip:hover .panel .panelPhoto {
   opacity: 0.68;
-  filter: brightness(0.78) contrast(1.02) saturate(0.9);
+  filter: brightness(0.78) contrast(1.02) saturate(0.9) blur(2px);
 }
 
+/* Parallax shift + clear focus on hovered panel */
 .panel:hover .panelPhoto {
   opacity: 0.98;
-  transform: scale(1.045) translateY(-0.5%);
-  filter: brightness(0.98) contrast(1.04) saturate(1.06);
+  transform: scale(1.045) translateX(2%);
+  filter: brightness(0.98) contrast(1.04) saturate(1.06) blur(0px);
 }
 
 .panelIconWrap {
@@ -141,9 +151,10 @@
   transform: translateY(8px);
 }
 
+/* Micro-scale on hover */
 .panel:hover .panelIcon {
   color: rgba(255, 255, 255, 0.38);
-  scale: 1.06;
+  scale: 1.08;
   transform: translateY(-3px);
   opacity: 1;
 }
@@ -199,7 +210,7 @@
   font-size: 0.62rem;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: rgba(255, 220, 192, 0.92);
+  color: rgba(255, 255, 255, 0.82);
   background: rgba(255, 255, 255, 0.06);
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
   opacity: 0;
@@ -226,11 +237,11 @@
 .panel:focus-visible .panelCta {
   opacity: 1;
   transform: translateY(0);
-  box-shadow: inset 0 0 0 1px rgba(192, 98, 35, 0.28);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.28);
 }
 
 .panel:focus-visible {
-  outline: 1px solid rgba(192, 98, 35, 0.5);
+  outline: 1px solid rgba(255, 255, 255, 0.4);
   outline-offset: -1px;
 }
 
@@ -320,7 +331,8 @@
   gap: 0.4rem;
   padding: 1rem 1.1rem;
   max-width: 32rem;
-  background: rgba(9, 9, 9, 0.28);
+  background: rgba(8, 9, 10, 0.36);
+  border: 1px solid rgba(255, 255, 255, 0.04);
   font-family: var(--font-mono);
   font-size: 0.78rem;
   letter-spacing: 0.06em;
@@ -370,6 +382,7 @@
   transform: translateY(0);
 }
 
+/* CTA buttons — magnetic hover effect via transform */
 .ctaPrimary,
 .ctaSecondary {
   display: inline-flex;
@@ -378,26 +391,29 @@
   min-width: 9.5rem;
   padding: 0.82rem 1.35rem;
   appearance: none;
-  border-radius: 999px;
+  border-radius: var(--radius-button);
   text-decoration: none;
   font-family: var(--font-sans), sans-serif;
   font-size: 0.78rem;
   font-weight: 600;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.15em;
   text-transform: uppercase;
   cursor: pointer;
-  transition: all 0.18s ease;
+  transition: all 0.22s cubic-bezier(0.2, 0, 0.2, 1);
+  transform: translate(var(--magnet-x, 0), var(--magnet-y, 0));
 }
 
 .ctaPrimary {
   background: var(--accent);
   color: #fff;
   border: 1px solid var(--accent);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 4px 12px rgba(229, 126, 49, 0.25);
 }
 
 .ctaPrimary:hover {
   background: var(--accent-hover);
   border-color: var(--accent-hover);
+  box-shadow: 0 0 24px rgba(229, 126, 49, 0.2);
 }
 
 .ctaSecondary {
@@ -409,10 +425,23 @@
 .ctaSecondary:hover {
   color: #fff;
   border-color: rgba(255, 255, 255, 0.42);
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.06);
 }
+
+/* ─── Mobile gallery ─────────────────────────────── */
 
 .mobileGallery {
   display: none;
+}
+
+/* Film-strip scroll indicator */
+.filmStrip {
+  display: none;
+}
+
+@keyframes filmStripGlow {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -454,12 +483,17 @@
     scroll-snap-align: center;
     position: relative;
     display: block;
-  text-decoration: none;
-  color: inherit;
+    text-decoration: none;
+    color: inherit;
     border: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(10, 10, 10, 0.28);
-  overflow: hidden;
-}
+    background: rgba(10, 11, 12, 0.28);
+    overflow: hidden;
+    transition: transform 0.3s ease;
+  }
+
+  .mobileCard:active {
+    transform: scale(0.97);
+  }
 
   .mobileCardPhoto {
     position: absolute;
@@ -467,6 +501,35 @@
     background-size: cover;
     background-position: center;
     filter: brightness(0.84) contrast(1.05) saturate(1.05);
+  }
+
+  /* Film-strip progress indicator */
+  .filmStrip {
+    display: flex;
+    position: absolute;
+    bottom: 11rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 4;
+    gap: 4px;
+    align-items: center;
+    padding: 6px 10px;
+    background: rgba(10, 11, 12, 0.6);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+
+  .filmFrame {
+    width: 24px;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.2);
+    transition: background 0.3s ease, box-shadow 0.3s ease, width 0.3s ease;
+  }
+
+  .filmFrameActive {
+    width: 32px;
+    background: rgba(255, 255, 255, 0.8);
+    box-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
   }
 
   .panelCta {
@@ -498,6 +561,10 @@
 
   .mobileCard {
     flex: 0 0 100%;
+  }
+
+  .filmStrip {
+    bottom: 4.5rem;
   }
 
   .sideLabel {

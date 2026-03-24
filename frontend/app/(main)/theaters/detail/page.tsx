@@ -41,7 +41,7 @@ function TheaterDetailContent() {
     return (
       <div className={styles.state}>
         <p>{error || t('common.error')}</p>
-        <Link href="/theaters" className={styles.backLink}>{t('common.back')}</Link>
+        <Link href="/theaters" prefetch={false} className={styles.backLink}>{t('common.back')}</Link>
       </div>
     )
   }
@@ -49,7 +49,7 @@ function TheaterDetailContent() {
   return (
     <div className={styles.container}>
       <div className={styles.hero}>
-        <Link href="/theaters" className={styles.backLink}>{t('common.back')}</Link>
+        <Link href="/theaters" prefetch={false} className={styles.backLink}>{t('common.back')}</Link>
         <p className={styles.eyebrow}>[ THEATER_FILE ]</p>
         <div className={styles.titleRow}>
           <div>
