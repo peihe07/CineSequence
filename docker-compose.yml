@@ -112,5 +112,35 @@ services:
     depends_on:
       - backend
 
+  # ---- Monitoring ----
+  prometheus:
+    container_name: cinesequence-prometheus-dev
+    image: prom/prometheus:v2.53.0
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    depends_on:
+      - backend
+
+  grafana:
+    container_name: cinesequence-grafana-dev
+    image: grafana/grafana:11.1.0
+    ports:
+      - "3001:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - ./docker/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./docker/grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - prometheus
+
 volumes:
   pgdata:
+  prometheus_data:
+  grafana_data:

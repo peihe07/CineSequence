@@ -1,3 +1,4 @@
+import asyncio
 import logging
 from contextlib import asynccontextmanager
 
@@ -17,7 +18,7 @@ from app.security import build_allowed_origins
 # Configure app-level logging so services (email, matcher, etc.) output INFO
 logging.basicConfig(level=logging.INFO)
 logging.getLogger("app").setLevel(logging.INFO)
-from app.routers import auth, dna, groups, matches, profile, sequencing
+from app.routers import auth, dna, groups, matches, notifications, profile, sequencing
 
 # Rate limiter (uses Redis in production, in-memory in dev)
 limiter = Limiter(
@@ -41,11 +42,23 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
             )
         return response
 
+async def _metrics_poller():
+    """Background task that updates Prometheus gauges every 60 seconds."""
+    from app.metrics import update_app_gauges, update_celery_queue_depth
+
+    while True:
+        await update_celery_queue_depth()
+        await update_app_gauges()
+        await asyncio.sleep(60)
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Startup: init DB pool, Redis connection
+    # Startup: launch metrics background poller
+    task = asyncio.create_task(_metrics_poller())
     yield
-    # Shutdown: cleanup
+    # Shutdown: cancel background task
+    task.cancel()
 
 
 app = FastAPI(
@@ -78,9 +91,20 @@ app.include_router(dna.router, prefix="/dna", tags=["dna"])
 app.include_router(matches.router, prefix="/matches", tags=["matches"])
 app.include_router(groups.router, prefix="/groups", tags=["groups"])
 app.include_router(profile.router, prefix="/profile", tags=["profile"])
+app.include_router(notifications.router, prefix="/notifications", tags=["notifications"])
 
 from app.routers import admin
 app.include_router(admin.router, prefix="/admin", tags=["admin"])
+
+# Prometheus metrics — /metrics endpoint
+from prometheus_fastapi_instrumentator import Instrumentator
+
+instrumentator = Instrumentator(
+    should_group_status_codes=True,
+    should_ignore_untemplated=True,
+    excluded_handlers=["/health", "/readiness", "/metrics"],
+)
+instrumentator.instrument(app).expose(app, include_in_schema=False)
 
 # Dev mode: serve locally saved files (avatars, tickets) as static assets
 if settings.environment == "development":

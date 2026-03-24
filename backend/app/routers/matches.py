@@ -10,6 +10,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.deps import get_current_user, get_db
 from app.models.user import User
 from app.services.matcher import find_matches, get_match_by_id, get_user_matches, respond_to_invite, send_invite
+from app.services.notification_service import (
+    emit_notification_safely,
+    notify_invite_received,
+    notify_match_accepted,
+    notify_match_found,
+)
 
 router = APIRouter()
 
@@ -89,6 +95,19 @@ async def discover_matches(
         )
 
     new_matches = await find_matches(db, user)
+
+    # Notify the current user about each new match
+    for m in new_matches:
+        partner = m.user_b if m.user_a_id == user.id else m.user_a
+        await emit_notification_safely(
+            notify_match_found,
+            db,
+            user.id,
+            partner.name,
+            m.id,
+            context=f"match_found user={user.id} match={m.id}",
+        )
+
     return [_match_to_out(m, user.id) for m in new_matches]
 
 
@@ -106,6 +125,17 @@ async def invite_match(
     except PermissionError as e:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(e))
 
+    # Notify the recipient about the invite
+    recipient = match.user_b if match.user_a_id == user.id else match.user_a
+    await emit_notification_safely(
+        notify_invite_received,
+        db,
+        recipient.id,
+        user.name,
+        match.id,
+        context=f"invite_received recipient={recipient.id} match={match.id}",
+    )
+
     return _match_to_out(match, user.id)
 
 
@@ -122,5 +152,17 @@ async def respond_match(
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     except PermissionError as e:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(e))
+
+    # Notify the inviter that their invite was accepted
+    if body.accept:
+        inviter = match.user_a if match.user_b_id == user.id else match.user_b
+        await emit_notification_safely(
+            notify_match_accepted,
+            db,
+            inviter.id,
+            user.name,
+            match.id,
+            context=f"match_accepted inviter={inviter.id} match={match.id}",
+        )
 
     return _match_to_out(match, user.id)

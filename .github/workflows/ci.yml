@@ -1,11 +1,21 @@
 name: CI
 
 on:
-  workflow_dispatch:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   frontend:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
     steps:
       - uses: actions/checkout@v4
 
@@ -15,18 +25,26 @@ jobs:
           cache: npm
           cache-dependency-path: frontend/package-lock.json
 
-      - name: Install frontend deps
+      - name: Install deps
         run: npm ci
-        working-directory: frontend
 
-      - name: Frontend typecheck
-        run: npm run typecheck:frontend
+      - name: Lint
+        run: npm run lint
 
-      - name: Frontend unit tests
-        run: npm run test:frontend
+      - name: Typecheck
+        run: npx tsc --noEmit
+
+      - name: Unit tests
+        run: npm run test
+
+      - name: Build
+        run: npm run build
 
   backend:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
     services:
       postgres:
         image: pgvector/pgvector:pg16
@@ -69,9 +87,17 @@ jobs:
           cache: pip
           cache-dependency-path: backend/requirements.txt
 
-      - name: Install backend deps
-        run: pip install -r backend/requirements.txt
+      - name: Install deps
+        run: pip install -r requirements.txt
 
-      - name: Backend security/integration tests
-        run: pytest tests/test_main.py tests/test_auth.py tests/test_profile.py tests/test_admin.py tests/test_sequencing_router.py
-        working-directory: backend
+      - name: Install dev tools
+        run: pip install ruff
+
+      - name: Lint
+        run: ruff check .
+
+      - name: DB migration
+        run: alembic upgrade head
+
+      - name: Tests
+        run: pytest tests -v

@@ -138,6 +138,16 @@ async def build_dna_for_user(user_id: str):
         await db.commit()
         logger.info("DNA build completed for user %s", user_id)
 
+        # Notify user that DNA is ready
+        from app.services.notification_service import emit_notification_safely, notify_dna_ready
+        await emit_notification_safely(
+            notify_dna_ready,
+            db,
+            user.id,
+            dna_data["archetype_id"],
+            context=f"dna_ready user={user.id}",
+        )
+
     await engine.dispose()
 
 

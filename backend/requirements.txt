@@ -35,6 +35,9 @@ boto3>=1.35.0
 # Rate limiting
 slowapi>=0.1.9
 
+# Metrics
+prometheus-fastapi-instrumentator>=7.0.0
+
 # Utils
 python-multipart>=0.0.17
 python-dotenv>=1.0.1
