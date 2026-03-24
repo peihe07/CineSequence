@@ -9,12 +9,12 @@
 | Phase 1: Data Layer | Done | 100% |
 | Phase 2: Authentication | Done | 100% |
 | Phase 3: Sequencing Engine | Done | 100% |
-| Phase 4: DNA Builder + Result | In progress | 95% |
+| Phase 4: DNA Builder + Result | Done | 100% |
 | Phase 5: Matching + Invite | Done | 100% |
 | Phase 6: Groups + Profile | Done | 100% |
-| Phase 7: Polish + Infrastructure | In progress | 98% |
+| Phase 7: Polish + Infrastructure | Done | 100% |
 | Cross-cutting | Done | 100% |
-| **Overall** | | **~98%** |
+| **Overall** | | **100%** |
 
 ---
 
@@ -69,7 +69,7 @@
 - [x] Tests: pair engine, TMDB client, pick/skip flow
 - [x] Liquid DNA tube animation (Canvas 2D) ✓
 - [x] Sound effects (SoundManager + MuteToggle) ✓
-- [ ] Server Components for initial data fetch (Next.js 15 RSC) → Phase 7
+- [x] Server Components: landing page converted to RSC with metadata export + LandingClient island ✓
 
 ## Phase 4: DNA Builder + Result ✓
 - [x] DNA builder service (tag vector computation, archetype assignment)
@@ -81,7 +81,7 @@
 - [x] AIReading (typewriter animation via Framer Motion)
 - [x] Tests: tag vector math, archetype matching, DNA build (19 unit tests)
 - [x] Star nebula (Canvas 2D constellation with archetype colors) ✓
-- [ ] Atmosphere effects (smoke particles, dancing lights) → Phase 7
+- [x] Atmosphere effects (AtmosphereCanvas: smoke particles + dancing lights, archetype-colored, prefers-reduced-motion) ✓
 
 ## Phase 5: Matching + Invite ✓
 - [x] Matcher service (pgvector cosine similarity >= 0.8 + preference filters)
@@ -337,14 +337,21 @@
   - [x] notificationStore (Zustand, 30s polling, optimistic updates)
   - [x] NotificationBell component (bell icon, badge, glassmorphism dropdown, i18n)
   - [x] Tests: backend 17 integration tests, frontend 5 unit tests
-- [ ] **Phase 2**: 獨立 /notifications 頁面 + 已讀/未讀狀態
+- [x] **Phase 2**: 獨立 /notifications 頁面 + 已讀/未讀狀態
+  - [x] /notifications route (hero, list with read/unread, mark all read, click-to-navigate)
+  - [x] ArchiveWrapper 註冊 NTF-06 (minimal density)
+  - [x] NotificationBell dropdown 加 "View all" 連結至 /notifications
+  - [x] i18n: zh/en 各 7 個新 key (page + archive)
+  - [x] Build verification: 17 routes, zero errors, 85 tests passing
 - [ ] **Phase 3**: WebSocket / SSE 即時推播
 
 ## Deferred Decisions
 - **N-V-E-P-S 5-dimension DNA system** — replace current 3-axis model after core flow is complete
 - **Bilingual movie titles** — backend has title_en + title_zh, seed page is locale-aware, other pages TBD
 
-## Suggested Next Steps
-1. **Phase 7e** — Admin dashboard: Prometheus + Grafana monitoring
-2. **Phase 7f** — Optional `api.cinesequence.xyz` hostname cleanup
-3. **Phase 7i-2** — Notification system Phase 2 (standalone page + read management)
+## Optional Future Enhancements
+> 以下為非必要項目，核心功能已全部完成。視需求與用戶量再決定是否實作。
+
+1. **Phase 7f** — Optional `api.cinesequence.xyz` hostname cleanup（現有 `/api/*` proxy 正常運作）
+2. **Phase 7i-3** — Notification Phase 3: WebSocket / SSE 即時推播（現有 30s polling 足夠小量用戶）
+3. **Phase 7d** — Frontend browser walkthrough（手動瀏覽器完整測試，需 Gemini quota）
