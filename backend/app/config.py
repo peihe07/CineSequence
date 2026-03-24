@@ -71,7 +71,7 @@ class Settings(BaseSettings):
     def resolved_auth_cookie_secure(self) -> bool:
         if self.auth_cookie_secure is not None:
             return self.auth_cookie_secure
-        return self.environment != "development"
+        return self.environment not in {"development", "test"}
 
     @property
     def admin_email_set(self) -> set[str]:
