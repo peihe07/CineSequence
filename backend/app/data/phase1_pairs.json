@@ -189,9 +189,9 @@
       "title_zh": "絕地救援"
     },
     "movie_b": {
-      "tmdb_id": 376867,
-      "title_en": "Moonlight",
-      "title_zh": "月光下的藍色男孩"
+      "tmdb_id": 517814,
+      "title_en": "Portrait of a Lady on Fire",
+      "title_zh": "燃燒女子的畫像"
     }
   },
   {
@@ -309,9 +309,9 @@
       "title_zh": "瘋狂麥斯：憤怒道"
     },
     "movie_b": {
-      "tmdb_id": 76,
-      "title_en": "Before Sunrise",
-      "title_zh": "愛在黎明破曉時"
+      "tmdb_id": 329,
+      "title_en": "Ikiru",
+      "title_zh": "生之慾"
     }
   },
   {
@@ -319,9 +319,9 @@
     "label": "飛車追逐 vs 鄉間漫步",
     "dimension": "fast_vs_slow",
     "movie_a": {
-      "tmdb_id": 475557,
-      "title_en": "Joker",
-      "title_zh": "小丑"
+      "tmdb_id": 137113,
+      "title_en": "Edge of Tomorrow",
+      "title_zh": "明日邊界"
     },
     "movie_b": {
       "tmdb_id": 11216,

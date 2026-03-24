@@ -30,6 +30,7 @@ const validDimensions = new Set([
 
 const errors = []
 const ids = new Set()
+const tmdbIds = new Map()
 const counts = {}
 
 for (const pair of pairs) {
@@ -49,6 +50,17 @@ for (const pair of pairs) {
   if (!pair.movie_a || !pair.movie_b) {
     errors.push(`Missing movie payload on ${pair.id}`)
     continue
+  }
+
+  for (const side of ['movie_a', 'movie_b']) {
+    const tmdbId = pair[side].tmdb_id
+    if (tmdbIds.has(tmdbId)) {
+      errors.push(
+        `Duplicate TMDB id across pairs: ${tmdbId} in ${tmdbIds.get(tmdbId)} and ${pair.id} (${side})`
+      )
+    } else {
+      tmdbIds.set(tmdbId, `${pair.id} (${side})`)
+    }
   }
 
   if (pair.movie_a.tmdb_id === pair.movie_b.tmdb_id) {
