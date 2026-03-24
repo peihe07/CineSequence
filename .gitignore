@@ -50,5 +50,8 @@ playwright-report/
 
 # Next.js build output
 frontend/out/
+frontend/.open-next/
+frontend/.wrangler/
+frontend/cloudflare-env.d.ts
 frontend/tsconfig.tsbuildinfo
 celerybeat-schedule

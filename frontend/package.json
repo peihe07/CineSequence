@@ -5,7 +5,11 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "build:worker": "opennextjs-cloudflare build",
     "start": "next start",
+    "preview": "npm run build:worker && opennextjs-cloudflare preview",
+    "deploy": "npm run build:worker && opennextjs-cloudflare deploy",
+    "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts",
     "lint": "next lint",
     "format": "prettier --write .",
     "test": "vitest run",
@@ -21,6 +25,7 @@
     "zod": "^3.24.0"
   },
   "devDependencies": {
+    "@opennextjs/cloudflare": "^1.8.0",
     "typescript": "^5.7.0",
     "@types/react": "^19.0.0",
     "@types/node": "^22.0.0",
@@ -31,6 +36,7 @@
     "@vitejs/plugin-react": "^4.3.0",
     "@testing-library/react": "^16.1.0",
     "@testing-library/jest-dom": "^6.6.0",
-    "jsdom": "^25.0.0"
+    "jsdom": "^25.0.0",
+    "wrangler": "^4.38.0"
   }
 }
