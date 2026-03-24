@@ -1,30 +1,18 @@
 """Celery tasks for async DNA build and matching trigger."""
 
-import asyncio
 import logging
 import uuid
 
+from app.tasks.async_utils import run_async, task_session
 from app.tasks.celery_app import celery_app
 
 logger = logging.getLogger(__name__)
 
 
-def _run_async(coro):
-    """Run an async coroutine from sync Celery task."""
-    loop = asyncio.new_event_loop()
-    try:
-        return loop.run_until_complete(coro)
-    finally:
-        loop.close()
-
-
 async def build_dna_for_user(user_id: str):
     """Build DNA profile and trigger matching for a user."""
     from sqlalchemy import select
-    from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
-    from sqlalchemy.orm import sessionmaker
 
-    from app.config import settings
     from app.models.dna_profile import DnaProfile
     from app.models.pick import Pick
     from app.models.user import SequencingStatus, User
@@ -33,10 +21,7 @@ async def build_dna_for_user(user_id: str):
     from app.services.session_service import get_or_create_session
     from app.services.tmdb_client import get_movie
 
-    engine = create_async_engine(settings.database_url)
-    async_session = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
-
-    async with async_session() as db:
+    async with task_session() as db:
         # Fetch user
         result = await db.execute(select(User).where(User.id == uuid.UUID(user_id)))
         user = result.scalar_one_or_none()
@@ -153,14 +138,13 @@ async def build_dna_for_user(user_id: str):
             context=f"dna_ready user={user.id}",
         )
 
-    await engine.dispose()
 
 
 @celery_app.task(bind=True, max_retries=2, default_retry_delay=30)
 def build_dna_task(self, user_id: str):
     """Build DNA profile asynchronously and trigger matching."""
     try:
-        _run_async(build_dna_for_user(user_id))
+        run_async(build_dna_for_user(user_id))
         # Trigger matching after DNA build
         from app.tasks.match_tasks import find_matches_task
         find_matches_task.delay(user_id)

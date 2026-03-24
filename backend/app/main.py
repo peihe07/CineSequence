@@ -11,7 +11,6 @@ from fastapi.staticfiles import StaticFiles
 from prometheus_fastapi_instrumentator import Instrumentator
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
-from slowapi.util import get_remote_address
 from sqlalchemy import text
 from starlette.middleware.base import BaseHTTPMiddleware
 
@@ -29,7 +28,7 @@ from app.routers import (
     profile,
     sequencing,
 )
-from app.security import build_allowed_origins
+from app.security import build_allowed_origins, get_client_ip
 
 # Configure app-level logging so services (email, matcher, etc.) output INFO
 logging.basicConfig(level=logging.INFO)
@@ -37,7 +36,7 @@ logging.getLogger("app").setLevel(logging.INFO)
 
 # Rate limiter (uses Redis in production, in-memory in dev)
 limiter = Limiter(
-    key_func=get_remote_address,
+    key_func=get_client_ip,
     default_limits=["60/minute"],
     storage_uri=settings.redis_url if settings.environment == "production" else None,
 )

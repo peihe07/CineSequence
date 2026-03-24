@@ -1,8 +1,22 @@
 from urllib.parse import urlsplit, urlunsplit
 
 from fastapi import HTTPException, Request, status
+from slowapi.util import get_remote_address
 
 from app.config import settings
+
+
+def get_client_ip(request: Request) -> str:
+    """Extract real client IP, respecting Cloudflare and standard proxy headers."""
+    cf_ip = request.headers.get("CF-Connecting-IP")
+    if cf_ip:
+        return cf_ip.strip()
+
+    forwarded = request.headers.get("X-Forwarded-For")
+    if forwarded:
+        return forwarded.split(",")[0].strip()
+
+    return get_remote_address(request)
 
 
 def build_allowed_origins(frontend_url: str) -> list[str]:
