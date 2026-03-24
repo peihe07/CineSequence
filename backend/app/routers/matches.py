@@ -9,7 +9,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.deps import get_current_user, get_db
 from app.models.user import User
-from app.services.matcher import find_matches, get_match_by_id, get_user_matches, respond_to_invite, send_invite
+from app.services.matcher import (
+    find_matches,
+    get_match_by_id,
+    get_user_matches,
+    respond_to_invite,
+    send_invite,
+)
 from app.services.notification_service import (
     emit_notification_safely,
     notify_invite_received,

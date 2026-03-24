@@ -76,7 +76,9 @@ class TestCreateNotification:
         assert n.is_read is False
         assert n.created_at is not None
 
-    async def test_creates_notification_without_optional_fields(self, db_session: AsyncSession, user_id):
+    async def test_creates_notification_without_optional_fields(
+        self, db_session: AsyncSession, user_id
+    ):
         n = await create_notification(
             db_session,
             user_id=user_id,
@@ -141,7 +143,9 @@ class TestGetNotifications:
         assert len(result) == 1
         assert result[0].title_en == "Unread"
 
-    async def test_only_returns_own_notifications(self, db_session: AsyncSession, user_id, other_user_id):
+    async def test_only_returns_own_notifications(
+        self, db_session: AsyncSession, user_id, other_user_id
+    ):
         await create_notification(
             db_session,
             user_id=user_id,
@@ -214,7 +218,9 @@ class TestMarkAsRead:
         refreshed = result.scalar_one()
         assert refreshed.is_read is True
 
-    async def test_returns_false_for_wrong_user(self, db_session: AsyncSession, user_id, other_user_id):
+    async def test_returns_false_for_wrong_user(
+        self, db_session: AsyncSession, user_id, other_user_id
+    ):
         n = await create_notification(
             db_session,
             user_id=user_id,
@@ -246,7 +252,9 @@ class TestMarkAllAsRead:
         assert count == 3
         assert await get_unread_count(db_session, user_id) == 0
 
-    async def test_does_not_affect_other_users(self, db_session: AsyncSession, user_id, other_user_id):
+    async def test_does_not_affect_other_users(
+        self, db_session: AsyncSession, user_id, other_user_id
+    ):
         await create_notification(
             db_session,
             user_id=user_id,

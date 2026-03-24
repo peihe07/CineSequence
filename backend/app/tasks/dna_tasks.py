@@ -113,7 +113,9 @@ async def build_dna_for_user(user_id: str):
             profile.genre_vector = dna_data["genre_vector"]
             profile.quadrant_scores = dna_data["quadrant_scores"]
             profile.ticket_style = dna_data["ticket_style"]
-            profile.personality_reading = personality["personality_reading"] if personality else None
+            profile.personality_reading = (
+                personality["personality_reading"] if personality else None
+            )
             profile.hidden_traits = personality["hidden_traits"] if personality else []
             profile.conversation_style = personality["conversation_style"] if personality else None
             profile.ideal_movie_date = personality["ideal_movie_date"] if personality else None
@@ -139,7 +141,10 @@ async def build_dna_for_user(user_id: str):
         logger.info("DNA build completed for user %s", user_id)
 
         # Notify user that DNA is ready
-        from app.services.notification_service import emit_notification_safely, notify_dna_ready
+        from app.services.notification_service import (
+            emit_notification_safely,
+            notify_dna_ready,
+        )
         await emit_notification_safely(
             notify_dna_ready,
             db,

@@ -1,10 +1,14 @@
 import asyncio
 import logging
+import os
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 from fastapi import FastAPI, HTTPException, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
+from prometheus_fastapi_instrumentator import Instrumentator
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from slowapi.util import get_remote_address
@@ -13,12 +17,23 @@ from starlette.middleware.base import BaseHTTPMiddleware
 
 from app.config import settings
 from app.deps import engine
+from app.metrics import update_app_gauges, update_celery_queue_depth
+from app.routers import (
+    admin,
+    auth,
+    dev_auth,
+    dna,
+    groups,
+    matches,
+    notifications,
+    profile,
+    sequencing,
+)
 from app.security import build_allowed_origins
 
 # Configure app-level logging so services (email, matcher, etc.) output INFO
 logging.basicConfig(level=logging.INFO)
 logging.getLogger("app").setLevel(logging.INFO)
-from app.routers import auth, dna, groups, matches, notifications, profile, sequencing
 
 # Rate limiter (uses Redis in production, in-memory in dev)
 limiter = Limiter(
@@ -44,8 +59,6 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
 
 async def _metrics_poller():
     """Background task that updates Prometheus gauges every 60 seconds."""
-    from app.metrics import update_app_gauges, update_celery_queue_depth
-
     while True:
         await update_celery_queue_depth()
         await update_app_gauges()
@@ -83,8 +96,6 @@ app.add_middleware(
 
 app.include_router(auth.router, prefix="/auth", tags=["auth"])
 if settings.environment in {"development", "test"}:
-    from app.routers import dev_auth
-
     app.include_router(dev_auth.router, prefix="/auth/dev", tags=["auth-dev"])
 app.include_router(sequencing.router, prefix="/sequencing", tags=["sequencing"])
 app.include_router(dna.router, prefix="/dna", tags=["dna"])
@@ -92,13 +103,9 @@ app.include_router(matches.router, prefix="/matches", tags=["matches"])
 app.include_router(groups.router, prefix="/groups", tags=["groups"])
 app.include_router(profile.router, prefix="/profile", tags=["profile"])
 app.include_router(notifications.router, prefix="/notifications", tags=["notifications"])
-
-from app.routers import admin
 app.include_router(admin.router, prefix="/admin", tags=["admin"])
 
 # Prometheus metrics — /metrics endpoint
-from prometheus_fastapi_instrumentator import Instrumentator
-
 instrumentator = Instrumentator(
     should_group_status_codes=True,
     should_ignore_untemplated=True,
@@ -108,11 +115,6 @@ instrumentator.instrument(app).expose(app, include_in_schema=False)
 
 # Dev mode: serve locally saved files (avatars, tickets) as static assets
 if settings.environment == "development":
-    import os
-    from pathlib import Path
-
-    from fastapi.staticfiles import StaticFiles
-
     output_dir = Path("output")
     output_dir.mkdir(exist_ok=True)
     if os.path.isdir(output_dir):
