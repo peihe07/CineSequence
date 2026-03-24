@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { ApiError, api, clearToken, setToken } from '@/lib/api'
+import { ApiError, api, clearToken } from '@/lib/api'
 import { translateStatic } from '@/lib/i18n'
 import type {
   LoginRequest,
@@ -18,14 +18,14 @@ interface AuthState {
 
   register: (data: RegisterRequest) => Promise<void>
 
-  login: (email: string) => Promise<void>
+  login: (email: string, nextPath?: string) => Promise<void>
   verify: (token: string) => Promise<void>
   fetchProfile: () => Promise<void>
   logout: () => Promise<void>
   clearError: () => void
 }
 
-export const useAuthStore = create<AuthState>((set) => ({
+export const useAuthStore = create<AuthState>((set, get) => ({
   user: null,
   isAuthenticated: false,
   isLoading: false,
@@ -46,10 +46,10 @@ export const useAuthStore = create<AuthState>((set) => ({
     }
   },
 
-  login: async (email) => {
+  login: async (email, nextPath) => {
     set({ isLoading: true, error: null })
     try {
-      const payload: LoginRequest = { email }
+      const payload: LoginRequest = { email, next_path: nextPath }
       await api('/auth/login', {
         method: 'POST',
         body: JSON.stringify(payload),
@@ -66,12 +66,11 @@ export const useAuthStore = create<AuthState>((set) => ({
     set({ isLoading: true, error: null })
     try {
       const payload: VerifyRequest = { token }
-      const response = await api<VerifyResponse>('/auth/verify', {
+      await api<VerifyResponse>('/auth/verify', {
         method: 'POST',
         body: JSON.stringify(payload),
       })
-      setToken(response.access_token)
-      set({ isAuthenticated: true, isLoading: false })
+      await get().fetchProfile()
     } catch (err) {
       const message = err instanceof Error ? err.message : translateStatic('common.error')
       set({ isLoading: false, error: message })

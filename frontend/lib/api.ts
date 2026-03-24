@@ -1,16 +1,7 @@
+import { buildApiUrl, resolveApiUrl } from './api-origin'
+
 const TOKEN_STORAGE_KEY = 'cine_sequence_access_token'
-
-function resolveApiUrl(): string {
-  if (process.env.NEXT_PUBLIC_API_URL) {
-    return process.env.NEXT_PUBLIC_API_URL
-  }
-
-  if (typeof window !== 'undefined') {
-    return `${window.location.protocol}//${window.location.hostname}:8000`
-  }
-
-  return 'http://127.0.0.1:8000'
-}
+export const AUTH_UNAUTHORIZED_EVENT = 'cine-sequence:auth-unauthorized'
 
 const API_URL = resolveApiUrl()
 
@@ -60,6 +51,15 @@ export function clearToken(): void {
   window.localStorage.removeItem(TOKEN_STORAGE_KEY)
 }
 
+function notifyUnauthorized(): void {
+  if (typeof window === 'undefined') {
+    return
+  }
+
+  clearToken()
+  window.dispatchEvent(new CustomEvent(AUTH_UNAUTHORIZED_EVENT))
+}
+
 export class ApiError extends Error {
   constructor(
     public status: number,
@@ -74,7 +74,6 @@ export async function api<T>(
   path: string,
   options: RequestInit = {},
 ): Promise<T> {
-  const token = getToken()
   const headers: Record<string, string> = {
     ...((options.headers as Record<string, string>) || {}),
   }
@@ -84,11 +83,7 @@ export async function api<T>(
     headers['Content-Type'] = 'application/json'
   }
 
-  if (token && !('Authorization' in headers)) {
-    headers.Authorization = `Bearer ${token}`
-  }
-
-  const response = await fetch(`${API_URL}${path}`, {
+  const response = await fetch(buildApiUrl(API_URL, path), {
     ...options,
     headers,
     credentials: 'include',
@@ -96,6 +91,9 @@ export async function api<T>(
 
   if (!response.ok) {
     const body = await response.json().catch(() => ({ detail: 'Request failed' }))
+    if (response.status === 401 || response.status === 403) {
+      notifyUnauthorized()
+    }
     throw new ApiError(response.status, body.detail || 'Request failed')
   }
 
@@ -113,7 +111,7 @@ export async function apiUpload<T>(
   const formData = new FormData()
   formData.append(fieldName, file)
 
-  const response = await fetch(`${API_URL}${path}`, {
+  const response = await fetch(buildApiUrl(API_URL, path), {
     method: 'POST',
     body: formData,
     credentials: 'include',
@@ -121,6 +119,9 @@ export async function apiUpload<T>(
 
   if (!response.ok) {
     const body = await response.json().catch(() => ({ detail: 'Upload failed' }))
+    if (response.status === 401 || response.status === 403) {
+      notifyUnauthorized()
+    }
     throw new ApiError(response.status, body.detail || 'Upload failed')
   }
 

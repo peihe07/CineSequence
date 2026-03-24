@@ -1,5 +1,6 @@
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { AUTH_UNAUTHORIZED_EVENT } from '@/lib/api'
 
 const {
   replaceMock,
@@ -20,10 +21,17 @@ vi.mock('next/navigation', () => ({
 }))
 
 vi.mock('@/stores/authStore', () => ({
-  useAuthStore: () => ({
-    ...authState,
-    fetchProfile: fetchProfileMock,
-  }),
+  useAuthStore: Object.assign(
+    () => ({
+      ...authState,
+      fetchProfile: fetchProfileMock,
+    }),
+    {
+      setState: vi.fn((partial: Partial<typeof authState>) => {
+        Object.assign(authState, partial)
+      }),
+    },
+  ),
 }))
 
 vi.mock('@/lib/i18n', () => ({
@@ -88,6 +96,19 @@ describe('MainLayout', () => {
     expect(screen.queryByText('Protected content')).toBeNull()
   })
 
+  it('does not render protected content before auth check resolves', () => {
+    fetchProfileMock.mockImplementation(() => new Promise(() => {}))
+
+    render(
+      <MainLayout>
+        <p>Protected content</p>
+      </MainLayout>,
+    )
+
+    expect(screen.getByText('Loading...')).toBeTruthy()
+    expect(screen.queryByText('Protected content')).toBeNull()
+  })
+
   it('retries the auth check when retry is clicked', async () => {
     fetchProfileMock
       .mockRejectedValueOnce(new Error('Profile unavailable'))
@@ -112,5 +133,26 @@ describe('MainLayout', () => {
       expect(screen.getByText('Protected content')).toBeTruthy()
     })
     expect(fetchProfileMock.mock.calls.length).toBeGreaterThanOrEqual(2)
+  })
+
+  it('redirects to login when a global unauthorized event is emitted', async () => {
+    authState.isAuthenticated = true
+    fetchProfileMock.mockImplementation(async () => {})
+
+    render(
+      <MainLayout>
+        <p>Protected content</p>
+      </MainLayout>,
+    )
+
+    await waitFor(() => {
+      expect(screen.getByText('Protected content')).toBeTruthy()
+    })
+
+    window.dispatchEvent(new CustomEvent(AUTH_UNAUTHORIZED_EVENT))
+
+    await waitFor(() => {
+      expect(replaceMock).toHaveBeenCalledWith('/login')
+    })
   })
 })

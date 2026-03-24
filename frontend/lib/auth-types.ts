@@ -15,10 +15,12 @@ export interface RegisterRequest {
   region: string
   birth_year?: number
   agreed_to_terms: boolean
+  next_path?: string
 }
 
 export interface LoginRequest {
   email: string
+  next_path?: string
 }
 
 export interface RegisterResponse {

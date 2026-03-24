@@ -11,10 +11,11 @@ import styles from './LoginModal.module.css'
 interface LoginModalProps {
   open: boolean
   mode?: 'login' | 'register'
+  nextPath?: string
   onClose: () => void
 }
 
-export default function LoginModal({ open, mode = 'login', onClose }: LoginModalProps) {
+export default function LoginModal({ open, mode = 'login', nextPath, onClose }: LoginModalProps) {
   const [activeMode, setActiveMode] = useState<'login' | 'register'>(mode)
   const { t } = useI18n()
 
@@ -128,7 +129,7 @@ export default function LoginModal({ open, mode = 'login', onClose }: LoginModal
                   <span className={styles.noteText}>
                     {activeMode === 'login' ? (
                       <>
-                        {t('auth.modalNoAccountPrefix')} <Link href="/register" onClick={onClose}>{t('auth.signUp')}</Link>{t('auth.modalNoAccountSuffix')}
+                        {t('auth.modalNoAccountPrefix')} <Link href="/register" prefetch={false} onClick={onClose}>{t('auth.signUp')}</Link>{t('auth.modalNoAccountSuffix')}
                       </>
                     ) : (
                       t('auth.layoutGateBody')
@@ -143,9 +144,17 @@ export default function LoginModal({ open, mode = 'login', onClose }: LoginModal
                 <i className="ri-close-line" />
               </button>
               {activeMode === 'login' ? (
-                <LoginForm mode="modal" onRegisterClick={() => setActiveMode('register')} />
+                <LoginForm
+                  mode="modal"
+                  nextPath={nextPath}
+                  onRegisterClick={() => setActiveMode('register')}
+                />
               ) : (
-                <RegisterForm mode="modal" onLoginClick={() => setActiveMode('login')} />
+                <RegisterForm
+                  mode="modal"
+                  nextPath={nextPath}
+                  onLoginClick={() => setActiveMode('login')}
+                />
               )}
             </section>
           </motion.div>

@@ -15,6 +15,7 @@ class RegisterRequest(BaseModel):
     region: str = Field("TW", min_length=1, max_length=10)
     birth_year: int = Field(..., ge=1900)
     agreed_to_terms: bool = Field(..., description="User must agree to privacy policy")
+    next_path: str | None = Field(default=None, max_length=512)
 
     @field_validator("birth_year")
     @classmethod
@@ -31,9 +32,28 @@ class RegisterRequest(BaseModel):
             raise ValueError("You must agree to the privacy policy")
         return v
 
+    @field_validator("next_path")
+    @classmethod
+    def next_path_must_be_relative(cls, v: str | None) -> str | None:
+        if v is None:
+            return v
+        if not v.startswith("/") or v.startswith("//"):
+            raise ValueError("next_path must be a relative path")
+        return v
+
 
 class LoginRequest(BaseModel):
     email: EmailStr
+    next_path: str | None = Field(default=None, max_length=512)
+
+    @field_validator("next_path")
+    @classmethod
+    def login_next_path_must_be_relative(cls, v: str | None) -> str | None:
+        if v is None:
+            return v
+        if not v.startswith("/") or v.startswith("//"):
+            raise ValueError("next_path must be a relative path")
+        return v
 
 
 class RegisterResponse(BaseModel):

@@ -78,7 +78,7 @@ describe('VerifyPage', () => {
     })
     triggerRedirectTimerImmediately()
 
-    render(<VerifyContent token="valid-token" />)
+    render(<VerifyContent token="valid-token" nextPath={null} />)
 
     await waitFor(() => {
       expect(verifyMock).toHaveBeenCalledWith('valid-token')
@@ -102,7 +102,7 @@ describe('VerifyPage', () => {
     })
     triggerRedirectTimerImmediately()
 
-    render(<VerifyContent token="valid-token" />)
+    render(<VerifyContent token="valid-token" nextPath={null} />)
 
     await waitFor(() => {
       expect(verifyMock).toHaveBeenCalledWith('valid-token')
@@ -116,7 +116,7 @@ describe('VerifyPage', () => {
   it('shows an error state when verification fails', async () => {
     verifyMock.mockRejectedValue(new Error('nope'))
 
-    render(<VerifyContent token="bad-token" />)
+    render(<VerifyContent token="bad-token" nextPath={null} />)
 
     expect(await screen.findByText('Verification failed')).toBeTruthy()
     expect(screen.getByText('Invalid token')).toBeTruthy()

@@ -87,7 +87,7 @@ async def register(
     user.magic_link_expires_at = expires_at
     await db.commit()
 
-    await send_magic_link(body.email, token)
+    await send_magic_link(body.email, token, body.next_path)
 
     return RegisterResponse(message=REGISTER_SUCCESS_MESSAGE)
 
@@ -111,7 +111,7 @@ async def login(
         user.magic_link_token = token
         user.magic_link_expires_at = expires_at
         await db.commit()
-        await send_magic_link(body.email, token)
+        await send_magic_link(body.email, token, body.next_path)
 
     return {"message": "If this email is registered, a magic link has been sent."}
 

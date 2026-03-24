@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-const { clearTokenMock, getTokenMock, setTokenMock, apiMock, MockApiError } = vi.hoisted(() => {
+const { clearTokenMock, getTokenMock, apiMock, MockApiError } = vi.hoisted(() => {
   class HoistedApiError extends Error {
     status: number
     detail: string
@@ -16,7 +16,6 @@ const { clearTokenMock, getTokenMock, setTokenMock, apiMock, MockApiError } = vi
   return {
     clearTokenMock: vi.fn(),
     getTokenMock: vi.fn(() => null),
-    setTokenMock: vi.fn(),
     apiMock: vi.fn(),
     MockApiError: HoistedApiError,
   }
@@ -27,7 +26,6 @@ vi.mock('@/lib/api', () => ({
   api: apiMock,
   clearToken: clearTokenMock,
   getToken: getTokenMock,
-  setToken: setTokenMock,
 }))
 
 import { useAuthStore } from '@/stores/authStore'
@@ -37,7 +35,6 @@ describe('authStore', () => {
     apiMock.mockReset()
     clearTokenMock.mockReset()
     getTokenMock.mockReset()
-    setTokenMock.mockReset()
     getTokenMock.mockReturnValue(null)
     useAuthStore.setState({
       user: null,
@@ -56,20 +53,52 @@ describe('authStore', () => {
     expect(useAuthStore.getState().isAuthenticated).toBe(false)
   })
 
-  it('stores the access token after verify succeeds', async () => {
-    apiMock.mockResolvedValue({
-      access_token: 'jwt-token',
-      token_type: 'bearer',
-    })
+  it('hydrates the user after verify succeeds via cookie-backed profile fetch', async () => {
+    apiMock
+      .mockResolvedValueOnce({
+        access_token: 'jwt-token',
+        token_type: 'bearer',
+      })
+      .mockResolvedValueOnce({
+        id: 'u1',
+        email: 'u@test.com',
+        name: 'User',
+        gender: 'other',
+        region: 'TW',
+        avatar_url: null,
+        sequencing_status: 'completed',
+      })
 
     await useAuthStore.getState().verify('magic-link-token')
 
-    expect(apiMock).toHaveBeenCalledWith('/auth/verify', {
+    expect(apiMock).toHaveBeenNthCalledWith(1, '/auth/verify', {
       method: 'POST',
       body: JSON.stringify({ token: 'magic-link-token' }),
     })
-    expect(setTokenMock).toHaveBeenCalledWith('jwt-token')
+    expect(apiMock).toHaveBeenNthCalledWith(2, '/profile')
     expect(useAuthStore.getState().isAuthenticated).toBe(true)
+    expect(useAuthStore.getState().user?.email).toBe('u@test.com')
+  })
+
+  it('does not rely on localStorage token after verify succeeds', async () => {
+    apiMock
+      .mockResolvedValueOnce({
+        access_token: 'jwt-token',
+        token_type: 'bearer',
+      })
+      .mockResolvedValueOnce({
+        id: 'u1',
+        email: 'u@test.com',
+        name: 'User',
+        gender: 'other',
+        region: 'TW',
+        avatar_url: null,
+        sequencing_status: 'completed',
+      })
+
+    await useAuthStore.getState().verify('magic-link-token')
+
+    expect(getTokenMock).not.toHaveBeenCalled()
   })
 
   it('does not clear the token on non-auth failures during fetchProfile', async () => {

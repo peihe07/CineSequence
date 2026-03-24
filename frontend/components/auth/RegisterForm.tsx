@@ -17,10 +17,11 @@ const currentYear = new Date().getFullYear()
 
 interface RegisterFormProps {
   mode?: 'page' | 'modal'
+  nextPath?: string
   onLoginClick?: () => void
 }
 
-export default function RegisterForm({ mode = 'page', onLoginClick }: RegisterFormProps) {
+export default function RegisterForm({ mode = 'page', nextPath, onLoginClick }: RegisterFormProps) {
   const router = useRouter()
   const { register, isLoading, error, clearError } = useAuthStore()
   const { t } = useI18n()
@@ -90,6 +91,7 @@ export default function RegisterForm({ mode = 'page', onLoginClick }: RegisterFo
       await register({
         ...form,
         birth_year: Number(form.birth_year),
+        next_path: nextPath,
       })
       setSent(true)
     } catch {
@@ -110,7 +112,12 @@ export default function RegisterForm({ mode = 'page', onLoginClick }: RegisterFo
             {t('auth.backToLogin')}
           </Button>
         ) : (
-          <Button variant="ghost" onClick={() => router.push('/login')}>
+          <Button
+            variant="ghost"
+            onClick={() =>
+              router.push(nextPath ? `/login?next=${encodeURIComponent(nextPath)}` : '/login')
+            }
+          >
             {t('auth.backToLogin')}
           </Button>
         )}
@@ -266,7 +273,11 @@ export default function RegisterForm({ mode = 'page', onLoginClick }: RegisterFo
             {t('auth.signIn')}
           </button>
         ) : (
-          <Link href="/login" className={styles.link}>
+          <Link
+            href={nextPath ? `/login?next=${encodeURIComponent(nextPath)}` : '/login'}
+            prefetch={false}
+            className={styles.link}
+          >
             {t('auth.signIn')}
           </Link>
         )}

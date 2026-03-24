@@ -12,6 +12,7 @@ def set_auth_cookie(response: Response, token: str) -> None:
         samesite=settings.auth_cookie_samesite,
         max_age=60 * 60 * 24 * 7,
         path="/",
+        domain=settings.auth_cookie_domain,
     )
 
 
@@ -22,4 +23,5 @@ def clear_auth_cookie(response: Response) -> None:
         httponly=True,
         secure=settings.resolved_auth_cookie_secure,
         samesite=settings.auth_cookie_samesite,
+        domain=settings.auth_cookie_domain,
     )

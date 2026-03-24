@@ -4,6 +4,7 @@ import asyncio
 import html as html_mod
 import logging
 import uuid
+from urllib.parse import quote
 
 import resend
 
@@ -49,9 +50,16 @@ async def _send_or_log(to: str, subject: str, html: str) -> None:
     }))
 
 
-async def send_magic_link(email: str, token: str) -> None:
+def _build_verify_url(token: str, next_path: str | None = None) -> str:
+    verify_url = f"{settings.frontend_url}/verify?token={quote(token)}"
+    if next_path:
+        verify_url += f"&next={quote(next_path, safe='/?=&')}"
+    return verify_url
+
+
+async def send_magic_link(email: str, token: str, next_path: str | None = None) -> None:
     """Send a magic link email to the user."""
-    verify_url = f"{settings.frontend_url}/verify?token={token}"
+    verify_url = _build_verify_url(token, next_path)
     await _send_or_log(
         to=email,
         subject="Your Cine Sequence login link",

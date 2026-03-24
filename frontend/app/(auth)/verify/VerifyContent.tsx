@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { sanitizeNextPath } from '@/lib/authProtection'
 import { useAuthStore } from '@/stores/authStore'
 import { useSequencingStore } from '@/stores/sequencingStore'
 import { useI18n } from '@/lib/i18n'
@@ -9,8 +10,10 @@ import styles from './page.module.css'
 
 export function VerifyContent({
   token,
+  nextPath,
 }: {
   token: string | null
+  nextPath: string | null
 }) {
   const router = useRouter()
   const { verify, error } = useAuthStore()
@@ -27,23 +30,26 @@ export function VerifyContent({
     verify(token)
       .then(async () => {
         setStatus('success')
-        let nextPath = '/sequencing'
+        const requestedPath = sanitizeNextPath(nextPath)
+        let destination = requestedPath || '/sequencing'
 
-        try {
-          const progress = await fetchProgress()
-          if (!progress.seed_movie_tmdb_id && progress.round_number === 1) {
-            nextPath = '/sequencing/seed'
+        if (!requestedPath) {
+          try {
+            const progress = await fetchProgress()
+            if (!progress.seed_movie_tmdb_id && progress.round_number === 1) {
+              destination = '/sequencing/seed'
+            }
+          } catch {
+            // Fall back to sequencing bootstrap when progress is not yet available.
           }
-        } catch {
-          // Fall back to sequencing bootstrap when progress is not yet available.
         }
 
-        setTimeout(() => router.replace(nextPath), 1500)
+        setTimeout(() => router.replace(destination), 1500)
       })
       .catch(() => {
         setStatus('error')
       })
-  }, [token, verify, fetchProgress, router])
+  }, [fetchProgress, nextPath, router, token, verify])
 
   return (
     <div className={styles.content}>

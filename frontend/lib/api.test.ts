@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { ApiError, api, apiUpload } from './api'
+import { AUTH_UNAUTHORIZED_EVENT, ApiError, api, apiUpload } from './api'
 
 describe('api helpers', () => {
   beforeEach(() => {
@@ -56,7 +56,7 @@ describe('api helpers', () => {
     expect(result).toEqual({ ok: true })
   })
 
-  it('adds the bearer token header when one is stored', async () => {
+  it('does not inject a bearer token header from localStorage', async () => {
     window.localStorage.setItem('cine_sequence_access_token', 'jwt-token')
     vi.mocked(fetch).mockResolvedValue({
       ok: true,
@@ -71,9 +71,7 @@ describe('api helpers', () => {
       expect.stringContaining('/profile'),
       expect.objectContaining({
         credentials: 'include',
-        headers: expect.objectContaining({
-          Authorization: 'Bearer jwt-token',
-        }),
+        headers: {},
       }),
     )
   })
@@ -88,5 +86,21 @@ describe('api helpers', () => {
     await expect(
       apiUpload('/upload', new File(['x'], 'x.txt')),
     ).rejects.toEqual(new ApiError(500, 'Upload failed'))
+  })
+
+  it('clears the stored token and emits an event on unauthorized responses', async () => {
+    const listener = vi.fn()
+    window.addEventListener(AUTH_UNAUTHORIZED_EVENT, listener)
+    window.localStorage.setItem('cine_sequence_access_token', 'jwt-token')
+
+    vi.mocked(fetch).mockResolvedValue({
+      ok: false,
+      status: 401,
+      json: vi.fn().mockResolvedValue({ detail: 'Unauthorized' }),
+    } as unknown as Response)
+
+    await expect(api('/profile')).rejects.toEqual(new ApiError(401, 'Unauthorized'))
+    expect(window.localStorage.getItem('cine_sequence_access_token')).toBeNull()
+    expect(listener).toHaveBeenCalledTimes(1)
   })
 })

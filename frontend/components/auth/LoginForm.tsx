@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import Button from '@/components/ui/Button'
 import Input from '@/components/ui/Input'
-import { api, setToken } from '@/lib/api'
+import { api } from '@/lib/api'
 import { useAuthStore } from '@/stores/authStore'
 import { useI18n } from '@/lib/i18n'
 import styles from './LoginForm.module.css'
@@ -15,6 +15,7 @@ const SHOW_DEV_LOGIN = process.env.NODE_ENV !== 'production'
 
 interface LoginFormProps {
   mode?: 'page' | 'modal'
+  nextPath?: string
   onRegisterClick?: () => void
   onMagicLinkSent?: () => void
   onDevLoginSuccess?: () => void
@@ -22,12 +23,13 @@ interface LoginFormProps {
 
 export default function LoginForm({
   mode = 'page',
+  nextPath,
   onRegisterClick,
   onMagicLinkSent,
   onDevLoginSuccess,
 }: LoginFormProps) {
   const router = useRouter()
-  const { login, isLoading, error, clearError } = useAuthStore()
+  const { login, fetchProfile, isLoading, error, clearError } = useAuthStore()
   const { t } = useI18n()
   const [email, setEmail] = useState('')
   const [sent, setSent] = useState(false)
@@ -45,7 +47,7 @@ export default function LoginForm({
     }
 
     try {
-      await login(email)
+      await login(email, nextPath)
       setSent(true)
       onMagicLinkSent?.()
     } catch {
@@ -59,7 +61,7 @@ export default function LoginForm({
     setDevLoading(true)
 
     try {
-      const response = await api<{ access_token: string }>('/auth/dev/session', {
+      await api<{ access_token: string }>('/auth/dev/session', {
         method: 'POST',
         body: JSON.stringify({
           email: DEV_ADMIN_EMAIL,
@@ -68,7 +70,7 @@ export default function LoginForm({
           region: 'TW',
         }),
       })
-      setToken(response.access_token)
+      await fetchProfile()
       onDevLoginSuccess?.()
       router.push('/admin')
       router.refresh()
@@ -140,7 +142,11 @@ export default function LoginForm({
             {t('auth.signUp')}
           </button>
         ) : (
-          <Link href="/register" className={styles.link}>
+          <Link
+            href={nextPath ? `/register?next=${encodeURIComponent(nextPath)}` : '/register'}
+            prefetch={false}
+            className={styles.link}
+          >
             {t('auth.signUp')}
           </Link>
         )}

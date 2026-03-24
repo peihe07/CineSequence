@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Button from '@/components/ui/Button'
+import { AUTH_UNAUTHORIZED_EVENT } from '@/lib/api'
 import { useI18n } from '@/lib/i18n'
 import { useAuthStore } from '@/stores/authStore'
 import styles from './AuthGuard.module.css'
@@ -29,6 +30,23 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     void runAuthCheck()
   }, [runAuthCheck])
+
+  useEffect(() => {
+    const handleUnauthorized = () => {
+      useAuthStore.setState({
+        user: null,
+        isAuthenticated: false,
+        isLoading: false,
+        error: null,
+      })
+      setHasCheckedAuth(true)
+      setAuthCheckError(null)
+      router.replace('/login')
+    }
+
+    window.addEventListener(AUTH_UNAUTHORIZED_EVENT, handleUnauthorized)
+    return () => window.removeEventListener(AUTH_UNAUTHORIZED_EVENT, handleUnauthorized)
+  }, [router])
 
   useEffect(() => {
     if (hasCheckedAuth && !isLoading && !isAuthenticated && !authCheckError) {

@@ -45,6 +45,7 @@ class Settings(BaseSettings):
     environment: str = "development"
     admin_emails: str = ""
     auth_cookie_name: str = "cine_sequence_session"
+    auth_cookie_domain: str | None = None
     auth_cookie_samesite: Literal["lax", "strict", "none"] = "lax"
     auth_cookie_secure: bool | None = None
 
