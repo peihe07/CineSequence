@@ -71,4 +71,34 @@ describe('sequencingStore', () => {
     expect(useSequencingStore.getState().error).toBe('Skip failed')
     expect(useSequencingStore.getState().isLoading).toBe(false)
   })
+
+  it('throws and preserves progress state when extend sequencing fails', async () => {
+    apiMock.mockRejectedValue(new Error('Extend failed'))
+    useSequencingStore.setState({
+      progress: {
+        round_number: 21,
+        phase: 3,
+        total_rounds: 20,
+        completed: true,
+        seed_movie_tmdb_id: 550,
+        can_extend: true,
+        extension_batches: 0,
+        max_extension_batches: 3,
+        session_version: 1,
+        is_extending: false,
+      },
+    })
+
+    await expect(useSequencingStore.getState().extendSequencing()).rejects.toThrow('Extend failed')
+
+    expect(useSequencingStore.getState().progress).toMatchObject({
+      completed: true,
+      can_extend: true,
+      total_rounds: 20,
+      extension_batches: 0,
+      is_extending: false,
+    })
+    expect(useSequencingStore.getState().error).toBe('Extend failed')
+    expect(useSequencingStore.getState().isLoading).toBe(false)
+  })
 })

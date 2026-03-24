@@ -1,10 +1,18 @@
 import logging
+from pathlib import Path
 from typing import Literal
 
 from pydantic import field_validator, model_validator
 from pydantic_settings import BaseSettings
 
 logger = logging.getLogger(__name__)
+
+_BACKEND_DIR = Path(__file__).resolve().parents[1]
+_PROJECT_ROOT = Path(__file__).resolve().parents[2]
+_ENV_FILES = (
+    _BACKEND_DIR / ".env",
+    _PROJECT_ROOT / ".env",
+)
 
 
 class Settings(BaseSettings):
@@ -93,7 +101,7 @@ class Settings(BaseSettings):
             raise ValueError("AUTH_COOKIE_SAMESITE=none requires AUTH_COOKIE_SECURE=true")
         return self
 
-    model_config = {"env_file": ".env", "extra": "ignore"}
+    model_config = {"env_file": _ENV_FILES, "extra": "ignore"}
 
 
 settings = Settings()

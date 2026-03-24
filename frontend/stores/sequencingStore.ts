@@ -221,8 +221,10 @@ export const useSequencingStore = create<SequencingState>((set, get) => ({
             }
           : null,
       }))
+      return
     } catch (err) {
       set({ isLoading: false, error: err instanceof Error ? err.message : translateStatic('common.error') })
+      throw err
     }
   },
 

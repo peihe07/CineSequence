@@ -52,8 +52,12 @@ export default function SequencingCompletePage() {
   }
 
   const handleExtend = async () => {
-    await extendSequencing()
-    router.replace('/sequencing')
+    try {
+      await extendSequencing()
+      router.replace('/sequencing')
+    } catch {
+      // Store error state keeps the user on the completion page.
+    }
   }
 
   const extensionBatches = progress?.extension_batches ?? 0

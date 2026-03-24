@@ -89,8 +89,12 @@ function DnaResultContent() {
   const canExtend = progress?.can_extend ?? result.can_extend
 
   async function handleExtend() {
-    await extendSequencing()
-    router.push('/sequencing')
+    try {
+      await extendSequencing()
+      router.push('/sequencing')
+    } catch {
+      // Store error state keeps the user on the DNA page.
+    }
   }
 
   return (

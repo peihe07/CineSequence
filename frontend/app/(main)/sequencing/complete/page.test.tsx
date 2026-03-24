@@ -153,4 +153,20 @@ describe('SequencingCompletePage', () => {
       expect(replaceMock).toHaveBeenCalledWith('/sequencing')
     })
   })
+
+  it('does not route back into sequencing when the extension request fails', async () => {
+    buildDnaMock.mockResolvedValue(null)
+    extendSequencingMock.mockRejectedValue(new Error('Extend failed'))
+
+    render(<SequencingCompletePage />)
+
+    expect(await screen.findByRole('button', { name: /Extend/i })).toBeTruthy()
+
+    fireEvent.click(screen.getByRole('button', { name: /Extend/i }))
+
+    await waitFor(() => {
+      expect(extendSequencingMock).toHaveBeenCalled()
+    })
+    expect(replaceMock).not.toHaveBeenCalledWith('/sequencing')
+  })
 })

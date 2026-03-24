@@ -1,3 +1,4 @@
+from pathlib import Path
 from unittest.mock import AsyncMock, patch
 
 import pytest
@@ -36,6 +37,14 @@ class TestHealthEndpoints:
 
 
 class TestSecuritySettings:
+    def test_settings_load_env_files_from_backend_and_repo_root(self):
+        env_files = Settings.model_config.get("env_file")
+        assert env_files is not None
+
+        resolved = {Path(path).resolve() for path in env_files}
+        assert Path(__file__).resolve().parents[2].joinpath(".env").resolve() in resolved
+        assert Path(__file__).resolve().parents[1].joinpath(".env").resolve() in resolved
+
     def test_build_allowed_origins_accepts_localhost_aliases(self):
         assert build_allowed_origins("http://127.0.0.1:3000") == [
             "http://127.0.0.1:3000",
