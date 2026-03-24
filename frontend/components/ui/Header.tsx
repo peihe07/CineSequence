@@ -51,7 +51,7 @@ export default function Header() {
     setIsLoggingOut(true)
     try {
       await logout()
-      router.replace('/login')
+      router.replace('/')
     } finally {
       setIsLoggingOut(false)
     }

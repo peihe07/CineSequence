@@ -106,7 +106,7 @@ describe('Header', () => {
     expect(screen.queryByRole('dialog', { name: 'Mobile menu' })).toBeNull()
   })
 
-  it('logs out and redirects to login from the mobile menu', async () => {
+  it('logs out and redirects to home from the mobile menu', async () => {
     logoutMock.mockResolvedValue(undefined)
 
     render(<Header />)
@@ -120,7 +120,7 @@ describe('Header', () => {
 
     await waitFor(() => {
       expect(logoutMock).toHaveBeenCalledTimes(1)
-      expect(replaceMock).toHaveBeenCalledWith('/login')
+      expect(replaceMock).toHaveBeenCalledWith('/')
     })
   })
 })
