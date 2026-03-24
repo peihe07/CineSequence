@@ -1,0 +1,221 @@
+/* ─── Bell button ────────────────────────────────── */
+
+.container {
+  position: relative;
+}
+
+.bell {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: none;
+  border-radius: var(--radius-component);
+  background: transparent;
+  color: var(--archive-text-muted);
+  cursor: pointer;
+  transition: color 0.2s ease, background 0.2s ease;
+}
+
+.bell:hover {
+  color: var(--archive-text);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.bell:focus-visible {
+  outline: 1px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* ─── Unread badge ───────────────────────────────── */
+
+.badge {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 8px;
+  background: var(--accent);
+  color: #fff;
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  font-weight: 700;
+  line-height: 16px;
+  text-align: center;
+  pointer-events: none;
+}
+
+/* ─── Dropdown panel ─────────────────────────────── */
+
+.dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 340px;
+  max-height: 420px;
+  border-radius: var(--radius-card);
+  background: rgba(18, 19, 22, 0.96);
+  backdrop-filter: blur(20px);
+  box-shadow:
+    0 16px 48px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+  z-index: var(--z-modal, 100);
+}
+
+.dropdownHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.dropdownTitle {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--archive-text);
+}
+
+.markAllRead {
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 0.64rem;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+
+.markAllRead:hover {
+  opacity: 0.8;
+}
+
+/* ─── Notification list ──────────────────────────── */
+
+.dropdownList {
+  overflow-y: auto;
+  max-height: 360px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.12) transparent;
+}
+
+.empty {
+  padding: 2rem 1rem;
+  text-align: center;
+  color: var(--archive-text-muted);
+  font-size: 0.78rem;
+}
+
+/* ─── Notification item ──────────────────────────── */
+
+.item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: none;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.item:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.item + .item {
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.itemRead {
+  opacity: 0.55;
+}
+
+.icon {
+  flex-shrink: 0;
+  font-size: 1rem;
+  line-height: 1.4;
+}
+
+.itemContent {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.itemTitle {
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--archive-text);
+  line-height: 1.35;
+}
+
+.itemBody {
+  font-size: 0.7rem;
+  color: var(--archive-text-muted);
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.itemTime {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: rgba(255, 255, 255, 0.3);
+  letter-spacing: 0.04em;
+}
+
+.unreadDot {
+  flex-shrink: 0;
+  width: 6px;
+  height: 6px;
+  margin-top: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+/* ─── View all link ──────────────────────────────── */
+
+.viewAll {
+  display: block;
+  padding: 0.65rem 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 0.64rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+  text-decoration: none;
+  transition: background 0.15s ease;
+}
+
+.viewAll:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+/* ─── Mobile ─────────────────────────────────────── */
+
+@media (max-width: 640px) {
+  .dropdown {
+    width: calc(100vw - 2rem);
+    right: -0.5rem;
+  }
+}

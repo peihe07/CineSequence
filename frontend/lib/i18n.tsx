@@ -172,6 +172,20 @@ const translations: Record<Locale, Record<string, string>> = {
     'sound.on': '音效開啟',
     'sound.off': '音效關閉',
 
+    // Notifications
+    'notification.bell': '通知',
+    'notification.title': '通知',
+    'notification.unread': '則未讀',
+    'notification.markAllRead': '全部已讀',
+    'notification.empty': '目前沒有通知',
+    'notification.list': '通知列表',
+    'notifications.pageTitle': '訊號',
+    'notifications.fileLabel': 'NTF-06',
+    'notifications.deck': '系統偵測到的觀影訊號紀錄。配對、邀約、DNA 解碼——所有動態匯集於此。',
+    'notification.viewAll': '查看全部',
+    'notifications.total': '共 {{count}} 則',
+    'notifications.unreadCount': '{{count}} 則未讀',
+
     // Auth
     'auth.signIn': '登入',
     'auth.signUp': '註冊',
@@ -434,6 +448,7 @@ const translations: Record<Locale, Record<string, string>> = {
     'profile.save': '儲存',
     'profile.cancel': '取消',
     'profile.changeAvatar': '更換頭像',
+    'profile.avatarHint': '支援 JPG、PNG、WebP，檔案上限 2 MB。',
     'profile.bio': '自我介紹',
     'profile.bioPlaceholder': '寫一段讓別人認識你怎麼看電影，或你希望如何被理解。',
     'profile.bioEmpty': '加入一段自我介紹',
@@ -503,6 +518,8 @@ const translations: Record<Locale, Record<string, string>> = {
     'archive.profileBreadcrumb': 'ROOT > DOSSIER > PROFILE',
     'archive.ticketCue': '票券紀錄',
     'archive.ticketBreadcrumb': 'ROOT > MATCHES > TICKET',
+    'archive.notificationsCue': '訊號日誌',
+    'archive.notificationsBreadcrumb': 'ROOT > SIGNAL > LOG',
     'archive.adminCue': '控制入口',
     'archive.adminBreadcrumb': 'ROOT > CONTROL > ACCESS',
 
@@ -668,6 +685,20 @@ const translations: Record<Locale, Record<string, string>> = {
     'sound.unmute': 'Unmute sound effects',
     'sound.on': 'Sound on',
     'sound.off': 'Sound off',
+
+    // Notifications
+    'notification.bell': 'Notifications',
+    'notification.title': 'Notifications',
+    'notification.unread': 'unread',
+    'notification.markAllRead': 'Mark all read',
+    'notification.empty': 'No notifications yet',
+    'notification.list': 'Notification list',
+    'notifications.pageTitle': 'Signals',
+    'notifications.fileLabel': 'NTF-06',
+    'notifications.deck': 'A log of detected cinematic signals. Matches, invites, DNA decoding — all activity converges here.',
+    'notification.viewAll': 'View all',
+    'notifications.total': '{{count}} total',
+    'notifications.unreadCount': '{{count}} unread',
 
     // Auth
     'auth.signIn': 'Sign in',
@@ -931,6 +962,7 @@ const translations: Record<Locale, Record<string, string>> = {
     'profile.save': 'Save',
     'profile.cancel': 'Cancel',
     'profile.changeAvatar': 'Change avatar',
+    'profile.avatarHint': 'Supports JPG, PNG, and WebP up to 2 MB.',
     'profile.bio': 'Self introduction',
     'profile.bioPlaceholder': 'Write a few lines about how you watch films or how you want to be understood.',
     'profile.bioEmpty': 'Add a short introduction',
@@ -1002,6 +1034,8 @@ const translations: Record<Locale, Record<string, string>> = {
     'archive.profileBreadcrumb': 'ROOT > DOSSIER > PROFILE',
     'archive.ticketCue': 'ADMISSION RECORD',
     'archive.ticketBreadcrumb': 'ROOT > MATCHES > TICKET',
+    'archive.notificationsCue': 'SIGNAL LOG',
+    'archive.notificationsBreadcrumb': 'ROOT > SIGNAL > LOG',
     'archive.adminCue': 'CONTROL ACCESS',
     'archive.adminBreadcrumb': 'ROOT > CONTROL > ACCESS',
 

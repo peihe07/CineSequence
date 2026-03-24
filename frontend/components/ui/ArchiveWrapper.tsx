@@ -14,6 +14,7 @@ const FILE_IDS: Array<{ match: RegExp; fileId: string; cueKey: string; breadcrum
   { match: /^\/theaters(?:\/|$)/, fileId: 'THR-03', cueKey: 'archive.theatersCue', breadcrumbKey: 'archive.theatersBreadcrumb', density: 'full' },
   { match: /^\/profile(?:\/|$)/, fileId: 'USR-04', cueKey: 'archive.profileCue', breadcrumbKey: 'archive.profileBreadcrumb', density: 'minimal' },
   { match: /^\/ticket(?:\/|$)/, fileId: 'TKT-05', cueKey: 'archive.ticketCue', breadcrumbKey: 'archive.ticketBreadcrumb', density: 'full' },
+  { match: /^\/notifications(?:\/|$)/, fileId: 'NTF-06', cueKey: 'archive.notificationsCue', breadcrumbKey: 'archive.notificationsBreadcrumb', density: 'minimal' },
   { match: /^\/admin(?:\/|$)/, fileId: 'ADM-99', cueKey: 'archive.adminCue', breadcrumbKey: 'archive.adminBreadcrumb', density: 'minimal' },
 ]
 

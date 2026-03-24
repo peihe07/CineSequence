@@ -7,6 +7,7 @@ import { useI18n } from '@/lib/i18n'
 import { soundManager } from '@/lib/sound'
 import LocaleToggle from './LocaleToggle'
 import MuteToggle from './MuteToggle'
+import NotificationBell from './NotificationBell'
 import styles from './Header.module.css'
 
 const NAV_ITEMS = [
@@ -64,6 +65,7 @@ export default function Header() {
 
       {/* Right: locale toggle + mute */}
       <div className={styles.right}>
+        <NotificationBell />
         <MuteToggle />
         <LocaleToggle />
       </div>
