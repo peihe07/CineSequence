@@ -31,6 +31,8 @@ movie-dna/
 │   │                                  # FloatingLocaleToggle
 │   ├── lib/
 │   │   ├── api.ts                     # API client (fetch wrapper)
+│   │   ├── api-origin.ts              # Resolve same-origin /api base and proxy target
+│   │   └── authProtection.ts          # Login redirect + protected route helpers
 │   │   └── i18n.tsx                   # React Context i18n (zh/en)
 │   ├── stores/                        # Zustand state management
 │   │   ├── authStore.ts
@@ -41,7 +43,10 @@ movie-dna/
 │   │   └── fonts/
 │   │       ├── jf-openhuninn-2.1.ttf  # Chinese font (OFL-1.1)
 │   │       └── ATTRIBUTION.md         # Font license attribution
+│   ├── middleware.ts                  # Route protection for Workers runtime
+│   ├── open-next.config.ts            # Cloudflare OpenNext config
 │   └── package.json
+│   └── wrangler.jsonc                 # Cloudflare Workers deployment config
 │
 ├── backend/                           # FastAPI backend
 │   ├── app/
@@ -141,6 +146,7 @@ POST   /auth/register              # Create account (magic link email)
 POST   /auth/login                 # Request magic link
 POST   /auth/verify                # Verify magic link token → JWT
 GET    /health                     # Health check
+GET    /readiness                  # DB readiness check
 ```
 
 ### Sequencing (`/sequencing`)
@@ -202,3 +208,11 @@ GET    /groups/:id                 # Group detail
 | Silkscreen | Logo / display titles | Google Fonts (OFL-1.1) |
 
 CSS variables: `--font-zh`, `--font-sans`, `--font-display`
+
+## Deployment Notes
+
+- Frontend production runtime: Cloudflare Workers
+- Backend production runtime: Railway
+- Browser requests `/api/*` from the frontend origin
+- Cloudflare Workers proxies `/api/*` to the Railway backend origin
+- Production deployment reference: `docs/production-deployment.md`

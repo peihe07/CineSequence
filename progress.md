@@ -1,6 +1,6 @@
 # Cine Sequence - Development Progress
 
-> Last updated: 2026-03-23
+> Last updated: 2026-03-24
 
 ## Overall Status
 
@@ -12,9 +12,9 @@
 | Phase 4: DNA Builder + Result | In progress | 95% |
 | Phase 5: Matching + Invite | Done | 100% |
 | Phase 6: Groups + Profile | Done | 100% |
-| Phase 7: Polish + Infrastructure | In progress | 96% |
+| Phase 7: Polish + Infrastructure | In progress | 99% |
 | Cross-cutting | Done | 100% |
-| **Overall** | | **~97%** |
+| **Overall** | | **~99%** |
 
 ---
 
@@ -259,14 +259,17 @@
 - [x] Frontend /admin page (stats overview, funnel chart, daily mini charts, API usage cards)
 - [ ] Docker compose: Prometheus + Grafana services
 
-### 7f: Deploy (in progress — 2026-03-23)
-- [x] Cloudflare Pages (frontend) — static export, SPA fallback
+### 7f: Deploy (in progress — 2026-03-24)
+- [x] Cloudflare Workers (frontend runtime) — OpenNext + wrangler deployment
 - [x] Railway (backend + PostgreSQL + Redis + Celery worker/beat)
 - [x] Production env vars configured (.env.production template)
-- [x] Cross-origin auth (COOKIE_SAMESITE=none + SECURE=true)
+- [x] Same-origin frontend `/api/*` proxy to Railway backend public origin
+- [x] Production auth cookie on `.cinesequence.xyz`
+- [x] Production login/session verified on `https://cinesequence.xyz`
 - [ ] CI/CD pipeline (GitHub Actions: lint, test, build, deploy)
-- [ ] Custom domain + SSL setup
-- [ ] Production end-to-end verification
+- [x] Frontend custom domain + SSL setup
+- [x] Production end-to-end verification
+- [ ] Separate public API hostname (`https://api.cinesequence.xyz`) cleanup
 
 ---
 
@@ -334,6 +337,6 @@
 - **Bilingual movie titles** — backend has title_en + title_zh, seed page is locale-aware, other pages TBD
 
 ## Suggested Next Steps
-1. **Phase 7f** — Deploy: CI/CD pipeline + custom domain + production E2E verification
+1. **Phase 7f** — Deploy: CI/CD pipeline + optional `api.cinesequence.xyz` cleanup
 2. **Phase 7i-1** — Notification system Phase 1 (Header 鈴鐺 + dropdown)
 3. **Phase 7e** — Admin dashboard: Prometheus + Grafana monitoring

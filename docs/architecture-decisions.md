@@ -259,6 +259,28 @@ Note: candidate pool context (~800 tokens/call) increases input substantially. R
 
 **Decision**: Treat match discovery as initiator-private until invite, restrict invite/respond authority by role, and enforce unordered pair uniqueness.
 
+---
+
+## ADR-016: Cloudflare Workers frontend with same-origin API proxy
+
+**Decision**: Deploy the frontend on Cloudflare Workers and keep browser API calls same-origin via `/api/*`, proxied to the Railway backend origin.
+
+**Rationale**:
+- The frontend depends on Next.js middleware and runtime rewrites.
+- Static hosting was not sufficient for protected-route middleware and same-origin auth flow.
+- Same-origin `/api/*` keeps browser traffic simple and avoids exposing the Railway backend URL in frontend code paths.
+- Cookie auth works cleanly on the production site when `AUTH_COOKIE_DOMAIN=.cinesequence.xyz`.
+
+**Current production shape**:
+- Frontend: `https://cinesequence.xyz`
+- Workers proxy target: Railway public backend origin
+- Backend: Railway
+- Redis/Postgres/Celery: Railway internal services
+
+**Trade-off**:
+- `api.cinesequence.xyz` is currently not part of the working production request path.
+- The deployment setup is more opinionated than a basic static frontend deploy.
+
 **Rules**:
 - `discovered` matches are visible only to the initiator.
 - Only `user_a` may send an invite for a discovered match.
