@@ -17,13 +17,13 @@ Respond with ONLY this JSON:
   "personality_reading": "2-3 paragraph personality analysis in Traditional Chinese (繁體中文)",
   "hidden_traits": ["trait1", "trait2", "trait3"],
   "conversation_style": "one sentence about how they likely communicate",
-  "ideal_movie_date": "a specific movie recommendation for a first date, with reasoning"
+  "ideal_movie_date": "recommend ONE specific real movie title for a first date, with reasoning why it fits this person"
 }
 ```
 
 ## Writing Guidelines
 - Write in Traditional Chinese (繁體中文)
-- Do not mention any specific movie titles, directors, actors, or franchises
+- Do not mention any specific movie titles, directors, actors, or franchises in personality_reading, hidden_traits, or conversation_style. The ONLY exception is ideal_movie_date, which MUST name a specific real movie.
 - Be specific about patterns, but only at the level of tendencies and contrastive signals
 - Go beyond surface: infer personality from the gap between what they chose and what they skipped
 - The "attracted but haven't seen" picks reveal aspirational taste — mention this
