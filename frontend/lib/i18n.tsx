@@ -435,6 +435,12 @@ const translations: Record<Locale, Record<string, string>> = {
     'admin.inviteEmails': '邀請信件',
     'admin.inviteReminderEmails': '邀請提醒信件',
     'admin.acceptedEmails': '接受信件',
+    'admin.tokenUsage': 'Token 用量',
+    'admin.calls': '呼叫次數',
+    'admin.promptTokens': 'Prompt tokens',
+    'admin.completionTokens': 'Completion tokens',
+    'admin.estimatedCost': '估算費用',
+    'admin.totalTokens': '總 tokens',
 
     // Demo
     'demo.ticketTitle': '示範票券',
@@ -964,6 +970,12 @@ const translations: Record<Locale, Record<string, string>> = {
     'admin.inviteEmails': 'Invite emails',
     'admin.inviteReminderEmails': 'Invite reminder emails',
     'admin.acceptedEmails': 'Accepted emails',
+    'admin.tokenUsage': 'Token Usage',
+    'admin.calls': 'Calls',
+    'admin.promptTokens': 'Prompt tokens',
+    'admin.completionTokens': 'Completion tokens',
+    'admin.estimatedCost': 'Est. cost',
+    'admin.totalTokens': 'Total tokens',
 
     // Demo
     'demo.ticketTitle': 'Your Cinema Ticket',

@@ -37,8 +37,26 @@ interface DailyStats {
   matches: { date: string; count: number }[]
 }
 
+interface TokenByType {
+  calls: number
+  prompt_tokens: number
+  completion_tokens: number
+  total_tokens: number
+  estimated_cost_usd: number
+}
+
 interface ApiUsage {
-  gemini: { personality_readings: number; ice_breakers: number; ai_pairs: number; estimated_total: number }
+  gemini: {
+    personality_readings: number
+    ice_breakers: number
+    ai_pairs: number
+    estimated_total: number
+    token_usage: Record<string, TokenByType>
+    total_prompt_tokens: number
+    total_completion_tokens: number
+    total_tokens: number
+    estimated_total_cost_usd: number
+  }
   tmdb: { estimated_queries: number }
   resend: { invite_emails: number; invite_reminder_emails: number; accepted_emails: number; estimated_total: number }
 }
@@ -52,14 +70,14 @@ function StatCard({ value, label }: { value: number | string; label: string }) {
   )
 }
 
-function MiniChart({ data }: { data: { date: string; count: number }[] }) {
+function MiniChart({ data, color = 'accent' }: { data: { date: string; count: number }[]; color?: 'accent' | 'teal' | 'blue' }) {
   const max = Math.max(...data.map((d) => d.count), 1)
   return (
     <div className={styles.chart}>
       {data.map((d) => (
         <div
           key={d.date}
-          className={styles.chartBar}
+          className={`${styles.chartBar} ${styles[`chartBar--${color}`]}`}
           style={{ height: `${(d.count / max) * 100}%` }}
           title={`${d.date}: ${d.count}`}
         />
@@ -164,7 +182,7 @@ export default function AdminPage() {
         <div className={styles.section}>
           <h2 className={styles.sectionTitle}>{t('admin.dailyRegistrations')}</h2>
           {daily.registrations.length > 0 ? (
-            <MiniChart data={daily.registrations} />
+            <MiniChart data={daily.registrations} color="teal" />
           ) : (
             <p className={styles.funnelLabel}>{t('admin.noData')}</p>
           )}
@@ -173,7 +191,7 @@ export default function AdminPage() {
         <div className={styles.section}>
           <h2 className={styles.sectionTitle}>{t('admin.dailyDnaBuilds')}</h2>
           {daily.dna_builds.length > 0 ? (
-            <MiniChart data={daily.dna_builds} />
+            <MiniChart data={daily.dna_builds} color="blue" />
           ) : (
             <p className={styles.funnelLabel}>{t('admin.noData')}</p>
           )}
@@ -265,6 +283,40 @@ export default function AdminPage() {
               </div>
             </div>
           </div>
+        </div>
+
+        {/* Token usage & cost */}
+        <div className={styles.section}>
+          <h2 className={styles.sectionTitle}>{t('admin.tokenUsage')}</h2>
+          <div className={styles.apiGrid}>
+            {Object.entries(apiUsage.gemini.token_usage).map(([type, data]) => (
+              <div key={type} className={styles.apiCard}>
+                <span className={styles.apiCardTitle}>{type}</span>
+                <div className={styles.apiRow}>
+                  <span>{t('admin.calls')}</span>
+                  <span>{data.calls}</span>
+                </div>
+                <div className={styles.apiRow}>
+                  <span>{t('admin.promptTokens')}</span>
+                  <span>{data.prompt_tokens.toLocaleString()}</span>
+                </div>
+                <div className={styles.apiRow}>
+                  <span>{t('admin.completionTokens')}</span>
+                  <span>{data.completion_tokens.toLocaleString()}</span>
+                </div>
+                <div className={`${styles.apiRow} ${styles.apiTotal}`}>
+                  <span>{t('admin.estimatedCost')}</span>
+                  <span>${data.estimated_cost_usd.toFixed(4)}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+          {apiUsage.gemini.total_tokens > 0 && (
+            <div className={styles.costSummary}>
+              <span>{t('admin.totalTokens')}: {apiUsage.gemini.total_tokens.toLocaleString()}</span>
+              <span className={styles.costValue}>${apiUsage.gemini.estimated_total_cost_usd.toFixed(4)}</span>
+            </div>
+          )}
         </div>
       </div>
     </div>

@@ -95,8 +95,8 @@
 
 .funnelBar {
   height: 24px;
-  background: var(--accent-light);
-  border-left: 3px solid var(--accent);
+  background: rgba(45, 212, 191, 0.12);
+  border-left: 3px solid #2dd4bf;
   display: flex;
   align-items: center;
   padding: 0 0.6rem;
@@ -108,7 +108,7 @@
   font-family: var(--font-sans);
   font-size: 0.7rem;
   font-weight: 600;
-  color: var(--accent);
+  color: var(--foreground);
 }
 
 .funnelLabel {
@@ -128,7 +128,7 @@
   padding: 0.5rem 0.8rem;
   text-align: left;
   font-size: 0.8rem;
-  border-bottom: 1px solid rgba(45, 54, 50, 0.06);
+  border-bottom: 1px solid rgba(45, 54, 50, 0.15);
 }
 
 .table th {
@@ -137,6 +137,10 @@
   color: var(--muted);
   letter-spacing: 0.08em;
   text-transform: uppercase;
+}
+
+.table td {
+  color: var(--foreground);
 }
 
 .table td:last-child {
@@ -156,10 +160,24 @@
 
 .chartBar {
   flex: 1;
-  background: var(--accent);
-  opacity: 0.7;
   min-height: 2px;
   transition: height 0.3s ease;
+  border-radius: 2px 2px 0 0;
+}
+
+.chartBar--accent {
+  background: var(--accent);
+  opacity: 0.7;
+}
+
+.chartBar--teal {
+  background: #2dd4bf;
+  opacity: 0.75;
+}
+
+.chartBar--blue {
+  background: #38bdf8;
+  opacity: 0.75;
 }
 
 .chartBar:hover {
@@ -216,10 +234,33 @@
 .apiRow span:last-child {
   font-family: var(--font-sans);
   font-weight: 600;
+  color: var(--foreground);
 }
 
 .apiTotal {
   padding-top: 0.4rem;
-  border-top: 1px solid rgba(45, 54, 50, 0.06);
+  border-top: 1px solid rgba(45, 54, 50, 0.15);
   font-weight: 600;
+}
+
+/* Token cost summary */
+.costSummary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.8rem 1rem;
+  background: var(--glass-bg-strong);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border-radius: var(--card-radius);
+  box-shadow: var(--glass-shadow);
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.costValue {
+  font-family: var(--font-sans);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--foreground);
 }
