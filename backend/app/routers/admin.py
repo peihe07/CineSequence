@@ -7,9 +7,11 @@ from sqlalchemy import func, select, union_all
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.deps import get_current_user, get_db
+from app.models.ai_token_log import AiTokenLog
 from app.models.dna_profile import DnaProfile
 from app.models.match import Match, MatchStatus
 from app.models.user import User
+from app.services.ai_token_tracker import estimate_cost
 
 router = APIRouter()
 
@@ -212,12 +214,43 @@ async def get_api_usage(
     total_sessions = await db.scalar(select(func.count(SequencingSession.id)))
     ai_pair_calls = total_sessions * 15 if total_sessions else 0
 
+    # Token usage from ai_token_logs
+    token_stats = await db.execute(
+        select(
+            AiTokenLog.call_type,
+            func.count(AiTokenLog.id).label("calls"),
+            func.coalesce(func.sum(AiTokenLog.prompt_tokens), 0).label("prompt"),
+            func.coalesce(func.sum(AiTokenLog.completion_tokens), 0).label("completion"),
+            func.coalesce(func.sum(AiTokenLog.total_tokens), 0).label("total"),
+        ).group_by(AiTokenLog.call_type)
+    )
+    token_by_type: dict[str, dict] = {}
+    grand_prompt = 0
+    grand_completion = 0
+    for row in token_stats:
+        token_by_type[row.call_type] = {
+            "calls": row.calls,
+            "prompt_tokens": row.prompt,
+            "completion_tokens": row.completion,
+            "total_tokens": row.total,
+            "estimated_cost_usd": round(estimate_cost(row.prompt, row.completion), 4),
+        }
+        grand_prompt += row.prompt
+        grand_completion += row.completion
+
     return {
         "gemini": {
             "personality_readings": total_dna,
             "ice_breakers": total_matches,
             "ai_pairs": ai_pair_calls,
             "estimated_total": (total_dna or 0) + (total_matches or 0) + ai_pair_calls,
+            "token_usage": token_by_type,
+            "total_prompt_tokens": grand_prompt,
+            "total_completion_tokens": grand_completion,
+            "total_tokens": grand_prompt + grand_completion,
+            "estimated_total_cost_usd": round(
+                estimate_cost(grand_prompt, grand_completion), 4
+            ),
         },
         "tmdb": {
             "estimated_queries": (total_picks or 0) * 2,

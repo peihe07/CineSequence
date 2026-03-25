@@ -191,6 +191,13 @@ POST   /groups/:id/leave           # Leave group
 GET    /groups/:id                 # Group detail
 ```
 
+### Admin (`/admin`)
+```
+GET    /admin/stats                # Overview stats (users, DNA, matches, funnel)
+GET    /admin/stats/daily          # Daily registrations, DNA builds, matches (30d)
+GET    /admin/api-usage            # API call counts, token usage by type, cost estimate
+```
+
 ## Match Flow Notes
 
 - `discover` creates candidate matches visible only to the initiator.

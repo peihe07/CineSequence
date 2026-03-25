@@ -6,6 +6,7 @@ class Base(DeclarativeBase):
 
 
 # Import all models so Alembic can detect them
+from app.models.ai_token_log import AiTokenLog  # noqa: E402, F401
 from app.models.dna_profile import DnaProfile  # noqa: E402, F401
 from app.models.group import Group  # noqa: E402, F401
 from app.models.group_message import GroupMessage  # noqa: E402, F401

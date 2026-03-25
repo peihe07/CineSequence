@@ -12,6 +12,7 @@ from pathlib import Path
 from google import genai
 
 from app.config import settings
+from app.services.ai_token_tracker import log_token_usage
 from app.services.tmdb_client import get_movie
 
 logger = logging.getLogger(__name__)
@@ -288,6 +289,8 @@ async def _call_gemini(user_context: str, round_number: int) -> dict | None:
     except Exception:
         logger.exception("Gemini API error for round %s", round_number)
         return None
+
+    await log_token_usage(response, call_type="ai_pair")
 
     response_text = response.text.strip()
 

@@ -7,6 +7,7 @@ from pathlib import Path
 from google import genai
 
 from app.config import settings
+from app.services.ai_token_tracker import log_token_usage
 
 logger = logging.getLogger(__name__)
 
@@ -82,6 +83,8 @@ async def generate_personality(
     except Exception:
         logger.exception("Gemini API error for personality generation")
         return None
+
+    await log_token_usage(response, call_type="personality")
 
     response_text = response.text.strip()
 

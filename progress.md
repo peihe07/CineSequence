@@ -254,9 +254,11 @@
 - [x] GET /admin/stats endpoint (user count, DNA count, match count, invite/accept rates, funnel)
 - [x] GET /admin/stats/daily endpoint (daily registration, DNA builds, matches over time)
 - [x] GET /admin/api-usage endpoint (Gemini calls, TMDB queries, Resend emails)
+- [x] Gemini token tracking: log prompt/completion tokens per call, estimate cost (Gemini 2.5 Flash pricing)
 - [x] Prometheus metrics endpoint (/metrics — request latency, error rate, in-flight, Celery queue depth, app gauges)
 - [x] Grafana dashboard config (request rate, latency percentiles, error rate, queue depth, user funnel)
-- [x] Frontend /admin page (stats overview, funnel chart, daily mini charts, API usage cards)
+- [x] Frontend /admin page (stats overview, funnel chart, daily mini charts, API usage cards, token usage + cost)
+- [x] Admin UI: chart color differentiation (teal/blue), text contrast fixes
 - [x] Docker compose: Prometheus + Grafana services (dev + prod)
 
 ### 7f: Deploy (in progress — 2026-03-24)
@@ -269,6 +271,7 @@
 - [x] CI/CD pipeline (GitHub Actions: lint, test, build on push/PR to main)
 - [x] Frontend custom domain + SSL setup
 - [x] Production end-to-end verification
+- [x] Open Graph + Twitter Card meta tags (dynamic OG image via ImageResponse, summary_large_image)
 - [ ] Separate public API hostname (`https://api.cinesequence.xyz`) cleanup
 
 ---
