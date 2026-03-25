@@ -136,7 +136,27 @@ function FullCinemaTicket({
 
       {/* ── MAIN SECTION ─────────────────────────────── */}
       <div className={styles.main}>
-        <div className={styles.partnerName}>{match.partner_name}</div>
+        <div className={styles.partnerHeader}>
+          {match.partner_avatar_url && (
+            <Image
+              src={match.partner_avatar_url}
+              alt={match.partner_name}
+              width={40}
+              height={40}
+              className={styles.partnerAvatar}
+            />
+          )}
+          <div className={styles.partnerInfo}>
+            <div className={styles.partnerName}>{match.partner_name}</div>
+            {match.partner_archetype && (
+              <div className={styles.partnerArchetype}>{match.partner_archetype}</div>
+            )}
+          </div>
+        </div>
+
+        {match.partner_bio && (
+          <p className={styles.partnerBio}>{match.partner_bio}</p>
+        )}
 
         {match.shared_tags.length > 0 && (
           <div className={styles.tags} aria-label={t('ticket.sharedTags')}>
@@ -168,7 +188,7 @@ function FullCinemaTicket({
             </button>
           )}
 
-          {match.status === 'invited' && (
+        {match.status === 'invited' && match.is_recipient && (
             <div className={styles.respondBtns}>
               <button
                 className={styles.acceptBtn}

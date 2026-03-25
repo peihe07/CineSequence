@@ -19,17 +19,21 @@ const {
   discoverMatchesMock: vi.fn(),
   sendInviteMock: vi.fn(),
   respondToInviteMock: vi.fn(),
-  matchState: {
-    matches: [] as Array<{
-      id: string
-      partner_id: string
-      partner_name: string
-      similarity_score: number
-      shared_tags: string[]
-      ice_breakers: string[]
-      status: 'discovered' | 'invited' | 'accepted' | 'declined'
-      ticket_image_url: string | null
-    }>,
+      matchState: {
+        matches: [] as Array<{
+          id: string
+          partner_id: string
+          partner_name: string
+          partner_bio: string | null
+          partner_avatar_url: string | null
+          partner_archetype: string | null
+          similarity_score: number
+          shared_tags: string[]
+          ice_breakers: string[]
+          status: 'discovered' | 'invited' | 'accepted' | 'declined'
+          ticket_image_url: string | null
+          is_recipient: boolean
+        }>,
     isLoading: false,
     isDiscovering: false,
     error: null as string | null,

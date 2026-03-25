@@ -11,6 +11,7 @@ from app.deps import get_current_user, get_db
 from app.models.user import User
 from app.services.matcher import (
     find_matches,
+    get_archetype_name,
     get_match_by_id,
     get_user_matches,
     respond_to_invite,
@@ -30,11 +31,15 @@ class MatchOut(BaseModel):
     id: uuid.UUID
     partner_id: uuid.UUID
     partner_name: str
+    partner_bio: str | None = None
+    partner_avatar_url: str | None = None
+    partner_archetype: str | None = None
     similarity_score: float
     shared_tags: list[str]
     ice_breakers: list[str]
     status: str
     ticket_image_url: str | None = None
+    is_recipient: bool
 
     model_config = {"from_attributes": True}
 
@@ -52,16 +57,21 @@ def _match_to_out(match, user_id: uuid.UUID) -> MatchOut:
     """Convert Match model to MatchOut, resolving which user is the partner."""
     is_user_a = match.user_a_id == user_id
     partner = match.user_b if is_user_a else match.user_a
+    is_recipient = match.user_b_id == user_id
 
     return MatchOut(
         id=match.id,
         partner_id=partner.id,
         partner_name=partner.name,
+        partner_bio=partner.bio,
+        partner_avatar_url=partner.avatar_url,
+        partner_archetype=get_archetype_name(partner),
         similarity_score=match.similarity_score,
         shared_tags=match.shared_tags or [],
         ice_breakers=match.ice_breakers or [],
         status=match.status.value,
         ticket_image_url=match.ticket_image_url,
+        is_recipient=is_recipient,
     )
 
 

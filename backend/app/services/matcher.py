@@ -15,7 +15,7 @@ from sqlalchemy.orm import selectinload
 from app.config import settings
 from app.models.dna_profile import DnaProfile
 from app.models.match import Match, MatchStatus
-from app.models.user import User
+from app.models.user import Gender, User
 from app.services.email_service import send_invite_email, send_match_accepted_email
 from app.services.ticket_gen import generate_and_upload_ticket
 
@@ -223,7 +223,7 @@ async def send_invite(
         "recipient_email": recipient.email,
         "recipient_name": recipient.name,
         "inviter_name": inviter.name,
-        "inviter_archetype": _get_archetype_name(inviter),
+        "inviter_archetype": get_archetype_name(inviter),
         "shared_tags": match.shared_tags or [],
         "ice_breakers": match.ice_breakers or [],
         "match_id": match.id,
@@ -332,8 +332,8 @@ async def respond_to_invite(
             "a_name": user_a.name,
             "b_email": user_b.email,
             "b_name": user_b.name,
-            "archetype_a": _get_archetype_name(user_a),
-            "archetype_b": _get_archetype_name(user_b),
+            "archetype_a": get_archetype_name(user_a),
+            "archetype_b": get_archetype_name(user_b),
             "shared_tags": match.shared_tags or [],
             "ice_breakers": match.ice_breakers or [],
             "match_id": match.id,
@@ -350,8 +350,8 @@ async def respond_to_invite(
                 match_id=match.id,
                 user_a_name=user_a.name,
                 user_b_name=user_b.name,
-                archetype_a=_get_archetype_name(user_a),
-                archetype_b=_get_archetype_name(user_b),
+                archetype_a=get_archetype_name(user_a),
+                archetype_b=get_archetype_name(user_b),
                 shared_tags=match.shared_tags or [],
                 similarity_score=match.similarity_score,
                 ticket_style=ticket_style_a,
@@ -455,12 +455,21 @@ def _build_candidate_demographic_clause(user: User):
     user_gender = getattr(user, "gender", None)
     user_age = current_year - user_birth_year if user_birth_year is not None else None
 
-    gender_clause = or_(
+    # Build gender clause — prefer_not_to_say is not a valid GenderPref value,
+    # so only match candidates with no preference or 'any'.
+    gender_parts = [
         User.match_gender_pref.is_(None),
         User.match_gender_pref == "any",
-        user_gender is None,
-        User.match_gender_pref == user_gender,
-    )
+    ]
+    if user_gender is None:
+        # Unknown gender: skip gender filter entirely
+        gender_parts.append(true())
+    elif user_gender != Gender.prefer_not_to_say:
+        # Known gender that exists in GenderPref: allow exact match
+        gender_parts.append(User.match_gender_pref == user_gender)
+    # If prefer_not_to_say: only None/any candidates match (already in gender_parts)
+
+    gender_clause = or_(*gender_parts)
 
     age_min_clause = (
         or_(User.match_age_min.is_(None), User.match_age_min <= user_age)
@@ -476,7 +485,7 @@ def _build_candidate_demographic_clause(user: User):
     return and_(gender_clause, age_min_clause, age_max_clause)
 
 
-def _get_archetype_name(user: User) -> str:
+def get_archetype_name(user: User) -> str:
     """Get display name of user's archetype from their active DNA profile."""
     profile = user.dna_profile
     if not profile:
