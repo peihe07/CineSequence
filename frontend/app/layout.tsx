@@ -26,7 +26,7 @@ const properScript = localFont({
 })
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://cinesequence.com'),
+  metadataBase: new URL('https://cinesequence.xyz'),
   title: {
     default: 'Cine Sequence',
     template: '%s',
