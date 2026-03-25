@@ -573,9 +573,12 @@ async def extend_sequencing(
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
+    _clear_pending_pair(session)
+    # Flush session changes first to avoid circular FK dependency with User
+    await db.flush()
+
     # Reset user status to in_progress for the extension
     user.sequencing_status = SequencingStatus.in_progress
-    _clear_pending_pair(session)
     await db.commit()
 
     return ExtendResponse(
@@ -592,6 +595,8 @@ async def retest_sequencing(
 ):
     """Start a fresh sequencing session, preserving old DNA."""
     new_session = await start_retest(db, user.id)
+    # Flush session changes first to avoid circular FK dependency with User
+    await db.flush()
 
     user.active_session_id = new_session.id
     user.sequencing_status = SequencingStatus.not_started
