@@ -243,23 +243,23 @@ class TestSendMatchAcceptedEmail:
 
 class TestGetArchetypeName:
     def test_returns_fallback_when_no_dna_profile(self):
-        from app.services.matcher import _get_archetype_name
+        from app.services.matcher import get_archetype_name
 
         mock_user = MagicMock()
         mock_user.dna_profile = None
-        assert _get_archetype_name(mock_user) == "電影愛好者"
+        assert get_archetype_name(mock_user) == "電影愛好者"
 
     def test_returns_fallback_for_unknown_archetype(self):
-        from app.services.matcher import _get_archetype_name
+        from app.services.matcher import get_archetype_name
 
         mock_profile = MagicMock()
         mock_profile.archetype_id = "nonexistent_xyz"
         mock_user = MagicMock()
         mock_user.dna_profile = mock_profile
-        assert _get_archetype_name(mock_user) == "電影愛好者"
+        assert get_archetype_name(mock_user) == "電影愛好者"
 
     def test_returns_correct_archetype_name(self):
-        from app.services.matcher import ARCHETYPE_MAP, _get_archetype_name
+        from app.services.matcher import ARCHETYPE_MAP, get_archetype_name
 
         archetype_id = next(iter(ARCHETYPE_MAP))
         data = ARCHETYPE_MAP[archetype_id]
@@ -269,5 +269,5 @@ class TestGetArchetypeName:
         mock_user = MagicMock()
         mock_user.dna_profile = mock_profile
 
-        result = _get_archetype_name(mock_user)
+        result = get_archetype_name(mock_user)
         assert result == f"{data['name']} {data['name_en']}"

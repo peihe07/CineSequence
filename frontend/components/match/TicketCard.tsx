@@ -144,6 +144,7 @@ function FullCinemaTicket({
               width={40}
               height={40}
               className={styles.partnerAvatar}
+              unoptimized
             />
           )}
           <div className={styles.partnerInfo}>
