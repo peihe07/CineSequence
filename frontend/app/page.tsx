@@ -9,7 +9,16 @@ export const metadata: Metadata = {
     title: 'CineSequence — Decode Your Cinema DNA',
     description:
       'Discover your unique cinema personality through AI-powered film taste analysis.',
+    url: 'https://cinesequence.com',
+    siteName: 'CineSequence',
     type: 'website',
+    locale: 'en_US',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'CineSequence — Decode Your Cinema DNA',
+    description:
+      'Discover your unique cinema personality through AI-powered film taste analysis.',
   },
 }
 

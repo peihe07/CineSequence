@@ -26,6 +26,7 @@ const properScript = localFont({
 })
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://cinesequence.com'),
   title: {
     default: 'Cine Sequence',
     template: '%s',
@@ -37,6 +38,9 @@ export const metadata: Metadata = {
     ],
     shortcut: '/favicon.svg',
     apple: '/favicon.svg',
+  },
+  twitter: {
+    card: 'summary_large_image',
   },
 }
 
