@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { useSequencingStore } from '@/stores/sequencingStore'
@@ -14,31 +14,12 @@ export default function SequencingCompletePage() {
   const { t } = useI18n()
   const { progress, fetchProgress, extendSequencing } = useSequencingStore()
   const { buildDna } = useDnaStore()
-  const hasAttemptedAutoBuild = useRef(false)
-  const [isPreparingDna, setIsPreparingDna] = useState(true)
+  const [isPreparingDna, setIsPreparingDna] = useState(false)
 
   useEffect(() => {
     fetchProgress()
     soundManager.play('complete')
   }, [fetchProgress])
-
-  useEffect(() => {
-    if (hasAttemptedAutoBuild.current) {
-      return
-    }
-
-    hasAttemptedAutoBuild.current = true
-
-    void (async () => {
-      const result = await buildDna()
-      if (result) {
-        router.replace('/dna')
-        return
-      }
-
-      setIsPreparingDna(false)
-    })()
-  }, [buildDna, router])
 
   const handleViewDna = async () => {
     setIsPreparingDna(true)
@@ -102,11 +83,9 @@ export default function SequencingCompletePage() {
 
         <section className={`${styles.section} ${styles.actionsSection}`}>
           <div className={styles.actions}>
-            {!isPreparingDna && (
-              <button className={styles.primaryBtn} onClick={handleViewDna}>
-                <i className="ri-refresh-line" /> {t('dna.retry')}
-              </button>
-            )}
+            <button className={styles.primaryBtn} onClick={handleViewDna} disabled={isPreparingDna}>
+              <i className="ri-dna-line" /> {t('complete.viewDna')}
+            </button>
 
             {canExtend && (
               <button className={styles.secondaryBtn} onClick={handleExtend}>

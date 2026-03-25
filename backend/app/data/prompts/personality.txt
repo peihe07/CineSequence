@@ -23,7 +23,7 @@ Respond with ONLY this JSON:
 
 ## Writing Guidelines
 - Write in Traditional Chinese (繁體中文)
-- Do not mention any specific movie titles, directors, actors, or franchises in personality_reading, hidden_traits, or conversation_style. The ONLY exception is ideal_movie_date, which MUST name a specific real movie.
+- Do NOT reference any of the movies from the user's picks or skips by title, director, or franchise — those are private input, not output material. You may freely mention other movies, directors, or franchises to illustrate a point or draw comparisons.
 - Be specific about patterns, but only at the level of tendencies and contrastive signals
 - Go beyond surface: infer personality from the gap between what they chose and what they skipped
 - The "attracted but haven't seen" picks reveal aspirational taste — mention this
