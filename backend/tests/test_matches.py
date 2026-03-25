@@ -1,5 +1,6 @@
 """Integration tests for match flow and visibility rules."""
 
+from datetime import UTC, datetime, timedelta
 from unittest.mock import AsyncMock, patch
 
 import pytest
@@ -200,6 +201,38 @@ class TestInviteRespondPermissions:
         assert data["status"] == "accepted"
         assert data["ticket_image_url"] == "https://ticket.test/1.png"
 
+    async def test_invite_sets_reminder_tracking_fields(
+        self, client: AsyncClient, db_session: AsyncSession
+    ):
+        inviter = await create_user_with_dna(
+            db_session, email="inviter@test.com", name="Inviter",
+            gender=Gender.female, birth_year=1994
+        )
+        recipient = await create_user_with_dna(
+            db_session, email="recipient@test.com", name="Recipient",
+            gender=Gender.male, birth_year=1992
+        )
+        match = await create_match(
+            db_session, user_a=inviter, user_b=recipient,
+            status=MatchStatus.discovered,
+        )
+
+        with patch("app.services.matcher.send_invite_email", new=AsyncMock()):
+            response = await client.post(
+                "/matches/invite",
+                json={"match_id": str(match.id)},
+                headers=auth_headers(inviter),
+            )
+
+        assert response.status_code == 200
+
+        refreshed = await db_session.get(Match, match.id)
+        assert refreshed is not None
+        assert refreshed.status == MatchStatus.invited
+        assert refreshed.invited_at is not None
+        assert refreshed.invite_reminder_count == 0
+        assert refreshed.last_invite_reminder_at is None
+
 
 @pytest.mark.asyncio
 class TestReciprocalPreferences:
@@ -223,3 +256,88 @@ class TestReciprocalPreferences:
         matches = await find_matches(db_session, seeker)
 
         assert matches == []
+
+
+@pytest.mark.asyncio
+class TestInviteReminders:
+    async def test_get_pending_invite_reminders_returns_only_due_matches(
+        self, db_session: AsyncSession
+    ):
+        from app.services.matcher import get_pending_invite_reminders
+
+        inviter = await create_user_with_dna(
+            db_session, email="inviter@test.com", name="Inviter",
+            gender=Gender.female, birth_year=1994
+        )
+        recipient = await create_user_with_dna(
+            db_session, email="recipient@test.com", name="Recipient",
+            gender=Gender.male, birth_year=1992
+        )
+        other = await create_user_with_dna(
+            db_session, email="other@test.com", name="Other",
+            gender=Gender.other, birth_year=1990
+        )
+
+        now = datetime.now(UTC)
+        due_first = await create_match(
+            db_session, user_a=inviter, user_b=recipient, status=MatchStatus.invited
+        )
+        due_first.invited_at = now - timedelta(days=3, hours=1)
+        due_first.invite_reminder_count = 0
+
+        due_second = await create_match(
+            db_session, user_a=inviter, user_b=other, status=MatchStatus.invited
+        )
+        due_second.invited_at = now - timedelta(days=7, hours=1)
+        due_second.invite_reminder_count = 1
+        due_second.last_invite_reminder_at = now - timedelta(days=4)
+
+        too_early = await create_match(
+            db_session, user_a=recipient, user_b=other, status=MatchStatus.invited
+        )
+        too_early.invited_at = now - timedelta(days=2, hours=20)
+        too_early.invite_reminder_count = 0
+
+        maxed_out = await create_match(
+            db_session, user_a=other, user_b=inviter, status=MatchStatus.invited
+        )
+        maxed_out.invited_at = now - timedelta(days=9)
+        maxed_out.invite_reminder_count = 2
+        maxed_out.last_invite_reminder_at = now - timedelta(days=2)
+
+        responded = await create_match(
+            db_session, user_a=other, user_b=recipient, status=MatchStatus.accepted
+        )
+        responded.invited_at = now - timedelta(days=8)
+        responded.responded_at = now - timedelta(days=7)
+        responded.invite_reminder_count = 0
+
+        await db_session.commit()
+
+        due_matches = await get_pending_invite_reminders(db_session, now=now)
+        due_ids = {match.id for match in due_matches}
+
+        assert due_ids == {due_first.id, due_second.id}
+
+    async def test_mark_invite_reminder_sent_updates_tracking(
+        self, db_session: AsyncSession
+    ):
+        from app.services.matcher import mark_invite_reminder_sent
+
+        inviter = await create_user_with_dna(
+            db_session, email="inviter@test.com", name="Inviter",
+            gender=Gender.female, birth_year=1994
+        )
+        recipient = await create_user_with_dna(
+            db_session, email="recipient@test.com", name="Recipient",
+            gender=Gender.male, birth_year=1992
+        )
+        match = await create_match(
+            db_session, user_a=inviter, user_b=recipient, status=MatchStatus.invited
+        )
+
+        now = datetime.now(UTC)
+        updated = await mark_invite_reminder_sent(db_session, match, sent_at=now)
+
+        assert updated.invite_reminder_count == 1
+        assert updated.last_invite_reminder_at == now

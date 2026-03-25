@@ -24,6 +24,7 @@ export default function Header() {
   const pathname = usePathname()
   const router = useRouter()
   const { t } = useI18n()
+  const user = useAuthStore((state) => state.user)
   const logout = useAuthStore((state) => state.logout)
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
@@ -57,8 +58,12 @@ export default function Header() {
     }
   }
 
+  const navItems = user?.is_admin
+    ? [...NAV_ITEMS, { href: '/admin', labelKey: 'nav.admin', index: '05' }]
+    : NAV_ITEMS
+
   function renderNavLinks(linkClassName = styles.navLink, activeClassName = styles.navLinkActive) {
-    return NAV_ITEMS.map(({ href, labelKey, index }) => {
+    return navItems.map(({ href, labelKey, index }) => {
       const isActive = pathname.startsWith(href)
       return (
         <Link

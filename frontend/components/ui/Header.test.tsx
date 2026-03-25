@@ -1,11 +1,14 @@
 import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-const { replaceMock, logoutMock, pathnameState } = vi.hoisted(() => ({
+const { replaceMock, logoutMock, pathnameState, authState } = vi.hoisted(() => ({
   replaceMock: vi.fn(),
   logoutMock: vi.fn(),
   pathnameState: {
     value: '/dna',
+  },
+  authState: {
+    user: null as null | { is_admin: boolean },
   },
 }))
 
@@ -42,6 +45,7 @@ vi.mock('@/lib/i18n', () => ({
         'nav.matches': 'Matches',
         'nav.theaters': 'Theaters',
         'nav.profile': 'Profile',
+        'nav.admin': 'Admin',
         'profile.logout': 'Log out',
         'header.openMenu': 'Open menu',
         'header.closeMenu': 'Close menu',
@@ -53,8 +57,9 @@ vi.mock('@/lib/i18n', () => ({
 }))
 
 vi.mock('@/stores/authStore', () => ({
-  useAuthStore: (selector: (state: { logout: typeof logoutMock }) => unknown) =>
-    selector({ logout: logoutMock }),
+  useAuthStore: (
+    selector: (state: { logout: typeof logoutMock; user: typeof authState.user }) => unknown,
+  ) => selector({ logout: logoutMock, user: authState.user }),
 }))
 
 vi.mock('@/lib/sound', () => ({
@@ -82,6 +87,7 @@ describe('Header', () => {
     replaceMock.mockReset()
     logoutMock.mockReset()
     pathnameState.value = '/dna'
+    authState.user = null
   })
 
   afterEach(() => {
@@ -122,5 +128,13 @@ describe('Header', () => {
       expect(logoutMock).toHaveBeenCalledTimes(1)
       expect(replaceMock).toHaveBeenCalledWith('/')
     })
+  })
+
+  it('shows the admin nav link for admin users only', () => {
+    authState.user = { is_admin: true }
+
+    render(<Header />)
+
+    expect(screen.getByRole('link', { name: '05 Admin' })).toBeTruthy()
   })
 })

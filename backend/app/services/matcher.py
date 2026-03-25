@@ -1,9 +1,10 @@
-"""Matcher service: find similar DNA profiles using pgvector cosine similarity."""
+"""Matcher service: find similar DNA profiles using pgvector cosine + quadrant similarity."""
 
 import json
 import logging
+import math
 import uuid
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 from sqlalchemy import and_, or_, select, true
@@ -27,6 +28,13 @@ ARCHETYPE_MAP: dict[str, dict] = {a["id"]: a for a in _archetypes_raw}
 
 _taxonomy = json.loads((_data_dir / "tag_taxonomy.json").read_text())
 TAG_KEYS = list(_taxonomy["tags"].keys())
+
+# Quadrant axes used for similarity calculation
+QUADRANT_AXES = list(_taxonomy.get("quadrant_axes", {}).keys())
+
+# Weight split: tag vector vs quadrant similarity
+TAG_WEIGHT = 0.7
+QUADRANT_WEIGHT = 0.3
 
 
 async def find_matches(
@@ -76,14 +84,27 @@ async def find_matches(
     # Also honor the candidate's reciprocal preferences unless they opted into taste-only matching.
     q = q.where(_build_reciprocal_preference_clause(user))
 
-    q = q.order_by("distance").limit(limit)
+    # Fetch more candidates for re-ranking with quadrant similarity
+    q = q.order_by("distance").limit(limit * 3)
     result = await db.execute(q)
     candidates = result.all()
 
+    # Re-rank: combine tag cosine similarity with quadrant proximity
+    ranked = []
+    for candidate_profile, distance in candidates:
+        tag_sim = 1.0 - distance
+        quad_sim = _compute_quadrant_similarity(
+            profile.quadrant_scores, candidate_profile.quadrant_scores
+        )
+        combined = TAG_WEIGHT * tag_sim + QUADRANT_WEIGHT * quad_sim
+        ranked.append((candidate_profile, combined))
+
+    ranked.sort(key=lambda x: x[1], reverse=True)
+    ranked = ranked[:limit]
+
     # Create Match records
     matches = []
-    for candidate_profile, distance in candidates:
-        similarity = 1.0 - distance
+    for candidate_profile, similarity in ranked:
         if similarity < settings.match_threshold:
             continue
 
@@ -210,6 +231,8 @@ async def send_invite(
 
     match.status = MatchStatus.invited
     match.invited_at = datetime.now(tz=UTC)
+    match.invite_reminder_count = 0
+    match.last_invite_reminder_at = None
     await db.commit()
     await db.refresh(match)
 
@@ -218,6 +241,58 @@ async def send_invite(
     except Exception:
         logger.exception("Failed to send invite email for match %s", match.id)
 
+    return match
+
+
+async def get_pending_invite_reminders(
+    db: AsyncSession,
+    *,
+    now: datetime | None = None,
+) -> list[Match]:
+    """Return invited matches due for a reminder after 3 and 7 days."""
+    current_time = now or datetime.now(tz=UTC)
+    first_cutoff = current_time - timedelta(days=3)
+    second_cutoff = current_time - timedelta(days=7)
+
+    result = await db.execute(
+        select(Match)
+        .options(
+            selectinload(Match.user_a).selectinload(User.dna_profiles),
+            selectinload(Match.user_b).selectinload(User.dna_profiles),
+        )
+        .where(Match.status == MatchStatus.invited)
+        .where(Match.responded_at.is_(None))
+        .where(
+            or_(
+                and_(
+                    Match.invite_reminder_count == 0,
+                    Match.invited_at.is_not(None),
+                    Match.invited_at <= first_cutoff,
+                ),
+                and_(
+                    Match.invite_reminder_count == 1,
+                    Match.invited_at.is_not(None),
+                    Match.invited_at <= second_cutoff,
+                ),
+            )
+        )
+        .order_by(Match.invited_at.asc())
+    )
+    return list(result.scalars().all())
+
+
+async def mark_invite_reminder_sent(
+    db: AsyncSession,
+    match: Match,
+    *,
+    sent_at: datetime | None = None,
+) -> Match:
+    """Persist reminder counters after a reminder email is sent."""
+    current_time = sent_at or datetime.now(tz=UTC)
+    match.invite_reminder_count += 1
+    match.last_invite_reminder_at = current_time
+    await db.commit()
+    await db.refresh(match)
     return match
 
 
@@ -317,6 +392,35 @@ async def respond_to_invite(
             logger.exception("Failed to send accepted email to user_b for match %s", match.id)
 
     return match
+
+
+def _compute_quadrant_similarity(
+    scores_a: dict | None, scores_b: dict | None
+) -> float:
+    """Compute similarity between two quadrant score dicts.
+
+    Each axis ranges [1, 5]. We compute normalized Euclidean distance
+    across the 3 axes and convert to a similarity in [0, 1].
+    Max distance = sqrt(3 * 4^2) = ~6.93.
+    """
+    if not scores_a or not scores_b:
+        return 0.5  # neutral fallback
+
+    sum_sq = 0.0
+    count = 0
+    for axis in QUADRANT_AXES:
+        val_a = scores_a.get(axis, 3.0)
+        val_b = scores_b.get(axis, 3.0)
+        sum_sq += (val_a - val_b) ** 2
+        count += 1
+
+    if count == 0:
+        return 0.5
+
+    # Max possible distance per axis is 4.0 (range 1-5)
+    max_distance = math.sqrt(count * 16.0)
+    distance = math.sqrt(sum_sq)
+    return 1.0 - (distance / max_distance)
 
 
 def _get_ticket_style(user: User) -> str:

@@ -1,6 +1,7 @@
 """DNA builder: compute tag vector, genre vector, and assign archetype from picks."""
 
 import json
+import math
 from pathlib import Path
 
 from app.services.pair_engine import compute_quadrant_from_picks
@@ -16,6 +17,15 @@ with open(DATA_DIR / "archetypes.json") as f:
 # Ordered list of tag keys matching the 30-dim vector
 TAG_KEYS = list(TAXONOMY["tags"].keys())
 TAG_INDEX = {tag: i for i, tag in enumerate(TAG_KEYS)}
+
+# TMDB genre ID → name mapping for archetype genre matching
+GENRE_ID_TO_NAME: dict[int, str] = {
+    28: "Action", 12: "Adventure", 16: "Animation", 35: "Comedy",
+    80: "Crime", 99: "Documentary", 18: "Drama", 10751: "Family",
+    14: "Fantasy", 36: "History", 27: "Horror", 10402: "Music",
+    9648: "Mystery", 10749: "Romance", 878: "Sci-Fi", 53: "Thriller",
+    10752: "War", 37: "Western",
+}
 
 
 def compute_tag_vector(picks: list[dict]) -> list[float]:
@@ -39,7 +49,10 @@ def compute_tag_vector(picks: list[dict]) -> list[float]:
         weight = 1.0 if mode == "watched" else 0.7
         vector[TAG_INDEX[dim]] += weight
 
-    # Normalize to [0, 1] range
+    # Log-dampened normalization: compress repeated-test advantage,
+    # then scale to [0, 1]. log(1+x) ensures a tag tested 3 times
+    # (raw=3.0) doesn't dominate one tested once (raw=1.0) by 3x.
+    vector = [math.log1p(v) for v in vector]
     max_val = max(vector) if vector else 1.0
     if max_val > 0:
         vector = [v / max_val for v in vector]
@@ -102,9 +115,15 @@ def assign_archetype(
             if tag in TAG_INDEX:
                 score += tag_vector[TAG_INDEX[tag]]
 
-        # Genre overlap: secondary signal
+        # Genre overlap: only count genres that match this archetype
+        archetype_genre_names = {
+            GENRE_ID_TO_NAME[gid]
+            for gid in archetype.get("match_genres", [])
+            if gid in GENRE_ID_TO_NAME
+        }
         for genre_name, genre_score in genre_vector.items():
-            score += genre_score * 0.1
+            if genre_name in archetype_genre_names:
+                score += genre_score * 0.3
 
         if score > best_score:
             best_score = score

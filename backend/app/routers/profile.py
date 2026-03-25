@@ -59,6 +59,7 @@ class ProfileOut(BaseModel):
     match_age_max: int | None = None
     pure_taste_match: bool
     sequencing_status: str
+    is_admin: bool
     # DNA summary (if completed)
     archetype_id: str | None = None
     archetype_name: str | None = None
@@ -103,6 +104,7 @@ def _user_to_profile(user: User) -> ProfileOut:
         match_age_max=user.match_age_max,
         pure_taste_match=user.pure_taste_match,
         sequencing_status=user.sequencing_status.value,
+        is_admin=user.is_admin,
         archetype_id=dna.archetype_id if dna else None,
         archetype_name=archetype_name,
         personality_reading=dna.personality_reading if dna else None,

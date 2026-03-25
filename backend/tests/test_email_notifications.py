@@ -151,6 +151,29 @@ class TestSendInviteEmail:
             assert "breaker_2" in html
             assert "breaker_3" not in html
 
+    @pytest.mark.asyncio
+    async def test_prod_mode_sends_invite_reminder(self, prod_settings, match_id):
+        from app.services.email_service import send_invite_email
+
+        with (
+            patch("app.services.email_service.settings", prod_settings),
+            patch("app.services.email_service._resend_initialized", False),
+            patch("app.services.email_service.resend") as mock_resend,
+        ):
+            await send_invite_email(
+                recipient_email="bob@example.com",
+                recipient_name="Bob",
+                inviter_name="Alice",
+                inviter_archetype="時空旅人 Time Traveler",
+                shared_tags=["dystopia"],
+                ice_breakers=["你們對「反烏托邦」都有偏好"],
+                match_id=match_id,
+                reminder_number=1,
+            )
+            payload = mock_resend.Emails.send.call_args[0][0]
+            assert "提醒" in payload["subject"]
+            assert "Alice" in payload["html"]
+
 
 class TestSendMatchAcceptedEmail:
     @pytest.mark.asyncio

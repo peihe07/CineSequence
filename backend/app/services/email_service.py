@@ -80,11 +80,13 @@ async def send_invite_email(
     shared_tags: list[str],
     ice_breakers: list[str],
     match_id: uuid.UUID,
+    reminder_number: int = 0,
 ) -> None:
     """Send notification email when someone sends a match invite."""
     respond_url = f"{settings.frontend_url}/matches?respond={match_id}"
     safe_inviter = _esc(inviter_name)
     safe_archetype = _esc(inviter_archetype)
+    is_reminder = reminder_number > 0
 
     tags_html = ""
     if shared_tags:
@@ -101,11 +103,15 @@ async def send_invite_email(
 
     await _send_or_log(
         to=recipient_email,
-        subject=f"來自 {inviter_name} 的配對邀請 — Cine Sequence",
+        subject=(
+            f"提醒：{inviter_name} 的配對邀請仍在等你回應 — Cine Sequence"
+            if is_reminder
+            else f"來自 {inviter_name} 的配對邀請 — Cine Sequence"
+        ),
         html=(
-            f"<h2>一位觀影者對你的品味產生了共鳴</h2>"
+            f"<h2>{'配對邀請提醒' if is_reminder else '一位觀影者對你的品味產生了共鳴'}</h2>"
             f"<p><strong>{safe_inviter}</strong>（{safe_archetype}）"
-            f"向你發出了配對邀請。</p>"
+            f"{'先前向你發出了配對邀請，仍在等你回應。' if is_reminder else '向你發出了配對邀請。'}</p>"
             f"{tags_html}"
             f"{breakers_html}"
             f'<p><a href="{respond_url}" '

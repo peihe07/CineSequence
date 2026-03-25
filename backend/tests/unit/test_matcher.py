@@ -6,7 +6,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from app.services.matcher import find_matches
+from app.services.matcher import _compute_quadrant_similarity, find_matches
 
 
 class _IterableResult:
@@ -36,6 +36,37 @@ class _RecordingSession:
 
     async def commit(self):
         return None
+
+
+class TestQuadrantSimilarity:
+    """Test quadrant similarity calculation."""
+
+    def test_identical_scores_return_one(self):
+        scores = {"mainstream_independent": 3.0, "rational_emotional": 2.0, "light_dark": 4.0}
+        assert _compute_quadrant_similarity(scores, scores) == 1.0
+
+    def test_opposite_scores_return_low(self):
+        scores_a = {"mainstream_independent": 1.0, "rational_emotional": 1.0, "light_dark": 1.0}
+        scores_b = {"mainstream_independent": 5.0, "rational_emotional": 5.0, "light_dark": 5.0}
+        result = _compute_quadrant_similarity(scores_a, scores_b)
+        assert result < 0.05  # near 0
+
+    def test_partial_difference(self):
+        scores_a = {"mainstream_independent": 2.0, "rational_emotional": 3.0, "light_dark": 4.0}
+        scores_b = {"mainstream_independent": 3.0, "rational_emotional": 3.0, "light_dark": 4.0}
+        result = _compute_quadrant_similarity(scores_a, scores_b)
+        assert 0.8 < result < 1.0  # mostly similar
+
+    def test_none_scores_return_neutral(self):
+        assert _compute_quadrant_similarity(None, {"mainstream_independent": 3.0}) == 0.5
+        assert _compute_quadrant_similarity({"mainstream_independent": 3.0}, None) == 0.5
+
+    def test_missing_axes_default_to_neutral(self):
+        scores_a = {"mainstream_independent": 3.0}
+        scores_b = {"mainstream_independent": 3.0}
+        result = _compute_quadrant_similarity(scores_a, scores_b)
+        # Missing axes default to 3.0, so distance should be 0
+        assert result == 1.0
 
 
 @pytest.mark.asyncio

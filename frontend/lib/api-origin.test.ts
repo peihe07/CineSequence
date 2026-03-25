@@ -49,6 +49,50 @@ describe('api origin helpers', () => {
     )
   })
 
+  it('keeps the browser loopback host when the explicit api url points at a different loopback hostname', () => {
+    const originalWindow = globalThis.window
+    Object.defineProperty(globalThis, 'window', {
+      value: {
+        location: {
+          hostname: '127.0.0.1',
+          protocol: 'http:',
+        },
+      },
+      configurable: true,
+    })
+
+    expect(resolveApiUrl({ NEXT_PUBLIC_API_URL: 'http://localhost:8000' }, true)).toBe(
+      'http://127.0.0.1:8000',
+    )
+
+    Object.defineProperty(globalThis, 'window', {
+      value: originalWindow,
+      configurable: true,
+    })
+  })
+
+  it('keeps the browser loopback host for explicit api urls that use localhost while browsing on localhost', () => {
+    const originalWindow = globalThis.window
+    Object.defineProperty(globalThis, 'window', {
+      value: {
+        location: {
+          hostname: 'localhost',
+          protocol: 'http:',
+        },
+      },
+      configurable: true,
+    })
+
+    expect(resolveApiUrl({ NEXT_PUBLIC_API_URL: 'http://127.0.0.1:8000' }, true)).toBe(
+      'http://localhost:8000',
+    )
+
+    Object.defineProperty(globalThis, 'window', {
+      value: originalWindow,
+      configurable: true,
+    })
+  })
+
   it('uses the proxy target during server-side execution when available', () => {
     expect(resolveApiUrl({ API_PROXY_TARGET: 'https://api.cinesequence.xyz/' }, false)).toBe(
       'https://api.cinesequence.xyz',

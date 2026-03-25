@@ -6,6 +6,7 @@ export interface User {
   region: string
   avatar_url: string | null
   sequencing_status: string
+  is_admin: boolean
 }
 
 export interface RegisterRequest {

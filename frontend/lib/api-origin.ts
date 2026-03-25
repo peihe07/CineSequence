@@ -11,19 +11,39 @@ export function resolveApiUrl(
   hasWindow = typeof window !== 'undefined',
 ): string {
   const explicit = env.NEXT_PUBLIC_API_URL?.trim()
-  if (explicit) {
-    return trimTrailingSlash(explicit)
-  }
 
   if (hasWindow) {
     const hostname = window.location.hostname
     const protocol = window.location.protocol || 'http:'
+
+    if (explicit) {
+      const normalizedExplicit = trimTrailingSlash(explicit)
+
+      try {
+        const explicitUrl = new URL(normalizedExplicit, `${protocol}//${hostname}`)
+        if (
+          LOCAL_HOSTNAMES.has(hostname)
+          && LOCAL_HOSTNAMES.has(explicitUrl.hostname)
+          && explicitUrl.hostname !== hostname
+        ) {
+          return `${protocol}//${hostname}:${explicitUrl.port || '8000'}`
+        }
+      } catch {
+        return normalizedExplicit
+      }
+
+      return normalizedExplicit
+    }
 
     if (LOCAL_HOSTNAMES.has(hostname)) {
       return `${protocol}//${hostname}:8000`
     }
 
     return DEFAULT_BROWSER_API_BASE
+  }
+
+  if (explicit) {
+    return trimTrailingSlash(explicit)
   }
 
   const proxyTarget = env.API_PROXY_TARGET?.trim()

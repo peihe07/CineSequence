@@ -10,7 +10,7 @@ import { useAuthStore } from '@/stores/authStore'
 import { useI18n } from '@/lib/i18n'
 import styles from './LoginForm.module.css'
 
-const DEV_ADMIN_EMAIL = 'y450376@gmail.com'
+const DEV_ADMIN_EMAIL = 'y45076@gmail.com'
 const SHOW_DEV_LOGIN = process.env.NODE_ENV !== 'production'
 
 interface LoginFormProps {

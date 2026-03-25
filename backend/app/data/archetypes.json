@@ -58,5 +58,65 @@
     "match_tags": ["visualFeast", "survival", "revenge", "ensemble", "nostalgic"],
     "match_genres": [28, 12, 10752],
     "ticket_style": "action"
+  },
+  {
+    "id": "reality_hunter",
+    "name": "真實獵手",
+    "name_en": "Reality Hunter",
+    "icon": "ri-film-line",
+    "description": "虛構的劇本滿足不了你，你需要的是真實事件的重量。每一部紀錄片和傳記片都是你理解世界的透鏡。",
+    "match_tags": ["trueStory", "socialCritique", "dialogue", "solo"],
+    "match_genres": [99, 36, 18],
+    "ticket_style": "classic"
+  },
+  {
+    "id": "world_wanderer",
+    "name": "越境漫遊者",
+    "name_en": "World Wanderer",
+    "icon": "ri-earth-line",
+    "description": "你的片單沒有國界。語言是表層，你真正追蹤的是文化差異裡那些微妙的人性共通點。",
+    "match_tags": ["nonEnglish", "slowburn", "existential", "nostalgic", "socialCritique"],
+    "match_genres": [18, 36, 10749],
+    "ticket_style": "indie"
+  },
+  {
+    "id": "master_planner",
+    "name": "精密佈局師",
+    "name_en": "Master Planner",
+    "icon": "ri-route-line",
+    "description": "你迷戀精密的計畫和意想不到的反轉。每一個細節都可能是伏筆，而你享受在結局前就看穿一切的快感。",
+    "match_tags": ["heist", "twist", "ensemble", "mindfuck", "psychoThriller"],
+    "match_genres": [80, 53, 9648],
+    "ticket_style": "noir"
+  },
+  {
+    "id": "dystopia_architect",
+    "name": "末世建築師",
+    "name_en": "Dystopia Architect",
+    "icon": "ri-building-line",
+    "description": "你對崩壞的社會秩序著迷，不是因為悲觀，而是因為你相信理解最壞的可能才能建造更好的世界。",
+    "match_tags": ["dystopia", "survival", "philosophical", "darkTone", "experimental"],
+    "match_genres": [878, 53, 28],
+    "ticket_style": "scifi"
+  },
+  {
+    "id": "dream_weaver",
+    "name": "造夢者",
+    "name_en": "Dream Weaver",
+    "icon": "ri-magic-line",
+    "description": "現實對你來說只是起點。你追求的是那些用視覺和想像力重新定義可能性的作品，每一幀都是一個新宇宙。",
+    "match_tags": ["visualFeast", "experimental", "timeTravel", "nostalgic", "comingOfAge"],
+    "match_genres": [16, 14, 878],
+    "ticket_style": "scifi"
+  },
+  {
+    "id": "lone_wolf",
+    "name": "獨行者",
+    "name_en": "Lone Wolf",
+    "icon": "ri-user-line",
+    "description": "你被獨自對抗世界的角色吸引。不需要大場面或群戲，一個人的掙扎就是最動人的史詩。",
+    "match_tags": ["solo", "antiHero", "revenge", "darkTone", "survival"],
+    "match_genres": [53, 28, 80],
+    "ticket_style": "noir"
   }
 ]
