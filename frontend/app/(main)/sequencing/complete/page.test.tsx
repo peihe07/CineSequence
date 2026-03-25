@@ -139,13 +139,19 @@ describe('SequencingCompletePage', () => {
 
     render(<SequencingCompletePage />)
 
-    fireEvent.click(screen.getByRole('button', { name: 'View DNA' }))
+    const viewDnaButton = screen.getByRole('button', { name: 'View DNA' })
+
+    fireEvent.click(viewDnaButton)
 
     await waitFor(() => {
       expect(buildDnaMock).toHaveBeenCalledTimes(1)
     })
 
-    fireEvent.click(screen.getByRole('button', { name: 'View DNA' }))
+    await waitFor(() => {
+      expect(viewDnaButton.hasAttribute('disabled')).toBe(false)
+    })
+
+    fireEvent.click(viewDnaButton)
 
     await waitFor(() => {
       expect(buildDnaMock).toHaveBeenCalledTimes(2)
