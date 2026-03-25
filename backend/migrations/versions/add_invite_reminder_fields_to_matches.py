@@ -8,7 +8,6 @@ Create Date: 2026-03-25
 import sqlalchemy as sa
 from alembic import op
 
-
 revision = "add_invite_reminder_fields"
 down_revision = "add_notifications"
 branch_labels = None
