@@ -403,17 +403,18 @@
   display: none;
 }
 
-/* Stacking effect — non-active tickets recede */
+/* Stacking effect — non-active tickets recede but remain legible */
 .carouselItem {
   flex-shrink: 0;
   scroll-snap-align: center;
-  transform: scale(0.88) translateY(8px);
-  opacity: 0.55;
-  filter: brightness(0.94);
+  transform: scale(0.92) translateY(4px);
+  opacity: 0.72;
+  filter: brightness(0.96);
   transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1),
               opacity 0.4s ease,
               filter 0.4s ease;
   z-index: 0;
+  cursor: pointer;
   /* Overlap spacing between cards */
   margin-right: -1rem;
 }
@@ -438,10 +439,14 @@
   display: block;
   width: 6px;
   height: 6px;
+  padding: 0;
+  border: none;
   border-radius: 50%;
   background: var(--border-dark, #c8c3b8);
   transition: background 0.2s ease, transform 0.2s ease;
-  cursor: default;
+  cursor: pointer;
+  /* Enlarge touch target without visual change */
+  box-shadow: 0 0 0 6px transparent;
 }
 
 .dotActive {

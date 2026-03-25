@@ -363,6 +363,17 @@
 }
 
 /* Declined note */
+.waitingNote {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.72rem;
+  font-family: var(--font-mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(229, 126, 49, 0.62);
+}
+
 .declinedNote {
   display: flex;
   align-items: center;

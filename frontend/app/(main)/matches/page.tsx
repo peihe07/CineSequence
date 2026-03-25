@@ -121,19 +121,25 @@ function MatchFilter({ prefs, onChange, disabled }: {
   )
 }
 
-/** Dot-based scroll indicator for the carousel */
-function CarouselDots({ count, activeIndex }: { count: number; activeIndex: number }) {
+/** Dot-based scroll indicator for the carousel — clickable to navigate */
+function CarouselDots({ count, activeIndex, onSelect }: {
+  count: number
+  activeIndex: number
+  onSelect: (index: number) => void
+}) {
   const { t } = useI18n()
   if (count <= 1) return null
   return (
     <div className={styles.carouselDots} role="tablist" aria-label={t('matches.ticketNav')}>
       {Array.from({ length: count }).map((_, i) => (
-        <span
+        <button
           key={i}
+          type="button"
           role="tab"
           aria-selected={i === activeIndex}
           aria-label={t('matches.ticketIndex', { index: i + 1 })}
           className={`${styles.dot} ${i === activeIndex ? styles.dotActive : ''}`}
+          onClick={() => onSelect(i)}
         />
       ))}
     </div>
@@ -310,6 +316,13 @@ function MatchesContent() {
                   <div
                     key={match.id}
                     className={`${styles.carouselItem} ${i === activeIndex ? styles.carouselItemActive : ''}`}
+                    onClick={() => {
+                      if (i !== activeIndex) {
+                        const el = document.getElementById(`match-${match.id}`)
+                        el?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' })
+                        setActiveIndex(i)
+                      }
+                    }}
                   >
                     <TicketCard
                       match={match}
@@ -322,8 +335,16 @@ function MatchesContent() {
                 ))}
               </div>
 
-              {/* Scroll indicator dots */}
-              <CarouselDots count={matches.length} activeIndex={activeIndex} />
+              {/* Scroll indicator dots — clickable to navigate */}
+              <CarouselDots
+                count={matches.length}
+                activeIndex={activeIndex}
+                onSelect={(idx) => {
+                  const el = document.getElementById(`match-${matches[idx].id}`)
+                  el?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' })
+                  setActiveIndex(idx)
+                }}
+              />
             </>
           )}
         </section>

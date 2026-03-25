@@ -189,7 +189,14 @@ function FullCinemaTicket({
             </button>
           )}
 
-        {match.status === 'invited' && match.is_recipient && (
+          {match.status === 'invited' && !match.is_recipient && (
+            <span className={styles.waitingNote}>
+              <i className="ri-time-line" aria-hidden="true" />
+              {t('matches.waitingResponse')}
+            </span>
+          )}
+
+          {match.status === 'invited' && match.is_recipient && (
             <div className={styles.respondBtns}>
               <button
                 className={styles.acceptBtn}

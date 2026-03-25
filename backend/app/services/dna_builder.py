@@ -108,22 +108,30 @@ def assign_archetype(
     best_archetype = ARCHETYPES[0]
 
     for archetype in ARCHETYPES:
-        score = 0.0
+        # Tag affinity: average of user's tag scores for archetype's match_tags
+        match_tags = [t for t in archetype.get("match_tags", []) if t in TAG_INDEX]
+        tag_score = (
+            sum(tag_vector[TAG_INDEX[t]] for t in match_tags) / len(match_tags)
+            if match_tags
+            else 0.0
+        )
 
-        # Tag overlap: sum of user's tag scores for archetype's match_tags
-        for tag in archetype.get("match_tags", []):
-            if tag in TAG_INDEX:
-                score += tag_vector[TAG_INDEX[tag]]
-
-        # Genre overlap: only count genres that match this archetype
+        # Genre affinity: average of matching genre scores
         archetype_genre_names = {
             GENRE_ID_TO_NAME[gid]
             for gid in archetype.get("match_genres", [])
             if gid in GENRE_ID_TO_NAME
         }
-        for genre_name, genre_score in genre_vector.items():
-            if genre_name in archetype_genre_names:
-                score += genre_score * 0.3
+        matching_genres = [
+            genre_vector[g] for g in genre_vector if g in archetype_genre_names
+        ]
+        genre_score = (
+            sum(matching_genres) / len(matching_genres) * 0.3
+            if matching_genres
+            else 0.0
+        )
+
+        score = tag_score + genre_score
 
         if score > best_score:
             best_score = score
