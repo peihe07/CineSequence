@@ -68,41 +68,52 @@ async def generate_personality(
         genre_vector, quadrant_scores, archetype_id,
     )
 
-    try:
-        client = genai.Client(api_key=settings.gemini_api_key)
-        response = await client.aio.models.generate_content(
-            model="gemini-2.5-flash",
-            contents=f"{SYSTEM_PROMPT}\n\n---\n\n{context}",
-            config={
-                "response_mime_type": "application/json",
-                "temperature": 0.9,
-                "max_output_tokens": 2048,
-                "thinking_config": {"thinking_budget": 0},
-            },
-        )
-    except Exception:
-        logger.exception("Gemini API error for personality generation")
-        return None
+    max_retries = 2
+    for attempt in range(1, max_retries + 1):
+        try:
+            client = genai.Client(api_key=settings.gemini_api_key)
+            response = await client.aio.models.generate_content(
+                model="gemini-2.5-flash",
+                contents=f"{SYSTEM_PROMPT}\n\n---\n\n{context}",
+                config={
+                    "response_mime_type": "application/json",
+                    "temperature": 0.9,
+                    "max_output_tokens": 4096,
+                    "thinking_config": {"thinking_budget": 0},
+                },
+            )
+        except Exception:
+            logger.exception("Gemini API error for personality generation (attempt %d)", attempt)
+            if attempt == max_retries:
+                return None
+            continue
 
-    await log_token_usage(response, call_type="personality")
+        await log_token_usage(response, call_type="personality")
 
-    response_text = response.text.strip()
+        response_text = response.text.strip()
 
-    # Extract JSON from potential markdown code block
-    if "```" in response_text:
-        start = response_text.find("{")
-        end = response_text.rfind("}") + 1
-        response_text = response_text[start:end]
+        # Extract JSON from potential markdown code block
+        if "```" in response_text:
+            start = response_text.find("{")
+            end = response_text.rfind("}") + 1
+            response_text = response_text[start:end]
 
-    try:
-        result = json.loads(response_text)
-    except json.JSONDecodeError:
-        logger.error("Failed to parse personality response: %s", response_text[:200])
-        return None
+        try:
+            result = json.loads(response_text)
+        except json.JSONDecodeError:
+            logger.warning(
+                "Failed to parse personality response (attempt %d): %s",
+                attempt, response_text[:200],
+            )
+            if attempt == max_retries:
+                return None
+            continue
 
-    return {
-        "personality_reading": result.get("personality_reading", ""),
-        "hidden_traits": result.get("hidden_traits", []),
-        "conversation_style": result.get("conversation_style", ""),
-        "ideal_movie_date": result.get("ideal_movie_date", ""),
-    }
+        return {
+            "personality_reading": result.get("personality_reading", ""),
+            "hidden_traits": result.get("hidden_traits", []),
+            "conversation_style": result.get("conversation_style", ""),
+            "ideal_movie_date": result.get("ideal_movie_date", ""),
+        }
+
+    return None
