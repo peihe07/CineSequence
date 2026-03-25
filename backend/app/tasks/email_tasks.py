@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 async def _send_pending_invite_reminders(db, *, now: datetime | None = None):
     from app.services.email_service import send_invite_email
     from app.services.matcher import (
-        _get_archetype_name,
+        get_archetype_name,
         get_pending_invite_reminders,
         mark_invite_reminder_sent,
     )
@@ -24,7 +24,7 @@ async def _send_pending_invite_reminders(db, *, now: datetime | None = None):
             recipient_email=match.user_b.email,
             recipient_name=match.user_b.name,
             inviter_name=match.user_a.name,
-            inviter_archetype=_get_archetype_name(match.user_a),
+            inviter_archetype=get_archetype_name(match.user_a),
             shared_tags=match.shared_tags or [],
             ice_breakers=match.ice_breakers or [],
             match_id=match.id,
