@@ -433,6 +433,7 @@ const translations: Record<Locale, Record<string, string>> = {
     'admin.total': '總計',
     'admin.queries': '查詢次數',
     'admin.inviteEmails': '邀請信件',
+    'admin.inviteReminderEmails': '邀請提醒信件',
     'admin.acceptedEmails': '接受信件',
 
     // Demo
@@ -961,6 +962,7 @@ const translations: Record<Locale, Record<string, string>> = {
     'admin.total': 'Total',
     'admin.queries': 'Queries',
     'admin.inviteEmails': 'Invite emails',
+    'admin.inviteReminderEmails': 'Invite reminder emails',
     'admin.acceptedEmails': 'Accepted emails',
 
     // Demo

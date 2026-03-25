@@ -189,12 +189,15 @@ async def get_api_usage(
 
     - Gemini: ~1 call per DNA build (personality) + 1 per match (ice breaker) + 1 per AI pair
     - TMDB: ~2 per sequencing round (pair fetch)
-    - Resend: ~1 per invite + 1 per accept
+    - Resend: invite sends + invite reminders + accept emails
     """
     total_dna = await db.scalar(select(func.count(DnaProfile.id)))
     total_matches = await db.scalar(select(func.count(Match.id)))
     total_invites = await db.scalar(
         select(func.count(Match.id)).where(Match.status != MatchStatus.discovered)
+    )
+    total_invite_reminders = await db.scalar(
+        select(func.coalesce(func.sum(Match.invite_reminder_count), 0))
     )
     total_accepted = await db.scalar(
         select(func.count(Match.id)).where(Match.status == MatchStatus.accepted)
@@ -221,7 +224,12 @@ async def get_api_usage(
         },
         "resend": {
             "invite_emails": total_invites,
+            "invite_reminder_emails": total_invite_reminders,
             "accepted_emails": total_accepted,
-            "estimated_total": (total_invites or 0) + (total_accepted or 0),
+            "estimated_total": (
+                (total_invites or 0)
+                + (total_invite_reminders or 0)
+                + (total_accepted or 0)
+            ),
         },
     }

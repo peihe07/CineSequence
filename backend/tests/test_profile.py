@@ -4,8 +4,16 @@ import io
 
 import pytest
 from httpx import AsyncClient
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.models.dna_profile import DnaProfile
+from app.models.group import Group, group_members
+from app.models.group_message import GroupMessage
+from app.models.match import Match, MatchStatus
+from app.models.notification import Notification, NotificationType
+from app.models.pick import Pick
+from app.models.sequencing_session import SequencingSession, SessionStatus, SessionType
 from app.models.user import Gender, SequencingStatus, User
 from app.services.auth_utils import create_access_token
 
@@ -211,3 +219,132 @@ class TestAvatarUpload:
             files={"file": ("a.jpg", io.BytesIO(b"\xff\xd8"), "image/jpeg")},
         )
         assert response.status_code == 401
+
+
+@pytest.mark.asyncio
+class TestDeleteAccount:
+    async def test_delete_account_removes_related_data_and_invalidates_token(
+        self, client: AsyncClient, db_session: AsyncSession
+    ):
+        user = await create_user(db_session, email="delete@test.com")
+        other_user = await create_user(db_session, email="other@test.com")
+
+        group = Group(
+            id="mobius_loop",
+            name="Mobius Loop",
+            subtitle="Mind-benders only",
+            icon="ri-tornado-line",
+            primary_tags=["mindfuck"],
+            is_hidden=False,
+            min_members_to_activate=2,
+            member_count=2,
+            is_active=True,
+        )
+        db_session.add(group)
+        await db_session.commit()
+
+        session = SequencingSession(
+            user_id=user.id,
+            session_type=SessionType.initial,
+            status=SessionStatus.completed,
+            total_rounds=20,
+        )
+        db_session.add(session)
+        await db_session.flush()
+        user.active_session_id = session.id
+        await db_session.flush()
+
+        db_session.add(DnaProfile(
+            user_id=user.id,
+            session_id=session.id,
+            archetype_id="time-traveler",
+            tag_vector=[0.8] * 30,
+            genre_vector={},
+            quadrant_scores={},
+            ticket_style="classic",
+            is_active=True,
+        ))
+        db_session.add(Pick(
+            user_id=user.id,
+            session_id=session.id,
+            round_number=1,
+            phase=1,
+            movie_a_tmdb_id=1,
+            movie_b_tmdb_id=2,
+            chosen_tmdb_id=1,
+            pick_mode="watched",
+        ))
+        db_session.add(Match(
+            user_a_id=user.id,
+            user_b_id=other_user.id,
+            similarity_score=0.91,
+            status=MatchStatus.invited,
+        ))
+        db_session.add(Notification(
+            user_id=user.id,
+            type=NotificationType.system,
+            title_zh="系統通知",
+            title_en="System notice",
+        ))
+        db_session.add(GroupMessage(
+            group_id=group.id,
+            user_id=user.id,
+            body="Goodbye theater.",
+        ))
+        await db_session.execute(
+            group_members.insert().values(user_id=user.id, group_id=group.id)
+        )
+        await db_session.execute(
+            group_members.insert().values(user_id=other_user.id, group_id=group.id)
+        )
+        await db_session.commit()
+
+        headers = auth_headers(user)
+        response = await client.delete("/profile", headers=headers)
+
+        assert response.status_code == 200
+        assert "account" in response.json()["message"].lower()
+        set_cookie = response.headers.get("set-cookie", "")
+        assert "cine_sequence_session=" in set_cookie
+
+        assert await db_session.get(User, user.id) is None
+
+        pick_rows = await db_session.execute(select(Pick).where(Pick.user_id == user.id))
+        assert pick_rows.scalars().all() == []
+
+        dna_rows = await db_session.execute(
+            select(DnaProfile).where(DnaProfile.user_id == user.id)
+        )
+        assert dna_rows.scalars().all() == []
+
+        session_rows = await db_session.execute(
+            select(SequencingSession).where(SequencingSession.user_id == user.id)
+        )
+        assert session_rows.scalars().all() == []
+
+        match_rows = await db_session.execute(
+            select(Match).where((Match.user_a_id == user.id) | (Match.user_b_id == user.id))
+        )
+        assert match_rows.scalars().all() == []
+
+        notification_rows = await db_session.execute(
+            select(Notification).where(Notification.user_id == user.id)
+        )
+        assert notification_rows.scalars().all() == []
+
+        message_rows = await db_session.execute(
+            select(GroupMessage).where(GroupMessage.user_id == user.id)
+        )
+        assert message_rows.scalars().all() == []
+
+        membership_rows = await db_session.execute(
+            select(group_members).where(group_members.c.user_id == user.id)
+        )
+        assert membership_rows.all() == []
+
+        await db_session.refresh(group)
+        assert group.member_count == 1
+        assert group.is_active is False
+
+        stale_token_response = await client.get("/profile", headers=headers)
+        assert stale_token_response.status_code == 401

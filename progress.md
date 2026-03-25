@@ -340,7 +340,9 @@
 - [x] **Phase 2**: 獨立 /notifications 頁面 + 已讀/未讀狀態
   - [x] /notifications route (hero, list with read/unread, mark all read, click-to-navigate)
   - [x] ArchiveWrapper 註冊 NTF-06 (minimal density)
-  - [x] NotificationBell dropdown 加 "View all" 連結至 /notifications
+- [x] NotificationBell dropdown 加 "View all" 連結至 /notifications
+- [x] Match notifications policy: `80%+` 相似只發站內通知；email 僅在送出 invite 時寄送
+- [x] Invite reminder emails: pending invites resend at day 3 and day 7, max 2 reminders
   - [x] i18n: zh/en 各 7 個新 key (page + archive)
   - [x] Build verification: 17 routes, zero errors, 85 tests passing
 - [ ] **Phase 3**: WebSocket / SSE 即時推播

@@ -67,6 +67,7 @@ describe('authStore', () => {
         region: 'TW',
         avatar_url: null,
         sequencing_status: 'completed',
+        is_admin: false,
       })
 
     await useAuthStore.getState().verify('magic-link-token')
@@ -94,6 +95,7 @@ describe('authStore', () => {
         region: 'TW',
         avatar_url: null,
         sequencing_status: 'completed',
+        is_admin: false,
       })
 
     await useAuthStore.getState().verify('magic-link-token')
@@ -103,7 +105,7 @@ describe('authStore', () => {
 
   it('does not clear the token on non-auth failures during fetchProfile', async () => {
     useAuthStore.setState({
-      user: { id: 'u1', email: 'u@test.com', name: 'User', gender: 'other', region: 'TW', avatar_url: null, sequencing_status: 'completed' },
+      user: { id: 'u1', email: 'u@test.com', name: 'User', gender: 'other', region: 'TW', avatar_url: null, sequencing_status: 'completed', is_admin: false },
       isAuthenticated: true,
       isLoading: false,
       error: null,
@@ -121,7 +123,7 @@ describe('authStore', () => {
 
   it('calls backend logout and clears auth state', async () => {
     useAuthStore.setState({
-      user: { id: 'u1', email: 'u@test.com', name: 'User', gender: 'other', region: 'TW', avatar_url: null, sequencing_status: 'completed' },
+      user: { id: 'u1', email: 'u@test.com', name: 'User', gender: 'other', region: 'TW', avatar_url: null, sequencing_status: 'completed', is_admin: false },
       isAuthenticated: true,
       isLoading: false,
       error: 'old error',

@@ -20,11 +20,18 @@ async def test_send_pending_invite_reminders_sends_and_marks_due_matches():
     )
 
     mock_db = MagicMock()
+    pending_reminders = AsyncMock(return_value=[match])
 
     with (
-        patch("app.services.matcher.get_pending_invite_reminders", new=AsyncMock(return_value=[match])),
+        patch(
+            "app.services.matcher.get_pending_invite_reminders",
+            new=pending_reminders,
+        ),
         patch("app.services.matcher.mark_invite_reminder_sent", new=AsyncMock()),
-        patch("app.services.email_service.send_invite_email", new=AsyncMock()) as send_invite_email,
+        patch(
+            "app.services.email_service.send_invite_email",
+            new=AsyncMock(),
+        ) as send_invite_email,
         patch("app.services.matcher._get_archetype_name", return_value="電影愛好者"),
     ):
         await _send_pending_invite_reminders(mock_db, now=datetime.now(UTC) - timedelta(days=3))

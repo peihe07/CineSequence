@@ -1,7 +1,5 @@
 """Tests for DNA builder: tag vector, genre vector, archetype assignment."""
 
-import math
-
 from app.services.dna_builder import (
     ARCHETYPES,
     GENRE_ID_TO_NAME,
@@ -215,7 +213,7 @@ class TestGenreOverlapFix:
         vector[TAG_INDEX["antiHero"]] = 0.5
 
         # With matching genre
-        result_with = assign_archetype(vector, {"Crime": 1.0})
+        assign_archetype(vector, {"Crime": 1.0})
         score_with = _score_archetype("dark_poet", vector, {"Crime": 1.0})
 
         # With non-matching genre

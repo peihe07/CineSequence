@@ -8,19 +8,20 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, status
 from fastapi.responses import JSONResponse, Response
 from pydantic import BaseModel
-from sqlalchemy import delete, or_
+from sqlalchemy import delete, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import settings
 from app.deps import get_current_user, get_db
 from app.models.dna_profile import DnaProfile
-from app.models.group import group_members
+from app.models.group import Group, group_members
 from app.models.match import Match
 from app.models.pick import Pick
 from app.models.sequencing_session import SequencingSession
 from app.models.user import User
 from app.services.auth_cookies import clear_auth_cookie
 from app.services.dna_builder import ARCHETYPES
+from app.services.group_engine import should_activate_group
 
 logger = logging.getLogger(__name__)
 
@@ -110,6 +111,30 @@ def _user_to_profile(user: User) -> ProfileOut:
         personality_reading=dna.personality_reading if dna else None,
         ticket_style=dna.ticket_style if dna else None,
     )
+
+
+async def _refresh_group_membership_stats(
+    db: AsyncSession,
+    *,
+    group_ids: set[str],
+) -> None:
+    """Recompute denormalized member counts for groups touched by account deletion."""
+    if not group_ids:
+        return
+
+    result = await db.execute(select(Group).where(Group.id.in_(group_ids)))
+    groups = list(result.scalars().all())
+    for group in groups:
+        count_result = await db.execute(
+            select(func.count()).select_from(group_members).where(
+                group_members.c.group_id == group.id
+            )
+        )
+        group.member_count = count_result.scalar() or 0
+        group.is_active = should_activate_group(
+            group.member_count,
+            group.min_members_to_activate,
+        )
 
 
 @router.get("")
@@ -280,11 +305,16 @@ async def delete_account(
 ):
     """Permanently delete the current user's account and all associated data."""
     user_id = user.id
+    group_id_rows = await db.execute(
+        select(group_members.c.group_id).where(group_members.c.user_id == user_id)
+    )
+    affected_group_ids = {row[0] for row in group_id_rows}
 
     # 1. Remove group memberships (association table, no ORM cascade)
     await db.execute(
         delete(group_members).where(group_members.c.user_id == user_id)
     )
+    await _refresh_group_membership_stats(db, group_ids=affected_group_ids)
 
     # 2. Delete matches where the user is either party
     await db.execute(

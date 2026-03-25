@@ -40,7 +40,7 @@ interface DailyStats {
 interface ApiUsage {
   gemini: { personality_readings: number; ice_breakers: number; ai_pairs: number; estimated_total: number }
   tmdb: { estimated_queries: number }
-  resend: { invite_emails: number; accepted_emails: number; estimated_total: number }
+  resend: { invite_emails: number; invite_reminder_emails: number; accepted_emails: number; estimated_total: number }
 }
 
 function StatCard({ value, label }: { value: number | string; label: string }) {
@@ -250,6 +250,10 @@ export default function AdminPage() {
               <div className={styles.apiRow}>
                 <span>{t('admin.inviteEmails')}</span>
                 <span>{apiUsage.resend.invite_emails}</span>
+              </div>
+              <div className={styles.apiRow}>
+                <span>{t('admin.inviteReminderEmails')}</span>
+                <span>{apiUsage.resend.invite_reminder_emails}</span>
               </div>
               <div className={styles.apiRow}>
                 <span>{t('admin.acceptedEmails')}</span>

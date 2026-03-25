@@ -1,4 +1,4 @@
-import { cleanup, render, screen, waitFor } from '@testing-library/react'
+import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 const { replaceMock, logoutMock, apiMock, apiUploadMock, ApiErrorMock } = vi.hoisted(() => ({
@@ -70,7 +70,12 @@ vi.mock('@/lib/i18n', () => ({
         'profile.completed': 'Completed',
         'profile.loadError': 'Could not load profile',
         'profile.deck': 'Profile deck copy',
+        'profile.deleteAccount': 'Delete account',
+        'profile.deletingAccount': 'Deleting account...',
         'confirm.logout': 'Confirm logout',
+        'confirm.deleteAccount': 'Confirm account deletion',
+        'common.cancel': 'Cancel',
+        'common.confirm': 'Confirm',
       }
       return dict[key] ?? key
     },
@@ -127,6 +132,50 @@ describe('ProfilePage', () => {
     render(<ProfilePage />)
 
     await waitFor(() => {
+      expect(logoutMock).toHaveBeenCalledTimes(1)
+      expect(replaceMock).toHaveBeenCalledWith('/login')
+    })
+  })
+
+  it('deletes the account, logs out, and redirects to login after confirmation', async () => {
+    logoutMock.mockResolvedValue(undefined)
+    const profileResponse = {
+      name: 'Aster',
+      email: 'aster@example.com',
+      bio: 'Dreaming in long takes.',
+      gender: 'female',
+      region: 'TW',
+      birth_year: 1996,
+      avatar_url: null,
+      match_gender_pref: 'male',
+      match_age_min: 25,
+      match_age_max: 35,
+      pure_taste_match: false,
+      sequencing_status: 'completed',
+      archetype_id: 'dream-archive',
+      archetype_name: 'Dream Archive',
+    }
+    apiMock.mockImplementation((path: string, options?: { method?: string }) => {
+      if (path === '/profile' && options?.method === 'DELETE') {
+        return Promise.resolve(undefined)
+      }
+      if (path === '/profile') {
+        return Promise.resolve(profileResponse)
+      }
+      return Promise.reject(new Error(`Unexpected api call: ${path}`))
+    })
+
+    render(<ProfilePage />)
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: 'Delete account' })).toBeTruthy()
+    })
+
+    fireEvent.click(screen.getByRole('button', { name: 'Delete account' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Confirm' }))
+
+    await waitFor(() => {
+      expect(apiMock).toHaveBeenCalledWith('/profile', { method: 'DELETE' })
       expect(logoutMock).toHaveBeenCalledTimes(1)
       expect(replaceMock).toHaveBeenCalledWith('/login')
     })

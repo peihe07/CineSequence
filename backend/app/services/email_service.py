@@ -100,6 +100,11 @@ async def send_invite_email(
             f'<p style="font-size:13px;color:#888;">可聊的方向：</p>'
             f'<ul style="font-size:13px;color:#666;">{items}</ul>'
         )
+    invite_copy = (
+        "先前向你發出了配對邀請，仍在等你回應。"
+        if is_reminder
+        else "向你發出了配對邀請。"
+    )
 
     await _send_or_log(
         to=recipient_email,
@@ -111,7 +116,7 @@ async def send_invite_email(
         html=(
             f"<h2>{'配對邀請提醒' if is_reminder else '一位觀影者對你的品味產生了共鳴'}</h2>"
             f"<p><strong>{safe_inviter}</strong>（{safe_archetype}）"
-            f"{'先前向你發出了配對邀請，仍在等你回應。' if is_reminder else '向你發出了配對邀請。'}</p>"
+            f"{invite_copy}</p>"
             f"{tags_html}"
             f"{breakers_html}"
             f'<p><a href="{respond_url}" '
