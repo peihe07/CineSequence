@@ -5,6 +5,12 @@
 }
 
 .content {
+  --admin-surface: rgba(255, 255, 255, 0.74);
+  --admin-surface-strong: rgba(255, 255, 255, 0.82);
+  --admin-text: #26332e;
+  --admin-text-soft: #52615a;
+  --admin-border: rgba(45, 54, 50, 0.14);
+
   width: 100%;
   max-width: 720px;
   display: flex;
@@ -17,6 +23,7 @@
   font-size: 1.4rem;
   font-weight: 600;
   letter-spacing: -0.02em;
+  color: var(--archive-text);
 }
 
 .forbidden {
@@ -25,7 +32,7 @@
   align-items: center;
   gap: 0.8rem;
   padding: 4rem 0;
-  color: var(--muted);
+  color: var(--archive-text);
   text-align: center;
 }
 
@@ -38,10 +45,10 @@
 
 .statCard {
   padding: 1.2rem;
-  background: var(--glass-bg-strong);
+  background: var(--admin-surface-strong);
   backdrop-filter: blur(var(--glass-blur));
   -webkit-backdrop-filter: blur(var(--glass-blur));
-  border: none;
+  border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: var(--card-radius);
   box-shadow: var(--glass-shadow);
   display: flex;
@@ -53,14 +60,14 @@
   font-family: var(--font-sans);
   font-size: 1.8rem;
   font-weight: 700;
-  color: var(--foreground);
+  color: var(--admin-text);
   line-height: 1;
 }
 
 .statLabel {
   font-size: 0.65rem;
   font-weight: 500;
-  color: var(--muted);
+  color: var(--admin-text-soft);
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -70,12 +77,19 @@
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  padding: 1.1rem 1rem 1rem;
+  background: var(--admin-surface);
+  backdrop-filter: blur(var(--glass-blur-light));
+  -webkit-backdrop-filter: blur(var(--glass-blur-light));
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: var(--card-radius);
+  box-shadow: var(--glass-shadow);
 }
 
 .sectionTitle {
   font-size: 0.75rem;
   font-weight: 600;
-  color: var(--muted);
+  color: var(--admin-text-soft);
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -95,7 +109,7 @@
 
 .funnelBar {
   height: 24px;
-  background: rgba(45, 212, 191, 0.12);
+  background: rgba(45, 212, 191, 0.18);
   border-left: 3px solid #2dd4bf;
   display: flex;
   align-items: center;
@@ -108,12 +122,12 @@
   font-family: var(--font-sans);
   font-size: 0.7rem;
   font-weight: 600;
-  color: var(--foreground);
+  color: var(--admin-text);
 }
 
 .funnelLabel {
   font-size: 0.75rem;
-  color: var(--muted);
+  color: var(--admin-text-soft);
   white-space: nowrap;
 }
 
@@ -128,19 +142,19 @@
   padding: 0.5rem 0.8rem;
   text-align: left;
   font-size: 0.8rem;
-  border-bottom: 1px solid rgba(45, 54, 50, 0.15);
+  border-bottom: 1px solid var(--admin-border);
 }
 
 .table th {
   font-size: 0.65rem;
   font-weight: 500;
-  color: var(--muted);
+  color: var(--admin-text-soft);
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
 .table td {
-  color: var(--foreground);
+  color: var(--admin-text);
 }
 
 .table td:last-child {
@@ -189,7 +203,7 @@
   display: flex;
   justify-content: center;
   padding: 4rem 0;
-  color: var(--muted);
+  color: var(--archive-text);
 }
 
 /* API usage */
@@ -201,10 +215,10 @@
 
 .apiCard {
   padding: 1rem;
-  background: var(--glass-bg-strong);
+  background: var(--admin-surface-strong);
   backdrop-filter: blur(var(--glass-blur));
   -webkit-backdrop-filter: blur(var(--glass-blur));
-  border: none;
+  border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: var(--card-radius);
   box-shadow: var(--glass-shadow);
   display: flex;
@@ -216,7 +230,7 @@
   font-family: var(--font-sans);
   font-size: 0.75rem;
   font-weight: 600;
-  color: var(--foreground);
+  color: var(--admin-text);
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }
@@ -228,18 +242,18 @@
 }
 
 .apiRow span:first-child {
-  color: var(--muted);
+  color: var(--admin-text-soft);
 }
 
 .apiRow span:last-child {
   font-family: var(--font-sans);
   font-weight: 600;
-  color: var(--foreground);
+  color: var(--admin-text);
 }
 
 .apiTotal {
   padding-top: 0.4rem;
-  border-top: 1px solid rgba(45, 54, 50, 0.15);
+  border-top: 1px solid var(--admin-border);
   font-weight: 600;
 }
 
@@ -249,18 +263,19 @@
   justify-content: space-between;
   align-items: center;
   padding: 0.8rem 1rem;
-  background: var(--glass-bg-strong);
+  background: var(--admin-surface-strong);
   backdrop-filter: blur(var(--glass-blur));
   -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: var(--card-radius);
   box-shadow: var(--glass-shadow);
   font-size: 0.8rem;
-  color: var(--muted);
+  color: var(--admin-text-soft);
 }
 
 .costValue {
   font-family: var(--font-sans);
   font-size: 1.1rem;
   font-weight: 700;
-  color: var(--foreground);
+  color: var(--admin-text);
 }
