@@ -39,8 +39,12 @@ export const metadata: Metadata = {
     shortcut: '/favicon.svg',
     apple: '/favicon.svg',
   },
+  openGraph: {
+    images: [{ url: '/og-image.png', width: 1200, height: 630, alt: 'CineSequence — Decode Your Cinema DNA' }],
+  },
   twitter: {
     card: 'summary_large_image',
+    images: ['/og-image.png'],
   },
 }
 
