@@ -10,7 +10,6 @@ from fastapi.responses import JSONResponse, Response
 from pydantic import BaseModel, Field, model_validator
 from sqlalchemy import delete, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import selectinload
 
 from app.config import settings
 from app.deps import get_current_user, get_db
@@ -202,18 +201,33 @@ class FavoriteMoviesUpdate(BaseModel):
         return self
 
 
-def _user_to_profile(user: User) -> ProfileOut:
-    """Convert User model to ProfileOut, including DNA summary if available."""
-    dna = user.dna_profile
+async def _profile_out(db: AsyncSession, user: User) -> ProfileOut:
+    """Convert User model to ProfileOut, loading related profile data explicitly."""
+    dna_result = await db.execute(
+        select(DnaProfile)
+        .where(DnaProfile.user_id == user.id)
+        .where(DnaProfile.is_active.is_(True))
+        .limit(1)
+    )
+    dna = dna_result.scalar_one_or_none()
+
     archetype_name = None
     if dna:
         for archetype in ARCHETYPES:
             if archetype["id"] == dna.archetype_id:
                 archetype_name = archetype["name"]
                 break
+
+    favorites_result = await db.execute(
+        select(UserFavoriteMovie)
+        .where(UserFavoriteMovie.user_id == user.id)
+        .order_by(UserFavoriteMovie.display_order)
+    )
     favorites = [
-        FavoriteMovieOut.model_validate(m) for m in (user.favorite_movies or [])
+        FavoriteMovieOut.model_validate(movie)
+        for movie in favorites_result.scalars().all()
     ]
+
     return ProfileOut(
         id=user.id,
         email=user.email,
@@ -238,22 +252,6 @@ def _user_to_profile(user: User) -> ProfileOut:
         personal_ticket_url=normalize_public_object_url(dna.personal_ticket_url) if dna else None,
         favorite_movies=favorites,
     )
-
-
-async def _load_profile_user(db: AsyncSession, user_id: uuid.UUID) -> User:
-    result = await db.execute(
-        select(User)
-        .options(
-            selectinload(User.dna_profiles),
-            selectinload(User.favorite_movies),
-        )
-        .where(User.id == user_id)
-        .limit(1)
-    )
-    user = result.scalar_one_or_none()
-    if not user:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
-    return user
 
 
 async def _refresh_group_membership_stats(
@@ -286,8 +284,7 @@ async def get_profile(
     db: Annotated[AsyncSession, Depends(get_db)],
 ):
     """Get current user's profile."""
-    loaded_user = await _load_profile_user(db, user.id)
-    return _user_to_profile(loaded_user)
+    return await _profile_out(db, user)
 
 
 @router.patch("")
@@ -329,7 +326,6 @@ async def update_profile(
                 profile.personal_ticket_url = await _generate_personal_ticket_url(db, user, profile)
 
         await db.commit()
-        loaded_user = await _load_profile_user(db, user_id)
     except HTTPException:
         await db.rollback()
         raise
@@ -341,7 +337,7 @@ async def update_profile(
             detail="Failed to update profile",
         ) from None
 
-    return _user_to_profile(loaded_user)
+    return await _profile_out(db, user)
 
 
 @router.post("/avatar")
@@ -395,8 +391,7 @@ async def upload_avatar(
         profile.personal_ticket_url = await _generate_personal_ticket_url(db, user, profile)
 
     await db.commit()
-    loaded_user = await _load_profile_user(db, user.id)
-    return _user_to_profile(loaded_user)
+    return await _profile_out(db, user)
 
 
 @router.get("/favorites")
