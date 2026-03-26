@@ -434,6 +434,11 @@ async def export_data(
         }
         for s in user.sessions
     ]
+    favorites_result = await db.execute(
+        select(UserFavoriteMovie)
+        .where(UserFavoriteMovie.user_id == user.id)
+        .order_by(UserFavoriteMovie.display_order)
+    )
     favorite_movies_data = [
         {
             "tmdb_id": movie.tmdb_id,
@@ -442,7 +447,7 @@ async def export_data(
             "poster_url": movie.poster_url,
             "display_order": movie.display_order,
         }
-        for movie in (user.favorite_movies or [])
+        for movie in favorites_result.scalars().all()
     ]
 
     # Fetch matches where this user is either party
