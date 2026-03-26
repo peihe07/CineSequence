@@ -96,7 +96,7 @@ class TestUpdateProfile:
         await db_session.commit()
 
         with patch(
-            "app.services.ticket_gen.generate_and_upload_personal_ticket",
+            "app.routers.profile._regenerate_personal_ticket",
             new=AsyncMock(side_effect=RuntimeError("ticket generation failed")),
         ):
             response = await client.patch(
