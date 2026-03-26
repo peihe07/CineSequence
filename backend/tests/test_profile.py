@@ -82,6 +82,7 @@ class TestUpdateProfile:
         self, client: AsyncClient, db_session: AsyncSession
     ):
         user = await create_user(db_session)
+        user_id = user.id
         user.sequencing_status = SequencingStatus.completed
         profile = DnaProfile(
             user_id=user.id,
@@ -107,7 +108,7 @@ class TestUpdateProfile:
 
         assert response.status_code == 500
 
-        refreshed = await db_session.get(User, user.id)
+        refreshed = await db_session.get(User, user_id)
         assert refreshed is not None
         assert refreshed.name == "Profile User"
 
