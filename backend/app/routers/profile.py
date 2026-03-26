@@ -248,9 +248,16 @@ async def update_profile(
             await _regenerate_personal_ticket(user, db)
 
         await db.commit()
-    except Exception:
+    except HTTPException:
         await db.rollback()
         raise
+    except Exception:
+        await db.rollback()
+        logger.exception("Failed to update profile for user %s", user.id)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to update profile",
+        ) from None
 
     await db.refresh(user)
     return _user_to_profile(user)
