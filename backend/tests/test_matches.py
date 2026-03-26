@@ -201,6 +201,38 @@ class TestInviteRespondPermissions:
         assert data["status"] == "accepted"
         assert data["ticket_image_url"] == "https://ticket.test/1.png"
 
+    async def test_matches_response_rewrites_legacy_ticket_url(
+        self, client: AsyncClient, db_session: AsyncSession, monkeypatch
+    ):
+        inviter = await create_user_with_dna(
+            db_session, email="inviter@test.com", name="Inviter",
+            gender=Gender.female, birth_year=1994
+        )
+        recipient = await create_user_with_dna(
+            db_session, email="recipient@test.com", name="Recipient",
+            gender=Gender.male, birth_year=1992
+        )
+        match = await create_match(
+            db_session, user_a=inviter, user_b=recipient,
+            status=MatchStatus.accepted,
+        )
+        match.ticket_image_url = (
+            "https://pub-e41ee8d058234933a2c34e1300b7e2be.r2.dev/"
+            "cinesequence/tickets/legacy.png"
+        )
+        await db_session.commit()
+
+        monkeypatch.setattr(
+            "app.config.settings.s3_public_url",
+            "https://assets.cinesequence.xyz",
+        )
+
+        response = await client.get("/matches", headers=auth_headers(inviter))
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data[0]["ticket_image_url"] == "https://assets.cinesequence.xyz/tickets/legacy.png"
+
     async def test_invite_sets_reminder_tracking_fields(
         self, client: AsyncClient, db_session: AsyncSession
     ):

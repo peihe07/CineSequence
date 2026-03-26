@@ -286,11 +286,9 @@ function LegacyImageTicket({ ticketImageUrl, partnerName, similarityScore }: Leg
     >
       <div className={styles.legacyInner}>
         {ticketImageUrl ? (
-          <Image
+          <img
             src={ticketImageUrl}
             alt={`${t('matches.matched')} - ${partnerName}`}
-            fill
-            sizes="100vw"
             className={styles.legacyImage}
           />
         ) : (

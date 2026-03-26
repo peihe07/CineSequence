@@ -36,6 +36,26 @@ def get_public_url(key: str) -> str:
     return f"{base}/{normalized_key}"
 
 
+def normalize_public_object_url(url: str | None) -> str | None:
+    """Rewrite legacy public bucket URLs to the currently configured public base.
+
+    This keeps old DB rows usable after switching from the default `r2.dev`
+    public URL to a custom domain.
+    """
+    if not url:
+        return url
+
+    parsed = urlsplit(url)
+    path = parsed.path.lstrip("/")
+    bucket_prefix = f"{settings.s3_bucket}/"
+
+    if parsed.netloc.endswith(".r2.dev") and path.startswith(bucket_prefix):
+        object_key = path[len(bucket_prefix):]
+        return get_public_url(object_key)
+
+    return url
+
+
 def _get_client():
     """Create S3 client configured for Cloudflare R2."""
     return boto3.client(

@@ -23,6 +23,7 @@ from app.services.notification_service import (
     notify_match_accepted,
     notify_match_found,
 )
+from app.services.r2_storage import normalize_public_object_url
 
 router = APIRouter()
 
@@ -70,7 +71,7 @@ def _match_to_out(match, user_id: uuid.UUID) -> MatchOut:
         shared_tags=match.shared_tags or [],
         ice_breakers=match.ice_breakers or [],
         status=match.status.value,
-        ticket_image_url=match.ticket_image_url,
+        ticket_image_url=normalize_public_object_url(match.ticket_image_url),
         is_recipient=is_recipient,
     )
 
