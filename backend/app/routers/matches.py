@@ -63,7 +63,8 @@ def _match_to_out(match, user_id: uuid.UUID) -> MatchOut:
     partner = match.user_b if is_user_a else match.user_a
     is_recipient = match.user_b_id == user_id
 
-    # Prefer the partner's personal ticket after acceptance, but keep legacy match tickets as fallback.
+    # Prefer the partner's personal ticket after acceptance.
+    # Keep legacy match tickets as the fallback.
     partner_ticket = normalize_public_object_url(match.ticket_image_url)
     if match.status == MatchStatus.accepted:
         partner_profile = partner.dna_profile

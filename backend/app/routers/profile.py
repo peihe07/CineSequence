@@ -45,14 +45,29 @@ async def _regenerate_personal_ticket(user: User, db: AsyncSession) -> None:
     tag_keys = list(taxonomy["tags"].keys())
 
     archetype_data = ARCHETYPE_MAP.get(profile.archetype_id, {})
-    archetype_display = f"{archetype_data.get('name', '')} {archetype_data.get('name_en', '')}".strip() or "電影愛好者"
+    archetype_display = (
+        f"{archetype_data.get('name', '')} "
+        f"{archetype_data.get('name_en', '')}"
+    ).strip() or "電影愛好者"
 
     tag_vec = list(profile.tag_vector) if profile.tag_vector else []
     top_indices = sorted(range(len(tag_vec)), key=lambda i: tag_vec[i], reverse=True)
-    top_tags = [tag_keys[i] for i in top_indices[:8] if i < len(tag_keys) and tag_vec[i] >= 0.3]
+    top_tags = [
+        tag_keys[i]
+        for i in top_indices[:8]
+        if i < len(tag_keys) and tag_vec[i] >= 0.3
+    ]
 
     genre_vector = profile.genre_vector or {}
-    top_genres = [g for g, s in sorted(genre_vector.items(), key=lambda x: x[1], reverse=True)[:5] if s >= 0.1]
+    top_genres = [
+        genre
+        for genre, score in sorted(
+            genre_vector.items(),
+            key=lambda item: item[1],
+            reverse=True,
+        )[:5]
+        if score >= 0.1
+    ]
 
     try:
         ticket_url = await generate_and_upload_personal_ticket(

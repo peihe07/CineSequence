@@ -1,13 +1,12 @@
-"""add percentile metadata to matches
+"""add percentile metadata to matches.
 
 Revision ID: add_match_percentile_fields
 Revises: add_notifications_table
 Create Date: 2026-03-26
 """
 
-from alembic import op
 import sqlalchemy as sa
-
+from alembic import op
 
 # revision identifiers, used by Alembic.
 revision = "add_match_percentile_fields"

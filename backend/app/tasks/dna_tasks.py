@@ -127,11 +127,14 @@ async def build_dna_for_user(user_id: str):
         logger.info("DNA build completed for user %s", user_id)
 
         # Generate personal ticket image
-        from app.services.matcher import get_archetype_name, ARCHETYPE_MAP
+        from app.services.matcher import ARCHETYPE_MAP
         from app.services.ticket_gen import generate_and_upload_personal_ticket
 
         archetype_data = ARCHETYPE_MAP.get(profile.archetype_id, {})
-        archetype_display = f"{archetype_data.get('name', '')} {archetype_data.get('name_en', '')}".strip()
+        archetype_display = (
+            f"{archetype_data.get('name', '')} "
+            f"{archetype_data.get('name_en', '')}"
+        ).strip()
         if not archetype_display:
             archetype_display = "電影愛好者"
 
@@ -143,7 +146,11 @@ async def build_dna_for_user(user_id: str):
         tag_keys = list(_tax["tags"].keys())
         tag_vec = list(profile.tag_vector) if profile.tag_vector else []
         top_tag_indices = sorted(range(len(tag_vec)), key=lambda i: tag_vec[i], reverse=True)
-        top_tags = [tag_keys[i] for i in top_tag_indices[:8] if i < len(tag_keys) and tag_vec[i] >= 0.3]
+        top_tags = [
+            tag_keys[i]
+            for i in top_tag_indices[:8]
+            if i < len(tag_keys) and tag_vec[i] >= 0.3
+        ]
 
         # Extract top genres
         genre_vector = profile.genre_vector or {}
@@ -181,7 +188,6 @@ async def build_dna_for_user(user_id: str):
             dna_data["archetype_id"],
             context=f"dna_ready user={user.id}",
         )
-
 
 
 @celery_app.task(bind=True, max_retries=2, default_retry_delay=30)

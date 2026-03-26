@@ -90,7 +90,7 @@ export default function ProfilePage() {
   }
 
   const topTags = dnaResult
-    ? Object.entries(dnaResult.tag_labels)
+    ? Object.entries(dnaResult.tag_labels ?? {})
         .sort(([, a], [, b]) => b - a)
         .slice(0, 8)
         .filter(([, v]) => v >= 0.3)
@@ -98,7 +98,7 @@ export default function ProfilePage() {
     : []
 
   const topGenres = dnaResult
-    ? Object.entries(dnaResult.genre_vector)
+    ? Object.entries(dnaResult.genre_vector ?? {})
         .sort(([, a], [, b]) => b - a)
         .slice(0, 5)
         .filter(([, v]) => v >= 0.1)

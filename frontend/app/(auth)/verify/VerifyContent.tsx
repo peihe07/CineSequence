@@ -22,13 +22,19 @@ export function VerifyContent({
   const [status, setStatus] = useState<'verifying' | 'success' | 'error'>('verifying')
 
   useEffect(() => {
+    let isActive = true
+
     if (!token) {
       setStatus('error')
       return
     }
 
-    verify(token)
+    void Promise.resolve(verify(token))
       .then(async () => {
+        if (!isActive) {
+          return
+        }
+
         setStatus('success')
         const requestedPath = sanitizeNextPath(nextPath)
         let destination = requestedPath || '/sequencing'
@@ -47,8 +53,14 @@ export function VerifyContent({
         setTimeout(() => router.replace(destination), 1500)
       })
       .catch(() => {
-        setStatus('error')
+        if (isActive) {
+          setStatus('error')
+        }
       })
+
+    return () => {
+      isActive = false
+    }
   }, [fetchProgress, nextPath, router, token, verify])
 
   return (

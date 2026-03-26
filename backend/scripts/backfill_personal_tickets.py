@@ -72,14 +72,21 @@ async def main():
 
             # Build archetype display name
             archetype_data = ARCHETYPE_MAP.get(profile.archetype_id, {})
-            archetype_display = f"{archetype_data.get('name', '')} {archetype_data.get('name_en', '')}".strip()
+            archetype_display = (
+                f"{archetype_data.get('name', '')} "
+                f"{archetype_data.get('name_en', '')}"
+            ).strip()
             if not archetype_display:
                 archetype_display = "電影愛好者"
 
             # Extract top tags
             tag_vec = list(profile.tag_vector) if profile.tag_vector else []
             top_tag_indices = sorted(range(len(tag_vec)), key=lambda i: tag_vec[i], reverse=True)
-            top_tags = [TAG_KEYS[i] for i in top_tag_indices[:8] if i < len(TAG_KEYS) and tag_vec[i] >= 0.3]
+            top_tags = [
+                TAG_KEYS[i]
+                for i in top_tag_indices[:8]
+                if i < len(TAG_KEYS) and tag_vec[i] >= 0.3
+            ]
 
             # Extract top genres
             genre_vector = profile.genre_vector or {}
@@ -102,10 +109,21 @@ async def main():
                 profile.personal_ticket_url = ticket_url
                 await db.commit()
                 success += 1
-                logger.info("[%d/%d] %s (%s) → %s", success + failed, len(profiles), user.name, user.email, ticket_url)
+                logger.info(
+                    "[%d/%d] %s (%s) → %s",
+                    success + failed,
+                    len(profiles),
+                    user.name,
+                    user.email,
+                    ticket_url,
+                )
             except Exception:
                 failed += 1
-                logger.exception("Failed to generate ticket for user %s (%s)", user.name, user.email)
+                logger.exception(
+                    "Failed to generate ticket for user %s (%s)",
+                    user.name,
+                    user.email,
+                )
 
         logger.info("Done! %d succeeded, %d failed out of %d total", success, failed, len(profiles))
 

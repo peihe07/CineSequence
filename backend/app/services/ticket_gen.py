@@ -231,7 +231,12 @@ def generate_personal_ticket(
     serial = f"#{uuid.uuid4().hex[:8].upper()}"
     bbox_serial = draw.textbbox((0, 0), serial, font=font_xs)
     serial_w = bbox_serial[2] - bbox_serial[0]
-    draw.text((TICKET_W - pad - serial_w, TICKET_H - 40), serial, fill=palette["muted"], font=font_xs)
+    draw.text(
+        (TICKET_W - pad - serial_w, TICKET_H - 40),
+        serial,
+        fill=palette["muted"],
+        font=font_xs,
+    )
 
     buf = BytesIO()
     img.save(buf, format="PNG", optimize=True)

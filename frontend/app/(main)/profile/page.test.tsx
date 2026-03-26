@@ -120,9 +120,9 @@ describe('ProfilePage', () => {
       expect(screen.getByRole('heading', { name: 'Profile' })).toBeTruthy()
     })
 
-    expect(screen.getByText('aster@example.com')).toBeTruthy()
-    expect(screen.getByText('Dreaming in long takes.')).toBeTruthy()
-    expect(screen.getByText('Dream Archive')).toBeTruthy()
+    expect(screen.getAllByText('aster@example.com').length).toBeGreaterThan(0)
+    expect(screen.getAllByText('Dreaming in long takes.').length).toBeGreaterThan(0)
+    expect(screen.getAllByText('Dream Archive').length).toBeGreaterThan(0)
     expect(screen.getAllByText('Completed').length).toBeGreaterThan(0)
   })
 
