@@ -254,7 +254,10 @@ async def send_invite(
         except Exception:
             logger.exception("Failed to send invite email for match %s", match.id)
     else:
-        logger.info("Skipped invite email for match %s (recipient disabled notifications)", match.id)
+        logger.info(
+            "Skipped invite email for match %s (recipient disabled notifications)",
+            match.id,
+        )
 
     return match
 
