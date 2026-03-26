@@ -10,10 +10,9 @@ import styles from './ProfileTicketCard.module.css'
 interface ProfileTicketCardProps {
   profile: Profile
   topTags: string[]
-  topGenres: string[]
 }
 
-export default function ProfileTicketCard({ profile, topTags, topGenres }: ProfileTicketCardProps) {
+export default function ProfileTicketCard({ profile, topTags }: ProfileTicketCardProps) {
   const { t, locale } = useI18n()
   const ref = useRef<HTMLDivElement>(null)
   const rotateX = useMotionValue(0)
@@ -37,6 +36,7 @@ export default function ProfileTicketCard({ profile, topTags, topGenres }: Profi
   const ry = useTransform(rotateY, (v) => `${v}deg`)
 
   const archetypeName = profile.archetype_name ?? profile.archetype_id ?? ''
+  const favoriteMovies = profile.favorite_movies ?? []
 
   return (
     <motion.div
@@ -63,9 +63,20 @@ export default function ProfileTicketCard({ profile, topTags, topGenres }: Profi
         <div className={styles.perforation} />
 
         <div className={styles.identity}>
-          <h2 className={styles.name}>{profile.name}</h2>
-          <p className={styles.archetype}>{archetypeName}</p>
-          <p className={styles.email}>{profile.email}</p>
+          <div className={styles.identityTop}>
+            <div className={styles.identityCopy}>
+              <h2 className={styles.name}>{profile.name}</h2>
+              <p className={styles.archetype}>{archetypeName}</p>
+              <p className={styles.email}>{profile.email}</p>
+            </div>
+            {profile.avatar_url && (
+              <img
+                src={profile.avatar_url}
+                alt={profile.name}
+                className={styles.avatar}
+              />
+            )}
+          </div>
           {profile.bio && <p className={styles.bio}>{profile.bio}</p>}
         </div>
 
@@ -84,25 +95,17 @@ export default function ProfileTicketCard({ profile, topTags, topGenres }: Profi
           </div>
         )}
 
-        {topGenres.length > 0 && (
+        {favoriteMovies.length > 0 && (
           <div className={styles.section}>
-            <span className={styles.sectionLabel}>{t('profile.ticketGenreLabel')}</span>
-            <div className={styles.genres}>
-              {topGenres.map((genre) => (
-                <span key={genre} className={styles.genre}>· {genre}</span>
+            <span className={styles.sectionLabel}>{t('profile.ticketFavoritesLabel')}</span>
+            <div className={styles.favorites}>
+              {favoriteMovies.slice(0, 3).map((movie) => (
+                <span key={movie.tmdb_id} className={styles.favorite}>
+                  · {movie.title_zh || movie.title_en}
+                </span>
               ))}
             </div>
           </div>
-        )}
-
-        {profile.personality_reading && (
-          <>
-            <div className={styles.perforation} />
-            <div className={styles.section}>
-              <span className={styles.sectionLabel}>{t('profile.ticketReadingLabel')}</span>
-              <p className={styles.reading}>{profile.personality_reading}</p>
-            </div>
-          </>
         )}
 
         <div className={styles.perforation} />

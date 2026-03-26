@@ -31,7 +31,25 @@ logger = logging.getLogger(__name__)
 _TICKET_FIELDS = {"name", "bio"}
 
 
-async def _generate_personal_ticket_url(user: User, profile: DnaProfile) -> str:
+async def _get_favorite_movie_titles(db: AsyncSession, user_id: uuid.UUID) -> list[str]:
+    result = await db.execute(
+        select(UserFavoriteMovie)
+        .where(UserFavoriteMovie.user_id == user_id)
+        .order_by(UserFavoriteMovie.display_order)
+    )
+    favorites = result.scalars().all()
+    return [
+        favorite.title_zh or favorite.title_en
+        for favorite in favorites
+        if favorite.title_zh or favorite.title_en
+    ]
+
+
+async def _generate_personal_ticket_url(
+    db: AsyncSession,
+    user: User,
+    profile: DnaProfile,
+) -> str:
     """Generate a personal ticket URL for a user/profile pair."""
     import json
 
@@ -61,6 +79,7 @@ async def _generate_personal_ticket_url(user: User, profile: DnaProfile) -> str:
         )[:5]
         if score >= 0.1
     ]
+    favorite_movies = await _get_favorite_movie_titles(db, user.id)
 
     return await generate_and_upload_personal_ticket(
         user_id=user.id,
@@ -73,6 +92,8 @@ async def _generate_personal_ticket_url(user: User, profile: DnaProfile) -> str:
         personality_reading=profile.personality_reading,
         conversation_style=profile.conversation_style,
         ticket_style=profile.ticket_style,
+        avatar_url=user.avatar_url,
+        favorite_movies=favorite_movies,
     )
 
 AVATAR_MAX_BYTES = 2 * 1024 * 1024  # 2 MB
@@ -285,7 +306,7 @@ async def update_profile(
             )
             profile = result.scalar_one_or_none()
             if profile:
-                profile.personal_ticket_url = await _generate_personal_ticket_url(user, profile)
+                profile.personal_ticket_url = await _generate_personal_ticket_url(db, user, profile)
 
         await db.commit()
         await db.refresh(user)
@@ -343,6 +364,16 @@ async def upload_avatar(
         url = await upload_bytes(data, key, content_type=file.content_type)
 
     user.avatar_url = _with_avatar_version(url)
+    result = await db.execute(
+        select(DnaProfile)
+        .where(DnaProfile.user_id == user.id)
+        .where(DnaProfile.is_active.is_(True))
+        .limit(1)
+    )
+    profile = result.scalar_one_or_none()
+    if profile:
+        profile.personal_ticket_url = await _generate_personal_ticket_url(db, user, profile)
+
     await db.commit()
     await db.refresh(user)
     return _user_to_profile(user)
@@ -383,6 +414,15 @@ async def update_favorites(
             poster_url=movie.poster_url,
             display_order=movie.display_order,
         ))
+    result = await db.execute(
+        select(DnaProfile)
+        .where(DnaProfile.user_id == user.id)
+        .where(DnaProfile.is_active.is_(True))
+        .limit(1)
+    )
+    profile = result.scalar_one_or_none()
+    if profile:
+        profile.personal_ticket_url = await _generate_personal_ticket_url(db, user, profile)
     await db.commit()
 
     result = await db.execute(

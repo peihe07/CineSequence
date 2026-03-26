@@ -11,11 +11,15 @@ logger = logging.getLogger(__name__)
 
 async def build_dna_for_user(user_id: str):
     """Build DNA profile and trigger matching for a user."""
+    import json as _json
+    from pathlib import Path as _Path
+
     from sqlalchemy import select
 
     from app.models.dna_profile import DnaProfile
     from app.models.pick import Pick
     from app.models.user import SequencingStatus, User
+    from app.models.user_favorite_movie import UserFavoriteMovie
     from app.services.ai_personality import generate_personality
     from app.services.dna_builder import build_dna
     from app.services.session_service import get_or_create_session
@@ -133,8 +137,6 @@ async def build_dna_for_user(user_id: str):
         archetype_display = get_archetype_display_name(profile.archetype_id)
 
         # Extract top tags from tag_vector
-        import json as _json
-        from pathlib import Path as _Path
         _tax_path = _Path(__file__).parent.parent / "data" / "tag_taxonomy.json"
         _tax = _json.loads(_tax_path.read_text())
         tag_keys = list(_tax["tags"].keys())
@@ -150,6 +152,16 @@ async def build_dna_for_user(user_id: str):
         genre_vector = profile.genre_vector or {}
         sorted_genres = sorted(genre_vector.items(), key=lambda x: x[1], reverse=True)
         top_genres = [g for g, score in sorted_genres[:5] if score >= 0.1]
+        favorites_result = await db.execute(
+            select(UserFavoriteMovie)
+            .where(UserFavoriteMovie.user_id == user.id)
+            .order_by(UserFavoriteMovie.display_order)
+        )
+        favorite_movies = [
+            favorite.title_zh or favorite.title_en
+            for favorite in favorites_result.scalars().all()
+            if favorite.title_zh or favorite.title_en
+        ]
 
         try:
             ticket_url = await generate_and_upload_personal_ticket(
@@ -163,6 +175,8 @@ async def build_dna_for_user(user_id: str):
                 personality_reading=profile.personality_reading,
                 conversation_style=profile.conversation_style,
                 ticket_style=profile.ticket_style,
+                avatar_url=user.avatar_url,
+                favorite_movies=favorite_movies,
             )
             profile.personal_ticket_url = ticket_url
             await db.commit()

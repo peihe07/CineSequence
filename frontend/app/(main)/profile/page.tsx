@@ -100,14 +100,6 @@ export default function ProfilePage() {
         .map(([k]) => k)
     : []
 
-  const topGenres = dnaResult
-    ? Object.entries(dnaResult.genre_vector ?? {})
-        .sort(([, a], [, b]) => b - a)
-        .slice(0, 5)
-        .filter(([, v]) => v >= 0.1)
-        .map(([k]) => k)
-    : []
-
   useEffect(() => {
     if (!isPreviewMode) return
     setIsEditing(false)
@@ -293,7 +285,7 @@ export default function ProfilePage() {
             </div>
             <div className={styles.snapshotSection}>
               {dnaResult ? (
-                <ProfileTicketCard profile={profile} topTags={topTags} topGenres={topGenres} />
+                <ProfileTicketCard profile={profile} topTags={topTags} />
               ) : (
                 <ProfileDnaSnapshot profile={profile} />
               )}

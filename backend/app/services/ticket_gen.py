@@ -5,8 +5,10 @@ import logging
 import uuid
 from io import BytesIO
 from pathlib import Path
+from urllib.error import URLError
+from urllib.request import urlopen
 
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFont, ImageOps
 
 from app.config import settings
 from app.services.r2_storage import upload_bytes
@@ -15,6 +17,39 @@ logger = logging.getLogger(__name__)
 
 _data_dir = Path(__file__).parent.parent / "data"
 _taxonomy = json.loads((_data_dir / "tag_taxonomy.json").read_text())
+
+_TAG_ZH_LABELS = {
+    "twist": "反轉結局",
+    "mindfuck": "燒腦",
+    "slowburn": "慢熱",
+    "ensemble": "群戲",
+    "solo": "獨角戲",
+    "visualFeast": "視覺饗宴",
+    "dialogue": "對白精彩",
+    "tearjerker": "催淚",
+    "darkTone": "黑暗",
+    "uplifting": "正能量",
+    "philosophical": "哲學思辨",
+    "satirical": "社會諷刺",
+    "nostalgic": "懷舊",
+    "experimental": "實驗性",
+    "cult": "邪典",
+    "comingOfAge": "成長故事",
+    "revenge": "復仇",
+    "heist": "精密計畫",
+    "survival": "生存掙扎",
+    "timeTravel": "時空穿越",
+    "dystopia": "反烏托邦",
+    "trueStory": "真實事件",
+    "nonEnglish": "非英語",
+    "existential": "存在主義",
+    "antiHero": "反英雄",
+    "romanticCore": "浪漫內核",
+    "violentAesthetic": "暴力美學",
+    "socialCritique": "社會批判",
+    "psychoThriller": "心理驚悚",
+    "absurdist": "荒誕",
+}
 
 # Ticket dimensions (portrait card, like a real movie ticket)
 TICKET_W = 800
@@ -101,7 +136,10 @@ def _draw_tag_pills(
     tag_x = x_start
     tag_y = y_start
     for tag_key in tags[:max_tags]:
-        tag_label = _taxonomy["tags"].get(tag_key, {}).get("zh", tag_key)
+        tag_label = _TAG_ZH_LABELS.get(
+            tag_key,
+            _taxonomy["tags"].get(tag_key, {}).get("zh", tag_key),
+        )
         bbox_tag = draw.textbbox((0, 0), tag_label, font=font)
         tw = bbox_tag[2] - bbox_tag[0]
 
@@ -119,6 +157,26 @@ def _draw_tag_pills(
     return tag_y + 40
 
 
+def _load_avatar_image(avatar_url: str | None, size: int) -> Image.Image | None:
+    """Fetch and fit an avatar image for the ticket if available."""
+    if not avatar_url:
+        return None
+
+    try:
+        with urlopen(avatar_url, timeout=4) as response:
+            avatar = Image.open(BytesIO(response.read())).convert("RGB")
+    except (OSError, URLError, ValueError):
+        logger.info("Skipping avatar render for ticket: %s", avatar_url)
+        return None
+
+    avatar = ImageOps.fit(avatar, (size, size), method=Image.Resampling.LANCZOS)
+    mask = Image.new("L", (size, size), 0)
+    mask_draw = ImageDraw.Draw(mask)
+    mask_draw.rounded_rectangle((0, 0, size, size), radius=28, fill=255)
+    avatar.putalpha(mask)
+    return avatar
+
+
 def _wrap_text(text: str, max_chars: int) -> list[str]:
     """Wrap text to fit within max_chars per line."""
     lines = []
@@ -131,6 +189,23 @@ def _wrap_text(text: str, max_chars: int) -> list[str]:
     return lines
 
 
+def _draw_favorite_movies(
+    draw: ImageDraw.ImageDraw,
+    favorite_movies: list[str],
+    x_start: int,
+    y_start: int,
+    font: ImageFont.FreeTypeFont,
+    palette: dict,
+) -> int:
+    """Draw a compact favorite-movies list and return the next y offset."""
+    for movie in favorite_movies[:3]:
+        for line in _wrap_text(movie, 24)[:2]:
+            draw.text((x_start, y_start), f"· {line}", fill=palette["text"], font=font)
+            y_start += 24
+        y_start += 4
+    return y_start
+
+
 def generate_personal_ticket(
     name: str,
     email: str,
@@ -141,6 +216,8 @@ def generate_personal_ticket(
     personality_reading: str | None = None,
     conversation_style: str | None = None,
     ticket_style: str = "classic",
+    avatar_url: str | None = None,
+    favorite_movies: list[str] | None = None,
 ) -> bytes:
     """Generate a personal movie ID card for one user.
 
@@ -155,6 +232,7 @@ def generate_personal_ticket(
     font_md = _get_font(20)
     font_sm = _get_font(16)
     font_xs = _get_font(13)
+    favorite_movies = favorite_movies or []
 
     # Subtle scan lines
     scan_step = 6 if palette["bg"][0] < 50 else 4
@@ -170,6 +248,11 @@ def generate_personal_ticket(
     _draw_punch_holes(draw, cursor_y, palette["muted"])
     cursor_y += 24
 
+    avatar = _load_avatar_image(avatar_url, size=132)
+    info_width = TICKET_W - (pad * 2) - (148 if avatar else 0)
+    if avatar:
+        img.alpha_composite(avatar, (TICKET_W - pad - 132, cursor_y))
+
     # ── Name + Archetype ──
     draw.text((pad, cursor_y), name, fill=palette["text"], font=font_title)
     cursor_y += 56
@@ -182,47 +265,31 @@ def generate_personal_ticket(
 
     # ── Bio ──
     if bio:
-        for line in _wrap_text(bio, 35)[:2]:
+        bio_chars = 34 if info_width < 560 else 38
+        for line in _wrap_text(bio, bio_chars)[:3]:
             draw.text((pad, cursor_y), line, fill=palette["text"], font=font_sm)
             cursor_y += 24
         cursor_y += 8
+
+    if avatar:
+        cursor_y = max(cursor_y, 40 + 132 + 16)
 
     _draw_punch_holes(draw, cursor_y, palette["muted"])
     cursor_y += 24
 
     # ── Taste DNA (tags) ──
-    draw.text((pad, cursor_y), "TASTE DNA", fill=palette["muted"], font=font_xs)
+    draw.text((pad, cursor_y), "TASTE TAGS", fill=palette["muted"], font=font_xs)
     cursor_y += 24
     cursor_y = _draw_tag_pills(draw, top_tags, pad, cursor_y, font_sm, palette)
 
-    # ── Top Genres ──
-    if top_genres:
-        cursor_y += 4
-        draw.text((pad, cursor_y), "GENRE SPECTRUM", fill=palette["muted"], font=font_xs)
-        cursor_y += 24
-        for genre in top_genres[:5]:
-            draw.text((pad, cursor_y), f"· {genre}", fill=palette["text"], font=font_sm)
-            cursor_y += 28
-        cursor_y += 8
-
-    # ── Personality ──
-    if personality_reading:
+    # ── Favorite movies ──
+    if favorite_movies:
         _draw_punch_holes(draw, cursor_y, palette["muted"])
         cursor_y += 20
-        draw.text((pad, cursor_y), "PERSONALITY READING", fill=palette["muted"], font=font_xs)
+        draw.text((pad, cursor_y), "MUST-WATCH FILMS", fill=palette["muted"], font=font_xs)
         cursor_y += 24
-        for line in _wrap_text(personality_reading, 32)[:6]:
-            draw.text((pad, cursor_y), line, fill=palette["text"], font=font_sm)
-            cursor_y += 24
+        cursor_y = _draw_favorite_movies(draw, favorite_movies, pad, cursor_y, font_sm, palette)
         cursor_y += 8
-
-    # ── Conversation Style ──
-    if conversation_style:
-        draw.text((pad, cursor_y), "CONVERSATION STYLE", fill=palette["muted"], font=font_xs)
-        cursor_y += 24
-        for line in _wrap_text(conversation_style, 32)[:3]:
-            draw.text((pad, cursor_y), line, fill=palette["text"], font=font_sm)
-            cursor_y += 24
 
     # ── Footer ──
     _draw_punch_holes(draw, TICKET_H - 60, palette["muted"])
@@ -254,6 +321,8 @@ async def generate_and_upload_personal_ticket(
     personality_reading: str | None = None,
     conversation_style: str | None = None,
     ticket_style: str = "classic",
+    avatar_url: str | None = None,
+    favorite_movies: list[str] | None = None,
 ) -> str:
     """Generate personal ticket image and upload to R2.
 
@@ -269,6 +338,8 @@ async def generate_and_upload_personal_ticket(
         personality_reading=personality_reading,
         conversation_style=conversation_style,
         ticket_style=ticket_style,
+        avatar_url=avatar_url,
+        favorite_movies=favorite_movies,
     )
 
     key = f"tickets/personal/{user_id}.png"

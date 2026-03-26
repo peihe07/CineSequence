@@ -4,6 +4,7 @@ Usage:
     cd backend
     source .venv/bin/activate
     python scripts/backfill_personal_tickets.py
+    python scripts/backfill_personal_tickets.py --force
 
 Set DATABASE_URL env var to target production DB, or it uses local .env defaults.
 """
@@ -25,7 +26,7 @@ _taxonomy = json.loads((_data_dir / "tag_taxonomy.json").read_text())
 TAG_KEYS = list(_taxonomy["tags"].keys())
 
 
-async def main():
+async def main(force: bool = False):
     from sqlalchemy import select
     from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
     from sqlalchemy.orm import sessionmaker
@@ -33,6 +34,7 @@ async def main():
     from app.config import settings
     from app.models.dna_profile import DnaProfile
     from app.models.user import SequencingStatus, User
+    from app.models.user_favorite_movie import UserFavoriteMovie
     from app.services.matcher import get_archetype_display_name
     from app.services.ticket_gen import generate_and_upload_personal_ticket
 
@@ -40,21 +42,30 @@ async def main():
     async_session = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 
     async with async_session() as db:
-        # Find all active DNA profiles without a personal ticket
-        result = await db.execute(
+        # Find all active DNA profiles that need a personal ticket.
+        query = (
             select(DnaProfile)
             .join(User, User.id == DnaProfile.user_id)
             .where(DnaProfile.is_active == True)  # noqa: E712
             .where(User.sequencing_status == SequencingStatus.completed)
-            .where(DnaProfile.personal_ticket_url.is_(None))
         )
+        if not force:
+            query = query.where(DnaProfile.personal_ticket_url.is_(None))
+
+        result = await db.execute(query)
         profiles = list(result.scalars().all())
 
         if not profiles:
-            logger.info("No profiles need backfilling. All done!")
+            if force:
+                logger.info("No completed active profiles found to regenerate. All done!")
+            else:
+                logger.info("No profiles need backfilling. All done!")
             return
 
-        logger.info("Found %d profiles to backfill", len(profiles))
+        if force:
+            logger.info("Force-regenerating %d personal tickets", len(profiles))
+        else:
+            logger.info("Found %d profiles to backfill", len(profiles))
 
         success = 0
         failed = 0
@@ -86,6 +97,16 @@ async def main():
             genre_vector = profile.genre_vector or {}
             sorted_genres = sorted(genre_vector.items(), key=lambda x: x[1], reverse=True)
             top_genres = [g for g, score in sorted_genres[:5] if score >= 0.1]
+            favorites_result = await db.execute(
+                select(UserFavoriteMovie)
+                .where(UserFavoriteMovie.user_id == user.id)
+                .order_by(UserFavoriteMovie.display_order)
+            )
+            favorite_movies = [
+                favorite.title_zh or favorite.title_en
+                for favorite in favorites_result.scalars().all()
+                if favorite.title_zh or favorite.title_en
+            ]
 
             try:
                 ticket_url = await generate_and_upload_personal_ticket(
@@ -99,6 +120,8 @@ async def main():
                     personality_reading=profile.personality_reading,
                     conversation_style=profile.conversation_style,
                     ticket_style=profile.ticket_style,
+                    avatar_url=user.avatar_url,
+                    favorite_movies=favorite_movies,
                 )
                 profile.personal_ticket_url = ticket_url
                 await db.commit()
@@ -126,4 +149,4 @@ async def main():
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    asyncio.run(main(force="--force" in sys.argv[1:]))
