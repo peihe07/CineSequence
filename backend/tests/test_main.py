@@ -60,6 +60,16 @@ class TestSecuritySettings:
                 _env_file=None,
             )
 
+    def test_non_production_allows_default_secrets_without_warning_noise(self, caplog):
+        Settings(
+            environment="development",
+            jwt_secret="change-me",
+            magic_link_secret="change-me",
+            _env_file=None,
+        )
+
+        assert "SECURITY:" not in caplog.text
+
     def test_csrf_origin_rejects_untrusted_origin(self):
         class DummyRequest:
             headers = {"origin": "https://evil.example"}

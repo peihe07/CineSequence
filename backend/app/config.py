@@ -1,11 +1,8 @@
-import logging
 from pathlib import Path
 from typing import Literal
 
 from pydantic import field_validator, model_validator
 from pydantic_settings import BaseSettings
-
-logger = logging.getLogger(__name__)
 
 _BACKEND_DIR = Path(__file__).resolve().parents[1]
 _PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -29,16 +26,6 @@ class Settings(BaseSettings):
     jwt_secret: str = "change-me"
     magic_link_secret: str = "change-me"
     magic_link_expiry_minutes: int = 15
-
-    @field_validator("jwt_secret", "magic_link_secret")
-    @classmethod
-    def secrets_must_not_be_default(cls, v: str, info) -> str:
-        if "change-me" in v:
-            logger.warning(
-                "SECURITY: %s uses default value. Set a real secret before production.",
-                info.field_name,
-            )
-        return v
 
     # Storage (R2)
     s3_bucket: str = "cinesequence"
