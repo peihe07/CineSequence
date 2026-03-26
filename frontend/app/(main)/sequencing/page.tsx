@@ -139,11 +139,15 @@ export default function SequencingPage() {
               />
             )}
           </div>
+
+          <div className={styles.actionsDock}>
+            <p className={styles.actionsHint}>{t('seq.skipPair')} / {t('seq.reroll')}</p>
+            <SkipActions onSkip={handleSkip} onReroll={handleReroll} disabled={isLoading} />
+          </div>
         </section>
 
         <section className={`${styles.section} ${styles.footerSection}`}>
           <LiveTagCloud tags={liveTags} />
-          <SkipActions onSkip={handleSkip} onReroll={handleReroll} disabled={isLoading} />
         </section>
       </div>
     </div>
