@@ -47,10 +47,16 @@ vi.mock('@/lib/i18n', () => ({
         'profile.gender': 'Gender',
         'profile.birthYear': 'Birth year',
         'profile.region': 'Region',
+        'profile.bio': 'Bio',
+        'profile.bioEmpty': 'Add a short introduction',
+        'profile.bioEmptyDisplay': 'Record pending / no introduction on file',
+        'profile.editBio': 'Edit bio',
         'profile.save': 'Save',
         'profile.cancel': 'Cancel',
         'profile.changeAvatar': 'Change avatar',
+        'profile.avatarHint': 'Upload a portrait',
         'profile.editName': 'Edit name',
+        'profile.edit': 'Edit',
         'profile.matchPref': 'Match Preferences',
         'profile.lookingFor': 'Looking for',
         'profile.ageRange': 'Age range',
@@ -70,6 +76,48 @@ vi.mock('@/lib/i18n', () => ({
         'profile.completed': 'Completed',
         'profile.loadError': 'Could not load profile',
         'profile.deck': 'Profile deck copy',
+        'profile.featuredNoteLabel': 'Featured Note',
+        'profile.identityNotesLabel': 'Identity Notes',
+        'profile.identityNotesDeck': 'Identity deck',
+        'profile.matchingNotesLabel': 'Matching Notes',
+        'profile.matchingNotesDeck': 'Matching deck',
+        'profile.preferencesEditorIntro': 'Preferences editor intro',
+        'profile.preferencesSummaryIntro': 'Preferences summary intro',
+        'profile.pureTasteOnCopy': 'Taste-first is on',
+        'profile.pureTasteOffCopy': 'Taste-first is off',
+        'profile.favorites': 'Must-Watch Films',
+        'profile.favoritesHint': 'Pick up to 3 films that define you for the public dossier.',
+        'profile.favoritesEmpty': 'Curation pending / no must-watch films on file',
+        'profile.favoritesSearch': 'Search movies...',
+        'profile.favoritesSearching': 'Searching...',
+        'profile.archiveChip': 'Archive / Profile',
+        'profile.dossierLabel': 'Profile Dossier',
+        'profile.editionLabel': 'Edition 07',
+        'profile.emailNotif': 'Email notifications',
+        'profile.visible': 'Visible in pool',
+        'profile.editPref': 'Edit preferences',
+        'profile.ticketInsertLabel': 'Editorial Insert',
+        'profile.ticketIssueLabel': 'Profile Card',
+        'profile.ticketCatalogLabel': 'ARCHIVE 07',
+        'profile.ticketTasteLabel': 'Taste DNA',
+        'profile.ticketFavoritesLabel': 'Must-Watch Films',
+        'profile.ticketStyleFallback': 'CLASSIC',
+        'profile.snapshotAriaLabel': 'DNA snapshot',
+        'profile.snapshotEyebrow': '[ DNA SNAPSHOT ]',
+        'profile.snapshotTitle': 'Preference Matrix',
+        'profile.snapshotVerified': 'Verified',
+        'profile.snapshotArchetype': 'Archetype',
+        'profile.snapshotScanComplete': 'Scan complete',
+        'profile.snapshotScanning': 'Scanning...',
+        'profile.snapshotResolving': 'Resolving profile signature',
+        'profile.snapshotPending': 'Pending sequence',
+        'profile.snapshotReadiness': 'Sequence readiness',
+        'profile.snapshotMatchScope': 'Match scope',
+        'profile.snapshotCurationStrictness': 'Curation strictness',
+        'profile.sequencingIntro': 'Sequencing intro',
+        'profile.previewMode': 'Preview mode',
+        'profile.previewBack': 'Back to editing',
+        'profile.completeness': 'Completeness',
         'profile.deleteAccount': 'Delete account',
         'profile.deletingAccount': 'Deleting account...',
         'confirm.logout': 'Confirm logout',
@@ -178,6 +226,43 @@ describe('ProfilePage', () => {
       expect(apiMock).toHaveBeenCalledWith('/profile', { method: 'DELETE' })
       expect(logoutMock).toHaveBeenCalledTimes(1)
       expect(replaceMock).toHaveBeenCalledWith('/login')
+    })
+  })
+
+  it('hides private editing controls in preview mode', async () => {
+    apiMock.mockResolvedValue({
+      name: 'Aster',
+      email: 'aster@example.com',
+      bio: 'Dreaming in long takes.',
+      gender: 'female',
+      region: 'TW',
+      birth_year: 1996,
+      avatar_url: null,
+      match_gender_pref: 'male',
+      match_age_min: 25,
+      match_age_max: 35,
+      pure_taste_match: false,
+      sequencing_status: 'completed',
+      archetype_id: 'dream-archive',
+      archetype_name: 'Dream Archive',
+      is_visible: true,
+      email_notifications_enabled: true,
+      favorite_movies: [],
+    })
+
+    render(<ProfilePage />)
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: 'Preview mode' })).toBeTruthy()
+      expect(screen.getByRole('button', { name: 'Delete account' })).toBeTruthy()
+    })
+
+    fireEvent.click(screen.getByRole('button', { name: 'Preview mode' }))
+
+    await waitFor(() => {
+      expect(screen.queryByRole('button', { name: 'Delete account' })).toBeNull()
+      expect(screen.queryByText('Completeness')).toBeNull()
+      expect(screen.queryByLabelText('Edit name')).toBeNull()
     })
   })
 })

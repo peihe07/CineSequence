@@ -9,6 +9,7 @@ interface FavoriteMoviesCardProps {
   favorites: FavoriteMovie[]
   title: string
   hintLabel: string
+  emptyLabel: string
   searchLabel: string
   searchingLabel: string
   saveLabel: string
@@ -30,6 +31,7 @@ export default function FavoriteMoviesCard({
   favorites,
   title,
   hintLabel,
+  emptyLabel,
   searchLabel,
   searchingLabel,
   saveLabel,
@@ -119,7 +121,7 @@ export default function FavoriteMoviesCard({
   if (isPreview && favorites.length === 0) return null
 
   return (
-    <div className={styles.card}>
+    <div className={`${styles.card} ${isPreview ? styles.previewCard : ''}`}>
       <div className={styles.sectionTitleRow}>
         <h2 className={styles.sectionTitle}>
           <i className="ri-film-line" /> {title}
@@ -138,7 +140,7 @@ export default function FavoriteMoviesCard({
       {!isEditing ? (
         <div className={styles.favoritesGrid}>
           {favorites.length === 0 ? (
-            <p className={styles.cardIntro}>{hintLabel}</p>
+            <p className={styles.cardIntro}>{emptyLabel}</p>
           ) : (
             favorites.map((movie) => (
               <div key={movie.tmdb_id} className={styles.favoriteItem}>
@@ -192,6 +194,7 @@ export default function FavoriteMoviesCard({
 
           {draft.length < 3 && (
             <div className={styles.field}>
+              <span className={styles.cardIntro}>{hintLabel}</span>
               <input
                 className={styles.editInput}
                 value={query}

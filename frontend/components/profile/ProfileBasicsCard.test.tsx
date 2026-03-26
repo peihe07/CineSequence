@@ -46,6 +46,7 @@ describe('ProfileBasicsCard', () => {
         bioLabel="Bio"
         bioPlaceholder="Add bio"
         addBioLabel="Add bio"
+        bioEmptyDisplayLabel="Record pending"
         emailLabel="Email"
         genderLabel="Gender"
         birthYearLabel="Birth Year"
@@ -86,5 +87,53 @@ describe('ProfileBasicsCard', () => {
     expect(screen.getByText('1995')).toBeTruthy()
     expect(screen.getByText('TW')).toBeTruthy()
     expect(screen.getByText('Upload a portrait')).toBeTruthy()
+  })
+
+  it('renders as a static identity card in preview mode', () => {
+    render(
+      <ProfileBasicsCard
+        profile={profile}
+        nameLabel="Name"
+        bioLabel="Bio"
+        bioPlaceholder="Add bio"
+        addBioLabel="Add bio"
+        bioEmptyDisplayLabel="Record pending"
+        emailLabel="Email"
+        genderLabel="Gender"
+        birthYearLabel="Birth Year"
+        regionLabel="Region"
+        saveLabel="Save"
+        cancelLabel="Cancel"
+        changeAvatarLabel="Change avatar"
+        avatarHintLabel="Upload a portrait"
+        avatarError={null}
+        sectionLabel="Identity"
+        isPreview
+        editNameLabel="Edit name"
+        editBioLabel="Edit bio"
+        editName={profile.name}
+        editBio={profile.bio ?? ''}
+        isEditing={false}
+        isEditingBio={false}
+        saving={false}
+        savingBio={false}
+        uploadingAvatar={false}
+        fileInputRef={{ current: null }}
+        onAvatarUpload={vi.fn(async () => {})}
+        onEditNameChange={vi.fn()}
+        onEditBioChange={vi.fn()}
+        onEditStart={vi.fn()}
+        onEditCancel={vi.fn()}
+        onSave={vi.fn(async () => {})}
+        onBioEditStart={vi.fn()}
+        onBioEditCancel={vi.fn()}
+        onBioSave={vi.fn(async () => {})}
+        getGenderLabel={() => 'Other'}
+      />,
+    )
+
+    expect(screen.queryByText('Upload a portrait')).toBeNull()
+    expect(screen.queryByLabelText('Edit name')).toBeNull()
+    expect(screen.queryByLabelText('Edit bio')).toBeNull()
   })
 })

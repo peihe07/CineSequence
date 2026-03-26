@@ -1,11 +1,7 @@
 'use client'
 
-import { useCallback, useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
-import { useRouter } from 'next/navigation'
-import { ApiError, api, apiUpload } from '@/lib/api'
 import { useI18n } from '@/lib/i18n'
-import { useAuthStore } from '@/stores/authStore'
 import ProfileBasicsCard from '@/components/profile/ProfileBasicsCard'
 import ProfileCompletenessBar from '@/components/profile/ProfileCompletenessBar'
 import ProfileDnaSnapshot from '@/components/profile/ProfileDnaSnapshot'
@@ -14,180 +10,49 @@ import ProfileHeader from '@/components/profile/ProfileHeader'
 import ProfilePreferencesCard from '@/components/profile/ProfilePreferencesCard'
 import ProfileSequencingCard from '@/components/profile/ProfileSequencingCard'
 import ProfileTicketCard from '@/components/profile/ProfileTicketCard'
-import type { FavoriteMovie, Profile } from '@/components/profile/types'
-import { useDnaStore } from '@/stores/dnaStore'
 import ConfirmDialog from '@/components/ui/ConfirmDialog'
+import { useProfile } from './useProfile'
 import styles from './page.module.css'
 
 export default function ProfilePage() {
   const { t } = useI18n()
-  const router = useRouter()
-  const logout = useAuthStore((state) => state.logout)
-  const [profile, setProfile] = useState<Profile | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
-  const [isEditing, setIsEditing] = useState(false)
-  const [editName, setEditName] = useState('')
-  const [isEditingBio, setIsEditingBio] = useState(false)
-  const [editBio, setEditBio] = useState('')
-  const [saving, setSaving] = useState(false)
-  const [savingBio, setSavingBio] = useState(false)
-  const [isLoggingOut, setIsLoggingOut] = useState(false)
-  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
-  const [isDeletingAccount, setIsDeletingAccount] = useState(false)
-  const [uploadingAvatar, setUploadingAvatar] = useState(false)
-  const [avatarError, setAvatarError] = useState<string | null>(null)
-  const [isPreviewMode, setIsPreviewMode] = useState(false)
-  const fileInputRef = useRef<HTMLInputElement>(null)
-  const dnaResult = useDnaStore((state) => state.result)
-  const fetchDna = useDnaStore((state) => state.fetchResult)
-
-  const handleAvatarUpload = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-    setUploadingAvatar(true)
-    setAvatarError(null)
-    try {
-      const updated = await apiUpload<Profile>('/profile/avatar', file)
-      setProfile(updated)
-    } catch (error) {
-      if (error instanceof ApiError) {
-        setAvatarError(error.detail)
-      } else {
-        setAvatarError(t('common.error'))
-      }
-    } finally {
-      setUploadingAvatar(false)
-      if (fileInputRef.current) fileInputRef.current.value = ''
-    }
-  }, [t])
-
-  // Locale-aware label resolvers using t() — replaces hardcoded GENDER_LABELS / PREF_LABELS / STATUS_LABELS
-  function getGenderLabel(value: string): string {
-    const map: Record<string, string> = {
-      male: t('profile.genderMale'),
-      female: t('profile.genderFemale'),
-      other: t('profile.genderOther'),
-      prefer_not_to_say: t('profile.genderSkip'),
-    }
-    return map[value] ?? value
-  }
-
-  function getPrefLabel(value: string): string {
-    const map: Record<string, string> = {
-      male: t('profile.genderMale'),
-      female: t('profile.genderFemale'),
-      other: t('profile.genderOther'),
-      any: t('profile.prefAny'),
-    }
-    return map[value] ?? value
-  }
-
-  function getStatusLabel(value: string): string {
-    const map: Record<string, string> = {
-      not_started: t('profile.notStarted'),
-      in_progress: t('profile.inProgress'),
-      completed: t('profile.completed'),
-    }
-    return map[value] ?? value
-  }
-
-  const topTags = dnaResult
-    ? Object.entries(dnaResult.tag_labels ?? {})
-        .sort(([, a], [, b]) => b - a)
-        .slice(0, 8)
-        .filter(([, v]) => v >= 0.3)
-        .map(([k]) => k)
-    : []
-
-  useEffect(() => {
-    if (!isPreviewMode) return
-    setIsEditing(false)
-    setIsEditingBio(false)
-    setEditName(profile?.name ?? '')
-    setEditBio(profile?.bio ?? '')
-  }, [isPreviewMode, profile?.bio, profile?.name])
-
-  useEffect(() => {
-    api<Profile>('/profile')
-      .then((data) => {
-        setProfile(data)
-        setEditName(data.name)
-        setEditBio(data.bio ?? '')
-        if (data.sequencing_status === 'completed') {
-          fetchDna().catch(() => {})
-        }
-      })
-      .catch(async (error) => {
-        if (error instanceof ApiError && (error.status === 401 || error.status === 403)) {
-          await logout()
-          router.replace('/login')
-          return
-        }
-      })
-      .finally(() => setIsLoading(false))
-  }, [logout, router, fetchDna])
-
-  const handleSave = async () => {
-    if (!editName.trim() || editName === profile?.name) {
-      setIsEditing(false)
-      return
-    }
-    setSaving(true)
-    try {
-      const updated = await api<Profile>('/profile', {
-        method: 'PATCH',
-        body: JSON.stringify({ name: editName.trim() }),
-      })
-      setProfile(updated)
-      setIsEditing(false)
-    } finally {
-      setSaving(false)
-    }
-  }
-
-  const handleBioSave = async () => {
-    const nextBio = editBio.trim()
-    if (nextBio === (profile?.bio ?? '')) {
-      setIsEditingBio(false)
-      return
-    }
-    setSavingBio(true)
-    try {
-      const updated = await api<Profile>('/profile', {
-        method: 'PATCH',
-        body: JSON.stringify({ bio: nextBio || null }),
-      })
-      setProfile(updated)
-      setEditBio(updated.bio ?? '')
-      setIsEditingBio(false)
-    } finally {
-      setSavingBio(false)
-    }
-  }
-
-  const handleLogout = async () => {
-    setShowLogoutConfirm(false)
-    setIsLoggingOut(true)
-    try {
-      await logout()
-      router.replace('/')
-    } finally {
-      setIsLoggingOut(false)
-    }
-  }
-
-  const handleDeleteAccount = async () => {
-    setShowDeleteConfirm(false)
-    setIsDeletingAccount(true)
-    try {
-      await api('/profile', { method: 'DELETE' })
-      await logout()
-      router.replace('/login')
-    } finally {
-      setIsDeletingAccount(false)
-    }
-  }
+  const {
+    profile,
+    isLoading,
+    dnaResult,
+    isEditing,
+    setIsEditing,
+    editName,
+    setEditName,
+    isEditingBio,
+    setIsEditingBio,
+    editBio,
+    setEditBio,
+    saving,
+    savingBio,
+    isLoggingOut,
+    showLogoutConfirm,
+    setShowLogoutConfirm,
+    showDeleteConfirm,
+    setShowDeleteConfirm,
+    isDeletingAccount,
+    uploadingAvatar,
+    avatarError,
+    isPreviewMode,
+    setIsPreviewMode,
+    fileInputRef,
+    topTags,
+    getGenderLabel,
+    getPrefLabel,
+    getStatusLabel,
+    handleAvatarUpload,
+    handleSave,
+    handleBioSave,
+    handleLogout,
+    handleDeleteAccount,
+    handleFavoriteMoviesUpdate,
+    setProfile,
+  } = useProfile()
 
   if (isLoading) {
     return (
@@ -208,7 +73,7 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className={styles.container}>
+    <div className={`${styles.container} ${isPreviewMode ? styles.previewCanvas : ''}`}>
       <motion.div
         className={styles.content}
         initial={{ opacity: 0, y: 12 }}
@@ -275,12 +140,18 @@ export default function ProfilePage() {
           </div>
         </section>
 
+        {!isPreviewMode && (
+          <section className={styles.completenessSection}>
+            <ProfileCompletenessBar profile={profile} label={t('profile.completeness')} />
+          </section>
+        )}
+
         <section className={`${styles.section} ${styles.editorialBody}`}>
           <div className={styles.featureRail}>
             <div className={styles.editorialNote}>
               <span className={styles.noteLabel}>{t('profile.featuredNoteLabel')}</span>
               <p className={styles.noteText}>
-                {profile.bio?.trim() || t('profile.bioEmpty')}
+                {profile.bio?.trim() || t('profile.bioEmptyDisplay')}
               </p>
             </div>
             <div className={styles.snapshotSection}>
@@ -307,6 +178,7 @@ export default function ProfilePage() {
                 bioLabel={t('profile.bio')}
                 bioPlaceholder={t('profile.bioPlaceholder')}
                 addBioLabel={t('profile.bioEmpty')}
+                bioEmptyDisplayLabel={t('profile.bioEmptyDisplay')}
                 emailLabel={t('profile.email')}
                 genderLabel={t('profile.gender')}
                 birthYearLabel={t('profile.birthYear')}
@@ -383,15 +255,14 @@ export default function ProfilePage() {
                   favorites={profile.favorite_movies ?? []}
                   title={t('profile.favorites')}
                   hintLabel={t('profile.favoritesHint')}
+                  emptyLabel={t('profile.favoritesEmpty')}
                   searchLabel={t('profile.favoritesSearch')}
                   searchingLabel={t('profile.favoritesSearching')}
                   saveLabel={t('profile.save')}
                   cancelLabel={t('profile.cancel')}
                   editLabel={t('profile.edit')}
                   isPreview={isPreviewMode}
-                  onUpdate={(movies: FavoriteMovie[]) =>
-                    setProfile({ ...profile, favorite_movies: movies })
-                  }
+                  onUpdate={handleFavoriteMoviesUpdate}
                 />
 
                 <ProfileSequencingCard
@@ -406,8 +277,6 @@ export default function ProfilePage() {
           </div>
         </section>
       </motion.div>
-
-      <ProfileCompletenessBar profile={profile} label={t('profile.completeness')} />
 
       {!isPreviewMode && (
         <section className={`${styles.section} ${styles.dangerSection}`}>

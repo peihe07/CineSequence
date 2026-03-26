@@ -105,7 +105,7 @@ export default function ProfilePreferencesCard({
 
   if (isEditing) {
     return (
-      <div className={styles.card}>
+      <div className={`${styles.card} ${isPreview ? styles.previewCard : ''}`}>
         <div className={styles.sectionTitleRow}>
           <h2 className={styles.sectionTitle}>
             <i className="ri-heart-pulse-line" /> {title}
@@ -245,7 +245,7 @@ export default function ProfilePreferencesCard({
   }
 
   return (
-    <div className={styles.card}>
+    <div className={`${styles.card} ${isPreview ? styles.previewCard : ''}`}>
       <div className={styles.sectionTitleRow}>
         <h2 className={styles.sectionTitle}>
           <i className="ri-heart-pulse-line" /> {title}

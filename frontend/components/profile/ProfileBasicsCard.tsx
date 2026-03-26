@@ -11,6 +11,7 @@ interface ProfileBasicsCardProps {
   bioLabel: string
   bioPlaceholder: string
   addBioLabel: string
+  bioEmptyDisplayLabel: string
   emailLabel: string
   genderLabel: string
   birthYearLabel: string
@@ -50,6 +51,7 @@ export default function ProfileBasicsCard({
   bioLabel,
   bioPlaceholder,
   addBioLabel,
+  bioEmptyDisplayLabel,
   emailLabel,
   genderLabel,
   birthYearLabel,
@@ -82,35 +84,43 @@ export default function ProfileBasicsCard({
   onBioSave,
   getGenderLabel,
 }: ProfileBasicsCardProps) {
+  const avatarNode = profile.avatar_url ? (
+    <Image
+      src={profile.avatar_url}
+      alt=""
+      fill
+      sizes="80px"
+      className={styles.avatarImg}
+    />
+  ) : (
+    <i className="ri-user-line" />
+  )
+
   return (
-    <div className={styles.card}>
+    <div className={`${styles.card} ${isPreview ? styles.previewCard : ''}`}>
       <div className={styles.basicsHero}>
         <div className={styles.avatarSection}>
-          <button
-            className={styles.avatarBtn}
-            onClick={() => fileInputRef.current?.click()}
-            disabled={uploadingAvatar || isPreview}
-            aria-label={changeAvatarLabel}
-          >
-            {profile.avatar_url ? (
-              <Image
-                src={profile.avatar_url}
-                alt=""
-                fill
-                sizes="80px"
-                className={styles.avatarImg}
-              />
-            ) : (
-              <i className="ri-user-line" />
-            )}
-            <span className={styles.avatarOverlay}>
-              {uploadingAvatar ? (
-                <i className="ri-loader-4-line ri-spin" />
-              ) : (
-                <i className="ri-camera-line" />
-              )}
-            </span>
-          </button>
+          {isPreview ? (
+            <div className={`${styles.avatarBtn} ${styles.avatarStatic}`}>
+              {avatarNode}
+            </div>
+          ) : (
+            <button
+              className={styles.avatarBtn}
+              onClick={() => fileInputRef.current?.click()}
+              disabled={uploadingAvatar}
+              aria-label={changeAvatarLabel}
+            >
+              {avatarNode}
+              <span className={styles.avatarOverlay}>
+                {uploadingAvatar ? (
+                  <i className="ri-loader-4-line ri-spin" />
+                ) : (
+                  <i className="ri-camera-line" />
+                )}
+              </span>
+            </button>
+          )}
           <input
             ref={fileInputRef}
             type="file"
@@ -118,8 +128,8 @@ export default function ProfileBasicsCard({
             onChange={onAvatarUpload}
             className={styles.fileInput}
           />
-          <p className={styles.avatarHint}>{avatarHintLabel}</p>
-          {avatarError && <p className={styles.avatarError}>{avatarError}</p>}
+          {!isPreview && <p className={styles.avatarHint}>{avatarHintLabel}</p>}
+          {!isPreview && avatarError && <p className={styles.avatarError}>{avatarError}</p>}
         </div>
 
         <div className={styles.identityBlock}>
@@ -201,7 +211,7 @@ export default function ProfileBasicsCard({
         ) : (
           <div className={styles.bioDisplay}>
             <p className={styles.bioText}>
-              {profile.bio?.trim() ? profile.bio : addBioLabel}
+              {profile.bio?.trim() ? profile.bio : bioEmptyDisplayLabel}
             </p>
             {!isPreview && (
               <button className={styles.editBtn} onClick={onBioEditStart} aria-label={editBioLabel}>
