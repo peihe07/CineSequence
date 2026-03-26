@@ -41,7 +41,7 @@ export default function ProfileTicketCard({ profile, topTags, topGenres }: Profi
   return (
     <motion.div
       ref={ref}
-      className={styles.ticket}
+      className={styles.frame}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       style={{ rotateX: rx, rotateY: ry, transformStyle: 'preserve-3d' }}
@@ -49,65 +49,67 @@ export default function ProfileTicketCard({ profile, topTags, topGenres }: Profi
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, ease: 'easeOut' }}
     >
-      {/* Header */}
-      <div className={styles.header}>
-        <span className={styles.brand}>CINE SEQUENCE</span>
+      <div className={styles.editorialMeta}>
+        <span className={styles.frameLabel}>Editorial Insert</span>
+        <span className={styles.frameIssue}>Profile Card</span>
       </div>
 
-      <div className={styles.perforation} />
-
-      {/* Identity */}
-      <div className={styles.identity}>
-        <h2 className={styles.name}>{profile.name}</h2>
-        <p className={styles.archetype}>{archetypeName}</p>
-        <p className={styles.email}>{profile.email}</p>
-        {profile.bio && <p className={styles.bio}>{profile.bio}</p>}
-      </div>
-
-      <div className={styles.perforation} />
-
-      {/* Taste DNA */}
-      {topTags.length > 0 && (
-        <div className={styles.section}>
-          <span className={styles.sectionLabel}>TASTE DNA</span>
-          <div className={styles.tags}>
-            {topTags.map((tag) => (
-              <span key={tag} className={styles.tag}>
-                {getTagLabel(tag, locale)}
-              </span>
-            ))}
-          </div>
+      <div className={styles.ticket}>
+        <div className={styles.header}>
+          <span className={styles.brand}>CINE SEQUENCE</span>
+          <span className={styles.catalogNo}>ARCHIVE 07</span>
         </div>
-      )}
 
-      {/* Genre Spectrum */}
-      {topGenres.length > 0 && (
-        <div className={styles.section}>
-          <span className={styles.sectionLabel}>GENRE SPECTRUM</span>
-          <div className={styles.genres}>
-            {topGenres.map((genre) => (
-              <span key={genre} className={styles.genre}>· {genre}</span>
-            ))}
-          </div>
+        <div className={styles.perforation} />
+
+        <div className={styles.identity}>
+          <h2 className={styles.name}>{profile.name}</h2>
+          <p className={styles.archetype}>{archetypeName}</p>
+          <p className={styles.email}>{profile.email}</p>
+          {profile.bio && <p className={styles.bio}>{profile.bio}</p>}
         </div>
-      )}
 
-      {/* Personality */}
-      {profile.personality_reading && (
-        <>
-          <div className={styles.perforation} />
+        <div className={styles.perforation} />
+
+        {topTags.length > 0 && (
           <div className={styles.section}>
-            <span className={styles.sectionLabel}>PERSONALITY READING</span>
-            <p className={styles.reading}>{profile.personality_reading}</p>
+            <span className={styles.sectionLabel}>Taste DNA</span>
+            <div className={styles.tags}>
+              {topTags.map((tag) => (
+                <span key={tag} className={styles.tag}>
+                  {getTagLabel(tag, locale)}
+                </span>
+              ))}
+            </div>
           </div>
-        </>
-      )}
+        )}
 
-      {/* Footer */}
-      <div className={styles.perforation} />
-      <div className={styles.footer}>
-        <span>cinesequence.app</span>
-        <span>{profile.ticket_style?.toUpperCase() ?? 'CLASSIC'}</span>
+        {topGenres.length > 0 && (
+          <div className={styles.section}>
+            <span className={styles.sectionLabel}>Genre Spectrum</span>
+            <div className={styles.genres}>
+              {topGenres.map((genre) => (
+                <span key={genre} className={styles.genre}>· {genre}</span>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {profile.personality_reading && (
+          <>
+            <div className={styles.perforation} />
+            <div className={styles.section}>
+              <span className={styles.sectionLabel}>Personality Reading</span>
+              <p className={styles.reading}>{profile.personality_reading}</p>
+            </div>
+          </>
+        )}
+
+        <div className={styles.perforation} />
+        <div className={styles.footer}>
+          <span>cinesequence.app</span>
+          <span>{profile.ticket_style?.toUpperCase() ?? 'CLASSIC'}</span>
+        </div>
       </div>
     </motion.div>
   )

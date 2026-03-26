@@ -18,23 +18,35 @@ export default function ProfileSequencingCard({
 }: ProfileSequencingCardProps) {
   return (
     <div className={styles.card}>
-      <h2 className={styles.sectionTitle}>
-        <i className="ri-dna-line" /> {title}
-      </h2>
-      <span
-        className={`${styles.statusBadge} ${
-          profile.sequencing_status === 'completed' ? styles.statusCompleted : ''
-        }`}
-      >
-        {getStatusLabel(profile.sequencing_status)}
-      </span>
+      <div className={styles.sectionTitleRow}>
+        <h2 className={styles.sectionTitle}>
+          <i className="ri-dna-line" /> {title}
+        </h2>
+      </div>
 
-      {profile.archetype_id && (
-        <div className={styles.field}>
-          <span className={styles.label}>{archetypeLabel}</span>
-          <span className={styles.value}>{profile.archetype_name || profile.archetype_id}</span>
+      <p className={styles.cardIntro}>
+        Sequencing stays as the profile backbone: current status first, then the archetype that the watch history resolves into.
+      </p>
+
+      <div className={styles.preferenceSummary}>
+        <div className={styles.factCard}>
+          <span className={styles.label}>{title}</span>
+          <span
+            className={`${styles.statusBadge} ${
+              profile.sequencing_status === 'completed' ? styles.statusCompleted : ''
+            }`}
+          >
+            {getStatusLabel(profile.sequencing_status)}
+          </span>
         </div>
-      )}
+
+        {profile.archetype_id && (
+          <div className={styles.factCard}>
+            <span className={styles.label}>{archetypeLabel}</span>
+            <span className={styles.factMetric}>{profile.archetype_name || profile.archetype_id}</span>
+          </div>
+        )}
+      </div>
     </div>
   )
 }

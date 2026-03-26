@@ -27,6 +27,18 @@ GENRE_ID_TO_NAME: dict[int, str] = {
     10752: "War", 37: "Western",
 }
 
+# IDF 權重：tag 被越少原型共用，鑑別力越高
+_TAG_ARCHETYPE_COUNT: dict[str, int] = {}
+for _arch in ARCHETYPES:
+    for _tag in _arch.get("match_tags", []):
+        _TAG_ARCHETYPE_COUNT[_tag] = _TAG_ARCHETYPE_COUNT.get(_tag, 0) + 1
+
+_NUM_ARCHETYPES = len(ARCHETYPES)
+TAG_IDF: dict[str, float] = {
+    tag: math.log(_NUM_ARCHETYPES / count)
+    for tag, count in _TAG_ARCHETYPE_COUNT.items()
+}
+
 
 def compute_tag_vector(picks: list[dict]) -> list[float]:
     """Build a 30-dimensional tag frequency vector from test_dimension signals.
@@ -103,20 +115,24 @@ def assign_archetype(
     tag_vector: list[float],
     genre_vector: dict[str, float],
 ) -> dict:
-    """Score each archetype by overlap with user's tags and genres, return best match."""
+    """Score each archetype using IDF-weighted tag sum + genre affinity.
+
+    IDF weighting: tags shared by fewer archetypes carry more discriminative
+    power. Weighted sum (not average) so archetypes with more matching tags
+    aren't penalised when the user genuinely matches multiple signals.
+    """
     best_score = -1.0
     best_archetype = ARCHETYPES[0]
 
     for archetype in ARCHETYPES:
-        # Tag affinity: average of user's tag scores for archetype's match_tags
+        # IDF-weighted tag affinity: sum of user_score × idf_weight
         match_tags = [t for t in archetype.get("match_tags", []) if t in TAG_INDEX]
-        tag_score = (
-            sum(tag_vector[TAG_INDEX[t]] for t in match_tags) / len(match_tags)
-            if match_tags
-            else 0.0
+        tag_score = sum(
+            tag_vector[TAG_INDEX[t]] * TAG_IDF.get(t, 1.0)
+            for t in match_tags
         )
 
-        # Genre affinity: average of matching genre scores
+        # Genre affinity: average of matching genre scores × 0.5
         archetype_genre_names = {
             GENRE_ID_TO_NAME[gid]
             for gid in archetype.get("match_genres", [])
@@ -126,7 +142,7 @@ def assign_archetype(
             genre_vector[g] for g in genre_vector if g in archetype_genre_names
         ]
         genre_score = (
-            sum(matching_genres) / len(matching_genres) * 0.3
+            sum(matching_genres) / len(matching_genres) * 0.5
             if matching_genres
             else 0.0
         )

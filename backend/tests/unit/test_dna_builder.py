@@ -3,6 +3,7 @@
 from app.services.dna_builder import (
     ARCHETYPES,
     GENRE_ID_TO_NAME,
+    TAG_IDF,
     TAG_INDEX,
     TAG_KEYS,
     assign_archetype,
@@ -310,6 +311,34 @@ class TestNewArchetypes:
         assert covered == all_tags, f"Uncovered tags: {all_tags - covered}"
 
 
+class TestIdfWeighting:
+    """Test that IDF weighting improves archetype differentiation."""
+
+    def test_idf_computed_for_all_archetype_tags(self):
+        """Every tag used by archetypes should have an IDF weight."""
+        for arch in ARCHETYPES:
+            for tag in arch.get("match_tags", []):
+                assert tag in TAG_IDF, f"{tag} missing from TAG_IDF"
+
+    def test_unique_tag_has_higher_idf(self):
+        """heist (1 archetype) should have higher IDF than darkTone (3 archetypes)."""
+        assert TAG_IDF["heist"] > TAG_IDF["darkTone"]
+
+    def test_shared_tags_produce_different_scores(self):
+        """Two archetypes sharing tags should still get different scores
+        when user has asymmetric tag distribution."""
+        vector = [0.0] * 30
+        # solo + antiHero shared by reality_hunter and lone_wolf,
+        # but revenge is unique to lone_wolf side
+        vector[TAG_INDEX["solo"]] = 0.5
+        vector[TAG_INDEX["antiHero"]] = 0.5
+        vector[TAG_INDEX["revenge"]] = 0.9
+
+        score_lone = _score_archetype("lone_wolf", vector, {})
+        score_reality = _score_archetype("reality_hunter", vector, {})
+        assert score_lone > score_reality
+
+
 class TestBuildDna:
     """Test the complete DNA build pipeline."""
 
@@ -340,16 +369,24 @@ class TestBuildDna:
 def _score_archetype(archetype_id: str, tag_vector: list[float], genre_vector: dict) -> float:
     """Helper to compute score for a specific archetype (mirrors assign_archetype logic)."""
     arch = next(a for a in ARCHETYPES if a["id"] == archetype_id)
-    score = 0.0
-    for tag in arch.get("match_tags", []):
-        if tag in TAG_INDEX:
-            score += tag_vector[TAG_INDEX[tag]]
+    # IDF-weighted tag sum
+    tag_score = sum(
+        tag_vector[TAG_INDEX[tag]] * TAG_IDF.get(tag, 1.0)
+        for tag in arch.get("match_tags", [])
+        if tag in TAG_INDEX
+    )
+    # Genre affinity × 0.5
     archetype_genre_names = {
         GENRE_ID_TO_NAME[gid]
         for gid in arch.get("match_genres", [])
         if gid in GENRE_ID_TO_NAME
     }
-    for genre_name, genre_score in genre_vector.items():
-        if genre_name in archetype_genre_names:
-            score += genre_score * 0.3
-    return score
+    matching_genres = [
+        genre_vector[g] for g in genre_vector if g in archetype_genre_names
+    ]
+    genre_score = (
+        sum(matching_genres) / len(matching_genres) * 0.5
+        if matching_genres
+        else 0.0
+    )
+    return tag_score + genre_score

@@ -1,6 +1,7 @@
 """Tests for profile CRUD endpoints."""
 
 import io
+from unittest.mock import AsyncMock, patch
 
 import pytest
 from httpx import AsyncClient
@@ -76,6 +77,39 @@ class TestUpdateProfile:
         )
         assert response.status_code == 200
         assert response.json()["bio"] == "Long walks, quiet cinemas, and difficult endings."
+
+    async def test_update_name_rolls_back_when_personal_ticket_regeneration_fails(
+        self, client: AsyncClient, db_session: AsyncSession
+    ):
+        user = await create_user(db_session)
+        user.sequencing_status = SequencingStatus.completed
+        profile = DnaProfile(
+            user_id=user.id,
+            archetype_id="time-traveler",
+            tag_vector=[0.6] * 30,
+            genre_vector={"Drama": 1.0},
+            quadrant_scores={},
+            ticket_style="classic",
+            is_active=True,
+        )
+        db_session.add(profile)
+        await db_session.commit()
+
+        with patch(
+            "app.services.ticket_gen.generate_and_upload_personal_ticket",
+            new=AsyncMock(side_effect=RuntimeError("ticket generation failed")),
+        ):
+            response = await client.patch(
+                "/profile",
+                json={"name": "New Name"},
+                headers=auth_headers(user),
+            )
+
+        assert response.status_code == 500
+
+        refreshed = await db_session.get(User, user.id)
+        assert refreshed is not None
+        assert refreshed.name == "Profile User"
 
     async def test_update_multiple_fields(self, client: AsyncClient, db_session: AsyncSession):
         user = await create_user(db_session)

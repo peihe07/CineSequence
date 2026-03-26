@@ -92,77 +92,83 @@ export default function ProfilePreferencesCard({
           </h2>
         </div>
 
-        <div className={styles.field}>
-          <span className={styles.label}>{birthYearLabel}</span>
-          <input
-            type="number"
-            className={styles.editInput}
-            value={form.birth_year}
-            onChange={(e) => setForm({ ...form, birth_year: e.target.value })}
-            placeholder="1990"
-            min={1920}
-            max={new Date().getFullYear() - 18}
-          />
-        </div>
+        <p className={styles.cardIntro}>
+          Adjust the matching brief while keeping the profile readout calm and editorial.
+        </p>
 
-        <div className={styles.field}>
-          <span className={styles.label}>{lookingForLabel}</span>
-          <div className={styles.prefGrid}>
-            {prefOptions.map((opt) => (
+        <div className={styles.preferencesEditor}>
+          <div className={styles.field}>
+            <span className={styles.label}>{birthYearLabel}</span>
+            <input
+              type="number"
+              className={styles.editInput}
+              value={form.birth_year}
+              onChange={(e) => setForm({ ...form, birth_year: e.target.value })}
+              placeholder="1990"
+              min={1920}
+              max={new Date().getFullYear() - 18}
+            />
+          </div>
+
+          <div className={styles.field}>
+            <span className={styles.label}>{lookingForLabel}</span>
+            <div className={styles.prefGrid}>
+              {prefOptions.map((opt) => (
+                <button
+                  key={opt.value}
+                  type="button"
+                  className={`${styles.prefOption} ${form.match_gender_pref === opt.value ? styles.prefActive : ''}`}
+                  onClick={() => setForm({ ...form, match_gender_pref: opt.value })}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className={styles.field}>
+            <span className={styles.label}>{ageRangeLabel}</span>
+            <div className={styles.editRow}>
+              <input
+                type="number"
+                className={styles.editInput}
+                value={form.match_age_min}
+                onChange={(e) => setForm({ ...form, match_age_min: e.target.value })}
+                placeholder="18"
+                min={18}
+                max={99}
+              />
+              <span className={styles.rangeDash}>—</span>
+              <input
+                type="number"
+                className={styles.editInput}
+                value={form.match_age_max}
+                onChange={(e) => setForm({ ...form, match_age_max: e.target.value })}
+                placeholder="99"
+                min={18}
+                max={99}
+              />
+            </div>
+          </div>
+
+          <div className={styles.field}>
+            <span className={styles.label}>{pureTasteLabel}</span>
+            <div className={styles.prefGrid}>
               <button
-                key={opt.value}
                 type="button"
-                className={`${styles.prefOption} ${form.match_gender_pref === opt.value ? styles.prefActive : ''}`}
-                onClick={() => setForm({ ...form, match_gender_pref: opt.value })}
+                className={`${styles.prefOption} ${form.pure_taste_match ? styles.prefActive : ''}`}
+                onClick={() => setForm({ ...form, pure_taste_match: true })}
               >
-                {opt.label}
+                {yesLabel}
               </button>
-            ))}
-          </div>
-        </div>
-
-        <div className={styles.field}>
-          <span className={styles.label}>{ageRangeLabel}</span>
-          <div className={styles.editRow}>
-            <input
-              type="number"
-              className={styles.editInput}
-              value={form.match_age_min}
-              onChange={(e) => setForm({ ...form, match_age_min: e.target.value })}
-              placeholder="18"
-              min={18}
-              max={99}
-            />
-            <span className={styles.rangeDash}>—</span>
-            <input
-              type="number"
-              className={styles.editInput}
-              value={form.match_age_max}
-              onChange={(e) => setForm({ ...form, match_age_max: e.target.value })}
-              placeholder="99"
-              min={18}
-              max={99}
-            />
-          </div>
-        </div>
-
-        <div className={styles.field}>
-          <span className={styles.label}>{pureTasteLabel}</span>
-          <div className={styles.prefGrid}>
-            <button
-              type="button"
-              className={`${styles.prefOption} ${form.pure_taste_match ? styles.prefActive : ''}`}
-              onClick={() => setForm({ ...form, pure_taste_match: true })}
-            >
-              {yesLabel}
-            </button>
-            <button
-              type="button"
-              className={`${styles.prefOption} ${!form.pure_taste_match ? styles.prefActive : ''}`}
-              onClick={() => setForm({ ...form, pure_taste_match: false })}
-            >
-              {noLabel}
-            </button>
+              <button
+                type="button"
+                className={`${styles.prefOption} ${!form.pure_taste_match ? styles.prefActive : ''}`}
+                onClick={() => setForm({ ...form, pure_taste_match: false })}
+              >
+                {noLabel}
+              </button>
+            </div>
           </div>
         </div>
 
@@ -189,36 +195,49 @@ export default function ProfilePreferencesCard({
         </button>
       </div>
 
-      {profile.birth_year && (
-        <div className={styles.field}>
-          <span className={styles.label}>{birthYearLabel}</span>
-          <span className={styles.value}>{profile.birth_year}</span>
-        </div>
-      )}
+      <p className={styles.cardIntro}>
+        Read as the matching brief: who feels aligned, what age range stays in frame, and how much taste leads the final cut.
+      </p>
 
-      <div className={styles.field}>
-        <span className={styles.label}>{lookingForLabel}</span>
-        <span className={styles.value}>
-          {profile.match_gender_pref
-            ? getPrefLabel(profile.match_gender_pref)
-            : notSetLabel}
-        </span>
-      </div>
+      <div className={styles.preferenceSummary}>
+        {profile.birth_year && (
+          <div className={styles.factCard}>
+            <span className={styles.label}>{birthYearLabel}</span>
+            <span className={styles.factMetric}>{profile.birth_year}</span>
+          </div>
+        )}
 
-      {(profile.match_age_min || profile.match_age_max) && (
-        <div className={styles.field}>
-          <span className={styles.label}>{ageRangeLabel}</span>
-          <span className={styles.value}>
-            {profile.match_age_min || '?'} — {profile.match_age_max || '?'}
+        <div className={styles.factCard}>
+          <span className={styles.label}>{lookingForLabel}</span>
+          <span className={styles.factMetric}>
+            {profile.match_gender_pref
+              ? getPrefLabel(profile.match_gender_pref)
+              : notSetLabel}
           </span>
         </div>
-      )}
+
+        {(profile.match_age_min || profile.match_age_max) && (
+          <div className={styles.factCard}>
+            <span className={styles.label}>{ageRangeLabel}</span>
+            <span className={styles.factMetric}>
+              {profile.match_age_min || '?'} — {profile.match_age_max || '?'}
+            </span>
+          </div>
+        )}
+      </div>
 
       <div className={styles.field}>
         <span className={styles.label}>{pureTasteLabel}</span>
-        <span className={styles.value}>
-          {profile.pure_taste_match ? yesLabel : noLabel}
-        </span>
+        <div className={styles.preferenceCallout}>
+          <span className={styles.calloutTone}>
+            {profile.pure_taste_match ? yesLabel : noLabel}
+          </span>
+          <p className={styles.calloutCopy}>
+            {profile.pure_taste_match
+              ? 'Taste-first mode is active, so demographic filters stay secondary to the profile signal.'
+              : 'Preference filters stay in play before a match is surfaced.'}
+          </p>
+        </div>
       </div>
     </div>
   )

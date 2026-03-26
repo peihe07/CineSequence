@@ -89,6 +89,22 @@ export default function ProfilePage() {
     return map[value] ?? value
   }
 
+  const topTags = dnaResult
+    ? Object.entries(dnaResult.tag_labels)
+        .sort(([, a], [, b]) => b - a)
+        .slice(0, 8)
+        .filter(([, v]) => v >= 0.3)
+        .map(([k]) => k)
+    : []
+
+  const topGenres = dnaResult
+    ? Object.entries(dnaResult.genre_vector)
+        .sort(([, a], [, b]) => b - a)
+        .slice(0, 5)
+        .filter(([, v]) => v >= 0.1)
+        .map(([k]) => k)
+    : []
+
   useEffect(() => {
     api<Profile>('/profile')
       .then((data) => {
@@ -197,119 +213,165 @@ export default function ProfilePage() {
         transition={{ duration: 0.4 }}
       >
         <section className={`${styles.section} ${styles.heroSection}`}>
-          <span className={styles.sideLabel}>{t('profile.fileLabel')}</span>
-          <ProfileHeader
-            title={t('profile.title')}
-            logoutLabel={t('profile.logout')}
-            loggingOutLabel={t('profile.loggingOut')}
-            isLoggingOut={isLoggingOut}
-            onLogout={async () => setShowLogoutConfirm(true)}
-          />
-          <div className={styles.metaRow}>
-            <span className={styles.metaChip}>ARCHIVE / PROFILE</span>
-            <span className={styles.metaChip}>{profile.region}</span>
-            <span className={styles.metaChip}>{getStatusLabel(profile.sequencing_status)}</span>
+          <div className={styles.heroFrame}>
+            <div className={styles.heroLead}>
+              <div className={styles.kickerRow}>
+                <span className={styles.kicker}>Profile Dossier</span>
+                <span className={styles.issueNo}>Edition 07</span>
+              </div>
+              <ProfileHeader
+                title={t('profile.title')}
+                logoutLabel={t('profile.logout')}
+                loggingOutLabel={t('profile.loggingOut')}
+                isLoggingOut={isLoggingOut}
+                onLogout={async () => setShowLogoutConfirm(true)}
+              />
+              <div className={styles.heroIdentity}>
+                <p className={styles.heroName}>{profile.name}</p>
+                <p className={styles.heroArchetype}>
+                  {profile.archetype_name || profile.archetype_id || getStatusLabel(profile.sequencing_status)}
+                </p>
+              </div>
+            </div>
+
+            <div className={styles.heroMetaColumn}>
+              <div className={styles.metaRow}>
+                <span className={styles.metaChip}>Archive / Profile</span>
+                <span className={styles.metaChip}>{profile.region}</span>
+                <span className={styles.metaChip}>{getStatusLabel(profile.sequencing_status)}</span>
+              </div>
+              <p className={styles.deck}>{t('profile.deck')}</p>
+              <dl className={styles.factGrid}>
+                <div className={styles.factBlock}>
+                  <dt className={styles.factLabel}>{t('profile.email')}</dt>
+                  <dd className={styles.factValue}>{profile.email}</dd>
+                </div>
+                <div className={styles.factBlock}>
+                  <dt className={styles.factLabel}>{t('profile.gender')}</dt>
+                  <dd className={styles.factValue}>{getGenderLabel(profile.gender)}</dd>
+                </div>
+                <div className={styles.factBlock}>
+                  <dt className={styles.factLabel}>{t('profile.region')}</dt>
+                  <dd className={styles.factValue}>{profile.region}</dd>
+                </div>
+                <div className={styles.factBlock}>
+                  <dt className={styles.factLabel}>{t('profile.matchPref')}</dt>
+                  <dd className={styles.factValue}>
+                    {profile.match_gender_pref ? getPrefLabel(profile.match_gender_pref) : t('profile.notSet')}
+                  </dd>
+                </div>
+              </dl>
+            </div>
           </div>
-          <p className={styles.deck}>
-            {t('profile.deck')}
-          </p>
         </section>
 
-        <section className={`${styles.section} ${styles.snapshotSection}`}>
-          {dnaResult ? (
-            <ProfileTicketCard
-              profile={profile}
-              topTags={
-                Object.entries(dnaResult.tag_labels)
-                  .sort(([, a], [, b]) => b - a)
-                  .slice(0, 8)
-                  .filter(([, v]) => v >= 0.3)
-                  .map(([k]) => k)
-              }
-              topGenres={
-                Object.entries(dnaResult.genre_vector)
-                  .sort(([, a], [, b]) => b - a)
-                  .slice(0, 5)
-                  .filter(([, v]) => v >= 0.1)
-                  .map(([k]) => k)
-              }
-            />
-          ) : (
-            <ProfileDnaSnapshot profile={profile} />
-          )}
-        </section>
+        <section className={`${styles.section} ${styles.editorialBody}`}>
+          <div className={styles.featureRail}>
+            <div className={styles.editorialNote}>
+              <span className={styles.noteLabel}>Featured Note</span>
+              <p className={styles.noteText}>
+                {profile.bio?.trim() || t('profile.bioEmpty')}
+              </p>
+            </div>
+            <div className={styles.snapshotSection}>
+              {dnaResult ? (
+                <ProfileTicketCard profile={profile} topTags={topTags} topGenres={topGenres} />
+              ) : (
+                <ProfileDnaSnapshot profile={profile} />
+              )}
+            </div>
+          </div>
 
-        <section className={`${styles.section} ${styles.profileGrid}`}>
-          <ProfileBasicsCard
-            profile={profile}
-            nameLabel={t('profile.name')}
-            bioLabel={t('profile.bio')}
-            bioPlaceholder={t('profile.bioPlaceholder')}
-            addBioLabel={t('profile.bioEmpty')}
-            emailLabel={t('profile.email')}
-            genderLabel={t('profile.gender')}
-            birthYearLabel={t('profile.birthYear')}
-            regionLabel={t('profile.region')}
-            saveLabel={t('profile.save')}
-            cancelLabel={t('profile.cancel')}
-            changeAvatarLabel={t('profile.changeAvatar')}
-            avatarHintLabel={t('profile.avatarHint')}
-            avatarError={avatarError}
-            editNameLabel={t('profile.editName')}
-            editBioLabel={t('profile.editBio')}
-            editName={editName}
-            editBio={editBio}
-            isEditing={isEditing}
-            isEditingBio={isEditingBio}
-            saving={saving}
-            savingBio={savingBio}
-            uploadingAvatar={uploadingAvatar}
-            fileInputRef={fileInputRef}
-            onAvatarUpload={handleAvatarUpload}
-            onEditNameChange={setEditName}
-            onEditBioChange={setEditBio}
-            onEditStart={() => setIsEditing(true)}
-            onEditCancel={() => setIsEditing(false)}
-            onSave={handleSave}
-            onBioEditStart={() => setIsEditingBio(true)}
-            onBioEditCancel={() => {
-              setEditBio(profile.bio ?? '')
-              setIsEditingBio(false)
-            }}
-            onBioSave={handleBioSave}
-            getGenderLabel={getGenderLabel}
-          />
+          <div className={styles.profileGrid}>
+            <div className={styles.editorialColumn}>
+              <div className={styles.columnHeading}>
+                <span className={styles.columnEyebrow}>Identity Notes</span>
+                <p className={styles.columnDeck}>
+                  Identity, voice, and the details that give this profile a recognizable point of view.
+                </p>
+              </div>
 
-          <div className={styles.stack}>
-            <ProfilePreferencesCard
-              profile={profile}
-              title={t('profile.matchPref')}
-              lookingForLabel={t('profile.lookingFor')}
-              ageRangeLabel={t('profile.ageRange')}
-              pureTasteLabel={t('profile.pureTaste')}
-              birthYearLabel={t('profile.birthYear')}
-              notSetLabel={t('profile.notSet')}
-              yesLabel={t('profile.yes')}
-              noLabel={t('profile.no')}
-              editLabel={t('profile.editPref')}
-              saveLabel={t('profile.save')}
-              cancelLabel={t('profile.cancel')}
-              getPrefLabel={getPrefLabel}
-              prefOptions={[
-                { value: 'male', label: t('profile.genderMale') },
-                { value: 'female', label: t('profile.genderFemale') },
-                { value: 'other', label: t('profile.genderOther') },
-                { value: 'any', label: t('profile.prefAny') },
-              ]}
-              onProfileUpdate={setProfile}
-            />
+              <ProfileBasicsCard
+                profile={profile}
+                nameLabel={t('profile.name')}
+                bioLabel={t('profile.bio')}
+                bioPlaceholder={t('profile.bioPlaceholder')}
+                addBioLabel={t('profile.bioEmpty')}
+                emailLabel={t('profile.email')}
+                genderLabel={t('profile.gender')}
+                birthYearLabel={t('profile.birthYear')}
+                regionLabel={t('profile.region')}
+                saveLabel={t('profile.save')}
+                cancelLabel={t('profile.cancel')}
+                changeAvatarLabel={t('profile.changeAvatar')}
+                avatarHintLabel={t('profile.avatarHint')}
+                avatarError={avatarError}
+                editNameLabel={t('profile.editName')}
+                editBioLabel={t('profile.editBio')}
+                editName={editName}
+                editBio={editBio}
+                isEditing={isEditing}
+                isEditingBio={isEditingBio}
+                saving={saving}
+                savingBio={savingBio}
+                uploadingAvatar={uploadingAvatar}
+                fileInputRef={fileInputRef}
+                onAvatarUpload={handleAvatarUpload}
+                onEditNameChange={setEditName}
+                onEditBioChange={setEditBio}
+                onEditStart={() => setIsEditing(true)}
+                onEditCancel={() => setIsEditing(false)}
+                onSave={handleSave}
+                onBioEditStart={() => setIsEditingBio(true)}
+                onBioEditCancel={() => {
+                  setEditBio(profile.bio ?? '')
+                  setIsEditingBio(false)
+                }}
+                onBioSave={handleBioSave}
+                getGenderLabel={getGenderLabel}
+              />
+            </div>
 
-            <ProfileSequencingCard
-              profile={profile}
-              title={t('profile.seqStatus')}
-              archetypeLabel={t('profile.archetype')}
-              getStatusLabel={getStatusLabel}
-            />
+            <div className={styles.editorialColumn}>
+              <div className={styles.columnHeading}>
+                <span className={styles.columnEyebrow}>Matching Notes</span>
+                <p className={styles.columnDeck}>
+                  Preferences and sequencing cues, arranged as concise side notes instead of utility widgets.
+                </p>
+              </div>
+
+              <div className={styles.stack}>
+                <ProfilePreferencesCard
+                  profile={profile}
+                  title={t('profile.matchPref')}
+                  lookingForLabel={t('profile.lookingFor')}
+                  ageRangeLabel={t('profile.ageRange')}
+                  pureTasteLabel={t('profile.pureTaste')}
+                  birthYearLabel={t('profile.birthYear')}
+                  notSetLabel={t('profile.notSet')}
+                  yesLabel={t('profile.yes')}
+                  noLabel={t('profile.no')}
+                  editLabel={t('profile.editPref')}
+                  saveLabel={t('profile.save')}
+                  cancelLabel={t('profile.cancel')}
+                  getPrefLabel={getPrefLabel}
+                  prefOptions={[
+                    { value: 'male', label: t('profile.genderMale') },
+                    { value: 'female', label: t('profile.genderFemale') },
+                    { value: 'other', label: t('profile.genderOther') },
+                    { value: 'any', label: t('profile.prefAny') },
+                  ]}
+                  onProfileUpdate={setProfile}
+                />
+
+                <ProfileSequencingCard
+                  profile={profile}
+                  title={t('profile.seqStatus')}
+                  archetypeLabel={t('profile.archetype')}
+                  getStatusLabel={getStatusLabel}
+                />
+              </div>
+            </div>
           </div>
         </section>
       </motion.div>

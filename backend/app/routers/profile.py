@@ -22,8 +22,56 @@ from app.models.user import User
 from app.services.auth_cookies import clear_auth_cookie
 from app.services.dna_builder import ARCHETYPES
 from app.services.group_engine import should_activate_group
+from app.services.matcher import ARCHETYPE_MAP
 
 logger = logging.getLogger(__name__)
+
+# Fields that appear on the personal ticket — changes trigger regeneration
+_TICKET_FIELDS = {"name", "bio"}
+
+
+async def _regenerate_personal_ticket(user: User, db: AsyncSession) -> None:
+    """Regenerate the user's personal ticket image if they have a completed DNA profile."""
+    import json
+
+    from app.services.ticket_gen import generate_and_upload_personal_ticket
+
+    profile = user.dna_profile
+    if not profile:
+        return
+
+    data_dir = Path(__file__).parent.parent / "data"
+    taxonomy = json.loads((data_dir / "tag_taxonomy.json").read_text())
+    tag_keys = list(taxonomy["tags"].keys())
+
+    archetype_data = ARCHETYPE_MAP.get(profile.archetype_id, {})
+    archetype_display = f"{archetype_data.get('name', '')} {archetype_data.get('name_en', '')}".strip() or "電影愛好者"
+
+    tag_vec = list(profile.tag_vector) if profile.tag_vector else []
+    top_indices = sorted(range(len(tag_vec)), key=lambda i: tag_vec[i], reverse=True)
+    top_tags = [tag_keys[i] for i in top_indices[:8] if i < len(tag_keys) and tag_vec[i] >= 0.3]
+
+    genre_vector = profile.genre_vector or {}
+    top_genres = [g for g, s in sorted(genre_vector.items(), key=lambda x: x[1], reverse=True)[:5] if s >= 0.1]
+
+    try:
+        ticket_url = await generate_and_upload_personal_ticket(
+            user_id=user.id,
+            name=user.name,
+            email=user.email,
+            archetype=archetype_display,
+            top_tags=top_tags,
+            top_genres=top_genres,
+            bio=user.bio,
+            personality_reading=profile.personality_reading,
+            conversation_style=profile.conversation_style,
+            ticket_style=profile.ticket_style,
+        )
+        profile.personal_ticket_url = ticket_url
+        logger.info("Regenerated personal ticket for user %s", user.id)
+    except Exception:
+        logger.exception("Failed to regenerate personal ticket for user %s", user.id)
+        raise
 
 AVATAR_MAX_BYTES = 2 * 1024 * 1024  # 2 MB
 AVATAR_ALLOWED_TYPES = {"image/jpeg", "image/png", "image/webp"}
@@ -171,7 +219,18 @@ async def update_profile(
             continue
         setattr(user, field, value)
 
-    await db.commit()
+    try:
+        await db.flush()
+
+        # Keep profile edits and ticket regeneration atomic.
+        if update_data.keys() & _TICKET_FIELDS:
+            await _regenerate_personal_ticket(user, db)
+
+        await db.commit()
+    except Exception:
+        await db.rollback()
+        raise
+
     await db.refresh(user)
     return _user_to_profile(user)
 
