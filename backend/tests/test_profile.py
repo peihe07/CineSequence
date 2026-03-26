@@ -82,7 +82,6 @@ class TestUpdateProfile:
         self, client: AsyncClient, db_session: AsyncSession
     ):
         user = await create_user(db_session)
-        user_id = user.id
         user.sequencing_status = SequencingStatus.completed
         profile = DnaProfile(
             user_id=user.id,
@@ -95,6 +94,7 @@ class TestUpdateProfile:
         )
         db_session.add(profile)
         await db_session.commit()
+        headers = auth_headers(user)
 
         with patch(
             "app.routers.profile._regenerate_personal_ticket",
@@ -103,15 +103,17 @@ class TestUpdateProfile:
             response = await client.patch(
                 "/profile",
                 json={"name": "New Name"},
-                headers=auth_headers(user),
+                headers=headers,
             )
 
         assert response.status_code == 500
 
-        refreshed_name = await db_session.scalar(
-            select(User.name).where(User.id == user_id)
-        )
-        assert refreshed_name == "Profile User"
+        assert db_session.bind is not None
+        async with AsyncSession(db_session.bind, expire_on_commit=False) as verify_session:
+            persisted_name = await verify_session.scalar(
+                select(User.name).where(User.id == user.id)
+            )
+        assert persisted_name == "Profile User"
 
     async def test_update_multiple_fields(self, client: AsyncClient, db_session: AsyncSession):
         user = await create_user(db_session)

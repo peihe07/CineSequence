@@ -18,7 +18,7 @@ from app.models.group import Group, group_members
 from app.models.match import Match
 from app.models.pick import Pick
 from app.models.sequencing_session import SequencingSession
-from app.models.user import User
+from app.models.user import Gender, GenderPref, User
 from app.services.auth_cookies import clear_auth_cookie
 from app.services.dna_builder import ARCHETYPES
 from app.services.group_engine import should_activate_group
@@ -143,10 +143,10 @@ class ProfileOut(BaseModel):
 class ProfileUpdate(BaseModel):
     name: str | None = None
     bio: str | None = None
-    gender: str | None = None
+    gender: Gender | None = None
     birth_year: int | None = None
     region: str | None = None
-    match_gender_pref: str | None = None
+    match_gender_pref: GenderPref | None = None
     match_age_min: int | None = None
     match_age_max: int | None = None
     pure_taste_match: bool | None = None
@@ -224,6 +224,7 @@ async def update_profile(
 ):
     """Update current user's profile fields."""
     update_data = body.model_dump(exclude_unset=True)
+    user_id = user.id
 
     if not update_data:
         raise HTTPException(
@@ -253,7 +254,7 @@ async def update_profile(
         raise
     except Exception:
         await db.rollback()
-        logger.exception("Failed to update profile for user %s", user.id)
+        logger.exception("Failed to update profile for user %s", user_id)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to update profile",

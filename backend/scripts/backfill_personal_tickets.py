@@ -118,6 +118,7 @@ async def main():
                     ticket_url,
                 )
             except Exception:
+                await db.rollback()
                 failed += 1
                 logger.exception(
                     "Failed to generate ticket for user %s (%s)",
