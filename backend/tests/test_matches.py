@@ -72,11 +72,15 @@ async def create_match(
     user_a: User,
     user_b: User,
     status: MatchStatus = MatchStatus.discovered,
+    candidate_percentile: int | None = 91,
+    candidate_pool_size: int | None = 37,
 ) -> Match:
     match = Match(
         user_a_id=user_a.id,
         user_b_id=user_b.id,
         similarity_score=0.91,
+        candidate_percentile=candidate_percentile,
+        candidate_pool_size=candidate_pool_size,
         shared_tags=["noir"],
         shared_movies=[],
         ice_breakers=["Talk about endings"],
@@ -183,11 +187,10 @@ class TestInviteRespondPermissions:
             status=MatchStatus.invited,
         )
 
+        inviter.dna_profile.personal_ticket_url = "https://ticket.test/inviter.png"
+        await db_session.commit()
+
         with (
-            patch(
-                "app.services.matcher.generate_and_upload_ticket",
-                new=AsyncMock(return_value="https://ticket.test/1.png"),
-            ),
             patch("app.services.matcher.send_match_accepted_email", new=AsyncMock()),
         ):
             response = await client.post(
@@ -199,7 +202,41 @@ class TestInviteRespondPermissions:
         assert response.status_code == 200
         data = response.json()
         assert data["status"] == "accepted"
-        assert data["ticket_image_url"] == "https://ticket.test/1.png"
+        assert data["ticket_image_url"] == "https://ticket.test/inviter.png"
+        assert data["candidate_percentile"] == 91
+        assert data["candidate_pool_size"] == 37
+
+    async def test_matches_response_falls_back_to_legacy_ticket_url_without_personal_ticket(
+        self, client: AsyncClient, db_session: AsyncSession, monkeypatch
+    ):
+        inviter = await create_user_with_dna(
+            db_session, email="inviter@test.com", name="Inviter",
+            gender=Gender.female, birth_year=1994
+        )
+        recipient = await create_user_with_dna(
+            db_session, email="recipient@test.com", name="Recipient",
+            gender=Gender.male, birth_year=1992
+        )
+        match = await create_match(
+            db_session, user_a=inviter, user_b=recipient,
+            status=MatchStatus.accepted,
+        )
+        match.ticket_image_url = (
+            "https://pub-e41ee8d058234933a2c34e1300b7e2be.r2.dev/"
+            "cinesequence/tickets/fallback.png"
+        )
+        await db_session.commit()
+
+        monkeypatch.setattr(
+            "app.config.settings.s3_public_url",
+            "https://assets.cinesequence.xyz",
+        )
+
+        response = await client.get(f"/matches/{match.id}", headers=auth_headers(inviter))
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["ticket_image_url"] == "https://assets.cinesequence.xyz/tickets/fallback.png"
 
     async def test_matches_response_rewrites_legacy_ticket_url(
         self, client: AsyncClient, db_session: AsyncSession, monkeypatch

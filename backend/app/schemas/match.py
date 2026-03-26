@@ -16,6 +16,8 @@ class MatchResponse(BaseModel):
     id: uuid.UUID
     partner: MatchUserSummary
     similarity_score: float
+    candidate_percentile: int | None = None
+    candidate_pool_size: int | None = None
     shared_tags: list[str] = []
     ice_breakers: list[str] = []
     status: MatchStatus
@@ -31,6 +33,8 @@ class InviteResponse(BaseModel):
     id: uuid.UUID
     sender: MatchUserSummary
     similarity_score: float
+    candidate_percentile: int | None = None
+    candidate_pool_size: int | None = None
     shared_tags: list[str] = []
     ice_breakers: list[str] = []
     ticket_image_url: str | None = None

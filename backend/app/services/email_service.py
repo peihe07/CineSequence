@@ -137,11 +137,22 @@ async def send_match_accepted_email(
     shared_tags: list[str],
     ice_breakers: list[str],
     match_id: uuid.UUID,
+    ticket_image_url: str | None = None,
 ) -> None:
     """Send notification email when a match is accepted (sent to both parties)."""
     match_url = f"{settings.frontend_url}/ticket?inviteId={match_id}"
     safe_partner = _esc(partner_name)
     safe_archetype = _esc(partner_archetype)
+
+    ticket_html = ""
+    if ticket_image_url:
+        ticket_html = (
+            f'<div style="margin:20px 0;text-align:center;">'
+            f'<img src="{ticket_image_url}" alt="Match Ticket" '
+            f'style="max-width:100%;width:600px;border-radius:8px;'
+            f'box-shadow:0 4px 12px rgba(0,0,0,0.15);" />'
+            f"</div>"
+        )
 
     tags_html = ""
     if shared_tags:
@@ -163,12 +174,13 @@ async def send_match_accepted_email(
             f"<h2>配對已建立</h2>"
             f"<p>你與 <strong>{safe_partner}</strong>（{safe_archetype}）"
             f"的配對已確認。</p>"
+            f"{ticket_html}"
             f"{tags_html}"
             f"{breakers_html}"
             f'<p><a href="{match_url}" '
             f'style="display:inline-block;padding:10px 24px;'
             f"background:#c06223;color:#fff;text-decoration:none;"
-            f'font-family:monospace;">開始對話</a></p>'
+            f'font-family:monospace;">查看完整票券</a></p>'
             f'<p style="font-size:12px;color:#aaa;">'
             f"所有對話透過 Cine Sequence 進行，你的隱私受到保護。</p>"
         ),

@@ -32,6 +32,8 @@ class Match(Base):
         UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), index=True
     )
     similarity_score: Mapped[float] = mapped_column(Float, nullable=False)
+    candidate_percentile: Mapped[int | None] = mapped_column(Integer)
+    candidate_pool_size: Mapped[int | None] = mapped_column(Integer)
 
     # Match details
     shared_tags: Mapped[list] = mapped_column(JSON, default=list)

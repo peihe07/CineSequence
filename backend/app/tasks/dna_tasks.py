@@ -123,7 +123,51 @@ async def build_dna_for_user(user_id: str):
             db.add(profile)
 
         await db.commit()
+        await db.refresh(profile)
         logger.info("DNA build completed for user %s", user_id)
+
+        # Generate personal ticket image
+        from app.services.matcher import get_archetype_name, ARCHETYPE_MAP
+        from app.services.ticket_gen import generate_and_upload_personal_ticket
+
+        archetype_data = ARCHETYPE_MAP.get(profile.archetype_id, {})
+        archetype_display = f"{archetype_data.get('name', '')} {archetype_data.get('name_en', '')}".strip()
+        if not archetype_display:
+            archetype_display = "電影愛好者"
+
+        # Extract top tags from tag_vector
+        import json as _json
+        from pathlib import Path as _Path
+        _tax_path = _Path(__file__).parent.parent / "data" / "tag_taxonomy.json"
+        _tax = _json.loads(_tax_path.read_text())
+        tag_keys = list(_tax["tags"].keys())
+        tag_vec = list(profile.tag_vector) if profile.tag_vector else []
+        top_tag_indices = sorted(range(len(tag_vec)), key=lambda i: tag_vec[i], reverse=True)
+        top_tags = [tag_keys[i] for i in top_tag_indices[:8] if i < len(tag_keys) and tag_vec[i] >= 0.3]
+
+        # Extract top genres
+        genre_vector = profile.genre_vector or {}
+        sorted_genres = sorted(genre_vector.items(), key=lambda x: x[1], reverse=True)
+        top_genres = [g for g, score in sorted_genres[:5] if score >= 0.1]
+
+        try:
+            ticket_url = await generate_and_upload_personal_ticket(
+                user_id=user.id,
+                name=user.name,
+                email=user.email,
+                archetype=archetype_display,
+                top_tags=top_tags,
+                top_genres=top_genres,
+                bio=user.bio,
+                personality_reading=profile.personality_reading,
+                conversation_style=profile.conversation_style,
+                ticket_style=profile.ticket_style,
+            )
+            profile.personal_ticket_url = ticket_url
+            await db.commit()
+            logger.info("Personal ticket generated for user %s: %s", user_id, ticket_url)
+        except Exception:
+            logger.exception("Failed to generate personal ticket for user %s", user_id)
 
         # Notify user that DNA is ready
         from app.services.notification_service import (

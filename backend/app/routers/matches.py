@@ -8,6 +8,7 @@ from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.deps import get_current_user, get_db
+from app.models.match import MatchStatus
 from app.models.user import User
 from app.services.matcher import (
     find_matches,
@@ -36,6 +37,8 @@ class MatchOut(BaseModel):
     partner_avatar_url: str | None = None
     partner_archetype: str | None = None
     similarity_score: float
+    candidate_percentile: int | None = None
+    candidate_pool_size: int | None = None
     shared_tags: list[str]
     ice_breakers: list[str]
     status: str
@@ -60,6 +63,13 @@ def _match_to_out(match, user_id: uuid.UUID) -> MatchOut:
     partner = match.user_b if is_user_a else match.user_a
     is_recipient = match.user_b_id == user_id
 
+    # Prefer the partner's personal ticket after acceptance, but keep legacy match tickets as fallback.
+    partner_ticket = normalize_public_object_url(match.ticket_image_url)
+    if match.status == MatchStatus.accepted:
+        partner_profile = partner.dna_profile
+        if partner_profile and partner_profile.personal_ticket_url:
+            partner_ticket = normalize_public_object_url(partner_profile.personal_ticket_url)
+
     return MatchOut(
         id=match.id,
         partner_id=partner.id,
@@ -68,10 +78,12 @@ def _match_to_out(match, user_id: uuid.UUID) -> MatchOut:
         partner_avatar_url=partner.avatar_url,
         partner_archetype=get_archetype_name(partner),
         similarity_score=match.similarity_score,
+        candidate_percentile=match.candidate_percentile,
+        candidate_pool_size=match.candidate_pool_size,
         shared_tags=match.shared_tags or [],
         ice_breakers=match.ice_breakers or [],
         status=match.status.value,
-        ticket_image_url=normalize_public_object_url(match.ticket_image_url),
+        ticket_image_url=partner_ticket,
         is_recipient=is_recipient,
     )
 

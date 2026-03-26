@@ -42,6 +42,7 @@ class DnaProfile(Base):
 
     # Visual
     ticket_style: Mapped[str] = mapped_column(String(20), nullable=False)
+    personal_ticket_url: Mapped[str | None] = mapped_column(String(500))
 
     # Timestamps
     created_at: Mapped[datetime] = mapped_column(

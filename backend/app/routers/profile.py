@@ -66,6 +66,7 @@ class ProfileOut(BaseModel):
     archetype_name: str | None = None
     personality_reading: str | None = None
     ticket_style: str | None = None
+    personal_ticket_url: str | None = None
 
     model_config = {"from_attributes": True}
 
@@ -110,6 +111,7 @@ def _user_to_profile(user: User) -> ProfileOut:
         archetype_name=archetype_name,
         personality_reading=dna.personality_reading if dna else None,
         ticket_style=dna.ticket_style if dna else None,
+        personal_ticket_url=dna.personal_ticket_url if dna else None,
     )
 
 

@@ -6,7 +6,11 @@ from types import SimpleNamespace
 
 import pytest
 
-from app.services.matcher import _compute_quadrant_similarity, find_matches
+from app.services.matcher import (
+    _compute_percentile_rank,
+    _compute_quadrant_similarity,
+    find_matches,
+)
 
 
 class _IterableResult:
@@ -69,6 +73,15 @@ class TestQuadrantSimilarity:
         assert result == 1.0
 
 
+class TestPercentileRank:
+    def test_percentile_rank_returns_expected_relative_position(self):
+        scores = [0.95, 0.88, 0.8, 0.72, 0.61]
+        assert _compute_percentile_rank(0.88, scores) == 80
+
+    def test_percentile_rank_returns_none_for_empty_distribution(self):
+        assert _compute_percentile_rank(0.88, []) is None
+
+
 @pytest.mark.asyncio
 async def test_find_matches_filters_to_active_profiles_only():
     db = _RecordingSession()
@@ -86,4 +99,3 @@ async def test_find_matches_filters_to_active_profiles_only():
     candidate_query = db.statements[2]
     compiled = str(candidate_query)
     assert "dna_profiles.is_active" in compiled
-

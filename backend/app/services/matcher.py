@@ -17,7 +17,6 @@ from app.models.dna_profile import DnaProfile
 from app.models.match import Match, MatchStatus
 from app.models.user import Gender, User
 from app.services.email_service import send_invite_email, send_match_accepted_email
-from app.services.ticket_gen import generate_and_upload_ticket
 
 logger = logging.getLogger(__name__)
 
@@ -35,6 +34,15 @@ QUADRANT_AXES = list(_taxonomy.get("quadrant_axes", {}).keys())
 # Weight split: tag vector vs quadrant similarity
 TAG_WEIGHT = 0.7
 QUADRANT_WEIGHT = 0.3
+
+
+def _compute_percentile_rank(score: float, all_scores: list[float]) -> int | None:
+    """Return percentile rank as the share of scores less than or equal to score."""
+    if not all_scores:
+        return None
+
+    lower_or_equal = sum(1 for candidate_score in all_scores if candidate_score <= score)
+    return round((lower_or_equal / len(all_scores)) * 100)
 
 
 async def find_matches(
@@ -84,8 +92,8 @@ async def find_matches(
     # Also honor the candidate's reciprocal preferences unless they opted into taste-only matching.
     q = q.where(_build_reciprocal_preference_clause(user))
 
-    # Fetch more candidates for re-ranking with quadrant similarity
-    q = q.order_by("distance").limit(limit * 3)
+    # Fetch all eligible candidates so we can derive a percentile rank per match.
+    q = q.order_by("distance")
     result = await db.execute(q)
     candidates = result.all()
 
@@ -99,6 +107,7 @@ async def find_matches(
         combined = TAG_WEIGHT * tag_sim + QUADRANT_WEIGHT * quad_sim
         ranked.append((candidate_profile, combined))
 
+    all_scores = [score for _, score in ranked]
     ranked.sort(key=lambda x: x[1], reverse=True)
     ranked = ranked[:limit]
 
@@ -127,6 +136,8 @@ async def find_matches(
             user_a_id=user.id,
             user_b_id=candidate_profile.user_id,
             similarity_score=round(similarity, 4),
+            candidate_percentile=_compute_percentile_rank(similarity, all_scores),
+            candidate_pool_size=len(all_scores),
             shared_tags=shared,
             shared_movies=[],
             ice_breakers=ice_breakers,
@@ -342,28 +353,19 @@ async def respond_to_invite(
     match.status = MatchStatus.accepted if accept else MatchStatus.declined
     match.responded_at = datetime.now(tz=UTC)
 
-    # Generate ticket image on accept (fire-and-forget)
+    # On accept, store partner's personal ticket URLs for each side
+    ticket_a_url = None
+    ticket_b_url = None
     if accept:
-        try:
-            ticket_style_a = _get_ticket_style(user_a)
-            ticket_url = await generate_and_upload_ticket(
-                match_id=match.id,
-                user_a_name=user_a.name,
-                user_b_name=user_b.name,
-                archetype_a=get_archetype_name(user_a),
-                archetype_b=get_archetype_name(user_b),
-                shared_tags=match.shared_tags or [],
-                similarity_score=match.similarity_score,
-                ticket_style=ticket_style_a,
-            )
-            match.ticket_image_url = ticket_url
-        except Exception:
-            logger.exception("Failed to generate ticket for match %s", match.id)
+        profile_a = user_a.dna_profile
+        profile_b = user_b.dna_profile
+        ticket_a_url = profile_a.personal_ticket_url if profile_a else None
+        ticket_b_url = profile_b.personal_ticket_url if profile_b else None
 
     await db.commit()
     await db.refresh(match)
 
-    # Send acceptance emails to both parties (fire-and-forget)
+    # Send acceptance emails — each person receives the partner's personal ticket
     if email_data:
         try:
             await send_match_accepted_email(
@@ -374,6 +376,7 @@ async def respond_to_invite(
                 shared_tags=email_data["shared_tags"],
                 ice_breakers=email_data["ice_breakers"],
                 match_id=email_data["match_id"],
+                ticket_image_url=ticket_b_url,
             )
         except Exception:
             logger.exception("Failed to send accepted email to user_a for match %s", match.id)
@@ -387,6 +390,7 @@ async def respond_to_invite(
                 shared_tags=email_data["shared_tags"],
                 ice_breakers=email_data["ice_breakers"],
                 match_id=email_data["match_id"],
+                ticket_image_url=ticket_a_url,
             )
         except Exception:
             logger.exception("Failed to send accepted email to user_b for match %s", match.id)

@@ -1,4 +1,4 @@
-"""Tests for ticket generation: image creation and style palettes."""
+"""Tests for personal ticket generation: image creation and style palettes."""
 
 from io import BytesIO
 
@@ -8,39 +8,36 @@ from app.services.ticket_gen import (
     STYLE_PALETTES,
     TICKET_H,
     TICKET_W,
-    generate_ticket_image,
+    generate_personal_ticket,
 )
 
 
-class TestGenerateTicketImage:
-    """Test ticket image generation."""
+class TestGeneratePersonalTicket:
+    """Test personal ticket image generation."""
 
     def _generate(self, **kwargs) -> Image.Image:
         defaults = {
-            "user_a_name": "Alice",
-            "user_b_name": "Bob",
-            "archetype_a": "Time Traveler",
-            "archetype_b": "Dark Poet",
-            "shared_tags": ["mindfuck", "philosophical"],
-            "similarity_score": 0.85,
+            "name": "Alice",
+            "email": "alice@test.com",
+            "archetype": "Time Traveler",
+            "top_tags": ["mindfuck", "philosophical"],
+            "top_genres": ["劇情", "科幻"],
             "ticket_style": "classic",
         }
         defaults.update(kwargs)
-        data = generate_ticket_image(**defaults)
+        data = generate_personal_ticket(**defaults)
         return Image.open(BytesIO(data))
 
     def test_returns_png_bytes(self):
-        data = generate_ticket_image(
-            user_a_name="A",
-            user_b_name="B",
-            archetype_a="X",
-            archetype_b="Y",
-            shared_tags=[],
-            similarity_score=0.5,
+        data = generate_personal_ticket(
+            name="A",
+            email="a@test.com",
+            archetype="X",
+            top_tags=[],
+            top_genres=[],
         )
         assert isinstance(data, bytes)
         assert len(data) > 0
-        # PNG magic bytes
         assert data[:4] == b"\x89PNG"
 
     def test_correct_dimensions(self):
@@ -60,34 +57,33 @@ class TestGenerateTicketImage:
         img = self._generate(ticket_style="nonexistent")
         assert img.size == (TICKET_W, TICKET_H)
 
-    def test_no_shared_tags(self):
-        img = self._generate(shared_tags=[])
+    def test_no_tags_or_genres(self):
+        img = self._generate(top_tags=[], top_genres=[])
         assert img.size == (TICKET_W, TICKET_H)
 
-    def test_many_shared_tags_truncated(self):
-        """More than 6 tags should still produce a valid image."""
+    def test_many_tags_truncated(self):
+        """More than 8 tags should still produce a valid image."""
         tags = [
             "mindfuck", "twist", "philosophical", "existential",
             "darkTone", "slowburn", "dialogue", "experimental",
+            "visualFeast", "nonlinear_narrative",
         ]
-        img = self._generate(shared_tags=tags)
+        img = self._generate(top_tags=tags)
         assert img.size == (TICKET_W, TICKET_H)
 
-    def test_high_similarity(self):
-        img = self._generate(similarity_score=0.99)
-        assert img.size == (TICKET_W, TICKET_H)
-
-    def test_low_similarity(self):
-        img = self._generate(similarity_score=0.01)
+    def test_with_bio_and_personality(self):
+        img = self._generate(
+            bio="喜歡看電影",
+            personality_reading="你有獨特的觀影品味。",
+            conversation_style="冷靜分析型",
+        )
         assert img.size == (TICKET_W, TICKET_H)
 
     def test_unicode_names(self):
         """Chinese names should render without errors."""
         img = self._generate(
-            user_a_name="時空旅人",
-            user_b_name="黑暗詩人",
-            archetype_a="時空旅人 Time Traveler",
-            archetype_b="黑暗詩人 Dark Poet",
+            name="時空旅人",
+            archetype="時空旅人 Time Traveler",
         )
         assert img.size == (TICKET_W, TICKET_H)
 
