@@ -538,6 +538,28 @@ GENRE_NAMES = {
 }
 
 
+# TMDB zh-TW sometimes returns simplified Chinese genre names; normalize to 繁體
+_GENRE_ZH_FIX: dict[str, str] = {
+    "爱情": "愛情",
+    "动作": "動作",
+    "动画": "動畫",
+    "纪录": "紀錄",
+    "历史": "歷史",
+    "科幻": "科幻",
+    "惊悚": "驚悚",
+    "战争": "戰爭",
+    "犯罪": "犯罪",
+    "冒险": "冒險",
+    "悬疑": "懸疑",
+    "音乐": "音樂",
+}
+
+
+def _fix_genre_zh(name: str) -> str:
+    """Normalize TMDB genre name to traditional Chinese."""
+    return _GENRE_ZH_FIX.get(name, name)
+
+
 def _generate_ice_breakers(shared_tags: list[str], shared_genres: list[str]) -> list[str]:
     """Generate conversation starters based on shared tastes."""
     breakers = []
@@ -551,7 +573,8 @@ def _generate_ice_breakers(shared_tags: list[str], shared_genres: list[str]) -> 
         breakers.append(f"「{tag_zh}」是你們的共同語言，聊聊近期印象深刻的作品。")
 
     if shared_genres:
-        breakers.append(f"你們都關注「{shared_genres[0]}」類型，適合交換推薦片單。")
+        genre_display = _fix_genre_zh(shared_genres[0])
+        breakers.append(f"你們都關注「{genre_display}」類型，適合交換推薦片單。")
 
     if not breakers:
         breakers.append("你們的觀影光譜有所交集，不妨從各自的年度片單開始。")
