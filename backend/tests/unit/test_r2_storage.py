@@ -54,3 +54,26 @@ def test_normalize_public_object_url_preserves_custom_domain_url(monkeypatch):
     url = normalize_public_object_url("https://assets.cinesequence.xyz/tickets/test.png")
 
     assert url == "https://assets.cinesequence.xyz/tickets/test.png"
+
+
+def test_normalize_public_object_url_rewrites_legacy_custom_domain_to_r2_dev(monkeypatch):
+    monkeypatch.setattr(settings, "s3_bucket", "cinesequence")
+    monkeypatch.setattr(
+        settings,
+        "s3_public_url",
+        "https://pub-e41ee8d058234933a2c34e1300b7e2be.r2.dev",
+    )
+    monkeypatch.setattr(
+        settings,
+        "s3_legacy_public_urls",
+        "https://assets.cinesequence.xyz",
+    )
+
+    url = normalize_public_object_url(
+        "https://assets.cinesequence.xyz/avatars/test.jpg?v=123"
+    )
+
+    assert (
+        url
+        == "https://pub-e41ee8d058234933a2c34e1300b7e2be.r2.dev/cinesequence/avatars/test.jpg?v=123"
+    )

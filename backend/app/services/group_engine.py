@@ -11,6 +11,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.models.group import Group, group_members
 from app.models.group_message import GroupMessage
 from app.models.user import User
+from app.services.r2_storage import normalize_public_object_url
 
 logger = logging.getLogger(__name__)
 
@@ -181,7 +182,7 @@ async def _member_preview(
         {
             "id": str(member.id),
             "name": member.name,
-            "avatar_url": member.avatar_url,
+            "avatar_url": normalize_public_object_url(member.avatar_url),
         }
         for member in members
     ]
@@ -222,7 +223,7 @@ async def _recent_messages(
             "user": {
                 "id": str(author.id),
                 "name": author.name,
-                "avatar_url": author.avatar_url,
+                "avatar_url": normalize_public_object_url(author.avatar_url),
             },
             "can_delete": viewer_id == author.id,
         }
@@ -262,7 +263,7 @@ async def build_group_payload(
             {
                 "id": str(member.id),
                 "name": member.name,
-                "avatar_url": member.avatar_url,
+                "avatar_url": normalize_public_object_url(member.avatar_url),
             }
             for member in members[:6]
         ],

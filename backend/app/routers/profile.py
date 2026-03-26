@@ -24,6 +24,7 @@ from app.services.auth_cookies import clear_auth_cookie
 from app.services.dna_builder import ARCHETYPES
 from app.services.group_engine import should_activate_group
 from app.services.matcher import get_archetype_display_name
+from app.services.r2_storage import normalize_public_object_url
 
 logger = logging.getLogger(__name__)
 
@@ -217,7 +218,7 @@ def _user_to_profile(user: User) -> ProfileOut:
         email=user.email,
         name=user.name,
         bio=user.bio,
-        avatar_url=user.avatar_url,
+        avatar_url=normalize_public_object_url(user.avatar_url),
         gender=user.gender.value,
         birth_year=user.birth_year,
         region=user.region,
@@ -233,7 +234,7 @@ def _user_to_profile(user: User) -> ProfileOut:
         archetype_name=archetype_name,
         personality_reading=dna.personality_reading if dna else None,
         ticket_style=dna.ticket_style if dna else None,
-        personal_ticket_url=dna.personal_ticket_url if dna else None,
+        personal_ticket_url=normalize_public_object_url(dna.personal_ticket_url) if dna else None,
         favorite_movies=favorites,
     )
 

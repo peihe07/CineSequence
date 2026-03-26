@@ -33,6 +33,7 @@ class Settings(BaseSettings):
     s3_access_key: str = ""
     s3_secret_key: str = ""
     s3_public_url: str = ""
+    s3_legacy_public_urls: str = ""
 
     # App
     frontend_url: str = "http://127.0.0.1:3000"

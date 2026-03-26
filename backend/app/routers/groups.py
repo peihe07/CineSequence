@@ -17,6 +17,7 @@ from app.services.group_engine import (
     leave_group,
     list_visible_groups,
 )
+from app.services.r2_storage import normalize_public_object_url
 
 router = APIRouter()
 
@@ -184,7 +185,7 @@ async def create_group_message(
         user=GroupMessageAuthorOut(
             id=str(user.id),
             name=user.name,
-            avatar_url=user.avatar_url,
+            avatar_url=normalize_public_object_url(user.avatar_url),
         ),
         can_delete=True,
     )

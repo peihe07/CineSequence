@@ -78,7 +78,7 @@ def _match_to_out(match, user_id: uuid.UUID) -> MatchOut:
         partner_name=partner.name,
         partner_email=partner.email if match.status == MatchStatus.accepted else None,
         partner_bio=partner.bio,
-        partner_avatar_url=partner.avatar_url,
+        partner_avatar_url=normalize_public_object_url(partner.avatar_url),
         partner_archetype=get_archetype_name(partner),
         similarity_score=match.similarity_score,
         candidate_percentile=match.candidate_percentile,

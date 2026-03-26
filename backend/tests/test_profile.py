@@ -56,6 +56,46 @@ class TestGetProfile:
         response = await client.get("/profile")
         assert response.status_code == 401
 
+    async def test_get_profile_rewrites_legacy_public_urls(
+        self, client: AsyncClient, db_session: AsyncSession, monkeypatch
+    ):
+        user = await create_user(db_session)
+        user.avatar_url = "https://assets.cinesequence.xyz/avatars/user.jpg?v=abc"
+        profile = DnaProfile(
+            user_id=user.id,
+            archetype_id="time-traveler",
+            tag_vector=[0.6] * 30,
+            genre_vector={"Drama": 1.0},
+            quadrant_scores={},
+            ticket_style="classic",
+            personal_ticket_url="https://assets.cinesequence.xyz/tickets/user.png",
+            is_active=True,
+        )
+        db_session.add(profile)
+        await db_session.commit()
+
+        monkeypatch.setattr(
+            "app.config.settings.s3_public_url",
+            "https://pub-e41ee8d058234933a2c34e1300b7e2be.r2.dev",
+        )
+        monkeypatch.setattr(
+            "app.config.settings.s3_legacy_public_urls",
+            "https://assets.cinesequence.xyz",
+        )
+
+        response = await client.get("/profile", headers=auth_headers(user))
+
+        assert response.status_code == 200
+        data = response.json()
+        assert (
+            data["avatar_url"]
+            == "https://pub-e41ee8d058234933a2c34e1300b7e2be.r2.dev/cinesequence/avatars/user.jpg?v=abc"
+        )
+        assert (
+            data["personal_ticket_url"]
+            == "https://pub-e41ee8d058234933a2c34e1300b7e2be.r2.dev/cinesequence/tickets/user.png"
+        )
+
 
 @pytest.mark.asyncio
 class TestUpdateProfile:
