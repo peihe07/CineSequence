@@ -140,7 +140,7 @@ async def build_dna_for_user(user_id: str):
         _tax_path = _Path(__file__).parent.parent / "data" / "tag_taxonomy.json"
         _tax = _json.loads(_tax_path.read_text())
         tag_keys = list(_tax["tags"].keys())
-        tag_vec = list(profile.tag_vector) if profile.tag_vector else []
+        tag_vec = list(profile.tag_vector) if profile.tag_vector is not None else []
         top_tag_indices = sorted(range(len(tag_vec)), key=lambda i: tag_vec[i], reverse=True)
         top_tags = [
             tag_keys[i]

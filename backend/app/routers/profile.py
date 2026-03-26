@@ -61,7 +61,7 @@ async def _generate_personal_ticket_url(
 
     archetype_display = get_archetype_display_name(profile.archetype_id)
 
-    tag_vec = list(profile.tag_vector) if profile.tag_vector else []
+    tag_vec = list(profile.tag_vector) if profile.tag_vector is not None else []
     top_indices = sorted(range(len(tag_vec)), key=lambda i: tag_vec[i], reverse=True)
     top_tags = [
         tag_keys[i]

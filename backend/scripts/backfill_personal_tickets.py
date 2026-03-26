@@ -85,7 +85,7 @@ async def main(force: bool = False):
             archetype_display = get_archetype_display_name(profile.archetype_id)
 
             # Extract top tags
-            tag_vec = list(profile.tag_vector) if profile.tag_vector else []
+            tag_vec = list(profile.tag_vector) if profile.tag_vector is not None else []
             top_tag_indices = sorted(range(len(tag_vec)), key=lambda i: tag_vec[i], reverse=True)
             top_tags = [
                 TAG_KEYS[i]
