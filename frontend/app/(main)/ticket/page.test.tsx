@@ -22,17 +22,26 @@ vi.mock('@/stores/matchStore', () => ({
 vi.mock('@/lib/i18n', () => ({
   useI18n: () => ({
     locale: 'en',
-    t: (key: string) => {
+    t: (key: string, vars?: Record<string, string | number>) => {
       const dict: Record<string, string> = {
         'ticket.title': 'Match Ticket',
         'ticket.similarity': 'Taste Similarity',
+        'ticket.percentileLabel': 'Relative standing',
+        'ticket.percentileAbove': 'Higher than {{percentile}}% of your current candidate pool',
+        'ticket.percentileTop': 'Top {{topPercent}}% match',
         'ticket.sharedTags': 'Shared Tastes',
         'ticket.iceBreakers': 'Conversation Starters',
         'ticket.backToMatches': 'Back to Matches',
         'ticket.notFound': 'Ticket not found',
         'ticket.notAccepted': 'Match not yet confirmed',
       }
-      return dict[key] ?? key
+      let text = dict[key] ?? key
+      if (vars) {
+        for (const [name, value] of Object.entries(vars)) {
+          text = text.replaceAll(`{{${name}}}`, String(value))
+        }
+      }
+      return text
     },
   }),
 }))
@@ -63,6 +72,8 @@ describe('TicketPage', () => {
       ticket_image_url: null,
       partner_name: 'Aster',
       similarity_score: 0.87,
+      candidate_percentile: 91,
+      candidate_pool_size: 37,
       shared_tags: ['neo-noir'],
       ice_breakers: ['Start with favorite endings'],
       status: 'accepted',
@@ -72,6 +83,8 @@ describe('TicketPage', () => {
 
     expect(await screen.findByRole('heading', { name: 'Match Ticket' })).toBeTruthy()
     expect(screen.getByText('87%')).toBeTruthy()
+    expect(screen.getByText('Higher than 91% of your current candidate pool')).toBeTruthy()
+    expect(screen.getByText('Top 10% match')).toBeTruthy()
     expect(screen.getByText('neo-noir')).toBeTruthy()
 
     fireEvent.click(screen.getByRole('button', { name: /Back to Matches/i }))

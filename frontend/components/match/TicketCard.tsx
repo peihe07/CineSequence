@@ -4,6 +4,7 @@ import { useRef } from 'react'
 import { motion, useMotionValue, useTransform } from 'framer-motion'
 import Image from 'next/image'
 import { useI18n } from '@/lib/i18n'
+import { formatPercentileSummary } from '@/lib/matchPercentile'
 import { getTagLabel } from '@/lib/tagLabels'
 import { MatchItem } from '@/stores/matchStore'
 import TearRitual from '@/components/match/TearRitual'
@@ -69,6 +70,7 @@ function FullCinemaTicket({
   const rotateY = useMotionValue(0)
 
   const pct = Math.round(match.similarity_score * 100)
+  const percentileSummary = formatPercentileSummary(t, match.candidate_percentile)
   const ticketNo = String(ticketNumber).padStart(3, '0')
 
   const today = new Date()
@@ -124,6 +126,12 @@ function FullCinemaTicket({
           >
             <div className={styles.progressFill} style={{ width: `${pct}%` }} />
           </div>
+          {percentileSummary && (
+            <div className={styles.percentileMeta}>
+              <span className={styles.percentileTop}>{percentileSummary.top}</span>
+              <span className={styles.percentileAbove}>{percentileSummary.above}</span>
+            </div>
+          )}
         </div>
       </div>
 

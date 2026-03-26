@@ -26,6 +26,7 @@ export default function RegisterForm({ mode = 'page', nextPath, onLoginClick }: 
   const { register, isLoading, error, clearError } = useAuthStore()
   const { t } = useI18n()
   const [sent, setSent] = useState(false)
+  const [successMessage, setSuccessMessage] = useState('')
   const [policyRead, setPolicyRead] = useState(false)
   const [policyExpanded, setPolicyExpanded] = useState(false)
   const policyRef = useRef<HTMLDivElement>(null)
@@ -88,11 +89,12 @@ export default function RegisterForm({ mode = 'page', nextPath, onLoginClick }: 
     if (!validate()) return
 
     try {
-      await register({
+      const response = await register({
         ...form,
         birth_year: Number(form.birth_year),
         next_path: nextPath,
       })
+      setSuccessMessage(response.message)
       setSent(true)
     } catch {
       // Error is handled by the store
@@ -107,6 +109,8 @@ export default function RegisterForm({ mode = 'page', nextPath, onLoginClick }: 
         <p className={styles.subtitle}>
           {t('auth.checkEmailSent', { email: form.email })}
         </p>
+        <p className={styles.statusNote}>{successMessage}</p>
+        <p className={styles.statusHint}>{t('auth.magicLinkHelp')}</p>
         {onLoginClick ? (
           <Button variant="ghost" onClick={onLoginClick}>
             {t('auth.backToLogin')}

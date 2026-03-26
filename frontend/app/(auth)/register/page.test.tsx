@@ -51,6 +51,7 @@ vi.mock('@/lib/i18n', () => ({
         'auth.signIn': 'Sign in',
         'auth.checkEmail': 'Check your inbox',
         'auth.backToLogin': 'Back to login',
+        'auth.magicLinkHelp': 'Magic link help',
       }
       return dict[key] ?? key
     },
@@ -112,7 +113,9 @@ describe('RegisterPage', () => {
   })
 
   it('submits when consent is checked', async () => {
-    registerMock.mockResolvedValue(undefined)
+    registerMock.mockResolvedValue({
+      message: 'If this email is eligible, a magic link has been sent.',
+    })
 
     render(<RegisterPage />)
 
@@ -142,5 +145,7 @@ describe('RegisterPage', () => {
       })
     })
     expect(await screen.findByText('sent:user@example.com')).toBeTruthy()
+    expect(screen.getByText('If this email is eligible, a magic link has been sent.')).toBeTruthy()
+    expect(screen.getByText('Magic link help')).toBeTruthy()
   })
 })

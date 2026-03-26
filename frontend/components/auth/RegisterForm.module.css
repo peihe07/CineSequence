@@ -263,6 +263,20 @@
   color: rgba(255, 255, 255, 0.88);
 }
 
+.statusNote {
+  font-size: 0.76rem;
+  color: rgba(255, 255, 255, 0.58);
+  font-family: var(--font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.statusHint {
+  font-size: 0.78rem;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.66);
+}
+
 .modal .title {
   font-size: clamp(1.8rem, 3vw, 2.3rem);
 }

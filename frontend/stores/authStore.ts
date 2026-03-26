@@ -16,7 +16,7 @@ interface AuthState {
   isLoading: boolean
   error: string | null
 
-  register: (data: RegisterRequest) => Promise<void>
+  register: (data: RegisterRequest) => Promise<RegisterResponse>
 
   login: (email: string, nextPath?: string) => Promise<void>
   verify: (token: string) => Promise<void>
@@ -34,11 +34,12 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   register: async (data) => {
     set({ isLoading: true, error: null })
     try {
-      await api<RegisterResponse>('/auth/register', {
+      const response = await api<RegisterResponse>('/auth/register', {
         method: 'POST',
         body: JSON.stringify(data),
       })
       set({ isLoading: false })
+      return response
     } catch (err) {
       const message = err instanceof Error ? err.message : translateStatic('common.error')
       set({ isLoading: false, error: message })

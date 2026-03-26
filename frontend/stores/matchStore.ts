@@ -10,6 +10,8 @@ export interface MatchItem {
   partner_avatar_url: string | null
   partner_archetype: string | null
   similarity_score: number
+  candidate_percentile: number | null
+  candidate_pool_size: number | null
   shared_tags: string[]
   ice_breakers: string[]
   status: 'discovered' | 'invited' | 'accepted' | 'declined'

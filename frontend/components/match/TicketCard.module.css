@@ -123,6 +123,27 @@
   transition: width 0.6s ease;
 }
 
+.percentileMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.18rem;
+  margin-top: 0.25rem;
+}
+
+.percentileTop {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(255, 233, 214, 0.9);
+}
+
+.percentileAbove {
+  font-size: 0.72rem;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.62);
+}
+
 /* ── PERFORATION ROW ───────────────────────────────── */
 /* Simulates the tear-off line with semicircle punch holes on both sides */
 .perforationRow {

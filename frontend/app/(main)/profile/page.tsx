@@ -11,7 +11,9 @@ import ProfileDnaSnapshot from '@/components/profile/ProfileDnaSnapshot'
 import ProfileHeader from '@/components/profile/ProfileHeader'
 import ProfilePreferencesCard from '@/components/profile/ProfilePreferencesCard'
 import ProfileSequencingCard from '@/components/profile/ProfileSequencingCard'
+import ProfileTicketCard from '@/components/profile/ProfileTicketCard'
 import type { Profile } from '@/components/profile/types'
+import { useDnaStore } from '@/stores/dnaStore'
 import ConfirmDialog from '@/components/ui/ConfirmDialog'
 import styles from './page.module.css'
 
@@ -34,6 +36,8 @@ export default function ProfilePage() {
   const [uploadingAvatar, setUploadingAvatar] = useState(false)
   const [avatarError, setAvatarError] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const dnaResult = useDnaStore((state) => state.result)
+  const fetchDna = useDnaStore((state) => state.fetchResult)
 
   const handleAvatarUpload = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -91,6 +95,9 @@ export default function ProfilePage() {
         setProfile(data)
         setEditName(data.name)
         setEditBio(data.bio ?? '')
+        if (data.sequencing_status === 'completed') {
+          fetchDna().catch(() => {})
+        }
       })
       .catch(async (error) => {
         if (error instanceof ApiError && (error.status === 401 || error.status === 403)) {
@@ -100,7 +107,7 @@ export default function ProfilePage() {
         }
       })
       .finally(() => setIsLoading(false))
-  }, [logout, router])
+  }, [logout, router, fetchDna])
 
   const handleSave = async () => {
     if (!editName.trim() || editName === profile?.name) {
@@ -209,7 +216,27 @@ export default function ProfilePage() {
         </section>
 
         <section className={`${styles.section} ${styles.snapshotSection}`}>
-          <ProfileDnaSnapshot profile={profile} />
+          {dnaResult ? (
+            <ProfileTicketCard
+              profile={profile}
+              topTags={
+                Object.entries(dnaResult.tag_labels)
+                  .sort(([, a], [, b]) => b - a)
+                  .slice(0, 8)
+                  .filter(([, v]) => v >= 0.3)
+                  .map(([k]) => k)
+              }
+              topGenres={
+                Object.entries(dnaResult.genre_vector)
+                  .sort(([, a], [, b]) => b - a)
+                  .slice(0, 5)
+                  .filter(([, v]) => v >= 0.1)
+                  .map(([k]) => k)
+              }
+            />
+          ) : (
+            <ProfileDnaSnapshot profile={profile} />
+          )}
         </section>
 
         <section className={`${styles.section} ${styles.profileGrid}`}>

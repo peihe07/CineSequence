@@ -8,6 +8,7 @@ import { useI18n } from '@/lib/i18n'
 import TicketCard from '@/components/match/TicketCard'
 import Button from '@/components/ui/Button'
 import { getTagLabel } from '@/lib/tagLabels'
+import { formatPercentileSummary } from '@/lib/matchPercentile'
 import styles from './page.module.css'
 
 export default function TicketPage() {
@@ -72,6 +73,8 @@ export default function TicketPage() {
     )
   }
 
+  const percentileSummary = formatPercentileSummary(t, match.candidate_percentile)
+
   return (
     <div className={styles.container}>
       <motion.div
@@ -102,6 +105,12 @@ export default function TicketPage() {
               <span className={styles.statValue}>
                 {Math.round(match.similarity_score * 100)}%
               </span>
+              {percentileSummary && (
+                <>
+                  <span className={styles.statBadge}>{percentileSummary.top}</span>
+                  <span className={styles.statSubtext}>{percentileSummary.above}</span>
+                </>
+              )}
             </div>
 
             {match.shared_tags.length > 0 && (

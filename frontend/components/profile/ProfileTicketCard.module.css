@@ -1,0 +1,209 @@
+.ticket {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 0;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 3px,
+      rgba(255, 255, 255, 0.015) 3px,
+      rgba(255, 255, 255, 0.015) 4px
+    ),
+    linear-gradient(180deg, rgba(18, 16, 14, 0.94), rgba(12, 10, 8, 0.88));
+  box-shadow:
+    0 24px 48px rgba(0, 0, 0, 0.3),
+    0 0 0 1px rgba(255, 255, 255, 0.06);
+  perspective: 800px;
+  cursor: default;
+}
+
+/* Left accent bar */
+.ticket::before {
+  content: '';
+  position: absolute;
+  top: 16px;
+  bottom: 16px;
+  left: 0;
+  width: 3px;
+  background: linear-gradient(
+    180deg,
+    rgba(229, 126, 49, 0.9) 0%,
+    rgba(229, 126, 49, 0.1) 100%
+  );
+}
+
+.header {
+  padding: 1.5rem 2rem 1rem;
+}
+
+.brand {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.22em;
+  color: rgba(229, 126, 49, 0.85);
+}
+
+.perforation {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 0.5rem;
+  margin: 0.5rem 0;
+}
+
+.perforation::before,
+.perforation::after {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.6);
+  flex-shrink: 0;
+}
+
+.perforation > :not(:first-child):not(:last-child) {
+  display: none;
+}
+
+/* Dashed line between punch holes */
+.perforation::before ~ .perforation::after {
+  flex-shrink: 0;
+}
+
+/* Fallback: use a pseudo that creates the dashed line */
+.perforation {
+  position: relative;
+}
+
+.perforation::before {
+  position: relative;
+  z-index: 1;
+}
+
+.perforation::after {
+  position: relative;
+  z-index: 1;
+}
+
+/* The dashed line in between */
+.perforation {
+  background-image: linear-gradient(
+    to right,
+    transparent 8px,
+    rgba(255, 255, 255, 0.08) 8px,
+    rgba(255, 255, 255, 0.08) calc(100% - 8px),
+    transparent calc(100% - 8px)
+  );
+  background-size: 100% 1px;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.identity {
+  padding: 0.5rem 2rem 0.75rem;
+}
+
+.name {
+  font-size: clamp(1.6rem, 4vw, 2.2rem);
+  line-height: 1.15;
+  color: rgba(255, 255, 255, 0.95);
+  margin: 0 0 0.35rem;
+}
+
+.archetype {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.5);
+  margin: 0 0 0.5rem;
+}
+
+.email {
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  color: rgba(229, 126, 49, 0.8);
+  margin: 0 0 0.5rem;
+}
+
+.bio {
+  font-size: 0.88rem;
+  line-height: 1.65;
+  color: rgba(255, 255, 255, 0.72);
+  margin: 0;
+}
+
+.section {
+  padding: 0.5rem 2rem 0.75rem;
+}
+
+.sectionLabel {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.35);
+  margin-bottom: 0.6rem;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.tag {
+  display: inline-block;
+  padding: 0.25rem 0.7rem;
+  font-size: 0.78rem;
+  color: rgba(229, 126, 49, 0.9);
+  background: rgba(229, 126, 49, 0.08);
+  border: 1px solid rgba(229, 126, 49, 0.2);
+  border-radius: 3px;
+}
+
+.genres {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.genre {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.reading {
+  font-size: 0.84rem;
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.68);
+  margin: 0;
+}
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 2rem 1.25rem;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.14em;
+  color: rgba(255, 255, 255, 0.3);
+}
+
+@media (max-width: 640px) {
+  .ticket {
+    max-width: 100%;
+  }
+
+  .identity,
+  .section,
+  .header,
+  .footer {
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
+  }
+}

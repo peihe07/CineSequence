@@ -16,4 +16,5 @@ export interface Profile {
   archetype_name: string | null
   personality_reading: string | null
   ticket_style: string | null
+  personal_ticket_url: string | null
 }

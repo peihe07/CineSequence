@@ -180,6 +180,22 @@
   letter-spacing: -0.04em;
 }
 
+.statBadge {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255, 233, 214, 0.92);
+}
+
+.statSubtext {
+  max-width: 28ch;
+  text-align: center;
+  font-size: 0.82rem;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.66);
+}
+
 .sectionBlock {
   display: flex;
   flex-direction: column;

@@ -10,12 +10,12 @@ function RegisterInner() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const nextPath = sanitizeNextPath(searchParams.get('next')) ?? '/sequencing'
-  const { isAuthenticated, isLoading, fetchProfile } = useAuthStore()
-  const [hasCheckedAuth, setHasCheckedAuth] = useState(false)
+  const { isAuthenticated, fetchProfile } = useAuthStore()
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true)
 
   useEffect(() => {
     if (isAuthenticated) {
-      setHasCheckedAuth(true)
+      setIsCheckingAuth(false)
       return
     }
 
@@ -28,7 +28,7 @@ function RegisterInner() {
         // Keep the registration form available when session validation fails.
       } finally {
         if (!cancelled) {
-          setHasCheckedAuth(true)
+          setIsCheckingAuth(false)
         }
       }
     }
@@ -41,12 +41,12 @@ function RegisterInner() {
   }, [fetchProfile, isAuthenticated])
 
   useEffect(() => {
-    if (hasCheckedAuth && isAuthenticated) {
+    if (!isCheckingAuth && isAuthenticated) {
       router.replace(nextPath)
     }
-  }, [hasCheckedAuth, isAuthenticated, nextPath, router])
+  }, [isCheckingAuth, isAuthenticated, nextPath, router])
 
-  if (!hasCheckedAuth || isLoading || isAuthenticated) {
+  if (isCheckingAuth || isAuthenticated) {
     return null
   }
 

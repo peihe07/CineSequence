@@ -53,6 +53,37 @@ describe('authStore', () => {
     expect(useAuthStore.getState().isAuthenticated).toBe(false)
   })
 
+  it('returns the register success payload so the UI can render it', async () => {
+    apiMock.mockResolvedValue({
+      message: 'If this email is eligible, a magic link has been sent.',
+    })
+
+    await expect(
+      useAuthStore.getState().register({
+        email: 'u@test.com',
+        name: 'User',
+        gender: 'other',
+        region: 'TW',
+        birth_year: 1990,
+        agreed_to_terms: true,
+      }),
+    ).resolves.toEqual({
+      message: 'If this email is eligible, a magic link has been sent.',
+    })
+
+    expect(apiMock).toHaveBeenCalledWith('/auth/register', {
+      method: 'POST',
+      body: JSON.stringify({
+        email: 'u@test.com',
+        name: 'User',
+        gender: 'other',
+        region: 'TW',
+        birth_year: 1990,
+        agreed_to_terms: true,
+      }),
+    })
+  })
+
   it('hydrates the user after verify succeeds via cookie-backed profile fetch', async () => {
     apiMock
       .mockResolvedValueOnce({
