@@ -7,12 +7,14 @@ import { ApiError, api, apiUpload } from '@/lib/api'
 import { useI18n } from '@/lib/i18n'
 import { useAuthStore } from '@/stores/authStore'
 import ProfileBasicsCard from '@/components/profile/ProfileBasicsCard'
+import ProfileCompletenessBar from '@/components/profile/ProfileCompletenessBar'
 import ProfileDnaSnapshot from '@/components/profile/ProfileDnaSnapshot'
+import FavoriteMoviesCard from '@/components/profile/FavoriteMoviesCard'
 import ProfileHeader from '@/components/profile/ProfileHeader'
 import ProfilePreferencesCard from '@/components/profile/ProfilePreferencesCard'
 import ProfileSequencingCard from '@/components/profile/ProfileSequencingCard'
 import ProfileTicketCard from '@/components/profile/ProfileTicketCard'
-import type { Profile } from '@/components/profile/types'
+import type { FavoriteMovie, Profile } from '@/components/profile/types'
 import { useDnaStore } from '@/stores/dnaStore'
 import ConfirmDialog from '@/components/ui/ConfirmDialog'
 import styles from './page.module.css'
@@ -35,6 +37,7 @@ export default function ProfilePage() {
   const [isDeletingAccount, setIsDeletingAccount] = useState(false)
   const [uploadingAvatar, setUploadingAvatar] = useState(false)
   const [avatarError, setAvatarError] = useState<string | null>(null)
+  const [isPreviewMode, setIsPreviewMode] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const dnaResult = useDnaStore((state) => state.result)
   const fetchDna = useDnaStore((state) => state.fetchResult)
@@ -104,6 +107,14 @@ export default function ProfilePage() {
         .filter(([, v]) => v >= 0.1)
         .map(([k]) => k)
     : []
+
+  useEffect(() => {
+    if (!isPreviewMode) return
+    setIsEditing(false)
+    setIsEditingBio(false)
+    setEditName(profile?.name ?? '')
+    setEditBio(profile?.bio ?? '')
+  }, [isPreviewMode, profile?.bio, profile?.name])
 
   useEffect(() => {
     api<Profile>('/profile')
@@ -216,8 +227,8 @@ export default function ProfilePage() {
           <div className={styles.heroFrame}>
             <div className={styles.heroLead}>
               <div className={styles.kickerRow}>
-                <span className={styles.kicker}>Profile Dossier</span>
-                <span className={styles.issueNo}>Edition 07</span>
+                <span className={styles.kicker}>{t('profile.dossierLabel')}</span>
+                <span className={styles.issueNo}>{t('profile.editionLabel')}</span>
               </div>
               <ProfileHeader
                 title={t('profile.title')}
@@ -225,7 +236,14 @@ export default function ProfilePage() {
                 loggingOutLabel={t('profile.loggingOut')}
                 isLoggingOut={isLoggingOut}
                 onLogout={async () => setShowLogoutConfirm(true)}
-              />
+              >
+                <button
+                  className={`${styles.previewToggle} ${isPreviewMode ? styles.previewActive : ''}`}
+                  onClick={() => setIsPreviewMode(!isPreviewMode)}
+                >
+                  {isPreviewMode ? t('profile.previewBack') : t('profile.previewMode')}
+                </button>
+              </ProfileHeader>
               <div className={styles.heroIdentity}>
                 <p className={styles.heroName}>{profile.name}</p>
                 <p className={styles.heroArchetype}>
@@ -236,7 +254,7 @@ export default function ProfilePage() {
 
             <div className={styles.heroMetaColumn}>
               <div className={styles.metaRow}>
-                <span className={styles.metaChip}>Archive / Profile</span>
+                <span className={styles.metaChip}>{t('profile.archiveChip')}</span>
                 <span className={styles.metaChip}>{profile.region}</span>
                 <span className={styles.metaChip}>{getStatusLabel(profile.sequencing_status)}</span>
               </div>
@@ -268,7 +286,7 @@ export default function ProfilePage() {
         <section className={`${styles.section} ${styles.editorialBody}`}>
           <div className={styles.featureRail}>
             <div className={styles.editorialNote}>
-              <span className={styles.noteLabel}>Featured Note</span>
+              <span className={styles.noteLabel}>{t('profile.featuredNoteLabel')}</span>
               <p className={styles.noteText}>
                 {profile.bio?.trim() || t('profile.bioEmpty')}
               </p>
@@ -285,14 +303,14 @@ export default function ProfilePage() {
           <div className={styles.profileGrid}>
             <div className={styles.editorialColumn}>
               <div className={styles.columnHeading}>
-                <span className={styles.columnEyebrow}>Identity Notes</span>
-                <p className={styles.columnDeck}>
-                  Identity, voice, and the details that give this profile a recognizable point of view.
-                </p>
+                <span className={styles.columnEyebrow}>{t('profile.identityNotesLabel')}</span>
+                <p className={styles.columnDeck}>{t('profile.identityNotesDeck')}</p>
               </div>
 
               <ProfileBasicsCard
                 profile={profile}
+                sectionLabel={t('profile.identityNotesLabel')}
+                isPreview={isPreviewMode}
                 nameLabel={t('profile.name')}
                 bioLabel={t('profile.bio')}
                 bioPlaceholder={t('profile.bioPlaceholder')}
@@ -334,10 +352,8 @@ export default function ProfilePage() {
 
             <div className={styles.editorialColumn}>
               <div className={styles.columnHeading}>
-                <span className={styles.columnEyebrow}>Matching Notes</span>
-                <p className={styles.columnDeck}>
-                  Preferences and sequencing cues, arranged as concise side notes instead of utility widgets.
-                </p>
+                <span className={styles.columnEyebrow}>{t('profile.matchingNotesLabel')}</span>
+                <p className={styles.columnDeck}>{t('profile.matchingNotesDeck')}</p>
               </div>
 
               <div className={styles.stack}>
@@ -354,6 +370,13 @@ export default function ProfilePage() {
                   editLabel={t('profile.editPref')}
                   saveLabel={t('profile.save')}
                   cancelLabel={t('profile.cancel')}
+                  visibleLabel={t('profile.visible')}
+                  emailNotifLabel={t('profile.emailNotif')}
+                  editorIntro={t('profile.preferencesEditorIntro')}
+                  summaryIntro={t('profile.preferencesSummaryIntro')}
+                  pureTasteOnCopy={t('profile.pureTasteOnCopy')}
+                  pureTasteOffCopy={t('profile.pureTasteOffCopy')}
+                  isPreview={isPreviewMode}
                   getPrefLabel={getPrefLabel}
                   prefOptions={[
                     { value: 'male', label: t('profile.genderMale') },
@@ -364,10 +387,26 @@ export default function ProfilePage() {
                   onProfileUpdate={setProfile}
                 />
 
+                <FavoriteMoviesCard
+                  favorites={profile.favorite_movies ?? []}
+                  title={t('profile.favorites')}
+                  hintLabel={t('profile.favoritesHint')}
+                  searchLabel={t('profile.favoritesSearch')}
+                  searchingLabel={t('profile.favoritesSearching')}
+                  saveLabel={t('profile.save')}
+                  cancelLabel={t('profile.cancel')}
+                  editLabel={t('profile.edit')}
+                  isPreview={isPreviewMode}
+                  onUpdate={(movies: FavoriteMovie[]) =>
+                    setProfile({ ...profile, favorite_movies: movies })
+                  }
+                />
+
                 <ProfileSequencingCard
                   profile={profile}
                   title={t('profile.seqStatus')}
                   archetypeLabel={t('profile.archetype')}
+                  intro={t('profile.sequencingIntro')}
                   getStatusLabel={getStatusLabel}
                 />
               </div>
@@ -376,16 +415,20 @@ export default function ProfilePage() {
         </section>
       </motion.div>
 
-      <section className={`${styles.section} ${styles.dangerSection}`}>
-        <button
-          className={styles.deleteAccountBtn}
-          onClick={() => setShowDeleteConfirm(true)}
-          disabled={isDeletingAccount}
-          aria-busy={isDeletingAccount}
-        >
-          {isDeletingAccount ? t('profile.deletingAccount') : t('profile.deleteAccount')}
-        </button>
-      </section>
+      <ProfileCompletenessBar profile={profile} label={t('profile.completeness')} />
+
+      {!isPreviewMode && (
+        <section className={`${styles.section} ${styles.dangerSection}`}>
+          <button
+            className={styles.deleteAccountBtn}
+            onClick={() => setShowDeleteConfirm(true)}
+            disabled={isDeletingAccount}
+            aria-busy={isDeletingAccount}
+          >
+            {isDeletingAccount ? t('profile.deletingAccount') : t('profile.deleteAccount')}
+          </button>
+        </section>
+      )}
 
       <ConfirmDialog
         open={showLogoutConfirm}

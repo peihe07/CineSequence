@@ -26,6 +26,7 @@ vi.mock('@/lib/i18n', () => ({
       const dict: Record<string, string> = {
         'ticket.title': 'Match Ticket',
         'ticket.similarity': 'Taste Similarity',
+        'ticket.contact': 'Contact',
         'ticket.percentileLabel': 'Relative standing',
         'ticket.percentileAbove': 'Higher than {{percentile}}% of your current candidate pool',
         'ticket.percentileTop': 'Top {{topPercent}}% match',
@@ -71,6 +72,7 @@ describe('TicketPage', () => {
       id: 'abc123',
       ticket_image_url: null,
       partner_name: 'Aster',
+      partner_email: 'aster@example.com',
       similarity_score: 0.87,
       candidate_percentile: 91,
       candidate_pool_size: 37,
@@ -82,6 +84,9 @@ describe('TicketPage', () => {
     render(<TicketPage />)
 
     expect(await screen.findByRole('heading', { name: 'Match Ticket' })).toBeTruthy()
+    expect(screen.getByRole('link', { name: 'aster@example.com' }).getAttribute('href')).toBe(
+      'mailto:aster@example.com',
+    )
     expect(screen.getByText('87%')).toBeTruthy()
     expect(screen.getByText('Higher than 91% of your current candidate pool')).toBeTruthy()
     expect(screen.getByText('Top 10% match')).toBeTruthy()

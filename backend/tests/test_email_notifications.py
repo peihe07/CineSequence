@@ -270,4 +270,4 @@ class TestGetArchetypeName:
         mock_user.dna_profile = mock_profile
 
         result = get_archetype_name(mock_user)
-        assert result == f"{data['name']} {data['name_en']}"
+        assert result == data["name_en"]

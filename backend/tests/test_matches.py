@@ -203,6 +203,7 @@ class TestInviteRespondPermissions:
         data = response.json()
         assert data["status"] == "accepted"
         assert data["ticket_image_url"] == "https://ticket.test/inviter.png"
+        assert data["partner_email"] == "inviter@test.com"
         assert data["candidate_percentile"] == 91
         assert data["candidate_pool_size"] == 37
 
@@ -269,6 +270,7 @@ class TestInviteRespondPermissions:
         assert response.status_code == 200
         data = response.json()
         assert data[0]["ticket_image_url"] == "https://assets.cinesequence.xyz/tickets/legacy.png"
+        assert data[0]["partner_email"] == "recipient@test.com"
 
     async def test_invite_sets_reminder_tracking_fields(
         self, client: AsyncClient, db_session: AsyncSession

@@ -50,14 +50,14 @@ export default function ProfileTicketCard({ profile, topTags, topGenres }: Profi
       transition={{ duration: 0.5, ease: 'easeOut' }}
     >
       <div className={styles.editorialMeta}>
-        <span className={styles.frameLabel}>Editorial Insert</span>
-        <span className={styles.frameIssue}>Profile Card</span>
+        <span className={styles.frameLabel}>{t('profile.ticketInsertLabel')}</span>
+        <span className={styles.frameIssue}>{t('profile.ticketIssueLabel')}</span>
       </div>
 
       <div className={styles.ticket}>
         <div className={styles.header}>
           <span className={styles.brand}>CINE SEQUENCE</span>
-          <span className={styles.catalogNo}>ARCHIVE 07</span>
+          <span className={styles.catalogNo}>{t('profile.ticketCatalogLabel')}</span>
         </div>
 
         <div className={styles.perforation} />
@@ -73,7 +73,7 @@ export default function ProfileTicketCard({ profile, topTags, topGenres }: Profi
 
         {topTags.length > 0 && (
           <div className={styles.section}>
-            <span className={styles.sectionLabel}>Taste DNA</span>
+            <span className={styles.sectionLabel}>{t('profile.ticketTasteLabel')}</span>
             <div className={styles.tags}>
               {topTags.map((tag) => (
                 <span key={tag} className={styles.tag}>
@@ -86,7 +86,7 @@ export default function ProfileTicketCard({ profile, topTags, topGenres }: Profi
 
         {topGenres.length > 0 && (
           <div className={styles.section}>
-            <span className={styles.sectionLabel}>Genre Spectrum</span>
+            <span className={styles.sectionLabel}>{t('profile.ticketGenreLabel')}</span>
             <div className={styles.genres}>
               {topGenres.map((genre) => (
                 <span key={genre} className={styles.genre}>· {genre}</span>
@@ -99,7 +99,7 @@ export default function ProfileTicketCard({ profile, topTags, topGenres }: Profi
           <>
             <div className={styles.perforation} />
             <div className={styles.section}>
-              <span className={styles.sectionLabel}>Personality Reading</span>
+              <span className={styles.sectionLabel}>{t('profile.ticketReadingLabel')}</span>
               <p className={styles.reading}>{profile.personality_reading}</p>
             </div>
           </>
@@ -108,7 +108,7 @@ export default function ProfileTicketCard({ profile, topTags, topGenres }: Profi
         <div className={styles.perforation} />
         <div className={styles.footer}>
           <span>cinesequence.app</span>
-          <span>{profile.ticket_style?.toUpperCase() ?? 'CLASSIC'}</span>
+          <span>{profile.ticket_style?.toUpperCase() ?? t('profile.ticketStyleFallback')}</span>
         </div>
       </div>
     </motion.div>

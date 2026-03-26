@@ -48,6 +48,10 @@ class User(Base):
     match_age_min: Mapped[int | None] = mapped_column(Integer)
     match_age_max: Mapped[int | None] = mapped_column(Integer)
     pure_taste_match: Mapped[bool] = mapped_column(Boolean, default=False)
+    is_visible: Mapped[bool] = mapped_column(Boolean, default=True, server_default="true")
+    email_notifications_enabled: Mapped[bool] = mapped_column(
+        Boolean, default=True, server_default="true"
+    )
 
     # Sequencing state
     sequencing_status: Mapped[SequencingStatus] = mapped_column(
@@ -88,6 +92,10 @@ class User(Base):
     )
     active_session: Mapped["SequencingSession | None"] = relationship(
         foreign_keys=[active_session_id], lazy="selectin", uselist=False,
+    )
+    favorite_movies: Mapped[list["UserFavoriteMovie"]] = relationship(
+        back_populates="user", lazy="selectin",
+        order_by="UserFavoriteMovie.display_order",
     )
 
     @property

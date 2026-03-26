@@ -26,6 +26,7 @@ type FullTicketProps = {
   ticketNumber: number
   onInvite: () => void
   onRespond: (accept: boolean) => void
+  onShowFullTicket?: () => void
   highlighted?: boolean
   // Legacy props must NOT be present
   ticketImageUrl?: never
@@ -62,6 +63,7 @@ function FullCinemaTicket({
   ticketNumber,
   onInvite,
   onRespond,
+  onShowFullTicket,
   highlighted,
 }: FullTicketProps) {
   const { t, locale } = useI18n()
@@ -110,7 +112,7 @@ function FullCinemaTicket({
       {/* ── STUB SECTION ─────────────────────────────── */}
       <div className={styles.stub}>
         <div className={styles.stubMeta}>
-          <span className={styles.stubLabel}>STUB · NO.{ticketNo}</span>
+          <span className={styles.stubLabel}>{t('matches.stubLabel', { number: ticketNo })}</span>
           <span className={styles.stubDate}>{displayDate}</span>
         </div>
 
@@ -226,13 +228,35 @@ function FullCinemaTicket({
           )}
 
           {match.status === 'accepted' && (
-            <div className={styles.tearSection}>
-              <p className={styles.tearHint}>{t('matches.tearHint')}</p>
-              <TearRitual
-                ticketImageUrl={match.ticket_image_url}
-                partnerName={match.partner_name}
-                similarityScore={match.similarity_score}
-              />
+            <div className={styles.acceptedActions}>
+              <button
+                type="button"
+                className={styles.ticketLinkBtn}
+                onClick={onShowFullTicket}
+                aria-label={`${t('matches.viewTicket')} ${match.partner_name}`}
+              >
+                <i className="ri-ticket-2-line" aria-hidden="true" />
+                {t('matches.viewTicket')}
+              </button>
+              {match.partner_email && (
+                <a
+                  href={`mailto:${match.partner_email}`}
+                  className={styles.emailLink}
+                  aria-label={`${t('matches.emailPartner')} ${match.partner_name}`}
+                >
+                  <i className="ri-mail-line" aria-hidden="true" />
+                  {match.partner_email}
+                </a>
+              )}
+              <div className={styles.tearSection}>
+                <p className={styles.tearHint}>{t('matches.tearHint')}</p>
+                <TearRitual
+                  ticketImageUrl={match.ticket_image_url}
+                  partnerName={match.partner_name}
+                  similarityScore={match.similarity_score}
+                  onTear={onShowFullTicket}
+                />
+              </div>
             </div>
           )}
 
@@ -294,11 +318,13 @@ function LegacyImageTicket({ ticketImageUrl, partnerName, similarityScore }: Leg
     >
       <div className={styles.legacyInner}>
         {ticketImageUrl ? (
-          <img
-            src={ticketImageUrl}
-            alt={`${t('matches.matched')} - ${partnerName}`}
-            className={styles.legacyImage}
-          />
+          <div className={styles.legacyImageFrame}>
+            <img
+              src={ticketImageUrl}
+              alt={`${t('matches.matched')} - ${partnerName}`}
+              className={styles.legacyImage}
+            />
+          </div>
         ) : (
           <div className={styles.legacyPlaceholder}>
             <i className="ri-ticket-2-line" aria-hidden="true" />

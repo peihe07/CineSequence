@@ -84,10 +84,10 @@ export default function TicketPage() {
         transition={{ duration: 0.5 }}
       >
         <section className={`${styles.section} ${styles.heroSection}`}>
-          <span className={styles.sideLabel}>FILE 07</span>
-          <p className={styles.eyebrow}>[ ADMISSION_RECORD ]</p>
+          <span className={styles.sideLabel}>{t('ticket.fileLabel')}</span>
+          <p className={styles.eyebrow}>{t('ticket.eyebrow')}</p>
           <h1 className={styles.title}>{t('ticket.title')}</h1>
-          <p className={styles.heroMeta}>TICKET LINK: VERIFIED // ENTRY: CONFIRMED</p>
+          <p className={styles.heroMeta}>{t('ticket.heroMeta')}</p>
         </section>
 
         <section className={`${styles.section} ${styles.ticketSection}`}>
@@ -100,6 +100,15 @@ export default function TicketPage() {
 
         <section className={`${styles.section} ${styles.detailsSection}`}>
           <div className={styles.details}>
+            {match.partner_email && (
+              <div className={styles.sectionBlock}>
+                <h3 className={styles.sectionTitle}>{t('ticket.contact')}</h3>
+                <a href={`mailto:${match.partner_email}`} className={styles.contactLink}>
+                  {match.partner_email}
+                </a>
+              </div>
+            )}
+
             <div className={styles.stat}>
               <span className={styles.statLabel}>{t('ticket.similarity')}</span>
               <span className={styles.statValue}>

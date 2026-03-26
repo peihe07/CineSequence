@@ -20,6 +20,9 @@ async def _send_pending_invite_reminders(db, *, now: datetime | None = None):
     current_time = now or datetime.now(UTC)
     due_matches = await get_pending_invite_reminders(db, now=current_time)
     for match in due_matches:
+        if not match.user_b.email_notifications_enabled:
+            logger.info("Skipped invite reminder for match %s (recipient disabled notifications)", match.id)
+            continue
         await send_invite_email(
             recipient_email=match.user_b.email,
             recipient_name=match.user_b.name,

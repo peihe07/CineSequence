@@ -33,6 +33,7 @@ class MatchOut(BaseModel):
     id: uuid.UUID
     partner_id: uuid.UUID
     partner_name: str
+    partner_email: str | None = None
     partner_bio: str | None = None
     partner_avatar_url: str | None = None
     partner_archetype: str | None = None
@@ -75,6 +76,7 @@ def _match_to_out(match, user_id: uuid.UUID) -> MatchOut:
         id=match.id,
         partner_id=partner.id,
         partner_name=partner.name,
+        partner_email=partner.email if match.status == MatchStatus.accepted else None,
         partner_bio=partner.bio,
         partner_avatar_url=partner.avatar_url,
         partner_archetype=get_archetype_name(partner),

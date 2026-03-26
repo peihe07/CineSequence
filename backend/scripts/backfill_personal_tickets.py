@@ -33,7 +33,7 @@ async def main():
     from app.config import settings
     from app.models.dna_profile import DnaProfile
     from app.models.user import SequencingStatus, User
-    from app.services.matcher import ARCHETYPE_MAP
+    from app.services.matcher import get_archetype_display_name
     from app.services.ticket_gen import generate_and_upload_personal_ticket
 
     engine = create_async_engine(settings.database_url)
@@ -71,13 +71,7 @@ async def main():
                 continue
 
             # Build archetype display name
-            archetype_data = ARCHETYPE_MAP.get(profile.archetype_id, {})
-            archetype_display = (
-                f"{archetype_data.get('name', '')} "
-                f"{archetype_data.get('name_en', '')}"
-            ).strip()
-            if not archetype_display:
-                archetype_display = "電影愛好者"
+            archetype_display = get_archetype_display_name(profile.archetype_id)
 
             # Extract top tags
             tag_vec = list(profile.tag_vector) if profile.tag_vector else []

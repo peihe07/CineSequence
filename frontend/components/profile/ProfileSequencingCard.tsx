@@ -7,6 +7,7 @@ interface ProfileSequencingCardProps {
   profile: Profile
   title: string
   archetypeLabel: string
+  intro: string
   getStatusLabel: (value: string) => string
 }
 
@@ -14,6 +15,7 @@ export default function ProfileSequencingCard({
   profile,
   title,
   archetypeLabel,
+  intro,
   getStatusLabel,
 }: ProfileSequencingCardProps) {
   return (
@@ -24,9 +26,7 @@ export default function ProfileSequencingCard({
         </h2>
       </div>
 
-      <p className={styles.cardIntro}>
-        Sequencing stays as the profile backbone: current status first, then the archetype that the watch history resolves into.
-      </p>
+      <p className={styles.cardIntro}>{intro}</p>
 
       <div className={styles.preferenceSummary}>
         <div className={styles.factCard}>

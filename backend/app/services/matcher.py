@@ -77,6 +77,7 @@ async def find_matches(
         .where(DnaProfile.user_id.notin_(exclude_ids))
         .where(DnaProfile.is_active == True)  # noqa: E712
         .where(User.sequencing_status == "completed")
+        .where(User.is_visible == True)  # noqa: E712
     )
 
     # Apply current user's preference filters (skip if pure_taste_match)
@@ -247,10 +248,13 @@ async def send_invite(
     await db.commit()
     await db.refresh(match)
 
-    try:
-        await send_invite_email(**email_data)
-    except Exception:
-        logger.exception("Failed to send invite email for match %s", match.id)
+    if recipient.email_notifications_enabled:
+        try:
+            await send_invite_email(**email_data)
+        except Exception:
+            logger.exception("Failed to send invite email for match %s", match.id)
+    else:
+        logger.info("Skipped invite email for match %s (recipient disabled notifications)", match.id)
 
     return match
 
@@ -367,33 +371,35 @@ async def respond_to_invite(
 
     # Send acceptance emails — each person receives the partner's personal ticket
     if email_data:
-        try:
-            await send_match_accepted_email(
-                to_email=email_data["a_email"],
-                to_name=email_data["a_name"],
-                partner_name=email_data["b_name"],
-                partner_archetype=email_data["archetype_b"],
-                shared_tags=email_data["shared_tags"],
-                ice_breakers=email_data["ice_breakers"],
-                match_id=email_data["match_id"],
-                ticket_image_url=ticket_b_url,
-            )
-        except Exception:
-            logger.exception("Failed to send accepted email to user_a for match %s", match.id)
+        if user_a.email_notifications_enabled:
+            try:
+                await send_match_accepted_email(
+                    to_email=email_data["a_email"],
+                    to_name=email_data["a_name"],
+                    partner_name=email_data["b_name"],
+                    partner_archetype=email_data["archetype_b"],
+                    shared_tags=email_data["shared_tags"],
+                    ice_breakers=email_data["ice_breakers"],
+                    match_id=email_data["match_id"],
+                    ticket_image_url=ticket_b_url,
+                )
+            except Exception:
+                logger.exception("Failed to send accepted email to user_a for match %s", match.id)
 
-        try:
-            await send_match_accepted_email(
-                to_email=email_data["b_email"],
-                to_name=email_data["b_name"],
-                partner_name=email_data["a_name"],
-                partner_archetype=email_data["archetype_a"],
-                shared_tags=email_data["shared_tags"],
-                ice_breakers=email_data["ice_breakers"],
-                match_id=email_data["match_id"],
-                ticket_image_url=ticket_a_url,
-            )
-        except Exception:
-            logger.exception("Failed to send accepted email to user_b for match %s", match.id)
+        if user_b.email_notifications_enabled:
+            try:
+                await send_match_accepted_email(
+                    to_email=email_data["b_email"],
+                    to_name=email_data["b_name"],
+                    partner_name=email_data["a_name"],
+                    partner_archetype=email_data["archetype_a"],
+                    shared_tags=email_data["shared_tags"],
+                    ice_breakers=email_data["ice_breakers"],
+                    match_id=email_data["match_id"],
+                    ticket_image_url=ticket_a_url,
+                )
+            except Exception:
+                logger.exception("Failed to send accepted email to user_b for match %s", match.id)
 
     return match
 
@@ -489,15 +495,26 @@ def _build_candidate_demographic_clause(user: User):
     return and_(gender_clause, age_min_clause, age_max_clause)
 
 
+def get_archetype_display_name(archetype_id: str | None) -> str:
+    """Return a single display name for an archetype.
+
+    Prefer the English label when available so English names are not prefixed
+    with an extra Chinese translation in downstream UI and ticket surfaces.
+    """
+    if not archetype_id:
+        return "電影愛好者"
+
+    archetype = ARCHETYPE_MAP.get(archetype_id)
+    if not archetype:
+        return "電影愛好者"
+
+    return archetype.get("name_en") or archetype.get("name") or "電影愛好者"
+
+
 def get_archetype_name(user: User) -> str:
     """Get display name of user's archetype from their active DNA profile."""
     profile = user.dna_profile
-    if not profile:
-        return "電影愛好者"
-    archetype = ARCHETYPE_MAP.get(profile.archetype_id)
-    if not archetype:
-        return "電影愛好者"
-    return f"{archetype['name']} {archetype['name_en']}"
+    return get_archetype_display_name(profile.archetype_id if profile else None)
 
 
 def _compute_shared_tags(

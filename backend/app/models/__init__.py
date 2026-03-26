@@ -15,3 +15,4 @@ from app.models.notification import Notification  # noqa: E402, F401
 from app.models.pick import Pick  # noqa: E402, F401
 from app.models.sequencing_session import SequencingSession  # noqa: E402, F401
 from app.models.user import User  # noqa: E402, F401
+from app.models.user_favorite_movie import UserFavoriteMovie  # noqa: E402, F401

@@ -16,7 +16,7 @@ async def test_send_pending_invite_reminders_sends_and_marks_due_matches():
         ice_breakers=["Talk about endings"],
         invite_reminder_count=0,
         user_a=SimpleNamespace(name="Alice", dna_profile=None),
-        user_b=SimpleNamespace(email="bob@example.com", name="Bob"),
+        user_b=SimpleNamespace(email="bob@example.com", name="Bob", email_notifications_enabled=True),
     )
 
     mock_db = MagicMock()

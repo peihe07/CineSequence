@@ -111,13 +111,13 @@
 }
 
 .title {
-  font-family: var(--font-display, "Iowan Old Style", "Palatino Linotype", serif);
-  font-size: clamp(2.3rem, 8vw, 5.8rem);
+  font-family: var(--font-mono);
+  font-size: clamp(0.72rem, 1.8vw, 0.82rem);
   font-weight: 500;
-  letter-spacing: -0.055em;
-  line-height: 0.88;
-  color: rgba(251, 247, 240, 0.98);
-  text-wrap: balance;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  line-height: 1;
+  color: rgba(233, 226, 216, 0.52);
   margin: 0;
 }
 
@@ -802,6 +802,182 @@
   background: rgba(229, 126, 49, 0.16);
   border-color: rgba(229, 126, 49, 0.28);
   color: rgba(255, 240, 226, 0.92);
+}
+
+/* Completeness bar */
+.completenessBar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 1rem clamp(1.1rem, 4vw, 2.25rem);
+  max-width: var(--page-max-width);
+  width: 100%;
+}
+
+.completenessHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.completenessPercent {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: rgba(229, 126, 49, 0.82);
+  letter-spacing: 0.08em;
+}
+
+.completenessTrack {
+  height: 3px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+}
+
+.completenessFill {
+  height: 100%;
+  border-radius: 2px;
+  background: linear-gradient(90deg, rgba(229, 126, 49, 0.7), rgba(229, 126, 49, 0.9));
+  transition: width 0.4s ease;
+}
+
+/* Preview mode toggle */
+.previewToggle {
+  padding: 0.45rem 0.85rem;
+  border: 1px solid rgba(205, 198, 188, 0.12);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.03);
+  color: rgba(236, 230, 221, 0.68);
+  font-size: 0.68rem;
+  font-family: var(--font-mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: border-color 0.18s ease, color 0.18s ease;
+}
+
+.previewToggle:hover {
+  color: rgba(247, 243, 237, 0.96);
+  border-color: rgba(229, 126, 49, 0.24);
+}
+
+.previewActive {
+  background: rgba(229, 126, 49, 0.12);
+  border-color: rgba(229, 126, 49, 0.28);
+  color: rgba(255, 240, 226, 0.92);
+}
+
+/* Favorite movies */
+.favoritesGrid {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.8rem;
+}
+
+.favoriteItem {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  align-items: center;
+}
+
+.favoritePoster {
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
+  border-radius: 12px;
+  border: 1px solid rgba(205, 198, 188, 0.08);
+}
+
+.favoritePosterEmpty {
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  border: 1px solid rgba(205, 198, 188, 0.08);
+  background: rgba(255, 255, 255, 0.03);
+  color: rgba(239, 232, 223, 0.3);
+  font-size: 1.8rem;
+}
+
+.favoriteTitle {
+  font-size: 0.78rem;
+  color: rgba(239, 232, 223, 0.72);
+  text-align: center;
+  line-height: 1.35;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.favoriteRemove {
+  position: absolute;
+  top: 0.3rem;
+  right: 0.3rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  border: none;
+  background: rgba(0, 0, 0, 0.6);
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.favoriteRemove:hover {
+  background: rgba(255, 107, 107, 0.6);
+}
+
+/* Search results dropdown */
+.searchResults {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid rgba(205, 198, 188, 0.1);
+  border-radius: 12px;
+  background: rgba(16, 17, 20, 0.96);
+  overflow: hidden;
+  max-height: 18rem;
+  overflow-y: auto;
+}
+
+.searchResultItem {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.55rem 0.75rem;
+  border: none;
+  background: none;
+  color: rgba(239, 232, 223, 0.82);
+  font-size: 0.85rem;
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.12s ease;
+}
+
+.searchResultItem:hover {
+  background: rgba(229, 126, 49, 0.1);
+}
+
+.searchResultPoster {
+  width: 2rem;
+  height: 3rem;
+  object-fit: cover;
+  border-radius: 4px;
+  flex-shrink: 0;
 }
 
 .dangerSection {

@@ -7,7 +7,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, status
 from fastapi.responses import JSONResponse, Response
-from pydantic import BaseModel
+from pydantic import BaseModel, Field, model_validator
 from sqlalchemy import delete, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -19,10 +19,11 @@ from app.models.match import Match
 from app.models.pick import Pick
 from app.models.sequencing_session import SequencingSession
 from app.models.user import Gender, GenderPref, User
+from app.models.user_favorite_movie import UserFavoriteMovie
 from app.services.auth_cookies import clear_auth_cookie
 from app.services.dna_builder import ARCHETYPES
 from app.services.group_engine import should_activate_group
-from app.services.matcher import ARCHETYPE_MAP
+from app.services.matcher import get_archetype_display_name
 
 logger = logging.getLogger(__name__)
 
@@ -30,31 +31,17 @@ logger = logging.getLogger(__name__)
 _TICKET_FIELDS = {"name", "bio"}
 
 
-async def _regenerate_personal_ticket(user: User, db: AsyncSession) -> None:
-    """Regenerate the user's personal ticket image if they have a completed DNA profile."""
+async def _generate_personal_ticket_url(user: User, profile: DnaProfile) -> str:
+    """Generate a personal ticket URL for a user/profile pair."""
     import json
 
     from app.services.ticket_gen import generate_and_upload_personal_ticket
-
-    result = await db.execute(
-        select(DnaProfile)
-        .where(DnaProfile.user_id == user.id)
-        .where(DnaProfile.is_active.is_(True))
-        .limit(1)
-    )
-    profile = result.scalar_one_or_none()
-    if not profile:
-        return
 
     data_dir = Path(__file__).parent.parent / "data"
     taxonomy = json.loads((data_dir / "tag_taxonomy.json").read_text())
     tag_keys = list(taxonomy["tags"].keys())
 
-    archetype_data = ARCHETYPE_MAP.get(profile.archetype_id, {})
-    archetype_display = (
-        f"{archetype_data.get('name', '')} "
-        f"{archetype_data.get('name_en', '')}"
-    ).strip() or "電影愛好者"
+    archetype_display = get_archetype_display_name(profile.archetype_id)
 
     tag_vec = list(profile.tag_vector) if profile.tag_vector else []
     top_indices = sorted(range(len(tag_vec)), key=lambda i: tag_vec[i], reverse=True)
@@ -75,24 +62,18 @@ async def _regenerate_personal_ticket(user: User, db: AsyncSession) -> None:
         if score >= 0.1
     ]
 
-    try:
-        ticket_url = await generate_and_upload_personal_ticket(
-            user_id=user.id,
-            name=user.name,
-            email=user.email,
-            archetype=archetype_display,
-            top_tags=top_tags,
-            top_genres=top_genres,
-            bio=user.bio,
-            personality_reading=profile.personality_reading,
-            conversation_style=profile.conversation_style,
-            ticket_style=profile.ticket_style,
-        )
-        profile.personal_ticket_url = ticket_url
-        logger.info("Regenerated personal ticket for user %s", user.id)
-    except Exception:
-        logger.exception("Failed to regenerate personal ticket for user %s", user.id)
-        raise
+    return await generate_and_upload_personal_ticket(
+        user_id=user.id,
+        name=user.name,
+        email=user.email,
+        archetype=archetype_display,
+        top_tags=top_tags,
+        top_genres=top_genres,
+        bio=user.bio,
+        personality_reading=profile.personality_reading,
+        conversation_style=profile.conversation_style,
+        ticket_style=profile.ticket_style,
+    )
 
 AVATAR_MAX_BYTES = 2 * 1024 * 1024  # 2 MB
 AVATAR_ALLOWED_TYPES = {"image/jpeg", "image/png", "image/webp"}
@@ -115,6 +96,17 @@ def _matches_avatar_signature(data: bytes, content_type: str) -> bool:
     return False
 
 
+class FavoriteMovieOut(BaseModel):
+    id: uuid.UUID
+    tmdb_id: int
+    title_zh: str | None = None
+    title_en: str | None = None
+    poster_url: str | None = None
+    display_order: int
+
+    model_config = {"from_attributes": True}
+
+
 class ProfileOut(BaseModel):
     id: uuid.UUID
     email: str
@@ -128,6 +120,8 @@ class ProfileOut(BaseModel):
     match_age_min: int | None = None
     match_age_max: int | None = None
     pure_taste_match: bool
+    is_visible: bool = True
+    email_notifications_enabled: bool = True
     sequencing_status: str
     is_admin: bool
     # DNA summary (if completed)
@@ -136,20 +130,53 @@ class ProfileOut(BaseModel):
     personality_reading: str | None = None
     ticket_style: str | None = None
     personal_ticket_url: str | None = None
+    # Favorites
+    favorite_movies: list[FavoriteMovieOut] = []
 
     model_config = {"from_attributes": True}
 
 
 class ProfileUpdate(BaseModel):
-    name: str | None = None
-    bio: str | None = None
+    name: str | None = Field(None, max_length=50)
+    bio: str | None = Field(None, max_length=280)
     gender: Gender | None = None
     birth_year: int | None = None
-    region: str | None = None
+    region: str | None = Field(None, max_length=50)
     match_gender_pref: GenderPref | None = None
     match_age_min: int | None = None
     match_age_max: int | None = None
     pure_taste_match: bool | None = None
+    is_visible: bool | None = None
+    email_notifications_enabled: bool | None = None
+
+    @model_validator(mode="after")
+    def validate_age_range(self):
+        if self.match_age_min is not None and self.match_age_max is not None:
+            if self.match_age_min > self.match_age_max:
+                raise ValueError("match_age_min must be <= match_age_max")
+        return self
+
+
+class FavoriteMovieIn(BaseModel):
+    tmdb_id: int
+    title_zh: str | None = Field(None, max_length=255)
+    title_en: str | None = Field(None, max_length=255)
+    poster_url: str | None = Field(None, max_length=500)
+    display_order: int = Field(ge=0, le=2)
+
+
+class FavoriteMoviesUpdate(BaseModel):
+    movies: list[FavoriteMovieIn] = Field(max_length=3)
+
+    @model_validator(mode="after")
+    def validate_unique(self):
+        orders = [m.display_order for m in self.movies]
+        if len(orders) != len(set(orders)):
+            raise ValueError("display_order values must be unique")
+        tmdb_ids = [m.tmdb_id for m in self.movies]
+        if len(tmdb_ids) != len(set(tmdb_ids)):
+            raise ValueError("tmdb_id values must be unique")
+        return self
 
 
 def _user_to_profile(user: User) -> ProfileOut:
@@ -161,6 +188,9 @@ def _user_to_profile(user: User) -> ProfileOut:
             if archetype["id"] == dna.archetype_id:
                 archetype_name = archetype["name"]
                 break
+    favorites = [
+        FavoriteMovieOut.model_validate(m) for m in (user.favorite_movies or [])
+    ]
     return ProfileOut(
         id=user.id,
         email=user.email,
@@ -174,6 +204,8 @@ def _user_to_profile(user: User) -> ProfileOut:
         match_age_min=user.match_age_min,
         match_age_max=user.match_age_max,
         pure_taste_match=user.pure_taste_match,
+        is_visible=user.is_visible,
+        email_notifications_enabled=user.email_notifications_enabled,
         sequencing_status=user.sequencing_status.value,
         is_admin=user.is_admin,
         archetype_id=dna.archetype_id if dna else None,
@@ -181,6 +213,7 @@ def _user_to_profile(user: User) -> ProfileOut:
         personality_reading=dna.personality_reading if dna else None,
         ticket_style=dna.ticket_style if dna else None,
         personal_ticket_url=dna.personal_ticket_url if dna else None,
+        favorite_movies=favorites,
     )
 
 
@@ -234,7 +267,8 @@ async def update_profile(
 
     allowed_fields = {
         "name", "bio", "gender", "birth_year", "region",
-        "match_gender_pref", "match_age_min", "match_age_max", "pure_taste_match",
+        "match_gender_pref", "match_age_min", "match_age_max",
+        "pure_taste_match", "is_visible", "email_notifications_enabled",
     }
     for field, value in update_data.items():
         if field not in allowed_fields:
@@ -242,13 +276,19 @@ async def update_profile(
         setattr(user, field, value)
 
     try:
-        await db.flush()
-
-        # Keep profile edits and ticket regeneration atomic.
         if update_data.keys() & _TICKET_FIELDS:
-            await _regenerate_personal_ticket(user, db)
+            result = await db.execute(
+                select(DnaProfile)
+                .where(DnaProfile.user_id == user_id)
+                .where(DnaProfile.is_active.is_(True))
+                .limit(1)
+            )
+            profile = result.scalar_one_or_none()
+            if profile:
+                profile.personal_ticket_url = await _generate_personal_ticket_url(user, profile)
 
         await db.commit()
+        await db.refresh(user)
     except HTTPException:
         await db.rollback()
         raise
@@ -260,7 +300,6 @@ async def update_profile(
             detail="Failed to update profile",
         ) from None
 
-    await db.refresh(user)
     return _user_to_profile(user)
 
 
@@ -309,6 +348,51 @@ async def upload_avatar(
     return _user_to_profile(user)
 
 
+@router.get("/favorites")
+async def get_favorites(
+    user: Annotated[User, Depends(get_current_user)],
+    db: Annotated[AsyncSession, Depends(get_db)],
+):
+    """Get user's favorite movies (up to 3)."""
+    result = await db.execute(
+        select(UserFavoriteMovie)
+        .where(UserFavoriteMovie.user_id == user.id)
+        .order_by(UserFavoriteMovie.display_order)
+    )
+    return [FavoriteMovieOut.model_validate(m) for m in result.scalars().all()]
+
+
+@router.put("/favorites")
+async def update_favorites(
+    body: FavoriteMoviesUpdate,
+    user: Annotated[User, Depends(get_current_user)],
+    db: Annotated[AsyncSession, Depends(get_db)],
+):
+    """Replace user's favorite movies (max 3)."""
+    # Delete existing
+    await db.execute(
+        delete(UserFavoriteMovie).where(UserFavoriteMovie.user_id == user.id)
+    )
+    # Insert new
+    for movie in body.movies:
+        db.add(UserFavoriteMovie(
+            user_id=user.id,
+            tmdb_id=movie.tmdb_id,
+            title_zh=movie.title_zh,
+            title_en=movie.title_en,
+            poster_url=movie.poster_url,
+            display_order=movie.display_order,
+        ))
+    await db.commit()
+
+    result = await db.execute(
+        select(UserFavoriteMovie)
+        .where(UserFavoriteMovie.user_id == user.id)
+        .order_by(UserFavoriteMovie.display_order)
+    )
+    return [FavoriteMovieOut.model_validate(m) for m in result.scalars().all()]
+
+
 @router.get("/export")
 async def export_data(
     user: Annotated[User, Depends(get_current_user)],
@@ -350,6 +434,16 @@ async def export_data(
         }
         for s in user.sessions
     ]
+    favorite_movies_data = [
+        {
+            "tmdb_id": movie.tmdb_id,
+            "title_zh": movie.title_zh,
+            "title_en": movie.title_en,
+            "poster_url": movie.poster_url,
+            "display_order": movie.display_order,
+        }
+        for movie in (user.favorite_movies or [])
+    ]
 
     # Fetch matches where this user is either party
     matches_result = await db.execute(
@@ -382,6 +476,7 @@ async def export_data(
         "picks": picks_data,
         "dna_profile": dna_data,
         "sequencing_sessions": sessions_data,
+        "favorite_movies": favorite_movies_data,
         "matches": matches_data,
     }
 
@@ -413,7 +508,10 @@ async def delete_account(
         )
     )
 
-    # 3. Delete picks
+    # 3. Delete favorite movies
+    await db.execute(delete(UserFavoriteMovie).where(UserFavoriteMovie.user_id == user_id))
+
+    # 4. Delete picks
     await db.execute(delete(Pick).where(Pick.user_id == user_id))
 
     # 4. Delete DNA profiles

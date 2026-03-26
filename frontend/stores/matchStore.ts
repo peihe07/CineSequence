@@ -6,6 +6,7 @@ export interface MatchItem {
   id: string
   partner_id: string
   partner_name: string
+  partner_email: string | null
   partner_bio: string | null
   partner_avatar_url: string | null
   partner_archetype: string | null

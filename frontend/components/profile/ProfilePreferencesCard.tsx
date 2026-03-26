@@ -18,6 +18,13 @@ interface ProfilePreferencesCardProps {
   editLabel: string
   saveLabel: string
   cancelLabel: string
+  visibleLabel: string
+  emailNotifLabel: string
+  editorIntro: string
+  summaryIntro: string
+  pureTasteOnCopy: string
+  pureTasteOffCopy: string
+  isPreview?: boolean
   getPrefLabel: (value: string) => string
   prefOptions: { value: string; label: string }[]
   onProfileUpdate: (updated: Profile) => void
@@ -36,6 +43,13 @@ export default function ProfilePreferencesCard({
   editLabel,
   saveLabel,
   cancelLabel,
+  visibleLabel,
+  emailNotifLabel,
+  editorIntro,
+  summaryIntro,
+  pureTasteOnCopy,
+  pureTasteOffCopy,
+  isPreview = false,
   getPrefLabel,
   prefOptions,
   onProfileUpdate,
@@ -48,6 +62,8 @@ export default function ProfilePreferencesCard({
     match_age_max: profile.match_age_max ?? '',
     pure_taste_match: profile.pure_taste_match,
     birth_year: profile.birth_year ?? '',
+    is_visible: profile.is_visible,
+    email_notifications_enabled: profile.email_notifications_enabled,
   })
 
   function handleEditStart() {
@@ -57,6 +73,8 @@ export default function ProfilePreferencesCard({
       match_age_max: profile.match_age_max ?? '',
       pure_taste_match: profile.pure_taste_match,
       birth_year: profile.birth_year ?? '',
+      is_visible: profile.is_visible,
+      email_notifications_enabled: profile.email_notifications_enabled,
     })
     setIsEditing(true)
   }
@@ -66,6 +84,8 @@ export default function ProfilePreferencesCard({
     try {
       const body: Record<string, unknown> = {
         pure_taste_match: form.pure_taste_match,
+        is_visible: form.is_visible,
+        email_notifications_enabled: form.email_notifications_enabled,
       }
       if (form.match_gender_pref) body.match_gender_pref = form.match_gender_pref
       if (form.match_age_min) body.match_age_min = Number(form.match_age_min)
@@ -92,9 +112,7 @@ export default function ProfilePreferencesCard({
           </h2>
         </div>
 
-        <p className={styles.cardIntro}>
-          Adjust the matching brief while keeping the profile readout calm and editorial.
-        </p>
+        <p className={styles.cardIntro}>{editorIntro}</p>
 
         <div className={styles.preferencesEditor}>
           <div className={styles.field}>
@@ -172,6 +190,48 @@ export default function ProfilePreferencesCard({
           </div>
         </div>
 
+        <div className={styles.preferencesEditor}>
+          <div className={styles.field}>
+            <span className={styles.label}>{visibleLabel}</span>
+            <div className={styles.prefGrid}>
+              <button
+                type="button"
+                className={`${styles.prefOption} ${form.is_visible ? styles.prefActive : ''}`}
+                onClick={() => setForm({ ...form, is_visible: true })}
+              >
+                {yesLabel}
+              </button>
+              <button
+                type="button"
+                className={`${styles.prefOption} ${!form.is_visible ? styles.prefActive : ''}`}
+                onClick={() => setForm({ ...form, is_visible: false })}
+              >
+                {noLabel}
+              </button>
+            </div>
+          </div>
+
+          <div className={styles.field}>
+            <span className={styles.label}>{emailNotifLabel}</span>
+            <div className={styles.prefGrid}>
+              <button
+                type="button"
+                className={`${styles.prefOption} ${form.email_notifications_enabled ? styles.prefActive : ''}`}
+                onClick={() => setForm({ ...form, email_notifications_enabled: true })}
+              >
+                {yesLabel}
+              </button>
+              <button
+                type="button"
+                className={`${styles.prefOption} ${!form.email_notifications_enabled ? styles.prefActive : ''}`}
+                onClick={() => setForm({ ...form, email_notifications_enabled: false })}
+              >
+                {noLabel}
+              </button>
+            </div>
+          </div>
+        </div>
+
         <div className={styles.editRow} style={{ justifyContent: 'flex-end', paddingTop: '0.5rem' }}>
           <button className={styles.cancelBtn} onClick={() => setIsEditing(false)}>
             {cancelLabel}
@@ -190,14 +250,14 @@ export default function ProfilePreferencesCard({
         <h2 className={styles.sectionTitle}>
           <i className="ri-heart-pulse-line" /> {title}
         </h2>
-        <button className={styles.editBtn} onClick={handleEditStart} aria-label={editLabel}>
-          <i className="ri-pencil-line" />
-        </button>
+        {!isPreview && (
+          <button className={styles.editBtn} onClick={handleEditStart} aria-label={editLabel}>
+            <i className="ri-pencil-line" />
+          </button>
+        )}
       </div>
 
-      <p className={styles.cardIntro}>
-        Read as the matching brief: who feels aligned, what age range stays in frame, and how much taste leads the final cut.
-      </p>
+      <p className={styles.cardIntro}>{summaryIntro}</p>
 
       <div className={styles.preferenceSummary}>
         {profile.birth_year && (
@@ -233,10 +293,23 @@ export default function ProfilePreferencesCard({
             {profile.pure_taste_match ? yesLabel : noLabel}
           </span>
           <p className={styles.calloutCopy}>
-            {profile.pure_taste_match
-              ? 'Taste-first mode is active, so demographic filters stay secondary to the profile signal.'
-              : 'Preference filters stay in play before a match is surfaced.'}
+            {profile.pure_taste_match ? pureTasteOnCopy : pureTasteOffCopy}
           </p>
+        </div>
+      </div>
+
+      <div className={styles.preferenceSummary}>
+        <div className={styles.factCard}>
+          <span className={styles.label}>{visibleLabel}</span>
+          <span className={styles.factMetric}>
+            {profile.is_visible ? yesLabel : noLabel}
+          </span>
+        </div>
+        <div className={styles.factCard}>
+          <span className={styles.label}>{emailNotifLabel}</span>
+          <span className={styles.factMetric}>
+            {profile.email_notifications_enabled ? yesLabel : noLabel}
+          </span>
         </div>
       </div>
     </div>

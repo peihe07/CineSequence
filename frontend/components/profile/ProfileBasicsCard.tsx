@@ -20,6 +20,8 @@ interface ProfileBasicsCardProps {
   changeAvatarLabel: string
   avatarHintLabel: string
   avatarError: string | null
+  sectionLabel: string
+  isPreview?: boolean
   editNameLabel: string
   editBioLabel: string
   editName: string
@@ -57,6 +59,8 @@ export default function ProfileBasicsCard({
   changeAvatarLabel,
   avatarHintLabel,
   avatarError,
+  sectionLabel,
+  isPreview = false,
   editNameLabel,
   editBioLabel,
   editName,
@@ -85,7 +89,7 @@ export default function ProfileBasicsCard({
           <button
             className={styles.avatarBtn}
             onClick={() => fileInputRef.current?.click()}
-            disabled={uploadingAvatar}
+            disabled={uploadingAvatar || isPreview}
             aria-label={changeAvatarLabel}
           >
             {profile.avatar_url ? (
@@ -119,7 +123,7 @@ export default function ProfileBasicsCard({
         </div>
 
         <div className={styles.identityBlock}>
-          <span className={styles.sectionTitle}>Identity Notes</span>
+          <span className={styles.sectionTitle}>{sectionLabel}</span>
           <div className={styles.field}>
             <span className={styles.label}>{nameLabel}</span>
             {isEditing ? (
@@ -140,9 +144,11 @@ export default function ProfileBasicsCard({
             ) : (
               <div className={styles.valueRow}>
                 <span className={styles.identityName}>{profile.name}</span>
-                <button className={styles.editBtn} onClick={onEditStart} aria-label={editNameLabel}>
-                  <i className="ri-pencil-line" />
-                </button>
+                {!isPreview && (
+                  <button className={styles.editBtn} onClick={onEditStart} aria-label={editNameLabel}>
+                    <i className="ri-pencil-line" />
+                  </button>
+                )}
               </div>
             )}
           </div>
@@ -197,9 +203,11 @@ export default function ProfileBasicsCard({
             <p className={styles.bioText}>
               {profile.bio?.trim() ? profile.bio : addBioLabel}
             </p>
-            <button className={styles.editBtn} onClick={onBioEditStart} aria-label={editBioLabel}>
-              <i className="ri-pencil-line" />
-            </button>
+            {!isPreview && (
+              <button className={styles.editBtn} onClick={onBioEditStart} aria-label={editBioLabel}>
+                <i className="ri-pencil-line" />
+              </button>
+            )}
           </div>
         )}
       </div>

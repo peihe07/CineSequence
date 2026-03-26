@@ -211,6 +211,16 @@
   font-family: var(--font-mono);
 }
 
+.contactLink {
+  color: rgba(255, 233, 214, 0.94);
+  text-decoration: none;
+  word-break: break-all;
+}
+
+.contactLink:hover {
+  color: var(--accent);
+}
+
 .tags {
   display: flex;
   flex-wrap: wrap;

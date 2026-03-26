@@ -8,6 +8,7 @@ interface ProfileHeaderProps {
   loggingOutLabel: string
   isLoggingOut: boolean
   onLogout: () => Promise<void>
+  children?: React.ReactNode
 }
 
 export default function ProfileHeader({
@@ -16,18 +17,22 @@ export default function ProfileHeader({
   loggingOutLabel,
   isLoggingOut,
   onLogout,
+  children,
 }: ProfileHeaderProps) {
   return (
     <div className={styles.header}>
       <h1 className={styles.title}>{title}</h1>
-      <button
-        type="button"
-        className={styles.logoutButton}
-        onClick={onLogout}
-        disabled={isLoggingOut}
-      >
-        {isLoggingOut ? loggingOutLabel : logoutLabel}
-      </button>
+      <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+        {children}
+        <button
+          type="button"
+          className={styles.logoutButton}
+          onClick={onLogout}
+          disabled={isLoggingOut}
+        >
+          {isLoggingOut ? loggingOutLabel : logoutLabel}
+        </button>
+      </div>
     </div>
   )
 }

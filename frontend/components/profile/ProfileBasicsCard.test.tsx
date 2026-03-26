@@ -6,8 +6,9 @@ vi.mock('next/image', () => ({
 }))
 
 import ProfileBasicsCard from './ProfileBasicsCard'
+import type { FavoriteMovie, Profile } from './types'
 
-const profile = {
+const profile: Profile = {
   id: '1',
   email: 'user@test.com',
   name: 'Test User',
@@ -26,8 +27,11 @@ const profile = {
   match_age_min: 24,
   match_age_max: 36,
   pure_taste_match: true,
+  is_visible: true,
+  email_notifications_enabled: true,
   is_admin: false,
-} as const
+  favorite_movies: [] as FavoriteMovie[],
+}
 
 describe('ProfileBasicsCard', () => {
   afterEach(() => {
@@ -51,10 +55,11 @@ describe('ProfileBasicsCard', () => {
         changeAvatarLabel="Change avatar"
         avatarHintLabel="Upload a portrait"
         avatarError={null}
+        sectionLabel="Identity"
         editNameLabel="Edit name"
         editBioLabel="Edit bio"
         editName={profile.name}
-        editBio={profile.bio}
+        editBio={profile.bio ?? ''}
         isEditing={false}
         isEditingBio={false}
         saving={false}

@@ -127,16 +127,10 @@ async def build_dna_for_user(user_id: str):
         logger.info("DNA build completed for user %s", user_id)
 
         # Generate personal ticket image
-        from app.services.matcher import ARCHETYPE_MAP
+        from app.services.matcher import get_archetype_display_name
         from app.services.ticket_gen import generate_and_upload_personal_ticket
 
-        archetype_data = ARCHETYPE_MAP.get(profile.archetype_id, {})
-        archetype_display = (
-            f"{archetype_data.get('name', '')} "
-            f"{archetype_data.get('name_en', '')}"
-        ).strip()
-        if not archetype_display:
-            archetype_display = "電影愛好者"
+        archetype_display = get_archetype_display_name(profile.archetype_id)
 
         # Extract top tags from tag_vector
         import json as _json

@@ -16,6 +16,7 @@ from app.models.notification import Notification, NotificationType
 from app.models.pick import Pick
 from app.models.sequencing_session import SequencingSession, SessionStatus, SessionType
 from app.models.user import Gender, SequencingStatus, User
+from app.models.user_favorite_movie import UserFavoriteMovie
 from app.services.auth_utils import create_access_token
 
 
@@ -98,7 +99,7 @@ class TestUpdateProfile:
         headers = auth_headers(user)
 
         with patch(
-            "app.routers.profile._regenerate_personal_ticket",
+            "app.routers.profile._generate_personal_ticket_url",
             new=AsyncMock(side_effect=RuntimeError("ticket generation failed")),
         ):
             response = await client.patch(
@@ -115,6 +116,33 @@ class TestUpdateProfile:
                 select(User.name).where(User.id == user_id)
             )
         assert persisted_name == "Profile User"
+
+    async def test_export_includes_favorite_movies(
+        self, client: AsyncClient, db_session: AsyncSession,
+    ):
+        user = await create_user(db_session)
+        favorite = UserFavoriteMovie(
+            user_id=user.id,
+            tmdb_id=550,
+            title_zh="鬥陣俱樂部",
+            title_en="Fight Club",
+            poster_url="https://image.test/fight-club.jpg",
+            display_order=0,
+        )
+        db_session.add(favorite)
+        await db_session.commit()
+
+        response = await client.get("/profile/export", headers=auth_headers(user))
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["favorite_movies"] == [{
+            "tmdb_id": 550,
+            "title_zh": "鬥陣俱樂部",
+            "title_en": "Fight Club",
+            "poster_url": "https://image.test/fight-club.jpg",
+            "display_order": 0,
+        }]
 
     async def test_update_multiple_fields(self, client: AsyncClient, db_session: AsyncSession):
         user = await create_user(db_session)

@@ -80,7 +80,7 @@ export default function ProfileDnaSnapshot({ profile }: ProfileDnaSnapshotProps)
     <section className={styles.panel} aria-label={t('profile.snapshotAriaLabel')}>
       <div className={styles.header}>
         <div>
-          <p className={styles.eyebrow}>[ DNA_SNAPSHOT ]</p>
+          <p className={styles.eyebrow}>{t('profile.snapshotEyebrow')}</p>
           <h2 className={styles.title}>{t('profile.snapshotTitle')}</h2>
         </div>
         {showVerifiedStamp ? <span className={`${styles.stamp} ${styles.stampVerified}`}>{t('profile.snapshotVerified')}</span> : null}

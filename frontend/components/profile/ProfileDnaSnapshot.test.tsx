@@ -49,6 +49,7 @@ vi.mock('@/lib/i18n', () => ({
 }))
 
 import ProfileDnaSnapshot from './ProfileDnaSnapshot'
+import type { FavoriteMovie } from './types'
 
 const profile = {
   id: '1',
@@ -69,7 +70,10 @@ const profile = {
   match_age_min: 24,
   match_age_max: 36,
   pure_taste_match: true,
+  is_visible: true,
+  email_notifications_enabled: true,
   is_admin: false,
+  favorite_movies: [] as FavoriteMovie[],
 } as const
 
 describe('ProfileDnaSnapshot', () => {

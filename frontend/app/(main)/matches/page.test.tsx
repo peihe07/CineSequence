@@ -24,10 +24,13 @@ const {
           id: string
           partner_id: string
           partner_name: string
+          partner_email: string | null
           partner_bio: string | null
           partner_avatar_url: string | null
           partner_archetype: string | null
           similarity_score: number
+          candidate_percentile: number | null
+          candidate_pool_size: number | null
           shared_tags: string[]
           ice_breakers: string[]
           status: 'discovered' | 'invited' | 'accepted' | 'declined'
@@ -85,6 +88,12 @@ vi.mock('@/lib/i18n', () => ({
         'matches.prefSaveError': 'Failed to save match preferences',
         'matches.results': 'Match results',
         'matches.loading': 'Loading matches',
+        'matches.matched': 'Matched',
+        'matches.tearHint': 'Drag to tear open',
+        'matches.viewTicket': 'Open ticket',
+        'matches.closeTicket': 'Close ticket',
+        'matches.ticketGenerating': 'Generating ticket',
+        'matches.emailPartner': 'Email partner',
       }
       return dict[key] ?? key
     },
@@ -189,5 +198,44 @@ describe('MatchesPage', () => {
     render(<MatchesPage />)
 
     expect(await screen.findByText('Invite failed')).toBeTruthy()
+  })
+
+  it('opens and closes the accepted ticket modal', async () => {
+    apiMock.mockResolvedValue({
+      match_gender_pref: null,
+      match_age_min: null,
+      match_age_max: null,
+      pure_taste_match: false,
+    })
+    matchState.matches = [{
+      id: 'match-1',
+      partner_id: 'partner-1',
+      partner_name: 'Jamie',
+      partner_email: 'jamie@example.com',
+      partner_bio: 'Likes slow cinema',
+      partner_avatar_url: null,
+      partner_archetype: 'The Archivist',
+      similarity_score: 0.91,
+      candidate_percentile: 97,
+      candidate_pool_size: 100,
+      shared_tags: ['noir'],
+      ice_breakers: ['Ask about first Wong Kar-wai watch'],
+      status: 'accepted',
+      ticket_image_url: 'https://example.com/ticket.png',
+      is_recipient: false,
+    }]
+
+    render(<MatchesPage />)
+
+    fireEvent.click(await screen.findByRole('button', { name: 'Open ticket Jamie' }))
+
+    expect(await screen.findByRole('dialog', { name: 'Jamie — Open ticket' })).toBeTruthy()
+    expect(screen.getByRole('link', { name: /jamie@example.com/i })).toBeTruthy()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Close ticket' }))
+
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog', { name: 'Jamie — Open ticket' })).toBeNull()
+    })
   })
 })

@@ -2,8 +2,8 @@
 
 import { Suspense, useCallback, useEffect, useRef, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
-import { motion } from 'framer-motion'
-import { useMatchStore } from '@/stores/matchStore'
+import { AnimatePresence, motion } from 'framer-motion'
+import { useMatchStore, MatchItem } from '@/stores/matchStore'
 import { api } from '@/lib/api'
 import { useI18n } from '@/lib/i18n'
 import TicketCard from '@/components/match/TicketCard'
@@ -146,6 +146,87 @@ function CarouselDots({ count, activeIndex, onSelect }: {
   )
 }
 
+/** Fullscreen modal overlay showing the partner's personal ticket image */
+function TicketModal({ match, onClose }: { match: MatchItem; onClose: () => void }) {
+  const { t } = useI18n()
+  const pct = Math.round(match.similarity_score * 100)
+
+  useEffect(() => {
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose()
+    }
+    document.addEventListener('keydown', handleEsc)
+    return () => document.removeEventListener('keydown', handleEsc)
+  }, [onClose])
+
+  return (
+    <motion.div
+      className={styles.modalOverlay}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.3 }}
+      onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+      aria-label={`${match.partner_name} — ${t('matches.viewTicket')}`}
+    >
+      <motion.div
+        className={styles.modalContent}
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.92, opacity: 0 }}
+        transition={{ duration: 0.35, ease: 'easeOut' }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button
+          type="button"
+          className={styles.modalClose}
+          onClick={onClose}
+          aria-label={t('matches.closeTicket')}
+        >
+          <i className="ri-close-line" aria-hidden="true" />
+        </button>
+
+        <div className={styles.modalHeader}>
+          <div className={styles.modalPartner}>
+            <span className={styles.modalName}>{match.partner_name}</span>
+            {match.partner_archetype && (
+              <span className={styles.modalArchetype}>{match.partner_archetype}</span>
+            )}
+          </div>
+          <span className={styles.modalScore}>{pct}%</span>
+        </div>
+
+        <div className={styles.modalImageFrame}>
+          {match.ticket_image_url ? (
+            <img
+              src={match.ticket_image_url}
+              alt={`${t('matches.matched')} — ${match.partner_name}`}
+              className={styles.modalImage}
+            />
+          ) : (
+            <div className={styles.modalPlaceholder}>
+              <i className="ri-ticket-2-line" aria-hidden="true" />
+              <span>{t('matches.ticketGenerating')}</span>
+            </div>
+          )}
+        </div>
+
+        {match.partner_email && (
+          <a
+            href={`mailto:${match.partner_email}`}
+            className={styles.modalEmail}
+          >
+            <i className="ri-mail-line" aria-hidden="true" />
+            {match.partner_email}
+          </a>
+        )}
+      </motion.div>
+    </motion.div>
+  )
+}
+
 function MatchesContent() {
   const searchParams = useSearchParams()
   const { t } = useI18n()
@@ -163,6 +244,7 @@ function MatchesContent() {
   const [prefsError, setPrefsError] = useState<string | null>(null)
   const [prefsReady, setPrefsReady] = useState(false)
   const [activeIndex, setActiveIndex] = useState(0)
+  const [ticketModalMatch, setTicketModalMatch] = useState<MatchItem | null>(null)
 
   const carouselRef = useRef<HTMLDivElement>(null)
 
@@ -329,6 +411,7 @@ function MatchesContent() {
                       ticketNumber={i + 1}
                       onInvite={() => sendInvite(match.id)}
                       onRespond={(accept) => respondToInvite(match.id, accept)}
+                      onShowFullTicket={() => setTicketModalMatch(match)}
                       highlighted={match.id === highlightId}
                     />
                   </div>
@@ -349,6 +432,15 @@ function MatchesContent() {
           )}
         </section>
       </div>
+
+      <AnimatePresence>
+        {ticketModalMatch && (
+          <TicketModal
+            match={ticketModalMatch}
+            onClose={() => setTicketModalMatch(null)}
+          />
+        )}
+      </AnimatePresence>
     </div>
   )
 }
