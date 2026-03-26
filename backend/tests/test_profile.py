@@ -82,9 +82,10 @@ class TestUpdateProfile:
         self, client: AsyncClient, db_session: AsyncSession
     ):
         user = await create_user(db_session)
+        user_id = user.id
         user.sequencing_status = SequencingStatus.completed
         profile = DnaProfile(
-            user_id=user.id,
+            user_id=user_id,
             archetype_id="time-traveler",
             tag_vector=[0.6] * 30,
             genre_vector={"Drama": 1.0},
@@ -111,7 +112,7 @@ class TestUpdateProfile:
         assert db_session.bind is not None
         async with AsyncSession(db_session.bind, expire_on_commit=False) as verify_session:
             persisted_name = await verify_session.scalar(
-                select(User.name).where(User.id == user.id)
+                select(User.name).where(User.id == user_id)
             )
         assert persisted_name == "Profile User"
 
