@@ -108,9 +108,10 @@ class TestUpdateProfile:
 
         assert response.status_code == 500
 
-        refreshed = await db_session.get(User, user_id)
-        assert refreshed is not None
-        assert refreshed.name == "Profile User"
+        refreshed_name = await db_session.scalar(
+            select(User.name).where(User.id == user_id)
+        )
+        assert refreshed_name == "Profile User"
 
     async def test_update_multiple_fields(self, client: AsyncClient, db_session: AsyncSession):
         user = await create_user(db_session)
