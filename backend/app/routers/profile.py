@@ -10,6 +10,7 @@ from fastapi.responses import JSONResponse, Response
 from pydantic import BaseModel, Field, model_validator
 from sqlalchemy import delete, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 from app.config import settings
 from app.deps import get_current_user, get_db
@@ -239,6 +240,22 @@ def _user_to_profile(user: User) -> ProfileOut:
     )
 
 
+async def _load_profile_user(db: AsyncSession, user_id: uuid.UUID) -> User:
+    result = await db.execute(
+        select(User)
+        .options(
+            selectinload(User.dna_profiles),
+            selectinload(User.favorite_movies),
+        )
+        .where(User.id == user_id)
+        .limit(1)
+    )
+    user = result.scalar_one_or_none()
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+    return user
+
+
 async def _refresh_group_membership_stats(
     db: AsyncSession,
     *,
@@ -266,9 +283,11 @@ async def _refresh_group_membership_stats(
 @router.get("")
 async def get_profile(
     user: Annotated[User, Depends(get_current_user)],
+    db: Annotated[AsyncSession, Depends(get_db)],
 ):
     """Get current user's profile."""
-    return _user_to_profile(user)
+    loaded_user = await _load_profile_user(db, user.id)
+    return _user_to_profile(loaded_user)
 
 
 @router.patch("")
@@ -310,7 +329,7 @@ async def update_profile(
                 profile.personal_ticket_url = await _generate_personal_ticket_url(db, user, profile)
 
         await db.commit()
-        await db.refresh(user)
+        loaded_user = await _load_profile_user(db, user_id)
     except HTTPException:
         await db.rollback()
         raise
@@ -322,7 +341,7 @@ async def update_profile(
             detail="Failed to update profile",
         ) from None
 
-    return _user_to_profile(user)
+    return _user_to_profile(loaded_user)
 
 
 @router.post("/avatar")
@@ -376,8 +395,8 @@ async def upload_avatar(
         profile.personal_ticket_url = await _generate_personal_ticket_url(db, user, profile)
 
     await db.commit()
-    await db.refresh(user)
-    return _user_to_profile(user)
+    loaded_user = await _load_profile_user(db, user.id)
+    return _user_to_profile(loaded_user)
 
 
 @router.get("/favorites")
