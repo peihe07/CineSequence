@@ -36,7 +36,13 @@ async def _regenerate_personal_ticket(user: User, db: AsyncSession) -> None:
 
     from app.services.ticket_gen import generate_and_upload_personal_ticket
 
-    profile = user.dna_profile
+    result = await db.execute(
+        select(DnaProfile)
+        .where(DnaProfile.user_id == user.id)
+        .where(DnaProfile.is_active.is_(True))
+        .limit(1)
+    )
+    profile = result.scalar_one_or_none()
     if not profile:
         return
 
