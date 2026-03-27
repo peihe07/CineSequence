@@ -163,6 +163,28 @@
   width: 100%;
 }
 
+.itemPoster,
+.itemPosterFallback {
+  width: 4.5rem;
+  height: 6.6rem;
+  flex-shrink: 0;
+  background: rgba(255, 255, 255, 0.04);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+.itemPoster {
+  object-fit: cover;
+}
+
+.itemPosterFallback {
+  display: grid;
+  place-items: center;
+  color: rgba(255, 255, 255, 0.66);
+  font-family: var(--font-mono);
+  font-size: 1.1rem;
+  letter-spacing: 0.08em;
+}
+
 .itemActions {
   display: flex;
   align-items: center;

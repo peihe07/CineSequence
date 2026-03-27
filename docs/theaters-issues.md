@@ -4,7 +4,7 @@
 
 - Fixed: `POST /groups/{group_id}/lists` 已接受 `items` 並建立初始片單項目，見 `groups.py:473-519`
 - Partial: list item API 已補上新增/刪除，但仍缺 reorder，見 `groups.py:522-588`
-- Partial: frontend 已能快速建立片單並追加純文字 title 項目，但仍沒有電影搜尋/metadata 補全，見 `useTheaterDetail.ts:94-150`
+- Partial: frontend 已能快速建立片單並追加純文字 title 項目；list item 現在已支援 `title_zh/poster_url/genres/runtime_minutes` metadata 與 detail 顯示，但仍沒有電影搜尋與自動 metadata 補全
 - Partial: detail 頁面現在會在 `groupId` 缺失時直接進入 error state，不再於初始載入階段發出 `/groups//...` 請求；但 mutation callback 本身仍未對空 `groupId` 做 guard，見 `useTheaterDetail.ts:32-39`
 
 ## Critical — Must Fix
@@ -32,7 +32,7 @@
 ## Low — Architecture & Future
 
 - [x] **Detail route 已改為動態路由** — 主要入口已切到 `/theaters/[id]`，並保留舊 `/theaters/detail?id=...` 作相容層。
-- [ ] **啟動門檻太高** — `min_members_to_activate = 20`，早期幾乎所有群組顯示未啟用。
+- [x] **啟動門檻已下修** — 預設與 seed 的 `min_members_to_activate` 已統一調整為 `3`，並補 migration 下修既有群組門檻。
 - [ ] **無即時更新** — 留言板和片單需手動 refresh，無 WebSocket 或 polling。
 - [ ] **`TheaterListItem` circular eager-load** — `theater_list.py:62` item 反向 relationship 用 `lazy="selectin"` 會額外載入 parent + 所有 sibling items。
 - [ ] **留言板定位模糊** — Phase D 規劃 list-scoped replies，與通用留言板並存尷尬。
@@ -44,9 +44,9 @@
 
 - [ ] **List items 無 API** — 已部分改善：新增/刪除 endpoints 已存在，但仍無 reorder endpoint
 - [x] **POST /lists 接受 items** — 建立片單時已可直接建立初始 items，不再永遠為空
-- [ ] **Frontend：建立片單無法搜尋/加電影** — 已部分改善：可快速輸入 title 建立 items，也可後續 append title；但仍沒有電影搜尋、TMDB 選擇與 metadata 補全
+- [ ] **Frontend：建立片單無法搜尋/加電影** — 已部分改善：可快速輸入 title 建立 items，也可後續 append title；list item metadata 結構已補齊，但仍沒有電影搜尋、TMDB 選擇與自動 metadata 補全
 - [ ] **Frontend：片單無詳情頁顯示電影卡片**
-- [ ] **List items 缺 metadata** — 無 poster_path、genres、runtime
+- [x] **List items metadata 已補基礎欄位** — `title_zh`、`poster_url`、`genres`、`runtime_minutes` 已進 model / API / frontend types，dynamic theater detail 也會顯示這些欄位。
 
 ---
 

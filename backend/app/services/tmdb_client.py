@@ -24,6 +24,7 @@ class MovieInfo:
     poster_url: str | None
     year: int | None
     genres: list[str]
+    runtime_minutes: int | None
     overview: str | None
 
 
@@ -46,6 +47,7 @@ def _parse_movie(data: dict) -> MovieInfo:
         poster_url=_poster_url(data.get("poster_path")),
         year=year,
         genres=genres,
+        runtime_minutes=data.get("runtime"),
         overview=data.get("overview"),
     )
 
@@ -87,6 +89,7 @@ async def get_movie(tmdb_id: int) -> MovieInfo | None:
         "poster_url": movie.poster_url,
         "year": movie.year,
         "genres": movie.genres,
+        "runtime_minutes": movie.runtime_minutes,
         "overview": movie.overview,
     })
     await redis_client.set(cache_key, cache_data, ex=settings.tmdb_cache_ttl)
@@ -135,6 +138,7 @@ async def search_movies(query: str, limit: int = 8) -> list[MovieInfo]:
             poster_url=_poster_url(item.get("poster_path")),
             year=year,
             genres=[],
+            runtime_minutes=None,
             overview=item.get("overview"),
         ))
     return movies

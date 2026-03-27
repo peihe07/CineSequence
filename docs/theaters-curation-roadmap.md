@@ -193,7 +193,6 @@ Implication:
 
 ## Risks
 
-- Theater activation thresholds are still high, so auto-assignment alone may not make halls feel populated
 - If user-created lists ship before enough theater traffic exists, interaction may still feel sparse
 - A separate generic chat surface will likely dilute list-based interaction if both are emphasized equally
 
@@ -216,3 +215,5 @@ Implication:
 - [x] Post-MVP fixes: `/groups` theater payloads now use batched list assembly instead of per-group N+1 queries
 - [x] Post-MVP fixes: shared frontend theater types consolidated into one source of truth
 - [x] Post-MVP fixes: theater detail routing migrated to `/theaters/[id]` with legacy query-param compatibility
+- [x] Post-MVP fixes: theater activation thresholds lowered to `3` across defaults, seed data, and migration path
+- [x] Post-MVP improvements: theater list items now support poster/title/genre/runtime metadata in model, API, and detail rendering

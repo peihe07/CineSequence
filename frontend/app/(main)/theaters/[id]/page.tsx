@@ -284,62 +284,89 @@ function TheaterDetailContent() {
                 <div className={styles.list}>
                   {list.items.map((item, index) => (
                     <div key={item.id} className={styles.item}>
-                      <div className={styles.itemRow}>
-                        <p className={styles.itemTitle}>{item.title_en}</p>
-                        {group.is_member && (
-                          <div className={styles.listHeaderActions}>
-                            <button
-                              className={styles.inlineBtn}
-                              disabled={isMutating || index === 0}
-                              onClick={() => void handleMoveListItem(list.id, item.id, 'up')}
-                            >
-                              {t('theaters.listItemMoveUp')}
-                            </button>
-                            <button
-                              className={styles.inlineBtn}
-                              disabled={isMutating || index === list.items.length - 1}
-                              onClick={() => void handleMoveListItem(list.id, item.id, 'down')}
-                            >
-                              {t('theaters.listItemMoveDown')}
-                            </button>
-                            <button
-                              className={styles.inlineBtn}
-                              disabled={isMutating}
-                              onClick={() => void deleteListItem(list.id, item.id)}
-                            >
-                              {t('theaters.listItemRemove')}
-                            </button>
+                      <div className={styles.listItemRow}>
+                        {item.poster_url ? (
+                          <img
+                            src={item.poster_url}
+                            alt={item.title_zh || item.title_en}
+                            className={styles.itemPoster}
+                          />
+                        ) : (
+                          <div className={styles.itemPosterFallback}>
+                            <span>{(item.title_zh || item.title_en).slice(0, 1)}</span>
                           </div>
                         )}
+                        <div className={styles.itemContentBlock}>
+                          <div className={styles.itemRow}>
+                            <div>
+                              <p className={styles.itemTitle}>{item.title_zh || item.title_en}</p>
+                              {item.title_zh && item.title_en !== item.title_zh && (
+                                <p className={styles.meta}>{item.title_en}</p>
+                              )}
+                            </div>
+                            {group.is_member && (
+                              <div className={styles.listHeaderActions}>
+                                <button
+                                  className={styles.inlineBtn}
+                                  disabled={isMutating || index === 0}
+                                  onClick={() => void handleMoveListItem(list.id, item.id, 'up')}
+                                >
+                                  {t('theaters.listItemMoveUp')}
+                                </button>
+                                <button
+                                  className={styles.inlineBtn}
+                                  disabled={isMutating || index === list.items.length - 1}
+                                  onClick={() => void handleMoveListItem(list.id, item.id, 'down')}
+                                >
+                                  {t('theaters.listItemMoveDown')}
+                                </button>
+                                <button
+                                  className={styles.inlineBtn}
+                                  disabled={isMutating}
+                                  onClick={() => void deleteListItem(list.id, item.id)}
+                                >
+                                  {t('theaters.listItemRemove')}
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                          {(item.genres.length > 0 || item.runtime_minutes) && (
+                            <p className={styles.meta}>
+                              {[item.genres.join(' / '), item.runtime_minutes ? `${item.runtime_minutes} min` : '']
+                                .filter(Boolean)
+                                .join(' • ')}
+                            </p>
+                          )}
+                          {item.match_tags.length > 0 && (
+                            <div className={styles.tags}>
+                              {item.match_tags.map((tag) => (
+                                <span key={`${item.id}-${tag}`} className={styles.tag}>{getTagLabel(tag, locale)}</span>
+                              ))}
+                            </div>
+                          )}
+                          {item.note && <p className={styles.itemNote}>{item.note}</p>}
+                          {group.is_member && (
+                            <div className={styles.itemNoteComposer}>
+                              <input
+                                className={styles.input}
+                                value={draftNoteByItem[item.id] ?? item.note ?? ''}
+                                onChange={(event) => setDraftNoteByItem((current) => ({
+                                  ...current,
+                                  [item.id]: event.target.value,
+                                }))}
+                                placeholder={t('theaters.listItemNotePlaceholder')}
+                              />
+                              <button
+                                className={styles.secondaryBtn}
+                                disabled={isMutating}
+                                onClick={() => void handleSaveListItemNote(list.id, item.id)}
+                              >
+                                {t('theaters.listItemNoteSave')}
+                              </button>
+                            </div>
+                          )}
+                        </div>
                       </div>
-                      {item.match_tags.length > 0 && (
-                        <div className={styles.tags}>
-                          {item.match_tags.map((tag) => (
-                            <span key={`${item.id}-${tag}`} className={styles.tag}>{getTagLabel(tag, locale)}</span>
-                          ))}
-                        </div>
-                      )}
-                      {item.note && <p className={styles.meta}>{item.note}</p>}
-                      {group.is_member && (
-                        <div className={styles.composer}>
-                          <input
-                            className={styles.input}
-                            value={draftNoteByItem[item.id] ?? item.note ?? ''}
-                            onChange={(event) => setDraftNoteByItem((current) => ({
-                              ...current,
-                              [item.id]: event.target.value,
-                            }))}
-                            placeholder={t('theaters.listItemNotePlaceholder')}
-                          />
-                          <button
-                            className={styles.secondaryBtn}
-                            disabled={isMutating}
-                            onClick={() => void handleSaveListItemNote(list.id, item.id)}
-                          >
-                            {t('theaters.listItemNoteSave')}
-                          </button>
-                        </div>
-                      )}
                     </div>
                   ))}
                 </div>
@@ -487,7 +514,7 @@ function TheaterDetailContent() {
 
 export default function TheaterDetailPage() {
   return (
-    <FlowGuard requireDna>
+    <FlowGuard require="dna">
       <TheaterDetailContent />
     </FlowGuard>
   )

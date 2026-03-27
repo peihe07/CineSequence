@@ -149,7 +149,7 @@ class TestSharedTagsAndRecommendations:
 
 class TestShouldActivateGroup:
     def test_returns_true_at_threshold(self):
-        assert should_activate_group(20, 20) is True
+        assert should_activate_group(3, 3) is True
 
     def test_returns_false_below_threshold(self):
-        assert should_activate_group(19, 20) is False
+        assert should_activate_group(2, 3) is False

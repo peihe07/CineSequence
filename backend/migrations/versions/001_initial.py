@@ -137,7 +137,7 @@ def upgrade() -> None:
         sa.Column("icon", sa.String(50), nullable=False),
         sa.Column("primary_tags", postgresql.JSON, server_default="[]"),
         sa.Column("is_hidden", sa.Boolean, server_default=sa.text("false")),
-        sa.Column("min_members_to_activate", sa.Integer, server_default="20"),
+        sa.Column("min_members_to_activate", sa.Integer, server_default="3"),
         sa.Column("member_count", sa.Integer, server_default="0"),
         sa.Column("is_active", sa.Boolean, server_default=sa.text("false")),
         sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.func.now()),

@@ -66,6 +66,8 @@ class MovieSearchResult(BaseModel):
     title_zh: str | None = None
     poster_url: str | None = None
     year: int | None = None
+    genres: list[str] = []
+    runtime_minutes: int | None = None
 
 
 class ExtendResponse(BaseModel):

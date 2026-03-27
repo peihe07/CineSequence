@@ -31,7 +31,7 @@ class Group(Base):
     icon: Mapped[str] = mapped_column(String(50), nullable=False)
     primary_tags: Mapped[list] = mapped_column(JSON, default=list)
     is_hidden: Mapped[bool] = mapped_column(Boolean, default=False)
-    min_members_to_activate: Mapped[int] = mapped_column(Integer, default=20)
+    min_members_to_activate: Mapped[int] = mapped_column(Integer, default=3)
     member_count: Mapped[int] = mapped_column(Integer, default=0)
     is_active: Mapped[bool] = mapped_column(Boolean, default=False)
 

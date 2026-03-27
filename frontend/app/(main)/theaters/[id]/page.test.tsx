@@ -94,7 +94,33 @@ describe('TheaterDetailDynamicPage', () => {
         recent_messages: [],
         recent_activity: [],
       })
-      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([
+        {
+          id: 'l1',
+          group_id: 'mobius_loop',
+          title: 'Midnight Rotation',
+          description: 'For after the room goes quiet.',
+          visibility: 'group',
+          created_at: '2026-03-27T13:00:00Z',
+          updated_at: '2026-03-27T13:00:00Z',
+          creator: { id: 'u1', name: 'Ari', avatar_url: null },
+          items: [
+            {
+              id: 'i1',
+              tmdb_id: 215,
+              title_en: 'Spirited Away',
+              title_zh: '神隱少女',
+              poster_url: 'https://image.test/spirited-away.jpg',
+              genres: ['Fantasy', 'Adventure'],
+              runtime_minutes: 125,
+              match_tags: ['mindfuck'],
+              note: 'The room needs one dream-state classic.',
+              position: 0,
+            },
+          ],
+          replies: [],
+        },
+      ])
 
     render(<TheaterDetailPage />)
 
@@ -106,5 +132,9 @@ describe('TheaterDetailDynamicPage', () => {
     expect(apiMock).toHaveBeenNthCalledWith(2, '/groups/mobius_loop/lists')
     expect(screen.getByText('Pulp Fiction')).toBeTruthy()
     expect(screen.getByText('Arrival')).toBeTruthy()
+    expect(screen.getByText('神隱少女')).toBeTruthy()
+    expect(screen.getByText('Spirited Away')).toBeTruthy()
+    expect(screen.getByText('Fantasy / Adventure • 125 min')).toBeTruthy()
+    expect(screen.getByText('The room needs one dream-state classic.')).toBeTruthy()
   })
 })

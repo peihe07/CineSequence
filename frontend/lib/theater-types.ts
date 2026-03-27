@@ -54,9 +54,23 @@ export interface TheaterListItem {
   id: string
   tmdb_id: number
   title_en: string
+  title_zh: string | null
+  poster_url: string | null
+  genres: string[]
+  runtime_minutes: number | null
   match_tags: string[]
   note: string | null
   position: number
+}
+
+export interface TheaterMovieSearchResult {
+  tmdb_id: number
+  title_en: string
+  title_zh: string | null
+  poster_url: string | null
+  year: number | null
+  genres: string[]
+  runtime_minutes: number | null
 }
 
 export interface TheaterListReply {

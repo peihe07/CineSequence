@@ -38,7 +38,7 @@ from app.services.session_service import (
     start_extension,
     start_retest,
 )
-from app.services.tmdb_client import get_movie, search_movies
+from app.services.tmdb_client import get_movie, get_movies, search_movies
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -235,6 +235,7 @@ async def search_tmdb_movies(
 ):
     """Search TMDB movies for seed movie autocomplete."""
     results = await search_movies(q)
+    detailed_movies = await get_movies([movie.tmdb_id for movie in results])
     return [
         MovieSearchResult(
             tmdb_id=m.tmdb_id,
@@ -242,6 +243,12 @@ async def search_tmdb_movies(
             title_zh=m.title_zh,
             poster_url=m.poster_url,
             year=m.year,
+            genres=detailed_movies[m.tmdb_id].genres if m.tmdb_id in detailed_movies else m.genres,
+            runtime_minutes=(
+                detailed_movies[m.tmdb_id].runtime_minutes
+                if m.tmdb_id in detailed_movies
+                else m.runtime_minutes
+            ),
         )
         for m in results
     ]

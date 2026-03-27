@@ -6,7 +6,7 @@
     "icon": "ri-tornado-line",
     "primary_tags": ["mindfuck", "twist", "timeTravel", "philosophical"],
     "is_hidden": false,
-    "min_members_to_activate": 20
+    "min_members_to_activate": 3
   },
   {
     "id": "midnight_cult",
@@ -15,7 +15,7 @@
     "icon": "ri-candle-line",
     "primary_tags": ["cult", "darkTone", "experimental", "violentAesthetic", "absurdist"],
     "is_hidden": true,
-    "min_members_to_activate": 10
+    "min_members_to_activate": 3
   },
   {
     "id": "tissue_room",
@@ -24,7 +24,7 @@
     "icon": "ri-emotion-sad-line",
     "primary_tags": ["tearjerker", "uplifting", "comingOfAge", "romanticCore"],
     "is_hidden": false,
-    "min_members_to_activate": 20
+    "min_members_to_activate": 3
   },
   {
     "id": "adrenaline_factory",
@@ -33,7 +33,7 @@
     "icon": "ri-bomb-line",
     "primary_tags": ["visualFeast", "survival", "revenge", "ensemble"],
     "is_hidden": false,
-    "min_members_to_activate": 20
+    "min_members_to_activate": 3
   },
   {
     "id": "cafe_screening",
@@ -42,7 +42,7 @@
     "icon": "ri-cup-line",
     "primary_tags": ["dialogue", "slowburn", "satirical", "socialCritique", "existential"],
     "is_hidden": false,
-    "min_members_to_activate": 15
+    "min_members_to_activate": 3
   },
   {
     "id": "abyss_gazer",
@@ -51,6 +51,6 @@
     "icon": "ri-ghost-line",
     "primary_tags": ["darkTone", "psychoThriller", "twist", "mindfuck"],
     "is_hidden": true,
-    "min_members_to_activate": 10
+    "min_members_to_activate": 3
   }
 ]

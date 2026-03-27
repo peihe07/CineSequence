@@ -6,8 +6,10 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, Field
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 from app.deps import get_current_user, get_db
+from app.models.dna_profile import DnaProfile
 from app.models.group import group_members
 from app.models.group_message import GroupMessage
 from app.models.theater_list import TheaterList, TheaterListItem, TheaterListReply
@@ -108,6 +110,10 @@ class TheaterListCreatorOut(BaseModel):
 class TheaterListItemCreate(BaseModel):
     tmdb_id: int
     title_en: str = Field(..., min_length=1, max_length=255)
+    title_zh: str | None = Field(default=None, max_length=255)
+    poster_url: str | None = Field(default=None, max_length=500)
+    genres: list[str] = Field(default_factory=list, max_length=5)
+    runtime_minutes: int | None = Field(default=None, ge=0, le=600)
     match_tags: list[str] = Field(default_factory=list, max_length=5)
     note: str | None = Field(default=None, max_length=500)
 
@@ -124,6 +130,10 @@ class TheaterListItemOut(BaseModel):
     id: str
     tmdb_id: int
     title_en: str
+    title_zh: str | None = None
+    poster_url: str | None = None
+    genres: list[str] = []
+    runtime_minutes: int | None = None
     match_tags: list[str]
     note: str | None = None
     position: int
@@ -184,6 +194,30 @@ async def _get_theater_list_with_creator(
         .where(
             TheaterList.id == list_id,
             TheaterList.group_id == group_id,
+        )
+    )
+    row = result.first()
+    if not row:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="List not found")
+    return row
+
+
+async def _get_theater_list_for_response(
+    db: AsyncSession,
+    *,
+    group_id: str,
+    list_id: str,
+) -> tuple[TheaterList, User]:
+    result = await db.execute(
+        select(TheaterList, User)
+        .join(User, User.id == TheaterList.creator_id)
+        .where(
+            TheaterList.id == list_id,
+            TheaterList.group_id == group_id,
+        )
+        .options(
+            selectinload(TheaterList.items),
+            selectinload(TheaterList.replies),
         )
     )
     row = result.first()
@@ -298,6 +332,10 @@ def _serialize_theater_list(
                 id=str(item.id),
                 tmdb_id=item.tmdb_id,
                 title_en=item.title_en,
+                title_zh=item.title_zh,
+                poster_url=item.poster_url,
+                genres=item.genres or [],
+                runtime_minutes=item.runtime_minutes,
                 match_tags=item.match_tags or [],
                 note=item.note,
                 position=item.position,
@@ -342,12 +380,20 @@ async def auto_assign(
     db: Annotated[AsyncSession, Depends(get_db)],
 ) -> list[GroupOut]:
     """Auto-assign user to groups based on DNA profile."""
-    if not user.dna_profile:
+    profile_result = await db.execute(
+        select(DnaProfile).where(
+            DnaProfile.user_id == user.id,
+            DnaProfile.is_active.is_(True),
+        )
+    )
+    profile = profile_result.scalar_one_or_none()
+    if not profile:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Complete DNA sequencing first",
         )
 
+    user.dna_profiles = [profile]
     assigned = await auto_assign_groups(db, user)
     for group in assigned:
         await emit_notification_safely(
@@ -482,6 +528,10 @@ async def list_theater_lists(
         .join(User, User.id == TheaterList.creator_id)
         .where(TheaterList.group_id == group_id)
         .order_by(TheaterList.created_at.desc())
+        .options(
+            selectinload(TheaterList.items),
+            selectinload(TheaterList.replies),
+        )
     )
     rows = result.all()
     serialized_lists: list[TheaterListOut] = []
@@ -528,6 +578,18 @@ async def create_theater_list(
             TheaterListItem(
                 tmdb_id=item.tmdb_id,
                 title_en=item.title_en.strip()[:255],
+                title_zh=(
+                    item.title_zh.strip()[:255]
+                    if item.title_zh and item.title_zh.strip()
+                    else None
+                ),
+                poster_url=(
+                    item.poster_url.strip()[:500]
+                    if item.poster_url and item.poster_url.strip()
+                    else None
+                ),
+                genres=item.genres[:5],
+                runtime_minutes=item.runtime_minutes,
                 match_tags=item.match_tags[:5],
                 note=item.note.strip()[:500] if item.note and item.note.strip() else None,
                 position=index,
@@ -536,7 +598,11 @@ async def create_theater_list(
         )
 
     await db.commit()
-    await db.refresh(theater_list)
+    theater_list, _creator = await _get_theater_list_for_response(
+        db,
+        group_id=group_id,
+        list_id=str(theater_list.id),
+    )
     await _notify_group_members_about_activity(
         db,
         group_id=group_id,
@@ -579,7 +645,11 @@ async def update_theater_list(
     )
 
     await db.commit()
-    await db.refresh(theater_list)
+    theater_list, creator = await _get_theater_list_for_response(
+        db,
+        group_id=group_id,
+        list_id=list_id,
+    )
     reply_authors = await _get_reply_authors(db, theater_list=theater_list)
     return _serialize_theater_list(
         theater_list,
@@ -617,7 +687,7 @@ async def append_theater_list_item(
 ) -> TheaterListOut:
     """Append a new movie item to an existing theater list."""
     await _require_group_membership(db, group_id=group_id, user_id=user.id)
-    theater_list, creator = await _get_theater_list_with_creator(
+    theater_list, creator = await _get_theater_list_for_response(
         db, group_id=group_id, list_id=list_id
     )
 
@@ -631,6 +701,18 @@ async def append_theater_list_item(
         TheaterListItem(
             tmdb_id=body.tmdb_id,
             title_en=title[:255],
+            title_zh=(
+                body.title_zh.strip()[:255]
+                if body.title_zh and body.title_zh.strip()
+                else None
+            ),
+            poster_url=(
+                body.poster_url.strip()[:500]
+                if body.poster_url and body.poster_url.strip()
+                else None
+            ),
+            genres=body.genres[:5],
+            runtime_minutes=body.runtime_minutes,
             match_tags=body.match_tags[:5],
             note=body.note.strip()[:500] if body.note and body.note.strip() else None,
             position=len(theater_list.items),
@@ -638,7 +720,11 @@ async def append_theater_list_item(
         )
     )
     await db.commit()
-    await db.refresh(theater_list)
+    theater_list, creator = await _get_theater_list_for_response(
+        db,
+        group_id=group_id,
+        list_id=list_id,
+    )
     await _notify_group_members_about_activity(
         db,
         group_id=group_id,
@@ -663,7 +749,7 @@ async def delete_theater_list_item(
 ) -> TheaterListOut:
     """Remove a movie item from a theater list."""
     await _require_group_membership(db, group_id=group_id, user_id=user.id)
-    theater_list, creator = await _get_theater_list_with_creator(
+    theater_list, creator = await _get_theater_list_for_response(
         db, group_id=group_id, list_id=list_id
     )
 
@@ -684,7 +770,11 @@ async def delete_theater_list_item(
         remaining.position = index
 
     await db.commit()
-    await db.refresh(theater_list)
+    theater_list, creator = await _get_theater_list_for_response(
+        db,
+        group_id=group_id,
+        list_id=list_id,
+    )
     reply_authors = await _get_reply_authors(db, theater_list=theater_list)
     return _serialize_theater_list(
         theater_list, creator, viewer_id=user.id, reply_authors=reply_authors
@@ -701,7 +791,7 @@ async def reorder_theater_list_items(
 ) -> TheaterListOut:
     """Reorder movie items inside a theater list."""
     await _require_group_membership(db, group_id=group_id, user_id=user.id)
-    theater_list, creator = await _get_theater_list_with_creator(
+    theater_list, creator = await _get_theater_list_for_response(
         db, group_id=group_id, list_id=list_id
     )
 
@@ -718,7 +808,11 @@ async def reorder_theater_list_items(
         item_lookup[item_id].position = index
 
     await db.commit()
-    await db.refresh(theater_list)
+    theater_list, creator = await _get_theater_list_for_response(
+        db,
+        group_id=group_id,
+        list_id=list_id,
+    )
     reply_authors = await _get_reply_authors(db, theater_list=theater_list)
     return _serialize_theater_list(
         theater_list, creator, viewer_id=user.id, reply_authors=reply_authors
@@ -736,7 +830,7 @@ async def update_theater_list_item(
 ) -> TheaterListOut:
     """Update note metadata for an existing theater list item."""
     await _require_group_membership(db, group_id=group_id, user_id=user.id)
-    theater_list, creator = await _get_theater_list_with_creator(
+    theater_list, creator = await _get_theater_list_for_response(
         db, group_id=group_id, list_id=list_id
     )
 
@@ -747,7 +841,11 @@ async def update_theater_list_item(
     item.note = body.note.strip()[:500] if body.note and body.note.strip() else None
 
     await db.commit()
-    await db.refresh(theater_list)
+    theater_list, creator = await _get_theater_list_for_response(
+        db,
+        group_id=group_id,
+        list_id=list_id,
+    )
     reply_authors = await _get_reply_authors(db, theater_list=theater_list)
     return _serialize_theater_list(
         theater_list, creator, viewer_id=user.id, reply_authors=reply_authors
@@ -764,7 +862,7 @@ async def create_theater_list_reply(
 ) -> TheaterListOut:
     """Create a flat reply under a theater list."""
     await _require_group_membership(db, group_id=group_id, user_id=user.id)
-    theater_list, creator = await _get_theater_list_with_creator(
+    theater_list, creator = await _get_theater_list_for_response(
         db, group_id=group_id, list_id=list_id
     )
 
@@ -780,7 +878,19 @@ async def create_theater_list_reply(
         )
     )
     await db.commit()
-    await db.refresh(theater_list)
+    theater_list, creator = await _get_theater_list_for_response(
+        db,
+        group_id=group_id,
+        list_id=list_id,
+    )
+    await _notify_group_members_about_activity(
+        db,
+        group_id=group_id,
+        actor=user,
+        list_id=str(theater_list.id),
+        list_title=theater_list.title,
+        activity_type="list_replied",
+    )
     reply_authors = await _get_reply_authors(db, theater_list=theater_list)
     return _serialize_theater_list(
         theater_list, creator, viewer_id=user.id, reply_authors=reply_authors
@@ -797,7 +907,7 @@ async def delete_theater_list_reply(
 ) -> TheaterListOut:
     """Delete a reply from a theater list if it belongs to the current user."""
     await _require_group_membership(db, group_id=group_id, user_id=user.id)
-    theater_list, creator = await _get_theater_list_with_creator(
+    theater_list, creator = await _get_theater_list_for_response(
         db, group_id=group_id, list_id=list_id
     )
 
@@ -812,7 +922,11 @@ async def delete_theater_list_reply(
 
     await db.delete(reply)
     await db.commit()
-    await db.refresh(theater_list)
+    theater_list, creator = await _get_theater_list_for_response(
+        db,
+        group_id=group_id,
+        list_id=list_id,
+    )
     reply_authors = await _get_reply_authors(db, theater_list=theater_list)
     return _serialize_theater_list(
         theater_list, creator, viewer_id=user.id, reply_authors=reply_authors

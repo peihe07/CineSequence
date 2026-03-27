@@ -5,6 +5,17 @@ import { api } from '@/lib/api'
 import { translateStatic } from '@/lib/i18n'
 import type { TheaterGroupDetail, TheaterList, TheaterMessage } from './types'
 
+type TheaterListItemInput = {
+  tmdb_id: number
+  title_en: string
+  title_zh?: string | null
+  poster_url?: string | null
+  genres?: string[]
+  runtime_minutes?: number | null
+  match_tags?: string[]
+  note?: string | null
+}
+
 export function useTheaterDetail(groupId: string) {
   const [group, setGroup] = useState<TheaterGroupDetail | null>(null)
   const [lists, setLists] = useState<TheaterList[]>([])
@@ -121,12 +132,28 @@ export function useTheaterDetail(groupId: string) {
     }
   }, [beginMutation, endMutation, ensureGroupId, groupId])
 
-  const createList = useCallback(async (input: { title: string; description: string; itemTitles: string[] }) => {
+  const createList = useCallback(async (input: {
+    title: string
+    description: string
+    itemTitles?: string[]
+    items?: TheaterListItemInput[]
+  }) => {
     const title = input.title.trim()
     const description = input.description.trim()
-    const itemTitles = input.itemTitles
+    const manualItems = (input.itemTitles ?? [])
       .map((itemTitle) => itemTitle.trim())
       .filter(Boolean)
+      .map((itemTitle, index) => ({
+        tmdb_id: 0,
+        title_en: itemTitle,
+        title_zh: null,
+        poster_url: null,
+        genres: [],
+        runtime_minutes: null,
+        match_tags: [],
+        note: index === 0 ? 'Seeded from quick-create flow.' : null,
+      }))
+    const items = [...(input.items ?? []), ...manualItems]
 
     if (!title) return false
     if (!ensureGroupId()) return false
@@ -138,11 +165,15 @@ export function useTheaterDetail(groupId: string) {
         body: JSON.stringify({
           title,
           description,
-          items: itemTitles.map((itemTitle, index) => ({
-            tmdb_id: 0,
-            title_en: itemTitle,
-            match_tags: [],
-            note: index === 0 ? 'Seeded from quick-create flow.' : null,
+          items: items.map((item) => ({
+            tmdb_id: item.tmdb_id,
+            title_en: item.title_en,
+            title_zh: item.title_zh ?? null,
+            poster_url: item.poster_url ?? null,
+            genres: item.genres ?? [],
+            runtime_minutes: item.runtime_minutes ?? null,
+            match_tags: item.match_tags ?? [],
+            note: item.note ?? null,
           })),
         }),
       })
@@ -203,20 +234,37 @@ export function useTheaterDetail(groupId: string) {
     }
   }, [beginMutation, endMutation, ensureGroupId, groupId])
 
-  const appendListItem = useCallback(async (listId: string, title: string) => {
-    const trimmed = title.trim()
-    if (!trimmed) return false
+  const appendListItem = useCallback(async (listId: string, item: string | TheaterListItemInput) => {
+    const payload = typeof item === 'string'
+      ? {
+          tmdb_id: 0,
+          title_en: item.trim(),
+          title_zh: null,
+          poster_url: null,
+          genres: [],
+          runtime_minutes: null,
+          match_tags: [],
+          note: null,
+        }
+      : {
+          tmdb_id: item.tmdb_id,
+          title_en: item.title_en.trim(),
+          title_zh: item.title_zh ?? null,
+          poster_url: item.poster_url ?? null,
+          genres: item.genres ?? [],
+          runtime_minutes: item.runtime_minutes ?? null,
+          match_tags: item.match_tags ?? [],
+          note: item.note ?? null,
+        }
+
+    if (!payload.title_en) return false
     if (!ensureGroupId()) return false
 
     beginMutation()
     try {
       const updated = await api<TheaterList>(`/groups/${groupId}/lists/${listId}/items`, {
         method: 'POST',
-        body: JSON.stringify({
-          tmdb_id: 0,
-          title_en: trimmed,
-          match_tags: [],
-        }),
+        body: JSON.stringify(payload),
       })
       setError(null)
       setLists((current) => current.map((list) => (list.id === listId ? updated : list)))
