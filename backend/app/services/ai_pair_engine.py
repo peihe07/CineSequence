@@ -43,12 +43,17 @@ def _select_candidates(
     tag_freq: dict[str, int],
     seen_ids: set[int],
     phase: int,
+    low_confidence_tags: set[str] | None = None,
+    contradicted_tags: set[str] | None = None,
 ) -> list[dict]:
     """Select relevant candidate movies from the pool.
 
     Prioritizes movies tagged with undertested dimensions, ensures
     region diversity and tag coverage, and filters out already-seen movies.
     Returns up to _CANDIDATE_LIMIT candidates.
+
+    low_confidence_tags: tags with confidence < 0.5 (need more testing)
+    contradicted_tags: tags with consistency ∈ [0.35, 0.65] (ambiguous signal)
     """
     # Identify undertested tags (low or zero frequency)
     all_tags = list(_TASTE_TAGS)
@@ -57,13 +62,17 @@ def _select_candidates(
     low_tags = [t for t, c in tag_freq.items() if c <= 1]
     priority_tags = set(untested_tags + low_tags)
 
-    # Phase 3 soul tags get extra priority
+    # Phase 3: soul tags + low confidence + contradicted tags get extra priority
     if phase == 3:
         soul_tags = {
             "existential", "antiHero", "romanticCore",
             "socialCritique", "philosophical", "absurdist",
         }
         priority_tags.update(soul_tags - tested_tags)
+        if low_confidence_tags:
+            priority_tags.update(low_confidence_tags)
+        if contradicted_tags:
+            priority_tags.update(contradicted_tags)
 
     # Penalize overtested tags
     overtested_tags = {t for t, c in tag_freq.items() if c >= 3}
@@ -324,12 +333,24 @@ async def get_ai_pair(
         if dim:
             tag_freq[dim] = tag_freq.get(dim, 0) + 1
 
+    # Compute confidence and consistency for smarter candidate selection
+    from app.services.dna_builder import compute_confidence, compute_consistency
+
+    confidence = compute_confidence(picks)
+    consistency = compute_consistency(picks)
+    low_confidence_tags = {t for t, c in confidence.items() if c < 0.5}
+    contradicted_tags = {t for t, c in consistency.items() if 0.35 <= c <= 0.65}
+
     retry_excluded: list[int] = []
 
     for attempt in range(1, MAX_RETRIES + 1):
         # Select fresh candidates each attempt (excludes seen + retry-excluded)
         all_excluded = seen_ids | set(retry_excluded)
-        candidates = _select_candidates(tag_freq, all_excluded, phase)
+        candidates = _select_candidates(
+            tag_freq, all_excluded, phase,
+            low_confidence_tags=low_confidence_tags,
+            contradicted_tags=contradicted_tags,
+        )
 
         user_context = _build_user_context(
             phase, round_number, picks, quadrant_scores,
