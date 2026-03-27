@@ -45,16 +45,6 @@ jobs:
     defaults:
       run:
         working-directory: backend
-    services:
-      redis:
-        image: redis:7-alpine
-        ports:
-          - 6379:6379
-        options: >-
-          --health-cmd "redis-cli ping"
-          --health-interval 5s
-          --health-timeout 5s
-          --health-retries 10
     env:
       DATABASE_URL: postgresql+asyncpg://dev:dev@localhost:5432/cinesequence
       REDIS_URL: redis://localhost:6379/0
@@ -79,7 +69,7 @@ jobs:
         run: |
           sudo /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -y
           sudo apt-get update
-          sudo apt-get install -y postgresql-16 postgresql-16-pgvector
+          sudo apt-get install -y postgresql-16 postgresql-16-pgvector redis-server
 
       - name: Start PostgreSQL
         working-directory: .
@@ -89,6 +79,12 @@ jobs:
           sudo -u postgres psql -tc "SELECT 1 FROM pg_database WHERE datname = 'cinesequence'" | grep -q 1 || \
             sudo -u postgres psql -c "CREATE DATABASE cinesequence OWNER dev;"
           pg_isready -h localhost -p 5432 -U postgres
+
+      - name: Start Redis
+        working-directory: .
+        run: |
+          sudo systemctl start redis-server
+          redis-cli ping
 
       - name: Install deps
         run: pip install -r requirements.txt

@@ -286,6 +286,9 @@ describe('TheaterDetailPage', () => {
 
     fireEvent.change(titleInputs[0], { target: { value: 'Midnight Rotation' } })
     fireEvent.change(descriptionInputs[0], { target: { value: 'For after the room goes quiet.' } })
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: 'Save List' }).getAttribute('disabled')).toBeNull()
+    })
     fireEvent.click(screen.getByRole('button', { name: 'Save List' }))
 
     await waitFor(() => {

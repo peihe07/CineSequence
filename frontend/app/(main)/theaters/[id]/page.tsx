@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import Link from 'next/link'
 import { useState } from 'react'
 import { useParams } from 'next/navigation'
@@ -397,10 +398,13 @@ function TheaterDetailContent() {
                     <div key={item.id} className={styles.item}>
                       <div className={styles.listItemRow}>
                         {item.poster_url ? (
-                          <img
+                          <Image
                             src={item.poster_url}
                             alt={item.title_zh || item.title_en}
                             className={styles.itemPoster}
+                            width={72}
+                            height={106}
+                            unoptimized
                           />
                         ) : (
                           <div className={styles.itemPosterFallback}>
@@ -532,10 +536,13 @@ function TheaterDetailContent() {
                             onClick={() => void handleSelectListMovie(list.id, movie)}
                           >
                             {movie.poster_url ? (
-                              <img
+                              <Image
                                 src={movie.poster_url}
                                 alt={movie.title_zh || movie.title_en}
                                 className={styles.searchResultPoster}
+                                width={35}
+                                height={50}
+                                unoptimized
                               />
                             ) : (
                               <div className={styles.searchResultPosterFallback}>
@@ -653,10 +660,13 @@ function TheaterDetailContent() {
                       onClick={() => handleSelectDraftMovie(movie)}
                     >
                       {movie.poster_url ? (
-                        <img
+                        <Image
                           src={movie.poster_url}
                           alt={movie.title_zh || movie.title_en}
                           className={styles.searchResultPoster}
+                          width={35}
+                          height={50}
+                          unoptimized
                         />
                       ) : (
                         <div className={styles.searchResultPosterFallback}>
