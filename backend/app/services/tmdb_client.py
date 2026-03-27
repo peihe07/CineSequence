@@ -2,7 +2,7 @@
 
 import json
 import logging
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 import httpx
 
@@ -23,9 +23,9 @@ class MovieInfo:
     title_zh: str | None
     poster_url: str | None
     year: int | None
-    genres: list[str]
-    runtime_minutes: int | None
-    overview: str | None
+    genres: list[str] = field(default_factory=list)
+    runtime_minutes: int | None = None
+    overview: str | None = None
 
 
 def _poster_url(path: str | None, size: str = "w500") -> str | None:

@@ -195,6 +195,7 @@ async def _get_theater_list_with_creator(
             TheaterList.id == list_id,
             TheaterList.group_id == group_id,
         )
+        .execution_options(populate_existing=True)
     )
     row = result.first()
     if not row:
@@ -219,6 +220,7 @@ async def _get_theater_list_for_response(
             selectinload(TheaterList.items),
             selectinload(TheaterList.replies),
         )
+        .execution_options(populate_existing=True)
     )
     row = result.first()
     if not row:
@@ -532,6 +534,7 @@ async def list_theater_lists(
             selectinload(TheaterList.items),
             selectinload(TheaterList.replies),
         )
+        .execution_options(populate_existing=True)
     )
     rows = result.all()
     serialized_lists: list[TheaterListOut] = []
@@ -574,8 +577,9 @@ async def create_theater_list(
     await db.flush()
 
     for index, item in enumerate(body.items):
-        theater_list.items.append(
+        db.add(
             TheaterListItem(
+                list_id=theater_list.id,
                 tmdb_id=item.tmdb_id,
                 title_en=item.title_en.strip()[:255],
                 title_zh=(
@@ -697,8 +701,9 @@ async def append_theater_list_item(
             status_code=status.HTTP_400_BAD_REQUEST, detail="Item title cannot be empty"
         )
 
-    theater_list.items.append(
+    db.add(
         TheaterListItem(
+            list_id=theater_list.id,
             tmdb_id=body.tmdb_id,
             title_en=title[:255],
             title_zh=(
