@@ -1,5 +1,6 @@
 """Celery tasks for repairing missing personal ticket images."""
 
+from inspect import CORO_CREATED, getcoroutinestate
 import logging
 
 from app.tasks.async_utils import run_async, task_session
@@ -24,7 +25,11 @@ async def _backfill_missing_personal_tickets(limit: int = 50):
 @celery_app.task
 def backfill_missing_personal_tickets_task(limit: int = 50):
     """Periodic task: repair missing personal tickets in small batches."""
+    coro = _backfill_missing_personal_tickets(limit)
     try:
-        run_async(_backfill_missing_personal_tickets(limit))
+        run_async(coro)
     except Exception:
         logger.exception("Personal ticket backfill task failed")
+    finally:
+        if getcoroutinestate(coro) == CORO_CREATED:
+            coro.close()

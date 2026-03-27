@@ -1,5 +1,7 @@
 'use client'
 
+/* eslint-disable @next/next/no-img-element */
+
 import { useRef } from 'react'
 import { motion, useMotionValue, useTransform } from 'framer-motion'
 import Image from 'next/image'
@@ -229,15 +231,6 @@ function FullCinemaTicket({
 
           {match.status === 'accepted' && (
             <div className={styles.acceptedActions}>
-              <button
-                type="button"
-                className={styles.ticketLinkBtn}
-                onClick={onShowFullTicket}
-                aria-label={`${t('matches.viewTicket')} ${match.partner_name}`}
-              >
-                <i className="ri-ticket-2-line" aria-hidden="true" />
-                {t('matches.viewTicket')}
-              </button>
               {match.partner_email && (
                 <a
                   href={`mailto:${match.partner_email}`}

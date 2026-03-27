@@ -3,6 +3,7 @@
   top: 1rem;
   left: 50%;
   transform: translateX(-50%);
+  width: min(calc(100vw - 2rem), 28rem);
   z-index: var(--z-toast);
   display: flex;
   flex-direction: column;
@@ -14,6 +15,7 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  width: 100%;
   padding: 0.7rem 1.2rem;
   background: var(--foreground);
   border-radius: 8px;
@@ -21,7 +23,8 @@
   color: #ffffff;
   cursor: pointer;
   pointer-events: auto;
-  white-space: nowrap;
+  white-space: normal;
+  overflow-wrap: anywhere;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
@@ -40,4 +43,15 @@
 
 .info .icon {
   color: #a78bfa;
+}
+
+@media (max-width: 640px) {
+  .container {
+    top: calc(env(safe-area-inset-top) + 0.75rem);
+    width: calc(100vw - 1rem);
+  }
+
+  .toast {
+    padding: 0.7rem 0.9rem;
+  }
 }

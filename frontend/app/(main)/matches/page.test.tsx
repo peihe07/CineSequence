@@ -105,7 +105,11 @@ vi.mock('@/lib/tagLabels', () => ({
 }))
 
 vi.mock('@/components/match/TearRitual', () => ({
-  default: () => <div>TearRitual</div>,
+  default: ({ onTear }: { onTear?: () => void }) => (
+    <button type="button" onClick={onTear}>
+      TearRitual
+    </button>
+  ),
 }))
 
 vi.mock('@/components/guards/FlowGuard', () => ({
@@ -200,7 +204,7 @@ describe('MatchesPage', () => {
     expect(await screen.findByText('Invite failed')).toBeTruthy()
   })
 
-  it('opens and closes the accepted ticket modal', async () => {
+  it('opens and closes the accepted ticket modal from the tear ritual', async () => {
     apiMock.mockResolvedValue({
       match_gender_pref: null,
       match_age_min: null,
@@ -227,7 +231,9 @@ describe('MatchesPage', () => {
 
     render(<MatchesPage />)
 
-    fireEvent.click(await screen.findByRole('button', { name: 'Open ticket Jamie' }))
+    expect(screen.queryByRole('button', { name: 'Open ticket Jamie' })).toBeNull()
+
+    fireEvent.click(await screen.findByRole('button', { name: 'TearRitual' }))
 
     expect(await screen.findByRole('dialog', { name: 'Jamie — Open ticket' })).toBeTruthy()
     expect(screen.getByRole('link', { name: /jamie@example.com/i })).toBeTruthy()

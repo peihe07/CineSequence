@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -9,9 +10,16 @@ const { onPickMock, setAmbientColorMock, playMock } = vi.hoisted(() => ({
 
 vi.mock('framer-motion', () => ({
   motion: {
-    button: ({ children, ...props }: React.ButtonHTMLAttributes<HTMLButtonElement>) => (
-      <button {...props}>{children}</button>
-    ),
+    button: (props: React.ButtonHTMLAttributes<HTMLButtonElement> & Record<string, unknown>) => {
+      const cleanProps = { ...props }
+      delete cleanProps.whileHover
+      delete cleanProps.whileTap
+      delete cleanProps.initial
+      delete cleanProps.animate
+      delete cleanProps.exit
+      delete cleanProps.transition
+      return <button {...cleanProps}>{props.children}</button>
+    },
   },
 }))
 

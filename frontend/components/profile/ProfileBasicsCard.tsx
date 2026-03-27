@@ -50,7 +50,6 @@ export default function ProfileBasicsCard({
   nameLabel,
   bioLabel,
   bioPlaceholder,
-  addBioLabel,
   bioEmptyDisplayLabel,
   emailLabel,
   genderLabel,
@@ -211,7 +210,7 @@ export default function ProfileBasicsCard({
         ) : (
           <div className={styles.bioDisplay}>
             <p className={styles.bioText}>
-              {profile.bio?.trim() ? profile.bio : bioEmptyDisplayLabel}
+              {profile.bio?.trim() ? profile.bio : addBioLabel || bioEmptyDisplayLabel}
             </p>
             {!isPreview && (
               <button className={styles.editBtn} onClick={onBioEditStart} aria-label={editBioLabel}>

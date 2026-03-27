@@ -1,5 +1,7 @@
 'use client'
 
+/* eslint-disable @next/next/no-img-element */
+
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { api } from '@/lib/api'
 import styles from '@/app/(main)/profile/page.module.css'

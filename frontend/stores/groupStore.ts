@@ -1,49 +1,10 @@
 import { create } from 'zustand'
 import { api } from '@/lib/api'
 import { translateStatic } from '@/lib/i18n'
-
-interface Group {
-  id: string
-  name: string
-  subtitle: string
-  icon: string
-  primary_tags: string[]
-  is_hidden: boolean
-  member_count: number
-  is_active: boolean
-  is_member: boolean
-  shared_tags: string[]
-  member_preview: Array<{
-    id: string
-    name: string
-    avatar_url: string | null
-  }>
-  recommended_movies: Array<{
-    tmdb_id: number
-    title_en: string
-    match_tags: string[]
-  }>
-  shared_watchlist: Array<{
-    tmdb_id: number
-    title_en: string
-    match_tags: string[]
-    supporter_count: number
-  }>
-  recent_messages: Array<{
-    id: string
-    body: string
-    created_at: string
-    user: {
-      id: string
-      name: string
-      avatar_url: string | null
-    }
-    can_delete: boolean
-  }>
-}
+import type { TheaterGroup } from '@/lib/theater-types'
 
 interface GroupState {
-  groups: Group[]
+  groups: TheaterGroup[]
   isLoading: boolean
   error: string | null
 
@@ -63,7 +24,7 @@ export const useGroupStore = create<GroupState>((set, get) => ({
   fetchGroups: async () => {
     set({ isLoading: true, error: null })
     try {
-      const groups = await api<Group[]>('/groups')
+      const groups = await api<TheaterGroup[]>('/groups')
       set({ groups, isLoading: false })
     } catch (err) {
       const message = err instanceof Error ? err.message : translateStatic('common.error')
@@ -74,9 +35,7 @@ export const useGroupStore = create<GroupState>((set, get) => ({
   autoAssign: async () => {
     set({ isLoading: true, error: null })
     try {
-      await api<Group[]>('/groups/auto-assign', { method: 'POST' })
-      // Refresh full list after auto-assign
-      const groups = await api<Group[]>('/groups')
+      const groups = await api<TheaterGroup[]>('/groups/auto-assign', { method: 'POST' })
       set({ groups, isLoading: false })
     } catch (err) {
       const message = err instanceof Error ? err.message : translateStatic('common.error')
@@ -86,7 +45,7 @@ export const useGroupStore = create<GroupState>((set, get) => ({
 
   joinGroup: async (groupId: string) => {
     try {
-      const updated = await api<Group>(`/groups/${groupId}/join`, { method: 'POST' })
+      const updated = await api<TheaterGroup>(`/groups/${groupId}/join`, { method: 'POST' })
       set({
         groups: get().groups.map((g) =>
           g.id === groupId ? { ...g, ...updated, is_member: true } : g
@@ -100,7 +59,7 @@ export const useGroupStore = create<GroupState>((set, get) => ({
 
   leaveGroup: async (groupId: string) => {
     try {
-      const updated = await api<Group>(`/groups/${groupId}/leave`, { method: 'POST' })
+      const updated = await api<TheaterGroup>(`/groups/${groupId}/leave`, { method: 'POST' })
       set({
         groups: get().groups.map((g) =>
           g.id === groupId ? { ...g, ...updated, is_member: false } : g
@@ -113,10 +72,15 @@ export const useGroupStore = create<GroupState>((set, get) => ({
   },
 
   postGroupMessage: async (groupId, body) => {
+    const trimmedBody = body.trim()
+    if (!trimmedBody) {
+      return
+    }
+
     try {
-      const message = await api<Group['recent_messages'][number]>(`/groups/${groupId}/messages`, {
+      const message = await api<TheaterGroup['recent_messages'][number]>(`/groups/${groupId}/messages`, {
         method: 'POST',
-        body: JSON.stringify({ body }),
+        body: JSON.stringify({ body: trimmedBody }),
       })
       set({
         groups: get().groups.map((g) =>

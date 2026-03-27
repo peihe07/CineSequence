@@ -6,52 +6,141 @@ import { motion } from 'framer-motion'
 import { useGroupStore } from '@/stores/groupStore'
 import { useI18n } from '@/lib/i18n'
 import { getTagLabel } from '@/lib/tagLabels'
+import type { TheaterGroup } from '@/lib/theater-types'
 import FlowGuard from '@/components/guards/FlowGuard'
 import ConfirmDialog from '@/components/ui/ConfirmDialog'
 import styles from './page.module.css'
 
-interface GroupItem {
-  id: string
-  name: string
-  subtitle: string
-  icon: string
-  primary_tags: string[]
-  is_hidden: boolean
-  member_count: number
-  is_active: boolean
-  is_member: boolean
-  shared_tags: string[]
-  member_preview: Array<{
-    id: string
-    name: string
-    avatar_url: string | null
-  }>
-  recommended_movies: Array<{
-    tmdb_id: number
-    title_en: string
-    match_tags: string[]
-  }>
-  shared_watchlist: Array<{
-    tmdb_id: number
-    title_en: string
-    match_tags: string[]
-    supporter_count: number
-  }>
-  recent_messages: Array<{
-    id: string
-    body: string
-    created_at: string
-    can_delete: boolean
-    user: {
-      id: string
-      name: string
-      avatar_url: string | null
-    }
-  }>
+function FeaturedGroup({ group }: { group: TheaterGroup }) {
+  const { t, locale } = useI18n()
+
+  return (
+    <motion.section
+      className={styles.featuredGroup}
+      initial={{ opacity: 0, y: 18 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.45 }}
+    >
+      <div className={styles.featuredHeader}>
+        <div className={styles.groupInfo}>
+          <i className={`${group.icon} ${styles.groupIcon}`} />
+          <div className={styles.groupText}>
+            <p className={styles.featuredEyebrow}>{t('theaters.featured')}</p>
+            <h2 className={styles.featuredTitle}>{group.name}</h2>
+            <p className={styles.groupSubtitle}>{group.subtitle}</p>
+          </div>
+        </div>
+        <Link href={`/theaters/detail?id=${group.id}`} prefetch={false} className={styles.detailLink}>
+          <i className="ri-arrow-right-up-line" /> {t('theaters.open')}
+        </Link>
+      </div>
+
+      <div className={styles.featuredGrid}>
+        <section className={styles.featuredBlock}>
+          <p className={styles.detailLabel}>{t('theaters.fit')}</p>
+          {group.shared_tags.length > 0 ? (
+            <>
+              <p className={styles.detailText}>{t('theaters.fitHint')}</p>
+              <div className={styles.detailTags}>
+                {group.shared_tags.map((tag) => (
+                  <span key={tag} className={styles.detailTag}>
+                    {getTagLabel(tag, locale)}
+                  </span>
+                ))}
+              </div>
+            </>
+          ) : (
+            <p className={styles.detailText}>{t('theaters.noSharedTags')}</p>
+          )}
+        </section>
+
+        <section className={styles.featuredBlock}>
+          <div className={styles.blockHeader}>
+            <p className={styles.detailLabel}>{t('theaters.recommended')}</p>
+            <p className={styles.blockHint}>{t('theaters.featuredHint')}</p>
+          </div>
+          <div className={styles.movieList}>
+            {group.recommended_movies.map((movie) => (
+              <article key={movie.tmdb_id} className={styles.movieItem}>
+                <p className={styles.movieTitle}>{movie.title_en}</p>
+                <div className={styles.movieTags}>
+                  {movie.match_tags.map((tag) => (
+                    <span key={`${movie.tmdb_id}-${tag}`} className={styles.movieTag}>
+                      {getTagLabel(tag, locale)}
+                    </span>
+                  ))}
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section className={styles.featuredBlock}>
+          <div className={styles.blockHeader}>
+            <p className={styles.detailLabel}>{t('theaters.watchlist')}</p>
+            <p className={styles.blockHint}>{t('theaters.watchlistHint')}</p>
+          </div>
+          <div className={styles.watchlistList}>
+            {group.shared_watchlist.map((movie) => (
+              <article key={movie.tmdb_id} className={styles.watchlistItem}>
+                <div className={styles.watchlistMeta}>
+                  <p className={styles.movieTitle}>{movie.title_en}</p>
+                  <span className={styles.supporterBadge}>
+                    {t('theaters.supporters', { count: movie.supporter_count })}
+                  </span>
+                </div>
+                <div className={styles.movieTags}>
+                  {movie.match_tags.map((tag) => (
+                    <span key={`${movie.tmdb_id}-${tag}`} className={styles.movieTag}>
+                      {getTagLabel(tag, locale)}
+                    </span>
+                  ))}
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section className={`${styles.featuredBlock} ${styles.activityBlock}`}>
+          <div className={styles.blockHeader}>
+            <p className={styles.detailLabel}>{t('theaters.activity')}</p>
+            <p className={styles.blockHint}>{t('theaters.activityHint')}</p>
+          </div>
+          {group.recent_activity.length > 0 ? (
+            <div className={styles.activityList}>
+              {group.recent_activity.map((activity) => (
+                <article key={activity.id} className={styles.activityItem}>
+                  <div className={styles.activityMeta}>
+                    <p className={styles.activityTitle}>
+                      {activity.type === 'list_created'
+                        ? t('theaters.activityListCreated', {
+                            name: activity.actor.name,
+                            title: activity.list_title,
+                          })
+                        : t('theaters.activityListReplied', {
+                            name: activity.actor.name,
+                            title: activity.list_title,
+                          })}
+                    </p>
+                    <span className={styles.messageTime}>
+                      {new Date(activity.created_at).toLocaleString(locale)}
+                    </span>
+                  </div>
+                  {activity.body && <p className={styles.activityBody}>{activity.body}</p>}
+                </article>
+              ))}
+            </div>
+          ) : (
+            <p className={styles.detailText}>{t('theaters.activityEmpty')}</p>
+          )}
+        </section>
+      </div>
+    </motion.section>
+  )
 }
 
 function GroupCard({ group, onJoin, onLeave }: {
-  group: GroupItem
+  group: TheaterGroup
   onJoin: () => void
   onLeave: () => void
 }) {
@@ -123,21 +212,6 @@ function GroupCard({ group, onJoin, onLeave }: {
         </section>
 
         <section className={styles.detailBlock}>
-          <p className={styles.detailLabel}>{t('theaters.members')}</p>
-          {group.member_preview.length > 0 ? (
-            <div className={styles.memberList}>
-              {group.member_preview.map((member) => (
-                <span key={member.id} className={styles.memberChip}>
-                  {member.name}
-                </span>
-              ))}
-            </div>
-          ) : (
-            <p className={styles.detailText}>{t('theaters.membersEmpty')}</p>
-          )}
-        </section>
-
-        <section className={styles.detailBlock}>
           <p className={styles.detailLabel}>{t('theaters.recommended')}</p>
           <div className={styles.movieList}>
             {group.recommended_movies.map((movie) => (
@@ -154,21 +228,61 @@ function GroupCard({ group, onJoin, onLeave }: {
             ))}
           </div>
         </section>
+
+        <section className={styles.detailBlock}>
+          <p className={styles.detailLabel}>{t('theaters.watchlist')}</p>
+          {group.shared_watchlist.length > 0 ? (
+            <div className={styles.watchlistListCompact}>
+              {group.shared_watchlist.slice(0, 2).map((movie) => (
+                <article key={movie.tmdb_id} className={styles.watchlistItemCompact}>
+                  <div className={styles.watchlistMeta}>
+                    <p className={styles.movieTitle}>{movie.title_en}</p>
+                    <span className={styles.supporterBadge}>
+                      {t('theaters.supporters', { count: movie.supporter_count })}
+                    </span>
+                  </div>
+                </article>
+              ))}
+            </div>
+          ) : (
+            <p className={styles.detailText}>{t('theaters.messagesEmpty')}</p>
+          )}
+        </section>
+
+        <section className={styles.detailBlock}>
+          <p className={styles.detailLabel}>{t('theaters.members')}</p>
+          {group.member_preview.length > 0 ? (
+            <div className={styles.memberList}>
+              {group.member_preview.map((member) => (
+                <span key={member.id} className={styles.memberChip}>
+                  {member.name}
+                </span>
+              ))}
+            </div>
+          ) : (
+            <p className={styles.detailText}>{t('theaters.membersEmpty')}</p>
+          )}
+        </section>
       </div>
 
       <div className={styles.cardActions}>
         <Link href={`/theaters/detail?id=${group.id}`} prefetch={false} className={styles.detailLink}>
           <i className="ri-arrow-right-up-line" /> {t('theaters.open')}
         </Link>
-        {group.is_member ? (
-          <button className={styles.leaveBtn} onClick={onLeave}>
-            <i className="ri-logout-box-line" /> {t('theaters.leave')}
-          </button>
-        ) : (
-          <button className={styles.joinBtn} onClick={onJoin}>
-            <i className="ri-add-line" /> {t('theaters.join')}
-          </button>
-        )}
+        <div className={styles.cardActionMeta}>
+          <span className={styles.cardActionHint}>
+            {group.is_member ? t('theaters.cardHintMember') : t('theaters.cardHintVisitor')}
+          </span>
+          {group.is_member ? (
+            <button className={styles.leaveBtn} onClick={onLeave}>
+              <i className="ri-logout-box-line" /> {t('theaters.leave')}
+            </button>
+          ) : (
+            <button className={styles.joinBtn} onClick={onJoin}>
+              <i className="ri-add-line" /> {t('theaters.join')}
+            </button>
+          )}
+        </div>
       </div>
     </motion.div>
   )
@@ -186,6 +300,10 @@ function TheatersContent() {
   const { t } = useI18n()
   const { groups, isLoading, fetchGroups, autoAssign, joinGroup, leaveGroup } = useGroupStore()
   const [leaveTarget, setLeaveTarget] = useState<string | null>(null)
+  const featuredGroup = groups.find((group) => group.is_member) ?? groups[0] ?? null
+  const remainingGroups = featuredGroup
+    ? groups.filter((group) => group.id !== featuredGroup.id)
+    : []
 
   useEffect(() => {
     fetchGroups()
@@ -197,6 +315,7 @@ function TheatersContent() {
         <section className={`${styles.section} ${styles.heroSection}`}>
           <span className={styles.sideLabel}>{t('theaters.fileLabel')}</span>
           <p className={styles.eyebrow}>[ SCREENING_INDEX ]</p>
+          <p className={styles.kicker}>{t('theaters.nextStep')}</p>
           <div className={styles.header}>
             <h1 className={styles.title}>{t('theaters.title')}</h1>
             <button
@@ -211,6 +330,7 @@ function TheatersContent() {
           <p className={styles.deck}>
             {t('theaters.deck')}
           </p>
+          <p className={styles.assignmentNote}>{t('theaters.assignmentReady')}</p>
           <p className={styles.heroMeta}>GROUP_SCAN: LIVE // ASSIGNMENT: READY</p>
         </section>
 
@@ -238,16 +358,30 @@ function TheatersContent() {
             </div>
           )}
 
-          <div className={styles.grid}>
-            {groups.map((group) => (
-              <GroupCard
-                key={group.id}
-                group={group}
-                onJoin={() => joinGroup(group.id)}
-                onLeave={() => setLeaveTarget(group.id)}
-              />
-            ))}
-          </div>
+          {!isLoading && featuredGroup && (
+            <>
+              <FeaturedGroup group={featuredGroup} />
+
+              {remainingGroups.length > 0 && (
+                <div className={styles.librarySection}>
+                  <div className={styles.sectionHeader}>
+                    <p className={styles.sectionEyebrow}>{t('theaters.library')}</p>
+                    <p className={styles.sectionIntro}>{t('theaters.libraryHint')}</p>
+                  </div>
+                  <div className={styles.grid}>
+                    {remainingGroups.map((group) => (
+                      <GroupCard
+                        key={group.id}
+                        group={group}
+                        onJoin={() => joinGroup(group.id)}
+                        onLeave={() => setLeaveTarget(group.id)}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
+            </>
+          )}
         </section>
       </div>
 

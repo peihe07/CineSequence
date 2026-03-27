@@ -16,6 +16,8 @@ class NotificationType(enum.StrEnum):
     match_found = "match_found"
     invite_received = "invite_received"
     match_accepted = "match_accepted"
+    theater_assigned = "theater_assigned"
+    theater_activity = "theater_activity"
     system = "system"
 
 

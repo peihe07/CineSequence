@@ -1,15 +1,17 @@
 """Group engine: auto-assign users to groups based on DNA tag affinity."""
 
+from collections import defaultdict
 import json
 import logging
 import uuid
 from pathlib import Path
 
-from sqlalchemy import delete, func, select
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.group import Group, group_members
 from app.models.group_message import GroupMessage
+from app.models.theater_list import TheaterList, TheaterListReply
 from app.models.user import User
 from app.services.r2_storage import normalize_public_object_url
 
@@ -232,6 +234,72 @@ async def _recent_messages(
     return list(reversed(messages))
 
 
+async def _recent_activity(
+    db: AsyncSession,
+    group_id: str,
+    limit: int = 6,
+) -> list[dict]:
+    list_result = await db.execute(
+        select(TheaterList, User)
+        .join(User, User.id == TheaterList.creator_id)
+        .where(
+            TheaterList.group_id == group_id,
+            TheaterList.visibility == "group",
+        )
+        .order_by(TheaterList.created_at.desc())
+        .limit(limit)
+    )
+    list_rows = list_result.all()
+    activity: list[dict] = [
+        {
+            "id": f"list-{theater_list.id}",
+            "type": "list_created",
+            "created_at": theater_list.created_at.isoformat(),
+            "actor": {
+                "id": str(author.id),
+                "name": author.name,
+                "avatar_url": normalize_public_object_url(author.avatar_url),
+            },
+            "list_id": str(theater_list.id),
+            "list_title": theater_list.title,
+            "body": theater_list.description,
+        }
+        for theater_list, author in list_rows
+    ]
+
+    reply_result = await db.execute(
+        select(TheaterListReply, User, TheaterList)
+        .join(User, User.id == TheaterListReply.user_id)
+        .join(TheaterList, TheaterList.id == TheaterListReply.list_id)
+        .where(
+            TheaterList.group_id == group_id,
+            TheaterList.visibility == "group",
+        )
+        .order_by(TheaterListReply.created_at.desc())
+        .limit(limit)
+    )
+    reply_rows = reply_result.all()
+    activity.extend(
+        {
+            "id": f"reply-{reply.id}",
+            "type": "list_replied",
+            "created_at": reply.created_at.isoformat(),
+            "actor": {
+                "id": str(author.id),
+                "name": author.name,
+                "avatar_url": normalize_public_object_url(author.avatar_url),
+            },
+            "list_id": str(theater_list.id),
+            "list_title": theater_list.title,
+            "body": reply.body,
+        }
+        for reply, author, theater_list in reply_rows
+    )
+
+    activity.sort(key=lambda item: item["created_at"], reverse=True)
+    return activity[:limit]
+
+
 async def build_group_payload(
     db: AsyncSession,
     group: Group,
@@ -272,9 +340,161 @@ async def build_group_payload(
             group.id,
             viewer_id=viewer.id if viewer else None,
         ),
+        "recent_activity": await _recent_activity(db, group.id),
         "recommended_movies": recommend_movies_for_group(group.primary_tags or [], tag_vector),
         "shared_watchlist": build_shared_watchlist(group.primary_tags or [], member_vectors),
     }
+
+
+async def _build_group_payloads_for_groups(
+    db: AsyncSession,
+    groups: list[Group],
+    *,
+    viewer: User | None = None,
+    user_group_ids: set[str] | None = None,
+) -> list[dict]:
+    """Serialize many groups with shared batched queries for list endpoints."""
+    if not groups:
+        return []
+
+    group_ids = [group.id for group in groups]
+    memberships = user_group_ids or set()
+    profile = viewer.dna_profile if viewer else None
+    tag_vector = list(profile.tag_vector) if profile and profile.tag_vector is not None else []
+
+    members_result = await db.execute(
+        select(group_members.c.group_id, User)
+        .join(User, group_members.c.user_id == User.id)
+        .where(group_members.c.group_id.in_(group_ids))
+        .order_by(group_members.c.group_id.asc(), User.name.asc())
+    )
+    members_by_group: dict[str, list[User]] = defaultdict(list)
+    for group_id, member in members_result.all():
+        members_by_group[group_id].append(member)
+
+    messages_result = await db.execute(
+        select(GroupMessage, User)
+        .join(User, User.id == GroupMessage.user_id)
+        .where(GroupMessage.group_id.in_(group_ids))
+        .order_by(GroupMessage.group_id.asc(), GroupMessage.created_at.desc())
+    )
+    messages_by_group: dict[str, list[dict]] = defaultdict(list)
+    viewer_id = viewer.id if viewer else None
+    for message, author in messages_result.all():
+        group_messages = messages_by_group[message.group_id]
+        if len(group_messages) >= 8:
+            continue
+        group_messages.append(
+            {
+                "id": str(message.id),
+                "body": message.body,
+                "created_at": message.created_at.isoformat(),
+                "user": {
+                    "id": str(author.id),
+                    "name": author.name,
+                    "avatar_url": normalize_public_object_url(author.avatar_url),
+                },
+                "can_delete": viewer_id == author.id,
+            }
+        )
+
+    list_result = await db.execute(
+        select(TheaterList, User)
+        .join(User, User.id == TheaterList.creator_id)
+        .where(
+            TheaterList.group_id.in_(group_ids),
+            TheaterList.visibility == "group",
+        )
+        .order_by(TheaterList.group_id.asc(), TheaterList.created_at.desc())
+    )
+    activity_by_group: dict[str, list[dict]] = defaultdict(list)
+    for theater_list, author in list_result.all():
+        activity_by_group[theater_list.group_id].append(
+            {
+                "id": f"list-{theater_list.id}",
+                "type": "list_created",
+                "created_at": theater_list.created_at.isoformat(),
+                "actor": {
+                    "id": str(author.id),
+                    "name": author.name,
+                    "avatar_url": normalize_public_object_url(author.avatar_url),
+                },
+                "list_id": str(theater_list.id),
+                "list_title": theater_list.title,
+                "body": theater_list.description,
+            }
+        )
+
+    reply_result = await db.execute(
+        select(TheaterListReply, User, TheaterList)
+        .join(User, User.id == TheaterListReply.user_id)
+        .join(TheaterList, TheaterList.id == TheaterListReply.list_id)
+        .where(
+            TheaterList.group_id.in_(group_ids),
+            TheaterList.visibility == "group",
+        )
+        .order_by(TheaterList.group_id.asc(), TheaterListReply.created_at.desc())
+    )
+    for reply, author, theater_list in reply_result.all():
+        activity_by_group[theater_list.group_id].append(
+            {
+                "id": f"reply-{reply.id}",
+                "type": "list_replied",
+                "created_at": reply.created_at.isoformat(),
+                "actor": {
+                    "id": str(author.id),
+                    "name": author.name,
+                    "avatar_url": normalize_public_object_url(author.avatar_url),
+                },
+                "list_id": str(theater_list.id),
+                "list_title": theater_list.title,
+                "body": reply.body,
+            }
+        )
+
+    payloads = []
+    for group in groups:
+        members = members_by_group.get(group.id, [])
+        member_vectors = [
+            list(member.dna_profile.tag_vector)
+            for member in members
+            if member.dna_profile and member.dna_profile.tag_vector is not None
+        ]
+        recent_messages = list(reversed(messages_by_group.get(group.id, [])))
+        recent_activity = sorted(
+            activity_by_group.get(group.id, []),
+            key=lambda item: item["created_at"],
+            reverse=True,
+        )[:6]
+
+        payloads.append(
+            {
+                "id": group.id,
+                "name": group.name,
+                "subtitle": group.subtitle,
+                "icon": group.icon,
+                "primary_tags": group.primary_tags or [],
+                "is_hidden": group.is_hidden,
+                "member_count": group.member_count,
+                "is_active": group.is_active,
+                "is_member": group.id in memberships,
+                "shared_tags": get_shared_tags(tag_vector, group.primary_tags or []),
+                "member_preview": [
+                    {
+                        "id": str(member.id),
+                        "name": member.name,
+                        "avatar_url": normalize_public_object_url(member.avatar_url),
+                    }
+                    for member in members[:6]
+                ],
+                "recent_messages": recent_messages,
+                "recent_activity": recent_activity,
+                "recommended_movies": recommend_movies_for_group(group.primary_tags or [], tag_vector),
+                "shared_watchlist": build_shared_watchlist(group.primary_tags or [], member_vectors),
+            }
+        )
+
+    return payloads
 
 
 async def auto_assign_groups(
@@ -283,8 +503,9 @@ async def auto_assign_groups(
 ) -> list[Group]:
     """Auto-assign user to groups based on their DNA tag_vector affinity.
 
-    Clears existing memberships and re-assigns based on current DNA profile.
-    Returns list of groups the user was assigned to.
+    This is intentionally additive: it adds newly matched groups without
+    stripping existing memberships, so manual joins are preserved.
+    Returns the user's full current group set after assignment.
     """
     profile = user.dna_profile
     if not profile or profile.tag_vector is None:
@@ -296,19 +517,19 @@ async def auto_assign_groups(
     result = await db.execute(select(Group))
     all_groups = list(result.scalars().all())
 
-    # Clear existing memberships for this user
-    await db.execute(
-        delete(group_members).where(group_members.c.user_id == user.id)
-    )
+    existing_group_ids = {
+        group.id
+        for group in await get_user_groups(db, user.id)
+    }
 
     assigned = []
     for group in all_groups:
         affinity = compute_group_affinity(tag_vector, group.primary_tags or [])
-        if affinity >= AUTO_ASSIGN_THRESHOLD:
+        if affinity >= AUTO_ASSIGN_THRESHOLD and group.id not in existing_group_ids:
             await db.execute(
                 group_members.insert().values(user_id=user.id, group_id=group.id)
             )
-            assigned.append(group)
+            existing_group_ids.add(group.id)
 
     # Update member counts for all groups
     for group in all_groups:
@@ -321,7 +542,7 @@ async def auto_assign_groups(
         group.is_active = should_activate_group(new_count, group.min_members_to_activate)
 
     await db.commit()
-    return assigned
+    return [group for group in all_groups if group.id in existing_group_ids]
 
 
 async def get_user_groups(
@@ -358,15 +579,20 @@ async def list_visible_groups(
         member_result = await db.execute(member_q)
         user_group_ids = {row[0] for row in member_result}
 
-    groups_out = []
+    visible_groups = []
     for group in all_groups:
         is_member = group.id in user_group_ids
         # Hidden groups only visible to members
         if group.is_hidden and not is_member:
             continue
-        groups_out.append(await build_group_payload(db, group, viewer=user, is_member=is_member))
+        visible_groups.append(group)
 
-    return groups_out
+    return await _build_group_payloads_for_groups(
+        db,
+        visible_groups,
+        viewer=user,
+        user_group_ids=user_group_ids,
+    )
 
 
 async def join_group(

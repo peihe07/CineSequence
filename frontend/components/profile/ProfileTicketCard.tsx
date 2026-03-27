@@ -1,5 +1,7 @@
 'use client'
 
+/* eslint-disable @next/next/no-img-element */
+
 import { useRef } from 'react'
 import { motion, useMotionValue, useTransform } from 'framer-motion'
 import { useI18n } from '@/lib/i18n'

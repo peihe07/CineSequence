@@ -15,7 +15,7 @@ from app.models.dna_profile import DnaProfile
 from app.models.match import Match, MatchStatus
 from app.models.notification import NotificationType
 from app.models.user import User
-from app.services.ai_token_tracker import estimate_cost
+from app.services.ai_token_tracker import estimate_cost_for_model
 from app.services.notification_service import create_notification
 
 logger = logging.getLogger(__name__)
@@ -95,8 +95,10 @@ async def get_stats(
         + match_breakdown.get("declined", 0)
     )
     accepted_count = match_breakdown.get("accepted", 0)
+    declined_count = match_breakdown.get("declined", 0)
+    decided_count = accepted_count + declined_count
     invite_rate = invited_count / total_matches if total_matches else 0
-    accept_rate = accepted_count / invited_count if invited_count else 0
+    accept_rate = accepted_count / decided_count if decided_count else 0
 
     # Funnel: registered → completed sequencing → has DNA → has match
     completed_sequencing = sequencing_breakdown.get("completed", 0)
@@ -107,6 +109,38 @@ async def get_stats(
     has_match = await db.scalar(
         select(func.count(func.distinct(matched_users.c.user_id)))
     )
+
+    # Week-over-week trends
+    two_weeks_ago = now - timedelta(days=14)
+    users_last_week = await db.scalar(
+        select(func.count(User.id)).where(
+            User.created_at >= two_weeks_ago,
+            User.created_at < week_ago,
+        )
+    )
+    dna_this_week = await db.scalar(
+        select(func.count(DnaProfile.id)).where(DnaProfile.created_at >= week_ago)
+    )
+    dna_last_week = await db.scalar(
+        select(func.count(DnaProfile.id)).where(
+            DnaProfile.created_at >= two_weeks_ago,
+            DnaProfile.created_at < week_ago,
+        )
+    )
+    matches_this_week = await db.scalar(
+        select(func.count(Match.id)).where(Match.created_at >= week_ago)
+    )
+    matches_last_week = await db.scalar(
+        select(func.count(Match.id)).where(
+            Match.created_at >= two_weeks_ago,
+            Match.created_at < week_ago,
+        )
+    )
+
+    def calc_trend(current: int, previous: int) -> float | None:
+        if not previous:
+            return None
+        return round(((current - previous) / previous) * 100, 1)
 
     return {
         "users": {
@@ -130,6 +164,11 @@ async def get_stats(
             "completed_sequencing": completed_sequencing,
             "has_dna": total_dna,
             "has_match": has_match,
+        },
+        "trends": {
+            "users": calc_trend(users_this_week or 0, users_last_week or 0),
+            "dna": calc_trend(dna_this_week or 0, dna_last_week or 0),
+            "matches": calc_trend(matches_this_week or 0, matches_last_week or 0),
         },
     }
 
@@ -212,38 +251,57 @@ async def get_api_usage(
         select(func.count(Match.id)).where(Match.status == MatchStatus.accepted)
     )
 
-    # Count AI-generated pairs (phase 2-3 rounds)
+    # Count AI-generated pairs from actual token logs
     from app.models.pick import Pick
     total_picks = await db.scalar(select(func.count(Pick.id)))
-
-    # Rough AI pair count: phase 2-3 is rounds 8-30 = 23 rounds per session
-    from app.models.sequencing_session import SequencingSession
-    total_sessions = await db.scalar(select(func.count(SequencingSession.id)))
-    ai_pair_calls = total_sessions * 23 if total_sessions else 0
 
     # Token usage from ai_token_logs
     token_stats = await db.execute(
         select(
             AiTokenLog.call_type,
+            AiTokenLog.model,
             func.count(AiTokenLog.id).label("calls"),
             func.coalesce(func.sum(AiTokenLog.prompt_tokens), 0).label("prompt"),
             func.coalesce(func.sum(AiTokenLog.completion_tokens), 0).label("completion"),
             func.coalesce(func.sum(AiTokenLog.total_tokens), 0).label("total"),
-        ).group_by(AiTokenLog.call_type)
+        ).group_by(AiTokenLog.call_type, AiTokenLog.model)
     )
     token_by_type: dict[str, dict] = {}
     grand_prompt = 0
     grand_completion = 0
+    grand_cost = 0.0
     for row in token_stats:
-        token_by_type[row.call_type] = {
-            "calls": row.calls,
-            "prompt_tokens": row.prompt,
-            "completion_tokens": row.completion,
-            "total_tokens": row.total,
-            "estimated_cost_usd": round(estimate_cost(row.prompt, row.completion), 4),
-        }
+        type_totals = token_by_type.setdefault(
+            row.call_type,
+            {
+                "calls": 0,
+                "prompt_tokens": 0,
+                "completion_tokens": 0,
+                "total_tokens": 0,
+                "estimated_cost_usd": 0.0,
+            },
+        )
+        type_totals["calls"] += row.calls
+        type_totals["prompt_tokens"] += row.prompt
+        type_totals["completion_tokens"] += row.completion
+        type_totals["total_tokens"] += row.total
+        type_totals["estimated_cost_usd"] += estimate_cost_for_model(
+            row.prompt,
+            row.completion,
+            model=row.model,
+        )
         grand_prompt += row.prompt
         grand_completion += row.completion
+        grand_cost += estimate_cost_for_model(
+            row.prompt,
+            row.completion,
+            model=row.model,
+        )
+
+    for type_totals in token_by_type.values():
+        type_totals["estimated_cost_usd"] = round(type_totals["estimated_cost_usd"], 4)
+
+    ai_pair_calls = token_by_type.get("ai_pair", {}).get("calls", 0)
 
     return {
         "gemini": {
@@ -255,9 +313,7 @@ async def get_api_usage(
             "total_prompt_tokens": grand_prompt,
             "total_completion_tokens": grand_completion,
             "total_tokens": grand_prompt + grand_completion,
-            "estimated_total_cost_usd": round(
-                estimate_cost(grand_prompt, grand_completion), 4
-            ),
+            "estimated_total_cost_usd": round(grand_cost, 4),
         },
         "tmdb": {
             "estimated_queries": (total_picks or 0) * 2,

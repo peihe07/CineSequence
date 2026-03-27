@@ -11,6 +11,10 @@
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
 }
 
+.legacySection {
+  background: rgba(255, 255, 255, 0.025);
+}
+
 .eyebrow,
 .label,
 .meta,
@@ -107,9 +111,16 @@
 
 .tags,
 .list,
-.composer {
+.composer,
+.itemList {
   display: grid;
   gap: 0.75rem;
+}
+
+.sectionHeader {
+  display: grid;
+  gap: 0.35rem;
+  margin-bottom: 0.65rem;
 }
 
 .tag {
@@ -125,6 +136,64 @@
 .item {
   padding: 0.9rem;
   background: rgba(255, 255, 255, 0.03);
+}
+
+.replyBlock {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.itemList {
+  margin-top: 0.85rem;
+}
+
+.listItemRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.itemContentBlock {
+  display: grid;
+  gap: 0.6rem;
+  width: 100%;
+}
+
+.itemActions {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  flex-wrap: wrap;
+}
+
+.listHeaderActions {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.itemNote {
+  margin: 0;
+  font-size: 0.78rem;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.66);
+}
+
+.itemNoteComposer {
+  display: flex;
+  align-items: stretch;
+  gap: 0.75rem;
+}
+
+.replyItem {
+  padding: 0.8rem;
+  background: rgba(255, 255, 255, 0.025);
 }
 
 .itemTitle,
@@ -155,6 +224,16 @@
   caret-color: var(--archive-input-caret);
 }
 
+.input {
+  min-height: 3rem;
+  padding: 0.9rem;
+  border: none;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--archive-input-text);
+  caret-color: var(--archive-input-caret);
+}
+
+.input::placeholder,
 .textarea::placeholder {
   color: var(--archive-input-placeholder);
 }
@@ -162,6 +241,19 @@
 .errorText {
   margin: 0.75rem 0 0;
   color: var(--error);
+}
+
+.inlineComposer {
+  display: flex;
+  align-items: stretch;
+  gap: 0.75rem;
+  margin-top: 0.9rem;
+}
+
+.legacyComposer {
+  margin-top: 1rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .state {
@@ -177,8 +269,32 @@
 
   .titleRow,
   .actionRow,
-  .itemRow {
+  .itemRow,
+  .listItemRow,
+  .inlineComposer {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .itemActions {
+    width: 100%;
+  }
+
+  .listHeaderActions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .itemNoteComposer {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .itemNoteComposer > * {
+    width: 100%;
+  }
+
+  .inlineComposer > * {
+    width: 100%;
   }
 }

@@ -12,6 +12,8 @@ const TYPE_ICONS: Record<NotificationItem['type'], string> = {
   match_found: '🔍',
   invite_received: '✉️',
   match_accepted: '🎬',
+  theater_assigned: '🎟️',
+  theater_activity: '🍿',
   system: '📢',
 }
 

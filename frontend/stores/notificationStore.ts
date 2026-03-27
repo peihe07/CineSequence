@@ -3,7 +3,7 @@ import { api } from '@/lib/api'
 
 export interface NotificationItem {
   id: string
-  type: 'dna_ready' | 'match_found' | 'invite_received' | 'match_accepted' | 'system'
+  type: 'dna_ready' | 'match_found' | 'invite_received' | 'match_accepted' | 'theater_assigned' | 'theater_activity' | 'system'
   title_zh: string
   title_en: string
   body_zh: string | null

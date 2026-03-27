@@ -1,9 +1,10 @@
-
 import pytest
 import pytest_asyncio
+from sqlalchemy import select
 
 from app.models.dna_profile import DnaProfile
 from app.models.group import Group, group_members
+from app.models.notification import Notification
 from app.models.user import SequencingStatus, User
 from app.services.auth_utils import create_access_token
 
@@ -42,9 +43,7 @@ async def test_member_can_post_group_message(client, auth_user, db_session):
     )
     db_session.add(group)
     await db_session.commit()
-    await db_session.execute(
-        group_members.insert().values(user_id=user.id, group_id=group.id)
-    )
+    await db_session.execute(group_members.insert().values(user_id=user.id, group_id=group.id))
     await db_session.commit()
 
     response = await client.post(
@@ -62,17 +61,19 @@ async def test_member_can_post_group_message(client, auth_user, db_session):
 @pytest.mark.asyncio
 async def test_non_member_cannot_post_group_message(client, auth_user, db_session):
     _, headers = auth_user
-    db_session.add(Group(
-        id="mobius_loop",
-        name="Mobius Loop",
-        subtitle="Mind-benders only",
-        icon="ri-tornado-line",
-        primary_tags=["mindfuck"],
-        is_hidden=False,
-        min_members_to_activate=1,
-        member_count=0,
-        is_active=False,
-    ))
+    db_session.add(
+        Group(
+            id="mobius_loop",
+            name="Mobius Loop",
+            subtitle="Mind-benders only",
+            icon="ri-tornado-line",
+            primary_tags=["mindfuck"],
+            is_hidden=False,
+            min_members_to_activate=1,
+            member_count=0,
+            is_active=False,
+        )
+    )
     await db_session.commit()
 
     response = await client.post(
@@ -109,9 +110,7 @@ async def test_groups_list_includes_recent_messages(client, auth_user, db_sessio
     )
     db_session.add_all([profile, group])
     await db_session.commit()
-    await db_session.execute(
-        group_members.insert().values(user_id=user.id, group_id=group.id)
-    )
+    await db_session.execute(group_members.insert().values(user_id=user.id, group_id=group.id))
     await db_session.commit()
 
     await client.post(
@@ -205,3 +204,863 @@ async def test_user_cannot_delete_others_group_message(client, auth_user, db_ses
         headers=headers,
     )
     assert delete_response.status_code == 403
+
+
+@pytest.mark.asyncio
+async def test_member_can_create_theater_list(client, auth_user, db_session):
+    user, headers = auth_user
+    group = Group(
+        id="mobius_loop",
+        name="Mobius Loop",
+        subtitle="Mind-benders only",
+        icon="ri-tornado-line",
+        primary_tags=["mindfuck", "twist"],
+        is_hidden=False,
+        min_members_to_activate=1,
+        member_count=1,
+        is_active=True,
+    )
+    db_session.add(group)
+    await db_session.commit()
+    await db_session.execute(group_members.insert().values(user_id=user.id, group_id=group.id))
+    await db_session.commit()
+
+    response = await client.post(
+        f"/groups/{group.id}/lists",
+        json={
+            "title": "Late-Night Brain Melt",
+            "description": "Built for spiral conversations after midnight.",
+            "items": [
+                {
+                    "tmdb_id": 11,
+                    "title_en": "Arrival",
+                    "match_tags": ["mindfuck", "twist"],
+                    "note": "Start here.",
+                }
+            ],
+        },
+        headers=headers,
+    )
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["title"] == "Late-Night Brain Melt"
+    assert payload["group_id"] == "mobius_loop"
+    assert payload["creator"]["name"] == "Group User"
+    assert len(payload["items"]) == 1
+    assert payload["items"][0]["title_en"] == "Arrival"
+    assert payload["items"][0]["position"] == 0
+
+
+@pytest.mark.asyncio
+async def test_group_message_schema_rejects_body_over_500_chars(client, auth_user, db_session):
+    user, headers = auth_user
+    group = Group(
+        id="mobius_loop",
+        name="Mobius Loop",
+        subtitle="Mind-benders only",
+        icon="ri-tornado-line",
+        primary_tags=["mindfuck", "twist"],
+        is_hidden=False,
+        min_members_to_activate=1,
+        member_count=1,
+        is_active=True,
+    )
+    db_session.add(group)
+    await db_session.commit()
+    await db_session.execute(group_members.insert().values(user_id=user.id, group_id=group.id))
+    await db_session.commit()
+
+    response = await client.post(
+        f"/groups/{group.id}/messages",
+        json={"body": "x" * 501},
+        headers=headers,
+    )
+
+    assert response.status_code == 422
+
+
+@pytest.mark.asyncio
+async def test_theater_list_schema_rejects_more_than_50_items(client, auth_user, db_session):
+    user, headers = auth_user
+    group = Group(
+        id="mobius_loop",
+        name="Mobius Loop",
+        subtitle="Mind-benders only",
+        icon="ri-tornado-line",
+        primary_tags=["mindfuck", "twist"],
+        is_hidden=False,
+        min_members_to_activate=1,
+        member_count=1,
+        is_active=True,
+    )
+    db_session.add(group)
+    await db_session.commit()
+    await db_session.execute(group_members.insert().values(user_id=user.id, group_id=group.id))
+    await db_session.commit()
+
+    response = await client.post(
+        f"/groups/{group.id}/lists",
+        json={
+            "title": "Too Many Movies",
+            "items": [
+                {
+                    "tmdb_id": index,
+                    "title_en": f"Movie {index}",
+                    "match_tags": [],
+                }
+                for index in range(51)
+            ],
+        },
+        headers=headers,
+    )
+
+    assert response.status_code == 422
+
+
+@pytest.mark.asyncio
+async def test_theater_list_schema_rejects_title_over_120_chars(client, auth_user, db_session):
+    user, headers = auth_user
+    group = Group(
+        id="mobius_loop",
+        name="Mobius Loop",
+        subtitle="Mind-benders only",
+        icon="ri-tornado-line",
+        primary_tags=["mindfuck", "twist"],
+        is_hidden=False,
+        min_members_to_activate=1,
+        member_count=1,
+        is_active=True,
+    )
+    db_session.add(group)
+    await db_session.commit()
+    await db_session.execute(group_members.insert().values(user_id=user.id, group_id=group.id))
+    await db_session.commit()
+
+    response = await client.post(
+        f"/groups/{group.id}/lists",
+        json={
+            "title": "x" * 121,
+            "description": "Built for spiral conversations after midnight.",
+        },
+        headers=headers,
+    )
+
+    assert response.status_code == 422
+
+
+@pytest.mark.asyncio
+async def test_member_can_list_theater_lists(client, auth_user, db_session):
+    user, headers = auth_user
+    group = Group(
+        id="mobius_loop",
+        name="Mobius Loop",
+        subtitle="Mind-benders only",
+        icon="ri-tornado-line",
+        primary_tags=["mindfuck", "twist"],
+        is_hidden=False,
+        min_members_to_activate=1,
+        member_count=1,
+        is_active=True,
+    )
+    db_session.add(group)
+    await db_session.commit()
+    await db_session.execute(group_members.insert().values(user_id=user.id, group_id=group.id))
+    await db_session.commit()
+
+    await client.post(
+        f"/groups/{group.id}/lists",
+        json={
+            "title": "Shared First Watch",
+            "description": "A first pass watchlist for this room.",
+            "items": [
+                {
+                    "tmdb_id": 12,
+                    "title_en": "Decision to Leave",
+                    "match_tags": ["twist"],
+                }
+            ],
+        },
+        headers=headers,
+    )
+
+    response = await client.get(f"/groups/{group.id}/lists", headers=headers)
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert len(payload) == 1
+    assert payload[0]["title"] == "Shared First Watch"
+    assert payload[0]["items"][0]["title_en"] == "Decision to Leave"
+
+
+@pytest.mark.asyncio
+async def test_member_can_update_theater_list_metadata(client, auth_user, db_session):
+    user, headers = auth_user
+    group = Group(
+        id="mobius_loop",
+        name="Mobius Loop",
+        subtitle="Mind-benders only",
+        icon="ri-tornado-line",
+        primary_tags=["mindfuck", "twist"],
+        is_hidden=False,
+        min_members_to_activate=1,
+        member_count=1,
+        is_active=True,
+    )
+    db_session.add(group)
+    await db_session.commit()
+    await db_session.execute(group_members.insert().values(user_id=user.id, group_id=group.id))
+    await db_session.commit()
+
+    create_response = await client.post(
+        f"/groups/{group.id}/lists",
+        json={
+            "title": "Late-Night Brain Melt",
+            "description": "Built for spiral conversations after midnight.",
+            "items": [],
+        },
+        headers=headers,
+    )
+    list_id = create_response.json()["id"]
+
+    response = await client.patch(
+        f"/groups/{group.id}/lists/{list_id}",
+        json={
+            "title": "Midnight Rotation",
+            "description": "For after the room goes quiet.",
+        },
+        headers=headers,
+    )
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["title"] == "Midnight Rotation"
+    assert payload["description"] == "For after the room goes quiet."
+
+
+@pytest.mark.asyncio
+async def test_member_can_delete_theater_list(client, auth_user, db_session):
+    user, headers = auth_user
+    group = Group(
+        id="mobius_loop",
+        name="Mobius Loop",
+        subtitle="Mind-benders only",
+        icon="ri-tornado-line",
+        primary_tags=["mindfuck", "twist"],
+        is_hidden=False,
+        min_members_to_activate=1,
+        member_count=1,
+        is_active=True,
+    )
+    db_session.add(group)
+    await db_session.commit()
+    await db_session.execute(group_members.insert().values(user_id=user.id, group_id=group.id))
+    await db_session.commit()
+
+    create_response = await client.post(
+        f"/groups/{group.id}/lists",
+        json={"title": "Late-Night Brain Melt", "description": "Built for spiral conversations after midnight.", "items": []},
+        headers=headers,
+    )
+    list_id = create_response.json()["id"]
+
+    response = await client.delete(
+        f"/groups/{group.id}/lists/{list_id}",
+        headers=headers,
+    )
+
+    assert response.status_code == 204
+
+    list_response = await client.get(f"/groups/{group.id}/lists", headers=headers)
+    payload = list_response.json()
+    assert payload == []
+
+
+@pytest.mark.asyncio
+async def test_non_member_cannot_create_theater_list(client, auth_user, db_session):
+    _, headers = auth_user
+    group = Group(
+        id="mobius_loop",
+        name="Mobius Loop",
+        subtitle="Mind-benders only",
+        icon="ri-tornado-line",
+        primary_tags=["mindfuck", "twist"],
+        is_hidden=False,
+        min_members_to_activate=1,
+        member_count=0,
+        is_active=False,
+    )
+    db_session.add(group)
+    await db_session.commit()
+
+    response = await client.post(
+        f"/groups/{group.id}/lists",
+        json={
+            "title": "Should Fail",
+            "description": "Not a member.",
+            "items": [],
+        },
+        headers=headers,
+    )
+
+    assert response.status_code == 403
+
+
+@pytest.mark.asyncio
+async def test_member_can_append_theater_list_item(client, auth_user, db_session):
+    user, headers = auth_user
+    group = Group(
+        id="mobius_loop",
+        name="Mobius Loop",
+        subtitle="Mind-benders only",
+        icon="ri-tornado-line",
+        primary_tags=["mindfuck", "twist"],
+        is_hidden=False,
+        min_members_to_activate=1,
+        member_count=1,
+        is_active=True,
+    )
+    db_session.add(group)
+    await db_session.commit()
+    await db_session.execute(group_members.insert().values(user_id=user.id, group_id=group.id))
+    await db_session.commit()
+
+    create_response = await client.post(
+        f"/groups/{group.id}/lists",
+        json={
+            "title": "Late-Night Brain Melt",
+            "description": "Built for spiral conversations after midnight.",
+            "items": [],
+        },
+        headers=headers,
+    )
+    list_id = create_response.json()["id"]
+
+    response = await client.post(
+        f"/groups/{group.id}/lists/{list_id}/items",
+        json={"tmdb_id": 18, "title_en": "The Master", "match_tags": ["slowburn"]},
+        headers=headers,
+    )
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert len(payload["items"]) == 1
+    assert payload["items"][0]["title_en"] == "The Master"
+
+
+@pytest.mark.asyncio
+async def test_member_can_delete_theater_list_item(client, auth_user, db_session):
+    user, headers = auth_user
+    group = Group(
+        id="mobius_loop",
+        name="Mobius Loop",
+        subtitle="Mind-benders only",
+        icon="ri-tornado-line",
+        primary_tags=["mindfuck", "twist"],
+        is_hidden=False,
+        min_members_to_activate=1,
+        member_count=1,
+        is_active=True,
+    )
+    db_session.add(group)
+    await db_session.commit()
+    await db_session.execute(group_members.insert().values(user_id=user.id, group_id=group.id))
+    await db_session.commit()
+
+    create_response = await client.post(
+        f"/groups/{group.id}/lists",
+        json={
+            "title": "Late-Night Brain Melt",
+            "description": "Built for spiral conversations after midnight.",
+            "items": [{"tmdb_id": 11, "title_en": "Arrival", "match_tags": ["mindfuck"]}],
+        },
+        headers=headers,
+    )
+    payload = create_response.json()
+    list_id = payload["id"]
+    item_id = payload["items"][0]["id"]
+
+    response = await client.delete(
+        f"/groups/{group.id}/lists/{list_id}/items/{item_id}",
+        headers=headers,
+    )
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["items"] == []
+
+
+@pytest.mark.asyncio
+async def test_member_cannot_delete_other_members_list_item(client, auth_user, db_session):
+    user, headers = auth_user
+    other_user = User(
+        email="other-item-owner@test.com",
+        name="Other Item Owner",
+        gender="other",
+        region="TW",
+        sequencing_status=SequencingStatus.completed,
+    )
+    group = Group(
+        id="mobius_loop",
+        name="Mobius Loop",
+        subtitle="Mind-benders only",
+        icon="ri-tornado-line",
+        primary_tags=["mindfuck", "twist"],
+        is_hidden=False,
+        min_members_to_activate=1,
+        member_count=2,
+        is_active=True,
+    )
+    db_session.add_all([other_user, group])
+    await db_session.commit()
+    await db_session.refresh(other_user)
+    await db_session.execute(group_members.insert().values(user_id=user.id, group_id=group.id))
+    await db_session.execute(group_members.insert().values(user_id=other_user.id, group_id=group.id))
+    await db_session.commit()
+
+    other_headers = {
+        "Authorization": f"Bearer {create_access_token(other_user.id, other_user.auth_version)}",
+    }
+    create_response = await client.post(
+        f"/groups/{group.id}/lists",
+        json={
+            "title": "Late-Night Brain Melt",
+            "description": "Built for spiral conversations after midnight.",
+            "items": [{"tmdb_id": 11, "title_en": "Arrival", "match_tags": ["mindfuck"]}],
+        },
+        headers=other_headers,
+    )
+    payload = create_response.json()
+    list_id = payload["id"]
+    item_id = payload["items"][0]["id"]
+
+    response = await client.delete(
+        f"/groups/{group.id}/lists/{list_id}/items/{item_id}",
+        headers=headers,
+    )
+
+    assert response.status_code == 403
+
+
+@pytest.mark.asyncio
+async def test_member_can_reorder_theater_list_items(client, auth_user, db_session):
+    user, headers = auth_user
+    group = Group(
+        id="mobius_loop",
+        name="Mobius Loop",
+        subtitle="Mind-benders only",
+        icon="ri-tornado-line",
+        primary_tags=["mindfuck", "twist"],
+        is_hidden=False,
+        min_members_to_activate=1,
+        member_count=1,
+        is_active=True,
+    )
+    db_session.add(group)
+    await db_session.commit()
+    await db_session.execute(group_members.insert().values(user_id=user.id, group_id=group.id))
+    await db_session.commit()
+
+    create_response = await client.post(
+        f"/groups/{group.id}/lists",
+        json={
+            "title": "Late-Night Brain Melt",
+            "description": "Built for spiral conversations after midnight.",
+            "items": [
+                {"tmdb_id": 11, "title_en": "Arrival", "match_tags": ["mindfuck"]},
+                {"tmdb_id": 12, "title_en": "Burning", "match_tags": ["twist"]},
+            ],
+        },
+        headers=headers,
+    )
+    payload = create_response.json()
+    list_id = payload["id"]
+    first_item_id = payload["items"][0]["id"]
+    second_item_id = payload["items"][1]["id"]
+
+    response = await client.patch(
+        f"/groups/{group.id}/lists/{list_id}/items/reorder",
+        json={"item_ids": [second_item_id, first_item_id]},
+        headers=headers,
+    )
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["items"][0]["title_en"] == "Burning"
+    assert payload["items"][0]["position"] == 0
+    assert payload["items"][1]["title_en"] == "Arrival"
+    assert payload["items"][1]["position"] == 1
+
+
+@pytest.mark.asyncio
+async def test_member_can_update_theater_list_item_note(client, auth_user, db_session):
+    user, headers = auth_user
+    group = Group(
+        id="mobius_loop",
+        name="Mobius Loop",
+        subtitle="Mind-benders only",
+        icon="ri-tornado-line",
+        primary_tags=["mindfuck", "twist"],
+        is_hidden=False,
+        min_members_to_activate=1,
+        member_count=1,
+        is_active=True,
+    )
+    db_session.add(group)
+    await db_session.commit()
+    await db_session.execute(group_members.insert().values(user_id=user.id, group_id=group.id))
+    await db_session.commit()
+
+    create_response = await client.post(
+        f"/groups/{group.id}/lists",
+        json={
+            "title": "Late-Night Brain Melt",
+            "description": "Built for spiral conversations after midnight.",
+            "items": [{"tmdb_id": 11, "title_en": "Arrival", "match_tags": ["mindfuck"]}],
+        },
+        headers=headers,
+    )
+    payload = create_response.json()
+    list_id = payload["id"]
+    item_id = payload["items"][0]["id"]
+
+    response = await client.patch(
+        f"/groups/{group.id}/lists/{list_id}/items/{item_id}",
+        json={"note": "Use this as the entry point."},
+        headers=headers,
+    )
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["items"][0]["note"] == "Use this as the entry point."
+
+
+@pytest.mark.asyncio
+async def test_theater_list_visibility_is_group_only(client, auth_user, db_session):
+    user, headers = auth_user
+    group = Group(
+        id="mobius_loop",
+        name="Mobius Loop",
+        subtitle="Mind-benders only",
+        icon="ri-tornado-line",
+        primary_tags=["mindfuck", "twist"],
+        is_hidden=False,
+        min_members_to_activate=1,
+        member_count=1,
+        is_active=True,
+    )
+    db_session.add(group)
+    await db_session.commit()
+    await db_session.execute(group_members.insert().values(user_id=user.id, group_id=group.id))
+    await db_session.commit()
+
+    response = await client.post(
+        f"/groups/{group.id}/lists",
+        json={
+            "title": "Should Fail",
+            "description": "Visibility is not configurable yet.",
+            "visibility": "private",
+            "items": [],
+        },
+        headers=headers,
+    )
+
+    assert response.status_code == 422
+
+
+@pytest.mark.asyncio
+async def test_member_can_reply_to_theater_list(client, auth_user, db_session):
+    user, headers = auth_user
+    group = Group(
+        id="mobius_loop",
+        name="Mobius Loop",
+        subtitle="Mind-benders only",
+        icon="ri-tornado-line",
+        primary_tags=["mindfuck", "twist"],
+        is_hidden=False,
+        min_members_to_activate=1,
+        member_count=1,
+        is_active=True,
+    )
+    db_session.add(group)
+    await db_session.commit()
+    await db_session.execute(group_members.insert().values(user_id=user.id, group_id=group.id))
+    await db_session.commit()
+
+    create_response = await client.post(
+        f"/groups/{group.id}/lists",
+        json={
+            "title": "Late-Night Brain Melt",
+            "description": "Built for spiral conversations after midnight.",
+            "items": [],
+        },
+        headers=headers,
+    )
+    list_id = create_response.json()["id"]
+
+    response = await client.post(
+        f"/groups/{group.id}/lists/{list_id}/replies",
+        json={"body": "Burning should sit next to Arrival."},
+        headers=headers,
+    )
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert len(payload["replies"]) == 1
+    assert payload["replies"][0]["body"] == "Burning should sit next to Arrival."
+    assert payload["replies"][0]["user"]["name"] == "Group User"
+    assert payload["replies"][0]["can_delete"] is True
+
+
+@pytest.mark.asyncio
+async def test_member_can_delete_own_theater_list_reply(client, auth_user, db_session):
+    user, headers = auth_user
+    group = Group(
+        id="mobius_loop",
+        name="Mobius Loop",
+        subtitle="Mind-benders only",
+        icon="ri-tornado-line",
+        primary_tags=["mindfuck", "twist"],
+        is_hidden=False,
+        min_members_to_activate=1,
+        member_count=1,
+        is_active=True,
+    )
+    db_session.add(group)
+    await db_session.commit()
+    await db_session.execute(group_members.insert().values(user_id=user.id, group_id=group.id))
+    await db_session.commit()
+
+    create_response = await client.post(
+        f"/groups/{group.id}/lists",
+        json={
+            "title": "Late-Night Brain Melt",
+            "description": "Built for spiral conversations after midnight.",
+            "items": [],
+        },
+        headers=headers,
+    )
+    payload = create_response.json()
+    list_id = payload["id"]
+
+    reply_response = await client.post(
+        f"/groups/{group.id}/lists/{list_id}/replies",
+        json={"body": "Start with Burning."},
+        headers=headers,
+    )
+    reply_id = reply_response.json()["replies"][0]["id"]
+
+    response = await client.delete(
+        f"/groups/{group.id}/lists/{list_id}/replies/{reply_id}",
+        headers=headers,
+    )
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["replies"] == []
+
+
+@pytest.mark.asyncio
+async def test_auto_assign_creates_theater_assignment_notification(client, auth_user, db_session):
+    user, headers = auth_user
+    profile = DnaProfile(
+        user_id=user.id,
+        archetype_id="time_traveler",
+        tag_vector=[0.8] * 30,
+        genre_vector={},
+        quadrant_scores={},
+        ticket_style="classic",
+        version=1,
+        is_active=True,
+    )
+    group = Group(
+        id="mobius_loop",
+        name="Mobius Loop",
+        subtitle="Mind-benders only",
+        icon="ri-tornado-line",
+        primary_tags=["mindfuck", "twist"],
+        is_hidden=False,
+        min_members_to_activate=1,
+        member_count=0,
+        is_active=False,
+    )
+    db_session.add_all([profile, group])
+    await db_session.commit()
+
+    response = await client.post("/groups/auto-assign", headers=headers)
+
+    assert response.status_code == 200
+    notification_result = await db_session.execute(
+        select(Notification).where(Notification.user_id == user.id)
+    )
+    notifications = list(notification_result.scalars().all())
+    assert len(notifications) == 1
+    assert notifications[0].type.value == "theater_assigned"
+    assert notifications[0].link == "/theaters/detail?id=mobius_loop"
+
+
+@pytest.mark.asyncio
+async def test_auto_assign_preserves_existing_memberships(client, auth_user, db_session):
+    user, headers = auth_user
+    profile = DnaProfile(
+        user_id=user.id,
+        archetype_id="time_traveler",
+        tag_vector=[0.8] * 30,
+        genre_vector={},
+        quadrant_scores={},
+        ticket_style="classic",
+        version=1,
+        is_active=True,
+    )
+    existing_group = Group(
+        id="afterhours",
+        name="Afterhours",
+        subtitle="Nocturnal melancholia",
+        icon="ri-moon-clear-line",
+        primary_tags=["slowburn"],
+        is_hidden=False,
+        min_members_to_activate=1,
+        member_count=1,
+        is_active=True,
+    )
+    matched_group = Group(
+        id="mobius_loop",
+        name="Mobius Loop",
+        subtitle="Mind-benders only",
+        icon="ri-tornado-line",
+        primary_tags=["mindfuck", "twist"],
+        is_hidden=False,
+        min_members_to_activate=1,
+        member_count=0,
+        is_active=False,
+    )
+    db_session.add_all([profile, existing_group, matched_group])
+    await db_session.commit()
+    await db_session.execute(group_members.insert().values(user_id=user.id, group_id=existing_group.id))
+    await db_session.commit()
+
+    response = await client.post("/groups/auto-assign", headers=headers)
+
+    assert response.status_code == 200
+    membership_result = await db_session.execute(
+        select(group_members.c.group_id).where(group_members.c.user_id == user.id)
+    )
+    group_ids = {group_id for (group_id,) in membership_result.all()}
+    assert "afterhours" in group_ids
+    assert "mobius_loop" in group_ids
+
+
+@pytest.mark.asyncio
+async def test_creating_theater_list_notifies_other_group_members(client, auth_user, db_session):
+    user, headers = auth_user
+    other_user = User(
+        email="other-member@test.com",
+        name="Other Member",
+        gender="other",
+        region="TW",
+        sequencing_status=SequencingStatus.completed,
+    )
+    group = Group(
+        id="mobius_loop",
+        name="Mobius Loop",
+        subtitle="Mind-benders only",
+        icon="ri-tornado-line",
+        primary_tags=["mindfuck", "twist"],
+        is_hidden=False,
+        min_members_to_activate=1,
+        member_count=2,
+        is_active=True,
+    )
+    db_session.add_all([other_user, group])
+    await db_session.commit()
+    await db_session.refresh(other_user)
+    await db_session.execute(group_members.insert().values(user_id=user.id, group_id=group.id))
+    await db_session.execute(
+        group_members.insert().values(user_id=other_user.id, group_id=group.id)
+    )
+    await db_session.commit()
+
+    response = await client.post(
+        f"/groups/{group.id}/lists",
+        json={
+            "title": "Late-Night Brain Melt",
+            "description": "Built for spiral conversations after midnight.",
+            "items": [],
+        },
+        headers=headers,
+    )
+
+    assert response.status_code == 200
+    notification_result = await db_session.execute(
+        select(Notification).where(Notification.user_id == other_user.id)
+    )
+    notifications = list(notification_result.scalars().all())
+    assert len(notifications) == 1
+    assert notifications[0].type.value == "theater_activity"
+    assert "Late-Night Brain Melt" in (notifications[0].body_en or "")
+
+
+@pytest.mark.asyncio
+async def test_replying_to_theater_list_notifies_other_group_members(client, auth_user, db_session):
+    user, headers = auth_user
+    other_user = User(
+        email="other-reply@test.com",
+        name="Other Reply",
+        gender="other",
+        region="TW",
+        sequencing_status=SequencingStatus.completed,
+    )
+    group = Group(
+        id="mobius_loop",
+        name="Mobius Loop",
+        subtitle="Mind-benders only",
+        icon="ri-tornado-line",
+        primary_tags=["mindfuck", "twist"],
+        is_hidden=False,
+        min_members_to_activate=1,
+        member_count=2,
+        is_active=True,
+    )
+    db_session.add_all([other_user, group])
+    await db_session.commit()
+    await db_session.refresh(other_user)
+    await db_session.execute(group_members.insert().values(user_id=user.id, group_id=group.id))
+    await db_session.execute(
+        group_members.insert().values(user_id=other_user.id, group_id=group.id)
+    )
+    await db_session.commit()
+
+    create_response = await client.post(
+        f"/groups/{group.id}/lists",
+        json={
+            "title": "Late-Night Brain Melt",
+            "description": "Built for spiral conversations after midnight.",
+            "items": [],
+        },
+        headers=headers,
+    )
+    list_id = create_response.json()["id"]
+
+    notification_result = await db_session.execute(
+        select(Notification).where(Notification.user_id == other_user.id)
+    )
+    initial_notifications = list(notification_result.scalars().all())
+    assert len(initial_notifications) == 1
+
+    response = await client.post(
+        f"/groups/{group.id}/lists/{list_id}/replies",
+        json={"body": "Burning should follow Arrival."},
+        headers=headers,
+    )
+
+    assert response.status_code == 200
+    notification_result = await db_session.execute(
+        select(Notification)
+        .where(Notification.user_id == other_user.id)
+        .order_by(Notification.created_at.asc())
+    )
+    notifications = list(notification_result.scalars().all())
+    assert len(notifications) == 2
+    assert notifications[-1].type.value == "theater_activity"
+    assert "Burning" not in (notifications[-1].body_en or "")
+    assert "Late-Night Brain Melt" in (notifications[-1].body_en or "")

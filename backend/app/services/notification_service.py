@@ -186,3 +186,71 @@ async def notify_match_accepted(
         ref_id=str(match_id),
     )
     logger.info("Notification created: match_accepted for user %s", user_id)
+
+
+async def notify_theater_assigned(
+    db: AsyncSession,
+    user_id: uuid.UUID,
+    *,
+    theater_name: str,
+    theater_id: str,
+) -> None:
+    """Notify user that DNA assigned them into a theater."""
+    await create_notification(
+        db,
+        user_id=user_id,
+        type=NotificationType.theater_assigned,
+        title_zh="你已被分配到新的放映廳",
+        title_en="You were assigned to a new theater",
+        body_zh=f"你的 DNA 已把你導向「{theater_name}」。前往查看這個廳正在累積的片單。",
+        body_en=(
+            f'Your DNA route now includes "{theater_name}". '
+            "Step in and see what this room is curating."
+        ),
+        link=f"/theaters/detail?id={theater_id}",
+        ref_id=f"assigned:{theater_id}",
+    )
+    logger.info(
+        "Notification created: theater_assigned for user %s theater %s", user_id, theater_id
+    )
+
+
+async def notify_theater_activity(
+    db: AsyncSession,
+    user_id: uuid.UUID,
+    *,
+    actor_name: str,
+    theater_id: str,
+    list_id: str,
+    list_title: str,
+    activity_type: str,
+) -> None:
+    """Notify room members about new list activity."""
+    if activity_type == "list_created":
+        title_zh = "你的放映廳出現了新片單"
+        title_en = "A new list appeared in your theater"
+        body_zh = f"{actor_name} 在這個廳建立了「{list_title}」。"
+        body_en = f'{actor_name} started "{list_title}" in this theater.'
+    else:
+        title_zh = "你的放映廳有新的片單回應"
+        title_en = "A theater list got a new reply"
+        body_zh = f"{actor_name} 回應了「{list_title}」。"
+        body_en = f'{actor_name} replied to "{list_title}".'
+
+    await create_notification(
+        db,
+        user_id=user_id,
+        type=NotificationType.theater_activity,
+        title_zh=title_zh,
+        title_en=title_en,
+        body_zh=body_zh,
+        body_en=body_en,
+        link=f"/theaters/detail?id={theater_id}",
+        ref_id=f"{activity_type}:{list_id}:{user_id}",
+    )
+    logger.info(
+        "Notification created: theater_activity for user %s theater %s list %s",
+        user_id,
+        theater_id,
+        list_id,
+    )

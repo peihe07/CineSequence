@@ -48,6 +48,10 @@ function typeIcon(type: NotificationItem['type']): string {
       return '✉️'
     case 'match_accepted':
       return '🎬'
+    case 'theater_assigned':
+      return '🍿'
+    case 'theater_activity':
+      return '📝'
     case 'system':
       return '📢'
   }

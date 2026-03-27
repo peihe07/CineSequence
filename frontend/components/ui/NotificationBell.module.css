@@ -57,6 +57,7 @@
   top: calc(100% + 8px);
   right: 0;
   width: 340px;
+  max-width: min(340px, calc(100vw - 1.5rem));
   max-height: 420px;
   border-radius: var(--radius-card);
   background: rgba(18, 19, 22, 0.96);
@@ -220,7 +221,12 @@
 
 @media (max-width: 640px) {
   .dropdown {
-    width: calc(100vw - 2rem);
-    right: -0.5rem;
+    position: fixed;
+    top: calc(68px + env(safe-area-inset-top) + 0.5rem);
+    left: 0.75rem;
+    right: 0.75rem;
+    width: auto;
+    max-width: none;
+    max-height: min(420px, calc(100vh - 68px - env(safe-area-inset-top) - 1.5rem));
   }
 }

@@ -18,6 +18,8 @@ from app.services.notification_service import (
     notify_invite_received,
     notify_match_accepted,
     notify_match_found,
+    notify_theater_activity,
+    notify_theater_assigned,
 )
 
 
@@ -306,3 +308,32 @@ class TestConvenienceCreators:
         assert len(notifications) == 1
         assert notifications[0].type == NotificationType.match_accepted
         assert f"/ticket?inviteId={match_id}" in notifications[0].link
+
+    async def test_notify_theater_assigned(self, db_session: AsyncSession, user_id):
+        await notify_theater_assigned(
+            db_session,
+            user_id,
+            theater_name="Mobius Loop",
+            theater_id="mobius_loop",
+        )
+        notifications = await get_notifications(db_session, user_id)
+        assert len(notifications) == 1
+        assert notifications[0].type == NotificationType.theater_assigned
+        assert notifications[0].link == "/theaters/detail?id=mobius_loop"
+        assert "Mobius Loop" in notifications[0].body_en
+
+    async def test_notify_theater_activity(self, db_session: AsyncSession, user_id):
+        await notify_theater_activity(
+            db_session,
+            user_id,
+            actor_name="Ari",
+            theater_id="mobius_loop",
+            list_id="l1",
+            list_title="Late-Night Brain Melt",
+            activity_type="list_created",
+        )
+        notifications = await get_notifications(db_session, user_id)
+        assert len(notifications) == 1
+        assert notifications[0].type == NotificationType.theater_activity
+        assert notifications[0].link == "/theaters/detail?id=mobius_loop"
+        assert "Late-Night Brain Melt" in notifications[0].body_en

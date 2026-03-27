@@ -1,8 +1,11 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { api } from '@/lib/api'
 import { useI18n } from '@/lib/i18n'
+import MiniChart from './charts/MiniChart'
+import DonutChart from './charts/DonutChart'
+import StackedBar from './charts/StackedBar'
 import styles from './page.module.css'
 
 interface Stats {
@@ -27,6 +30,11 @@ interface Stats {
     completed_sequencing: number
     has_dna: number
     has_match: number
+  }
+  trends: {
+    users: number | null
+    dna: number | null
+    matches: number | null
   }
 }
 
@@ -61,38 +69,34 @@ interface ApiUsage {
   resend: { invite_emails: number; invite_reminder_emails: number; accepted_emails: number; estimated_total: number }
 }
 
-function StatCard({ value, label }: { value: number | string; label: string }) {
+function StatCard({ value, label, trend }: { value: number | string; label: string; trend?: number | null }) {
   return (
     <div className={styles.statCard}>
       <span className={styles.statValue}>{value}</span>
       <span className={styles.statLabel}>{label}</span>
+      {trend !== undefined && trend !== null && (
+        <span className={`${styles.trend} ${trend > 0 ? styles.trendUp : trend < 0 ? styles.trendDown : ''}`}>
+          {trend > 0 ? <i className="ri-arrow-up-s-line" /> : trend < 0 ? <i className="ri-arrow-down-s-line" /> : '—'}
+          {trend !== 0 ? `${Math.abs(trend)}%` : ''}
+        </span>
+      )}
     </div>
   )
 }
 
-function MiniChart({ data, color = 'accent' }: { data: { date: string; count: number }[]; color?: 'accent' | 'teal' | 'blue' }) {
-  const max = Math.max(...data.map((d) => d.count), 1)
-  return (
-    <div className={styles.chart}>
-      {data.map((d) => (
-        <div
-          key={d.date}
-          className={`${styles.chartBar} ${styles[`chartBar--${color}`]}`}
-          style={{ height: `${(d.count / max) * 100}%` }}
-          title={`${d.date}: ${d.count}`}
-        />
-      ))}
-    </div>
-  )
-}
-
-function FunnelBar({ count, max, label }: { count: number; max: number; label: string }) {
+function FunnelBar({ count, max, label, rate }: { count: number; max: number; label: string; rate?: number }) {
   const pct = max > 0 ? (count / max) * 100 : 0
+  const displayWidth = count === 0 ? 0 : Math.max(pct, 8)
   return (
     <div className={styles.funnelRow}>
       <span className={styles.funnelLabel}>{label}</span>
-      <div className={styles.funnelBar} style={{ width: `${Math.max(pct, 8)}%` }}>
-        <span className={styles.funnelCount}>{count}</span>
+      <div
+        className={styles.funnelBar}
+        style={{ width: `${displayWidth}%`, minWidth: count === 0 ? 0 : undefined }}
+      >
+        <span className={styles.funnelCount}>
+          {count}{rate !== undefined ? ` (${(rate * 100).toFixed(0)}%)` : ''}
+        </span>
       </div>
     </div>
   )
@@ -105,27 +109,47 @@ export default function AdminPage() {
   const [apiUsage, setApiUsage] = useState<ApiUsage | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
+  const [days, setDays] = useState(30)
+  const initialLoadDone = useRef(false)
 
+  // Initial load: all 3 endpoints
   useEffect(() => {
     async function load() {
       try {
         const [s, d, a] = await Promise.all([
           api<Stats>('/admin/stats'),
-          api<DailyStats>('/admin/stats/daily?days=30'),
+          api<DailyStats>(`/admin/stats/daily?days=${days}`),
           api<ApiUsage>('/admin/api-usage'),
         ])
         setStats(s)
         setDaily(d)
         setApiUsage(a)
+        initialLoadDone.current = true
       } catch (e: unknown) {
-        const msg = e instanceof Error ? e.message : t('admin.loadFailed')
+        const msg = e instanceof Error ? e.message : 'Failed to load'
         setError(msg)
       } finally {
         setLoading(false)
       }
     }
     load()
-  }, [t])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  // Re-fetch daily stats on date range change
+  const fetchDaily = useCallback(async (d: number) => {
+    try {
+      const result = await api<DailyStats>(`/admin/stats/daily?days=${d}`)
+      setDaily(result)
+    } catch {
+      // keep existing daily data on error
+    }
+  }, [])
+
+  const handleDaysChange = (d: number) => {
+    setDays(d)
+    if (initialLoadDone.current) fetchDaily(d)
+  }
 
   if (loading) {
     return (
@@ -151,6 +175,12 @@ export default function AdminPage() {
   if (!stats || !daily || !apiUsage) return null
 
   const funnelMax = stats.funnel.registered || 1
+  const { registered, completed_sequencing, has_dna, has_match } = stats.funnel
+  const funnelRates = {
+    toSequencing: registered > 0 ? completed_sequencing / registered : 0,
+    toDna: completed_sequencing > 0 ? has_dna / completed_sequencing : 0,
+    toMatch: has_dna > 0 ? has_match / has_dna : 0,
+  }
 
   return (
     <div className={styles.container}>
@@ -161,9 +191,9 @@ export default function AdminPage() {
         <div className={styles.grid}>
           <StatCard value={stats.users.total} label={t('admin.totalUsers')} />
           <StatCard value={stats.users.today} label={t('admin.today')} />
-          <StatCard value={stats.users.this_week} label={t('admin.thisWeek')} />
-          <StatCard value={stats.dna.total_active} label={t('admin.dnaProfiles')} />
-          <StatCard value={stats.matches.total} label={t('admin.totalMatches')} />
+          <StatCard value={stats.users.this_week} label={t('admin.thisWeek')} trend={stats.trends.users} />
+          <StatCard value={stats.dna.total_active} label={t('admin.dnaProfiles')} trend={stats.trends.dna} />
+          <StatCard value={stats.matches.total} label={t('admin.totalMatches')} trend={stats.trends.matches} />
           <StatCard value={`${(stats.matches.accept_rate * 100).toFixed(0)}%`} label={t('admin.acceptRate')} />
         </div>
 
@@ -171,14 +201,26 @@ export default function AdminPage() {
         <div className={styles.section}>
           <h2 className={styles.sectionTitle}>{t('admin.userFunnel')}</h2>
           <div className={styles.funnel}>
-            <FunnelBar count={stats.funnel.registered} max={funnelMax} label={t('admin.registered')} />
-            <FunnelBar count={stats.funnel.completed_sequencing} max={funnelMax} label={t('admin.completedSequencing')} />
-            <FunnelBar count={stats.funnel.has_dna} max={funnelMax} label={t('admin.hasDna')} />
-            <FunnelBar count={stats.funnel.has_match} max={funnelMax} label={t('admin.hasMatch')} />
+            <FunnelBar count={registered} max={funnelMax} label={t('admin.registered')} />
+            <FunnelBar count={completed_sequencing} max={funnelMax} label={t('admin.completedSequencing')} rate={funnelRates.toSequencing} />
+            <FunnelBar count={has_dna} max={funnelMax} label={t('admin.hasDna')} rate={funnelRates.toDna} />
+            <FunnelBar count={has_match} max={funnelMax} label={t('admin.hasMatch')} rate={funnelRates.toMatch} />
           </div>
         </div>
 
-        {/* Daily charts */}
+        {/* Date range selector + daily charts */}
+        <div className={styles.rangeRow}>
+          {[7, 30, 90].map((d) => (
+            <button
+              key={d}
+              className={`${styles.rangeBtn} ${days === d ? styles.rangeBtnActive : ''}`}
+              onClick={() => handleDaysChange(d)}
+            >
+              {d}{t('admin.daysSuffix')}
+            </button>
+          ))}
+        </div>
+
         <div className={styles.section}>
           <h2 className={styles.sectionTitle}>{t('admin.dailyRegistrations')}</h2>
           {daily.registrations.length > 0 ? (
@@ -201,34 +243,14 @@ export default function AdminPage() {
         {Object.keys(stats.dna.archetype_distribution).length > 0 && (
           <div className={styles.section}>
             <h2 className={styles.sectionTitle}>{t('admin.archetypeDistribution')}</h2>
-            <table className={styles.table}>
-              <thead>
-                <tr><th>{t('admin.archetype')}</th><th>{t('admin.count')}</th></tr>
-              </thead>
-              <tbody>
-                {Object.entries(stats.dna.archetype_distribution)
-                  .sort((a, b) => b[1] - a[1])
-                  .map(([archetype, count]) => (
-                    <tr key={archetype}><td>{archetype}</td><td>{count}</td></tr>
-                  ))}
-              </tbody>
-            </table>
+            <DonutChart data={stats.dna.archetype_distribution} />
           </div>
         )}
 
         {/* Match breakdown */}
         <div className={styles.section}>
           <h2 className={styles.sectionTitle}>{t('admin.matchStatus')}</h2>
-          <table className={styles.table}>
-            <thead>
-              <tr><th>{t('admin.status')}</th><th>{t('admin.count')}</th></tr>
-            </thead>
-            <tbody>
-              {Object.entries(stats.matches.status_breakdown).map(([status, count]) => (
-                <tr key={status}><td>{status}</td><td>{count}</td></tr>
-              ))}
-            </tbody>
-          </table>
+          <StackedBar data={stats.matches.status_breakdown} />
         </div>
 
         {/* API usage */}

@@ -1,0 +1,97 @@
+.wrapper {
+  display: flex;
+  gap: 0.4rem;
+}
+
+/* Y-axis labels */
+.yAxis {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding-bottom: 22px;
+  min-width: 28px;
+}
+
+.yLabel {
+  font-size: 0.6rem;
+  color: rgba(82, 97, 90, 0.6);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+/* Chart area (grid lines + bars + x-axis) */
+.chartArea {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+/* Horizontal grid lines */
+.gridLines {
+  position: absolute;
+  inset: 0;
+  bottom: 22px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  pointer-events: none;
+}
+
+.gridLine {
+  border-bottom: 1px dashed rgba(45, 54, 50, 0.08);
+}
+
+/* Bar container */
+.bars {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 140px;
+  padding-top: 0.5rem;
+}
+
+/* Individual bar */
+.bar {
+  flex: 1;
+  min-height: 2px;
+  transition: height 0.3s ease, opacity 0.15s ease;
+  border-radius: 2px 2px 0 0;
+  cursor: pointer;
+}
+
+.bar--accent {
+  background: var(--accent);
+  opacity: 0.7;
+}
+
+.bar--teal {
+  background: #2dd4bf;
+  opacity: 0.75;
+}
+
+.bar--blue {
+  background: #38bdf8;
+  opacity: 0.75;
+}
+
+.bar:hover {
+  opacity: 1;
+}
+
+/* X-axis */
+.xAxis {
+  position: relative;
+  height: 22px;
+  margin-top: 4px;
+}
+
+.xLabel {
+  position: absolute;
+  transform: translateX(-50%);
+  font-size: 0.6rem;
+  color: rgba(82, 97, 90, 0.6);
+  white-space: nowrap;
+}
