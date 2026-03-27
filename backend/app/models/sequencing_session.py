@@ -10,9 +10,9 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models import Base
 
-BASE_ROUNDS = 20
-EXTENSION_BATCH_SIZE = 5
-MAX_EXTENSION_BATCHES = 3
+BASE_ROUNDS = 30
+EXTENSION_BATCH_SIZE = 3
+MAX_EXTENSION_BATCHES = 2
 
 
 class SessionType(enum.StrEnum):

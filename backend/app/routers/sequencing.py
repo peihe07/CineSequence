@@ -71,11 +71,22 @@ async def _enqueue_dna_build(user_id) -> None:
             )
 
 
-def _get_phase(round_number: int) -> int:
-    """Phase 1: rounds 1-5, Phase 2: 6-12, Phase 3: 13+ (includes extensions)."""
-    if round_number <= 5:
+def _get_phase(round_number: int, base_rounds: int = 30) -> int:
+    """Compute phase from round number and session's base_rounds.
+
+    Phase boundaries scale proportionally with base_rounds:
+    - Phase 1: ~23% of base (rule-based quadrant pairs)
+    - Phase 2: ~37% of base (AI adaptive exploration)
+    - Phase 3: remaining ~40% (soul tags + convergence verification)
+
+    base_rounds=20 → P1: 1-5, P2: 6-12, P3: 13+
+    base_rounds=30 → P1: 1-7, P2: 8-18, P3: 19+
+    """
+    p1_end = max(3, round(base_rounds * 0.23))
+    p2_end = max(p1_end + 2, round(base_rounds * 0.6))
+    if round_number <= p1_end:
         return 1
-    if round_number <= 12:
+    if round_number <= p2_end:
         return 2
     return 3
 
@@ -122,7 +133,7 @@ def _build_progress(session, pick_count: int) -> ProgressResponse:
 
     return ProgressResponse(
         round_number=next_round,
-        phase=_get_phase(min(next_round, session.total_rounds)),
+        phase=_get_phase(min(next_round, session.total_rounds), session.base_rounds),
         total_rounds=session.total_rounds,
         completed=completed,
         seed_movie_tmdb_id=session.seed_movie_tmdb_id,
@@ -245,7 +256,7 @@ async def get_pair(
     session = await get_or_create_session(db, user.id)
     picks = await _get_session_picks(db, session.id)
     round_number = len(picks) + 1
-    phase = _get_phase(round_number)
+    phase = _get_phase(round_number, session.base_rounds)
 
     if round_number > session.total_rounds:
         return PairResponse(
@@ -315,7 +326,7 @@ async def reroll_pair(
     session = await get_or_create_session(db, user.id)
     picks = await _get_session_picks(db, session.id)
     round_number = len(picks) + 1
-    phase = _get_phase(round_number)
+    phase = _get_phase(round_number, session.base_rounds)
 
     if round_number > session.total_rounds:
         raise HTTPException(status_code=400, detail="Sequencing already completed")
@@ -413,7 +424,7 @@ async def submit_pick(
     if round_number > session.total_rounds:
         raise HTTPException(status_code=400, detail="Sequencing already completed")
 
-    phase = _get_phase(round_number)
+    phase = _get_phase(round_number, session.base_rounds)
     pending_payload = _get_pending_pair_payload(session, round_number)
 
     # Determine pair info based on phase
@@ -490,7 +501,7 @@ async def skip_pair(
     if round_number > session.total_rounds:
         raise HTTPException(status_code=400, detail="Sequencing already completed")
 
-    phase = _get_phase(round_number)
+    phase = _get_phase(round_number, session.base_rounds)
     pending_payload = _get_pending_pair_payload(session, round_number)
 
     if pending_payload:
@@ -565,7 +576,7 @@ async def extend_sequencing(
     user: Annotated[User, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
 ):
-    """Unlock 5 more rounds after base sequencing is completed."""
+    """Unlock more rounds after base sequencing is completed."""
     session = await get_or_create_session(db, user.id)
 
     try:

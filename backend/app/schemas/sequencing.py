@@ -45,13 +45,13 @@ class RerollRequest(BaseModel):
 class ProgressResponse(BaseModel):
     round_number: int
     phase: int
-    total_rounds: int = 20
+    total_rounds: int = 30
     completed: bool = False
     seed_movie_tmdb_id: int | None = None
     # Extension fields
     can_extend: bool = False
     extension_batches: int = 0
-    max_extension_batches: int = 3
+    max_extension_batches: int = 2
     session_version: int = 1
     is_extending: bool = False
 

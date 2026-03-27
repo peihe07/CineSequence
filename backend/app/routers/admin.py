@@ -209,10 +209,10 @@ async def get_api_usage(
     from app.models.pick import Pick
     total_picks = await db.scalar(select(func.count(Pick.id)))
 
-    # Rough AI pair count: phase 2-3 is rounds 6-20 = 15 rounds per session
+    # Rough AI pair count: phase 2-3 is rounds 8-30 = 23 rounds per session
     from app.models.sequencing_session import SequencingSession
     total_sessions = await db.scalar(select(func.count(SequencingSession.id)))
-    ai_pair_calls = total_sessions * 15 if total_sessions else 0
+    ai_pair_calls = total_sessions * 23 if total_sessions else 0
 
     # Token usage from ai_token_logs
     token_stats = await db.execute(

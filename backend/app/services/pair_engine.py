@@ -40,7 +40,7 @@ SUPPLEMENTARY_AXIS = {
 # The 3 required quadrant axes — each session must include at least 1 pair per axis
 REQUIRED_AXES = ["mainstream_vs_independent", "rational_vs_emotional", "light_vs_dark"]
 
-PHASE1_COUNT = 5
+PHASE1_COUNT = 7
 
 
 def _get_pair_by_id(pair_id: str) -> dict | None:
@@ -92,9 +92,10 @@ def get_phase1_pairs(
     seed_movie_genres: list[str] | None = None,
     session_seed: str | None = None,
 ) -> list[dict]:
-    """Return 5 randomly selected pairs for Phase 1.
+    """Return PHASE1_COUNT randomly selected pairs for Phase 1.
 
-    Guarantees at least 1 pair per required quadrant axis.
+    Guarantees at least 1 pair per required quadrant axis, then fills
+    remaining slots prioritizing uncovered dimensions (supplementary axes).
     Uses session_seed for deterministic selection across calls.
     Seed movie genres influence the weighting of pair selection.
     """
@@ -184,7 +185,7 @@ def get_pair_for_round(
     seed_movie_genres: list[str] | None = None,
     session_seed: str | None = None,
 ) -> dict:
-    """Get the specific pair for a given round (1-5)."""
+    """Get the specific pair for a given Phase 1 round."""
     pairs = get_phase1_pairs(seed_movie_genres, session_seed)
     index = round_number - 1
     if 0 <= index < len(pairs):
@@ -200,7 +201,7 @@ def get_reroll_pair_for_round(
     reserved_tmdb_ids: set[int] | None = None,
 ) -> dict | None:
     """Return an alternate Phase 1 pair for the same round without consuming it."""
-    if not 1 <= round_number <= 5:
+    if not 1 <= round_number <= PHASE1_COUNT:
         raise ValueError(f"Invalid Phase 1 round number: {round_number}")
 
     used_pair_ids = used_pair_ids or set()
@@ -228,15 +229,46 @@ def get_reroll_pair_for_round(
     return None
 
 
+# Tag → quadrant axis mapping for Phase 2-3 implicit quadrant signals.
+# When a picked movie has these tags, it nudges the corresponding axis.
+# Format: {tag: (axis, direction)} where direction is +1 (toward second end)
+# or -1 (toward first end).
+TAG_TO_QUADRANT: dict[str, tuple[str, float]] = {
+    # mainstream ↔ independent
+    "cult": ("mainstream_independent", +0.3),
+    "experimental": ("mainstream_independent", +0.3),
+    "absurdist": ("mainstream_independent", +0.3),
+    # rational ↔ emotional
+    "mindfuck": ("rational_emotional", -0.3),
+    "philosophical": ("rational_emotional", -0.3),
+    "tearjerker": ("rational_emotional", +0.3),
+    "romanticCore": ("rational_emotional", +0.3),
+    # light ↔ dark
+    "darkTone": ("light_dark", +0.3),
+    "uplifting": ("light_dark", -0.3),
+    # fast ↔ slow
+    "slowburn": ("fast_slow", +0.3),
+    # visual ↔ dialogue
+    "visualFeast": ("visual_dialogue", -0.3),
+    "dialogue": ("visual_dialogue", +0.3),
+    # realism ↔ fantasy
+    "trueStory": ("realism_fantasy", -0.3),
+    "dystopia": ("realism_fantasy", +0.3),
+    "timeTravel": ("realism_fantasy", +0.3),
+    # cynical ↔ sincere
+    "satirical": ("cynical_sincere", -0.3),
+    "nostalgic": ("cynical_sincere", +0.3),
+}
+
+
 def compute_quadrant_from_picks(picks: list[dict]) -> dict:
-    """Compute quadrant scores from Phase 1 picks.
+    """Compute quadrant scores from all picks across all phases.
 
-    Each pick shifts the score on the relevant axis.
-    Choosing movie_a shifts toward one end, movie_b toward the other.
+    Phase 1: rule-based pairs with known dimension → ±0.5 shift per pick.
+    Phase 2-3: AI pairs contribute via tag-to-axis mapping with ±0.3 shift,
+    derived from the chosen movie's tags in the movie pool.
+
     Scale: 1-5 where 3 is neutral.
-
-    Includes both core axes (3) and supplementary axes (up to 9)
-    from auxiliary dimensions, giving the AI richer taste signals.
     """
     scores = {
         "mainstream_independent": 3.0,
@@ -245,32 +277,42 @@ def compute_quadrant_from_picks(picks: list[dict]) -> dict:
     }
 
     for pick in picks:
-        if pick.get("phase") != 1:
-            continue
-
-        pair_id = pick.get("pair_id")
-        pair = _get_pair_by_id(pair_id)
-        if not pair:
-            continue
-
-        dimension = pair.get("dimension", "")
-
-        # Check core axes first, then supplementary
-        axis = DIMENSION_TO_AXIS.get(dimension) or SUPPLEMENTARY_AXIS.get(dimension)
-        if not axis:
-            continue
-
         chosen = pick.get("chosen_tmdb_id")
         if chosen is None:
             continue
 
-        # Initialize supplementary axis on first encounter
-        if axis not in scores:
-            scores[axis] = 3.0
+        phase = pick.get("phase")
 
-        # movie_a leans toward first side, movie_b toward second side
-        movie_a_id = pair["movie_a"]["tmdb_id"]
-        shift = -0.5 if chosen == movie_a_id else 0.5
-        scores[axis] = max(1.0, min(5.0, scores[axis] + shift))
+        if phase == 1:
+            # Phase 1: rule-based pair dimension shift
+            pair_id = pick.get("pair_id")
+            pair = _get_pair_by_id(pair_id)
+            if not pair:
+                continue
+
+            dimension = pair.get("dimension", "")
+            axis = DIMENSION_TO_AXIS.get(dimension) or SUPPLEMENTARY_AXIS.get(dimension)
+            if not axis:
+                continue
+
+            if axis not in scores:
+                scores[axis] = 3.0
+
+            movie_a_id = pair["movie_a"]["tmdb_id"]
+            shift = -0.5 if chosen == movie_a_id else 0.5
+            scores[axis] = max(1.0, min(5.0, scores[axis] + shift))
+
+        else:
+            # Phase 2-3: infer quadrant shifts from chosen movie's tags
+            from app.services.dna_builder import _POOL_TAGS
+
+            chosen_tags = _POOL_TAGS.get(chosen, [])
+            for tag in chosen_tags:
+                if tag not in TAG_TO_QUADRANT:
+                    continue
+                axis, direction = TAG_TO_QUADRANT[tag]
+                if axis not in scores:
+                    scores[axis] = 3.0
+                scores[axis] = max(1.0, min(5.0, scores[axis] + direction))
 
     return scores
