@@ -1,6 +1,7 @@
 """Admin dashboard API — stats and metrics for project maintainers."""
+
 from datetime import UTC, datetime, timedelta
-from typing import Annotated, Any
+from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
