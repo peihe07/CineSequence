@@ -1,7 +1,7 @@
 """Add metadata fields to theater list items.
 
 Revision ID: add_theater_list_item_metadata
-Revises: lower_group_activation_thresholds
+Revises: lower_group_activation
 Create Date: 2026-03-27
 """
 
@@ -12,7 +12,7 @@ from alembic import op
 from sqlalchemy.dialects import postgresql
 
 revision: str = "add_theater_list_item_metadata"
-down_revision: str | None = "lower_group_activation_thresholds"
+down_revision: str | None = "lower_group_activation"
 branch_labels: str | Sequence[str] | None = None
 depends_on: str | Sequence[str] | None = None
 

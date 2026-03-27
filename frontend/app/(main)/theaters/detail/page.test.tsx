@@ -195,8 +195,26 @@ describe('TheaterDetailPage', () => {
           title: 'Midnight Rotation',
           description: 'For after the room goes quiet.',
           items: [
-            { tmdb_id: 0, title_en: 'Arrival', match_tags: [], note: 'Seeded from quick-create flow.' },
-            { tmdb_id: 0, title_en: 'Burning', match_tags: [], note: null },
+            {
+              tmdb_id: 0,
+              title_en: 'Arrival',
+              title_zh: null,
+              poster_url: null,
+              genres: [],
+              runtime_minutes: null,
+              match_tags: [],
+              note: 'Seeded from quick-create flow.',
+            },
+            {
+              tmdb_id: 0,
+              title_en: 'Burning',
+              title_zh: null,
+              poster_url: null,
+              genres: [],
+              runtime_minutes: null,
+              match_tags: [],
+              note: null,
+            },
           ],
         }),
       })
@@ -413,7 +431,12 @@ describe('TheaterDetailPage', () => {
         body: JSON.stringify({
           tmdb_id: 0,
           title_en: 'Burning',
+          title_zh: null,
+          poster_url: null,
+          genres: [],
+          runtime_minutes: null,
           match_tags: [],
+          note: null,
         }),
       })
     })

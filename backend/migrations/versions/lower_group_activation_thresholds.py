@@ -1,6 +1,6 @@
 """Lower group activation thresholds for early-stage theaters.
 
-Revision ID: lower_group_activation_thresholds
+Revision ID: lower_group_activation
 Revises: add_theater_list_replies
 Create Date: 2026-03-27
 """
@@ -9,7 +9,7 @@ from collections.abc import Sequence
 
 from alembic import op
 
-revision: str = "lower_group_activation_thresholds"
+revision: str = "lower_group_activation"
 down_revision: str | None = "add_theater_list_replies"
 branch_labels: str | Sequence[str] | None = None
 depends_on: str | Sequence[str] | None = None
