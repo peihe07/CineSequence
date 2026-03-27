@@ -1,5 +1,6 @@
 """Admin dashboard API — stats and metrics for project maintainers."""
 
+import logging
 from datetime import UTC, datetime, timedelta
 from typing import Annotated
 
@@ -16,6 +17,8 @@ from app.models.notification import NotificationType
 from app.models.user import User
 from app.services.ai_token_tracker import estimate_cost
 from app.services.notification_service import create_notification
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
@@ -283,12 +286,13 @@ class AnnouncementRequest(BaseModel):
     subject_zh: str
     subject_en: str
     sections: list[AnnouncementSection]
-    closing_zh: str = "如有任何問題或回饋，歡迎直接回覆此信。"
-    closing_en: str = "If you have any questions or feedback, feel free to reply to this email."
+    closing_zh: str = "如有任何問題或回饋，歡迎來信至 y450376@gmail.com"
+    closing_en: str = "If you have any questions or feedback, please email y450376@gmail.com"
     notification_title_zh: str = "系統更新"
     notification_title_en: str = "System Update"
     notification_body_zh: str | None = None
     notification_body_en: str | None = None
+    skip_notification: bool = False
     dry_run: bool = False
 
 
@@ -317,38 +321,57 @@ async def send_announcement(
             "subject": body.subject_zh,
         }
 
-    # Create in-app notification for all users
-    result = await db.execute(select(User.id))
-    user_ids = [row[0] for row in result.all()]
+    # Create in-app notification for all users (skip if already sent)
     notification_count = 0
-    for user_id in user_ids:
-        await create_notification(
-            db,
-            user_id=user_id,
-            type=NotificationType.system,
-            title_zh=body.notification_title_zh,
-            title_en=body.notification_title_en,
-            body_zh=body.notification_body_zh or body.subject_zh,
-            body_en=body.notification_body_en or body.subject_en,
-            link="/sequencing",
-        )
-        notification_count += 1
+    if not body.skip_notification:
+        result = await db.execute(select(User.id))
+        user_ids = [row[0] for row in result.all()]
+        for user_id in user_ids:
+            await create_notification(
+                db,
+                user_id=user_id,
+                type=NotificationType.system,
+                title_zh=body.notification_title_zh,
+                title_en=body.notification_title_en,
+                body_zh=body.notification_body_zh or body.subject_zh,
+                body_en=body.notification_body_en or body.subject_en,
+                link="/sequencing",
+            )
+            notification_count += 1
 
-    # Enqueue email task via Celery
-    from app.tasks.email_tasks import send_announcement_task
+    # 直接發送 email（不經 Celery，適用於無 worker 的部署環境）
+    from app.services.email_service import send_announcement_email
 
     sections_data = [s.model_dump() for s in body.sections]
-    task = send_announcement_task.delay(
-        subject_zh=body.subject_zh,
-        subject_en=body.subject_en,
-        body_sections=sections_data,
-        closing_zh=body.closing_zh,
-        closing_en=body.closing_en,
+    email_result = await db.execute(
+        select(User.email).where(
+            User.email_notifications_enabled.is_(True),
+            User.email.isnot(None),
+        )
     )
+    emails = [row[0] for row in email_result.all()]
+
+    sent = 0
+    failed = 0
+    for email in emails:
+        try:
+            await send_announcement_email(
+                to_email=email,
+                subject_zh=body.subject_zh,
+                subject_en=body.subject_en,
+                body_sections=sections_data,
+                closing_zh=body.closing_zh,
+                closing_en=body.closing_en,
+            )
+            sent += 1
+        except Exception:
+            logger.exception("Failed to send announcement to %s", email)
+            failed += 1
 
     return {
-        "status": "queued",
-        "task_id": task.id,
-        "email_recipient_count": recipient_count,
+        "status": "sent",
+        "email_sent": sent,
+        "email_failed": failed,
+        "email_recipient_count": len(emails),
         "notifications_created": notification_count,
     }
