@@ -139,6 +139,14 @@ For cookie auth in production:
 
 If your frontend and API are on different sites, do not rely on the default cookie policy.
 
+For the optional footer support button, set:
+
+- `NEXT_PUBLIC_SUPPORT_URL=https://payment.ecpay.com.tw/<your-link>`
+
+The footer also falls back to `NEXT_PUBLIC_BUYMEACOFFEE_URL` for older deployments,
+but `NEXT_PUBLIC_SUPPORT_URL` is now the preferred setting for any support platform,
+including ECPay.
+
 See `docs/production-deployment.md` for the current production deployment guide and
 `docs/deployment-checklist.md` for the short verification checklist.
 

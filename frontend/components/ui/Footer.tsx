@@ -9,6 +9,9 @@ type FooterModalKind = 'privacy' | 'terms' | null
 export default function Footer() {
   const { t } = useI18n()
   const [openModal, setOpenModal] = useState<FooterModalKind>(null)
+  const supportUrl =
+    process.env.NEXT_PUBLIC_SUPPORT_URL?.trim() ||
+    process.env.NEXT_PUBLIC_BUYMEACOFFEE_URL?.trim()
 
   useEffect(() => {
     if (!openModal) return
@@ -46,6 +49,19 @@ export default function Footer() {
               <i className="ri-mail-line" />
               <span>y450376@gmail.com</span>
             </a>
+
+            {supportUrl ? (
+              <a
+                href={supportUrl}
+                className={styles.footerSupport}
+                target="_blank"
+                rel="noreferrer noopener external"
+                aria-label={t('footer.supportAria')}
+              >
+                <i className="ri-cup-line" />
+                <span>{t('footer.support')}</span>
+              </a>
+            ) : null}
 
             <nav className={styles.footerNav} aria-label={t('footer.nav')}>
               <button type="button" className={styles.footerLink} onClick={() => setOpenModal('privacy')}>

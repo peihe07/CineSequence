@@ -270,6 +270,38 @@ class TestInviteRespondPermissions:
         assert response.status_code == 200
         data = response.json()
         assert data[0]["ticket_image_url"] == "https://assets.cinesequence.xyz/tickets/legacy.png"
+
+    async def test_matches_response_lazily_generates_missing_personal_ticket(
+        self, client: AsyncClient, db_session: AsyncSession
+    ):
+        inviter = await create_user_with_dna(
+            db_session, email="inviter@test.com", name="Inviter",
+            gender=Gender.female, birth_year=1994
+        )
+        recipient = await create_user_with_dna(
+            db_session, email="recipient@test.com", name="Recipient",
+            gender=Gender.male, birth_year=1992
+        )
+        match = await create_match(
+            db_session, user_a=inviter, user_b=recipient,
+            status=MatchStatus.accepted,
+        )
+
+        recipient.dna_profile.personal_ticket_url = None
+        await db_session.commit()
+
+        with patch(
+            "app.routers.profile._generate_personal_ticket_url",
+            new=AsyncMock(return_value="https://ticket.test/generated.png"),
+        ):
+            response = await client.get(f"/matches/{match.id}", headers=auth_headers(inviter))
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["ticket_image_url"] == "https://ticket.test/generated.png"
+
+        await db_session.refresh(recipient.dna_profile)
+        assert recipient.dna_profile.personal_ticket_url == "https://ticket.test/generated.png"
         assert data[0]["partner_email"] == "recipient@test.com"
 
     async def test_invite_sets_reminder_tracking_fields(

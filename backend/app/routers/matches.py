@@ -1,5 +1,6 @@
 """Matches router: find matches and manage invites."""
 
+import logging
 import uuid
 from typing import Annotated
 
@@ -27,6 +28,7 @@ from app.services.notification_service import (
 from app.services.r2_storage import normalize_public_object_url
 
 router = APIRouter()
+logger = logging.getLogger(__name__)
 
 
 class MatchOut(BaseModel):
@@ -58,19 +60,50 @@ class RespondRequest(BaseModel):
     accept: bool
 
 
-def _match_to_out(match, user_id: uuid.UUID) -> MatchOut:
+async def _resolve_partner_ticket(db: AsyncSession, match, partner: User) -> str | None:
+    """Return the best available ticket URL for an accepted match.
+
+    Older profiles may be missing a personal ticket because async generation failed
+    after DNA creation. Repair that lazily when the match is viewed so accepted
+    matches do not stay stuck in a perpetual "generating" state.
+    """
+    partner_ticket = normalize_public_object_url(match.ticket_image_url)
+    if match.status != MatchStatus.accepted:
+        return partner_ticket
+
+    partner_profile = partner.dna_profile
+    if not partner_profile:
+        return partner_ticket
+
+    if partner_profile.personal_ticket_url:
+        return normalize_public_object_url(partner_profile.personal_ticket_url)
+
+    try:
+        from app.routers.profile import _generate_personal_ticket_url
+
+        partner_profile.personal_ticket_url = await _generate_personal_ticket_url(
+            db,
+            partner,
+            partner_profile,
+        )
+        await db.commit()
+        return normalize_public_object_url(partner_profile.personal_ticket_url)
+    except Exception:
+        logger.exception(
+            "Failed to lazily generate personal ticket for accepted match %s and user %s",
+            match.id,
+            partner.id,
+        )
+        return partner_ticket
+
+
+async def _match_to_out(db: AsyncSession, match, user_id: uuid.UUID) -> MatchOut:
     """Convert Match model to MatchOut, resolving which user is the partner."""
     is_user_a = match.user_a_id == user_id
     partner = match.user_b if is_user_a else match.user_a
     is_recipient = match.user_b_id == user_id
 
-    # Prefer the partner's personal ticket after acceptance.
-    # Keep legacy match tickets as the fallback.
-    partner_ticket = normalize_public_object_url(match.ticket_image_url)
-    if match.status == MatchStatus.accepted:
-        partner_profile = partner.dna_profile
-        if partner_profile and partner_profile.personal_ticket_url:
-            partner_ticket = normalize_public_object_url(partner_profile.personal_ticket_url)
+    partner_ticket = await _resolve_partner_ticket(db, match, partner)
 
     return MatchOut(
         id=match.id,
@@ -98,7 +131,7 @@ async def list_matches(
 ):
     """List all matches for the current user."""
     matches = await get_user_matches(db, user.id)
-    return [_match_to_out(m, user.id) for m in matches]
+    return [await _match_to_out(db, m, user.id) for m in matches]
 
 
 @router.get("/{match_id}")
@@ -111,7 +144,7 @@ async def get_match(
     match = await get_match_by_id(db, match_id, user.id)
     if not match:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Match not found")
-    return _match_to_out(match, user.id)
+    return await _match_to_out(db, match, user.id)
 
 
 @router.post("/discover")
@@ -140,7 +173,7 @@ async def discover_matches(
             context=f"match_found user={user.id} match={m.id}",
         )
 
-    return [_match_to_out(m, user.id) for m in new_matches]
+    return [await _match_to_out(db, m, user.id) for m in new_matches]
 
 
 @router.post("/invite")
@@ -168,7 +201,7 @@ async def invite_match(
         context=f"invite_received recipient={recipient.id} match={match.id}",
     )
 
-    return _match_to_out(match, user.id)
+    return await _match_to_out(db, match, user.id)
 
 
 @router.post("/respond")
@@ -197,4 +230,4 @@ async def respond_match(
             context=f"match_accepted inviter={inviter.id} match={match.id}",
         )
 
-    return _match_to_out(match, user.id)
+    return await _match_to_out(db, match, user.id)
