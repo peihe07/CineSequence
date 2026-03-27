@@ -8,6 +8,7 @@ from app.services.ai_pair_engine import (
     _TASTE_TAGS,
     _VALID_TAGS,
     _build_user_context,
+    _clear_ai_pair_cache,
     _collect_seen_ids,
     _pool_fallback,
     _select_candidates,
@@ -41,6 +42,13 @@ class TestCollectSeenIds:
         picks = [{"movie_a_tmdb_id": 100}]
         seen = _collect_seen_ids(picks)
         assert 100 in seen
+
+
+@pytest.fixture(autouse=True)
+def clear_ai_pair_cache():
+    _clear_ai_pair_cache()
+    yield
+    _clear_ai_pair_cache()
 
 
 class TestSelectCandidates:
@@ -252,6 +260,33 @@ class TestGetAiPairDuplicateRejection:
 
         assert result is not None
         assert result["test_dimension"] == ""
+
+    @pytest.mark.asyncio
+    async def test_reuses_cached_pair_for_identical_inputs(self):
+        call_count = 0
+
+        async def mock_gemini(_user_context, _round_number):
+            nonlocal call_count
+            call_count += 1
+            return {
+                "movie_a": {"tmdb_id": 680, "reason": "test"},
+                "movie_b": {"tmdb_id": 807, "reason": "test"},
+                "test_dimension": "twist",
+            }
+
+        mock_movie = {"id": 1, "title": "Test", "overview": "", "poster_path": ""}
+        with (
+            patch("app.services.ai_pair_engine._call_gemini", side_effect=mock_gemini),
+            patch(
+                "app.services.ai_pair_engine.get_movie",
+                new_callable=AsyncMock, return_value=mock_movie,
+            ),
+        ):
+            first = await get_ai_pair(phase=2, round_number=6, picks=[], quadrant_scores={})
+            second = await get_ai_pair(phase=2, round_number=6, picks=[], quadrant_scores={})
+
+        assert call_count == 1
+        assert first == second
 
 
 class TestValidTags:

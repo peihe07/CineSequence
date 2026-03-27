@@ -2,6 +2,9 @@
 
 import json
 import logging
+import time
+from copy import deepcopy
+from hashlib import sha256
 from pathlib import Path
 
 from google import genai
@@ -13,6 +16,8 @@ logger = logging.getLogger(__name__)
 
 PROMPT_FILE = Path(__file__).resolve().parent.parent / "data" / "prompts" / "personality.txt"
 SYSTEM_PROMPT = PROMPT_FILE.read_text(encoding="utf-8")
+_PERSONALITY_CACHE_TTL_SECONDS = 3600
+_PERSONALITY_CACHE: dict[str, tuple[float, dict]] = {}
 
 
 def _build_context(
@@ -50,6 +55,34 @@ def _build_context(
     }, ensure_ascii=False)
 
 
+def _make_personality_cache_key(context: str) -> str:
+    return sha256(context.encode("utf-8")).hexdigest()
+
+
+def _get_cached_personality(cache_key: str) -> dict | None:
+    cached = _PERSONALITY_CACHE.get(cache_key)
+    if cached is None:
+        return None
+
+    expires_at, result = cached
+    if expires_at <= time.monotonic():
+        _PERSONALITY_CACHE.pop(cache_key, None)
+        return None
+
+    return deepcopy(result)
+
+
+def _store_cached_personality(cache_key: str, result: dict) -> None:
+    _PERSONALITY_CACHE[cache_key] = (
+        time.monotonic() + _PERSONALITY_CACHE_TTL_SECONDS,
+        deepcopy(result),
+    )
+
+
+def _clear_personality_cache() -> None:
+    _PERSONALITY_CACHE.clear()
+
+
 async def generate_personality(
     picks: list[dict],
     tag_labels: dict[str, float],
@@ -67,6 +100,11 @@ async def generate_personality(
         picks, tag_labels, excluded_tags,
         genre_vector, quadrant_scores, archetype_id,
     )
+    cache_key = _make_personality_cache_key(context)
+    cached = _get_cached_personality(cache_key)
+    if cached is not None:
+        logger.info("Using cached Gemini personality result")
+        return cached
 
     max_retries = 2
     client = genai.Client(api_key=settings.gemini_api_key)
@@ -123,11 +161,13 @@ async def generate_personality(
                 return None
             continue
 
-        return {
+        final_result = {
             "personality_reading": result.get("personality_reading", ""),
             "hidden_traits": result.get("hidden_traits", []),
             "conversation_style": result.get("conversation_style", ""),
             "ideal_movie_date": result.get("ideal_movie_date", ""),
         }
+        _store_cached_personality(cache_key, final_result)
+        return final_result
 
     return None

@@ -7,6 +7,9 @@ with hard duplicate prevention and retry logic.
 import json
 import logging
 import random
+import time
+from copy import deepcopy
+from hashlib import sha256
 from pathlib import Path
 
 from google import genai
@@ -37,6 +40,50 @@ _CANDIDATE_LIMIT = 40
 
 _MIN_NON_ENGLISH = 8  # Minimum non-US/UK candidates
 _MIN_TAG_COVERAGE = 15  # Minimum distinct tags across candidates
+_PAIR_CACHE_TTL_SECONDS = 300
+_AI_PAIR_CACHE: dict[str, tuple[float, dict]] = {}
+
+
+def _make_ai_pair_cache_key(
+    phase: int,
+    round_number: int,
+    picks: list[dict],
+    quadrant_scores: dict,
+    extra_excluded_tmdb_ids: list[int] | None = None,
+) -> str:
+    payload = {
+        "phase": phase,
+        "round_number": round_number,
+        "picks": picks,
+        "quadrant_scores": quadrant_scores,
+        "extra_excluded_tmdb_ids": sorted(extra_excluded_tmdb_ids or []),
+    }
+    serialized = json.dumps(payload, ensure_ascii=False, sort_keys=True)
+    return sha256(serialized.encode("utf-8")).hexdigest()
+
+
+def _get_cached_ai_pair(cache_key: str) -> dict | None:
+    cached = _AI_PAIR_CACHE.get(cache_key)
+    if cached is None:
+        return None
+
+    expires_at, result = cached
+    if expires_at <= time.monotonic():
+        _AI_PAIR_CACHE.pop(cache_key, None)
+        return None
+
+    return deepcopy(result)
+
+
+def _store_cached_ai_pair(cache_key: str, result: dict) -> None:
+    _AI_PAIR_CACHE[cache_key] = (
+        time.monotonic() + _PAIR_CACHE_TTL_SECONDS,
+        deepcopy(result),
+    )
+
+
+def _clear_ai_pair_cache() -> None:
+    _AI_PAIR_CACHE.clear()
 
 
 def _select_candidates(
@@ -332,6 +379,18 @@ async def get_ai_pair(
     Validates returned TMDB IDs against seen history and retries up to
     MAX_RETRIES times if duplicates are detected.
     """
+    cache_key = _make_ai_pair_cache_key(
+        phase,
+        round_number,
+        picks,
+        quadrant_scores,
+        extra_excluded_tmdb_ids,
+    )
+    cached = _get_cached_ai_pair(cache_key)
+    if cached is not None:
+        logger.info("Using cached AI pair for round %s", round_number)
+        return cached
+
     seen_ids = _collect_seen_ids(picks)
     if extra_excluded_tmdb_ids:
         seen_ids.update(extra_excluded_tmdb_ids)
@@ -418,13 +477,15 @@ async def get_ai_pair(
             logger.warning("Gemini returned invalid test_dimension '%s', discarding", test_dim)
             test_dim = ""
 
-        return {
+        final_result = {
             "movie_a_tmdb_id": movie_a_id,
             "movie_b_tmdb_id": movie_b_id,
             "movie_a": movie_a,
             "movie_b": movie_b,
             "test_dimension": test_dim,
         }
+        _store_cached_ai_pair(cache_key, final_result)
+        return final_result
 
     # A4: Rule-based fallback when all AI retries fail
     logger.warning(
@@ -433,6 +494,7 @@ async def get_ai_pair(
     )
     fallback = await _pool_fallback(tag_freq, seen_ids | set(retry_excluded), phase)
     if fallback:
+        _store_cached_ai_pair(cache_key, fallback)
         return fallback
 
     logger.error("Pool fallback also failed for round %s", round_number)
