@@ -78,6 +78,7 @@ jobs:
           sudo -u postgres psql -c "CREATE USER dev WITH PASSWORD 'dev';" || true
           sudo -u postgres psql -tc "SELECT 1 FROM pg_database WHERE datname = 'cinesequence'" | grep -q 1 || \
             sudo -u postgres psql -c "CREATE DATABASE cinesequence OWNER dev;"
+          sudo -u postgres psql -d cinesequence -c "CREATE EXTENSION IF NOT EXISTS vector;"
           pg_isready -h localhost -p 5432 -U postgres
 
       - name: Start Redis
