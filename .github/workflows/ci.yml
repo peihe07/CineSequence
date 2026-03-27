@@ -46,19 +46,6 @@ jobs:
       run:
         working-directory: backend
     services:
-      postgres:
-        image: pgvector/pgvector:pg16
-        env:
-          POSTGRES_DB: cinesequence
-          POSTGRES_USER: dev
-          POSTGRES_PASSWORD: dev
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd "pg_isready -U dev -d cinesequence"
-          --health-interval 5s
-          --health-timeout 5s
-          --health-retries 10
       redis:
         image: redis:7-alpine
         ports:
@@ -87,6 +74,22 @@ jobs:
           cache: pip
           cache-dependency-path: backend/requirements.txt
 
+      - name: Install PostgreSQL and pgvector
+        working-directory: .
+        run: |
+          sudo /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -y
+          sudo apt-get update
+          sudo apt-get install -y postgresql-16 postgresql-16-pgvector
+
+      - name: Start PostgreSQL
+        working-directory: .
+        run: |
+          sudo systemctl start postgresql
+          sudo -u postgres psql -c "CREATE USER dev WITH PASSWORD 'dev';" || true
+          sudo -u postgres psql -tc "SELECT 1 FROM pg_database WHERE datname = 'cinesequence'" | grep -q 1 || \
+            sudo -u postgres psql -c "CREATE DATABASE cinesequence OWNER dev;"
+          pg_isready -h localhost -p 5432 -U postgres
+
       - name: Install deps
         run: pip install -r requirements.txt
 
@@ -98,6 +101,9 @@ jobs:
 
       - name: DB migration
         run: alembic upgrade head
+
+      - name: Seed default groups
+        run: python scripts/seed_groups.py
 
       - name: Tests
         run: pytest tests -v

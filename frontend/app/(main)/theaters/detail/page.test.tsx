@@ -182,6 +182,9 @@ describe('TheaterDetailPage', () => {
     await waitFor(() => {
       expect(screen.getByPlaceholderText('List title')).toBeTruthy()
     })
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: 'Create List' }).getAttribute('disabled')).toBeNull()
+    })
 
     fireEvent.change(screen.getByPlaceholderText('List title'), { target: { value: 'Midnight Rotation' } })
     fireEvent.change(screen.getByPlaceholderText('List description'), { target: { value: 'For after the room goes quiet.' } })
