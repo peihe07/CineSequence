@@ -137,8 +137,11 @@ function TheaterDetailContent() {
 
   return (
     <div className={styles.container}>
+      <div className={styles.content}>
       <div className={styles.hero}>
-        <Link href="/theaters" prefetch={false} className={styles.backLink}>{t('common.back')}</Link>
+        <Link href="/theaters" prefetch={false} className={styles.backLink}>
+          <i className="ri-arrow-left-line" /> {t('common.back')}
+        </Link>
         <p className={styles.eyebrow}>[ THEATER_FILE ]</p>
         <div className={styles.titleRow}>
           <div>
@@ -152,22 +155,24 @@ function TheaterDetailContent() {
         <div className={styles.actionRow}>
           {group.is_member ? (
             <button className={styles.secondaryBtn} disabled={isMutating} onClick={() => void leaveGroup()}>
-              {t('theaters.leave')}
+              <i className="ri-logout-box-line" /> {t('theaters.leave')}
             </button>
           ) : (
             <button className={styles.primaryBtn} disabled={isMutating} onClick={() => void joinGroup()}>
-              {t('theaters.join')}
+              <i className="ri-add-line" /> {t('theaters.join')}
             </button>
           )}
           <button className={styles.secondaryBtn} disabled={isLoading || isMutating} onClick={() => void loadGroup()}>
-            {t('error.retry')}
+            <i className="ri-refresh-line" /> {t('error.retry')}
           </button>
         </div>
         {error && <p className={styles.errorText}>{error}</p>}
       </div>
 
       <section className={styles.section}>
+        <div className={styles.sectionHeader}>
         <p className={styles.label}>{t('theaters.fit')}</p>
+        </div>
         <div className={styles.tags}>
           {group.shared_tags.map((tag) => (
             <span key={tag} className={styles.tag}>{getTagLabel(tag, locale)}</span>
@@ -471,6 +476,7 @@ function TheaterDetailContent() {
           </div>
         )}
       </section>
+      </div>
     </div>
   )
 }

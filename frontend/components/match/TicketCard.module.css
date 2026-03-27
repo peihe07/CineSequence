@@ -525,8 +525,8 @@
 
 .legacyTicket {
   position: relative;
-  width: min(100%, 320px);
-  aspect-ratio: 2 / 3;
+  width: min(100%, 720px);
+  aspect-ratio: 16 / 9;
   margin-inline: auto;
   cursor: pointer;
   perspective: 800px;
@@ -591,6 +591,11 @@
   .ticketWrapper {
     width: 82vw;
     min-height: 460px;
+  }
+
+  .legacyTicket {
+    width: 100%;
+    aspect-ratio: 4 / 3;
   }
 
   .similarityValue {

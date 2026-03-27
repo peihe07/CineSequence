@@ -242,108 +242,122 @@ function TheaterDetailContent() {
     return (
       <div className={styles.state}>
         <p>{error || t('common.error')}</p>
-        <Link href="/theaters" prefetch={false} className={styles.backLink}>{t('common.back')}</Link>
+        <Link href="/theaters" prefetch={false} className={styles.backLink}>
+          <i className="ri-arrow-left-line" /> {t('common.back')}
+        </Link>
       </div>
     )
   }
 
   return (
     <div className={styles.container}>
-      <div className={styles.hero}>
-        <Link href="/theaters" prefetch={false} className={styles.backLink}>{t('common.back')}</Link>
-        <p className={styles.eyebrow}>[ THEATER_FILE ]</p>
-        <div className={styles.titleRow}>
-          <div>
-            <h1 className={styles.title}>{group.name}</h1>
-            <p className={styles.subtitle}>{group.subtitle}</p>
+      <div className={styles.content}>
+        {/* ── HERO ──────────────────────────── */}
+        <div className={styles.hero}>
+          <span className={styles.sideLabel}>{t('theaters.fileLabel')}</span>
+          <Link href="/theaters" prefetch={false} className={styles.backLink}>
+            <i className="ri-arrow-left-line" /> {t('common.back')}
+          </Link>
+          <p className={styles.eyebrow}>[ THEATER_FILE ]</p>
+          <div className={styles.titleRow}>
+            <div>
+              <h1 className={styles.title}>{group.name}</h1>
+              <p className={styles.subtitle}>{group.subtitle}</p>
+            </div>
+            <span className={styles.memberBadge}>
+              <i className="ri-group-line" /> {group.member_count}
+            </span>
           </div>
-          <span className={styles.memberBadge}>
-            <i className="ri-group-line" /> {group.member_count}
-          </span>
-        </div>
-        <div className={styles.actionRow}>
-          {group.is_member ? (
-            <button className={styles.secondaryBtn} disabled={isMutating} onClick={() => void leaveGroup()}>
-              {t('theaters.leave')}
+          <div className={styles.actionRow}>
+            {group.is_member ? (
+              <button className={styles.secondaryBtn} disabled={isMutating} onClick={() => void leaveGroup()}>
+                <i className="ri-logout-box-line" /> {t('theaters.leave')}
+              </button>
+            ) : (
+              <button className={styles.primaryBtn} disabled={isMutating} onClick={() => void joinGroup()}>
+                <i className="ri-add-line" /> {t('theaters.join')}
+              </button>
+            )}
+            <button className={styles.secondaryBtn} disabled={isLoading || isMutating} onClick={() => void loadGroup()}>
+              <i className="ri-refresh-line" /> {t('error.retry')}
             </button>
-          ) : (
-            <button className={styles.primaryBtn} disabled={isMutating} onClick={() => void joinGroup()}>
-              {t('theaters.join')}
-            </button>
-          )}
-          <button className={styles.secondaryBtn} disabled={isLoading || isMutating} onClick={() => void loadGroup()}>
-            {t('error.retry')}
-          </button>
+          </div>
+          {error && <p className={styles.errorText}>{error}</p>}
+          <p className={styles.heroMeta}>THEATER_ID: {groupId.slice(0, 8).toUpperCase()} {'// '}STATUS: {group.is_member ? 'MEMBER' : 'VISITOR'}</p>
         </div>
-        {error && <p className={styles.errorText}>{error}</p>}
-      </div>
 
-      <section className={styles.section}>
-        <p className={styles.label}>{t('theaters.fit')}</p>
-        <div className={styles.tags}>
-          {group.shared_tags.map((tag) => (
-            <span key={tag} className={styles.tag}>{getTagLabel(tag, locale)}</span>
-          ))}
-        </div>
-      </section>
+        {/* ── SHARED TAGS ──────────────────── */}
+        <section className={styles.section}>
+          <div className={styles.sectionHeader}>
+            <p className={styles.label}>{t('theaters.fit')}</p>
+          </div>
+          <div className={styles.tags}>
+            {group.shared_tags.map((tag) => (
+              <span key={tag} className={styles.tag}>{getTagLabel(tag, locale)}</span>
+            ))}
+          </div>
+        </section>
 
-      <section className={styles.section}>
-        <p className={styles.label}>{t('theaters.recommended')}</p>
-        <div className={styles.list}>
-          {group.recommended_movies.map((movie) => (
-            <article key={movie.tmdb_id} className={styles.item}>
-              <div className={styles.listItemRow}>
+        {/* ── RECOMMENDED ──────────────────── */}
+        <section className={styles.section}>
+          <div className={styles.sectionHeader}>
+            <p className={styles.label}>{t('theaters.recommended')}</p>
+          </div>
+          <div className={styles.movieGrid}>
+            {group.recommended_movies.map((movie) => (
+              <article key={movie.tmdb_id} className={styles.movieCard}>
                 {movie.poster_url ? (
                   <Image
                     src={movie.poster_url}
                     alt={movie.title_en}
-                    className={styles.itemPoster}
+                    className={styles.moviePoster}
                     width={72}
                     height={106}
                     unoptimized
                   />
                 ) : (
-                  <div className={styles.itemPosterFallback}>
+                  <div className={styles.moviePosterFallback}>
                     <span>{movie.title_en.slice(0, 1)}</span>
                   </div>
                 )}
-                <div className={styles.itemContentBlock}>
-                  <p className={styles.itemTitle}>{movie.title_en}</p>
+                <div className={styles.movieCopy}>
+                  <p className={styles.movieTitle}>{movie.title_en}</p>
                   <div className={styles.tags}>
                     {movie.match_tags.map((tag) => (
                       <span key={`${movie.tmdb_id}-${tag}`} className={styles.tag}>{getTagLabel(tag, locale)}</span>
                     ))}
                   </div>
                 </div>
-              </div>
-            </article>
-          ))}
-        </div>
-      </section>
+              </article>
+            ))}
+          </div>
+        </section>
 
-      <section className={styles.section}>
-        <p className={styles.label}>{t('theaters.watchlist')}</p>
-        <div className={styles.list}>
-          {group.shared_watchlist.map((movie) => (
-            <article key={movie.tmdb_id} className={styles.item}>
-              <div className={styles.listItemRow}>
+        {/* ── WATCHLIST ────────────────────── */}
+        <section className={styles.section}>
+          <div className={styles.sectionHeader}>
+            <p className={styles.label}>{t('theaters.watchlist')}</p>
+          </div>
+          <div className={styles.movieGrid}>
+            {group.shared_watchlist.map((movie) => (
+              <article key={movie.tmdb_id} className={styles.movieCard}>
                 {movie.poster_url ? (
                   <Image
                     src={movie.poster_url}
                     alt={movie.title_en}
-                    className={styles.itemPoster}
+                    className={styles.moviePoster}
                     width={72}
                     height={106}
                     unoptimized
                   />
                 ) : (
-                  <div className={styles.itemPosterFallback}>
+                  <div className={styles.moviePosterFallback}>
                     <span>{movie.title_en.slice(0, 1)}</span>
                   </div>
                 )}
-                <div className={styles.itemContentBlock}>
-                  <div className={styles.itemRow}>
-                    <p className={styles.itemTitle}>{movie.title_en}</p>
+                <div className={styles.movieCopy}>
+                  <div className={styles.movieMeta}>
+                    <p className={styles.movieTitle}>{movie.title_en}</p>
                     <span className={styles.supporterBadge}>{t('theaters.supporters', { count: movie.supporter_count })}</span>
                   </div>
                   <div className={styles.tags}>
@@ -352,87 +366,92 @@ function TheaterDetailContent() {
                     ))}
                   </div>
                 </div>
-              </div>
-            </article>
-          ))}
-        </div>
-      </section>
+              </article>
+            ))}
+          </div>
+        </section>
 
-      <section className={styles.section}>
-        <p className={styles.label}>{t('theaters.userLists')}</p>
-        <div className={styles.list}>
-          {lists.length > 0 ? lists.map((list) => (
-            <article key={list.id} className={styles.item}>
-              <div className={styles.itemRow}>
-                <div>
-                  <p className={styles.itemTitle}>{list.title}</p>
-                  <p className={styles.meta}>{t('theaters.listBy', { name: list.creator.name })}</p>
+        {/* ── USER LISTS ───────────────────── */}
+        <section className={styles.section}>
+          <div className={styles.sectionHeader}>
+            <p className={styles.label}>{t('theaters.userLists')}</p>
+          </div>
+          <div className={styles.listGrid}>
+            {lists.length > 0 ? lists.map((list) => (
+              <article key={list.id} className={styles.listCard}>
+                <div className={styles.listHeader}>
+                  <div>
+                    <p className={styles.itemTitle}>{list.title}</p>
+                    <p className={styles.meta}>{t('theaters.listBy', { name: list.creator.name })}</p>
+                  </div>
+                  <div className={styles.listHeaderActions}>
+                    <span className={styles.supporterBadge}>
+                      {t('theaters.listItems', { count: list.items.length })}
+                    </span>
+                    {group.is_member && (
+                      <>
+                        <button
+                          className={styles.inlineBtn}
+                          disabled={isMutating}
+                          onClick={() => setEditingListId((current) => current === list.id ? null : list.id)}
+                        >
+                          {editingListId === list.id ? t('common.cancel') : t('theaters.listEdit')}
+                        </button>
+                        <button
+                          className={styles.inlineBtn}
+                          disabled={isMutating}
+                          onClick={() => void deleteList(list.id)}
+                        >
+                          {t('theaters.listDelete')}
+                        </button>
+                      </>
+                    )}
+                  </div>
                 </div>
-                <div className={styles.listHeaderActions}>
-                  <span className={styles.supporterBadge}>
-                    {t('theaters.listItems', { count: list.items.length })}
-                  </span>
-                  {group.is_member && (
-                    <>
-                      <button
-                        className={styles.inlineBtn}
-                        disabled={isMutating}
-                        onClick={() => setEditingListId((current) => current === list.id ? null : list.id)}
-                      >
-                        {editingListId === list.id ? t('common.cancel') : t('theaters.listEdit')}
-                      </button>
-                      <button
-                        className={styles.inlineBtn}
-                        disabled={isMutating}
-                        onClick={() => void deleteList(list.id)}
-                      >
-                        {t('theaters.listDelete')}
-                      </button>
-                    </>
-                  )}
-                </div>
-              </div>
-              {group.is_member && editingListId === list.id && (
-                <div className={styles.composer}>
-                  <input
-                    className={styles.input}
-                    value={draftListMetaById[list.id]?.title ?? list.title}
-                    onChange={(event) => setDraftListMetaById((current) => ({
-                      ...current,
-                      [list.id]: {
-                        title: event.target.value,
-                        description: current[list.id]?.description ?? list.description ?? '',
-                      },
-                    }))}
-                    placeholder={t('theaters.listTitlePlaceholder')}
-                  />
-                  <textarea
-                    className={styles.textarea}
-                    value={draftListMetaById[list.id]?.description ?? list.description ?? ''}
-                    onChange={(event) => setDraftListMetaById((current) => ({
-                      ...current,
-                      [list.id]: {
-                        title: current[list.id]?.title ?? list.title,
-                        description: event.target.value,
-                      },
-                    }))}
-                    placeholder={t('theaters.listDescriptionPlaceholder')}
-                  />
-                  <button
-                    className={styles.primaryBtn}
-                    disabled={isMutating}
-                    onClick={() => void handleUpdateList(list.id, list.title, list.description)}
-                  >
-                    {t('theaters.listUpdate')}
-                  </button>
-                </div>
-              )}
-              {list.description && <p className={styles.meta}>{list.description}</p>}
-              {list.items.length > 0 && (
-                <div className={styles.list}>
-                  {list.items.map((item, index) => (
-                    <div key={item.id} className={styles.item}>
-                      <div className={styles.listItemRow}>
+
+                {group.is_member && editingListId === list.id && (
+                  <div className={styles.composer}>
+                    <input
+                      className={styles.input}
+                      value={draftListMetaById[list.id]?.title ?? list.title}
+                      onChange={(event) => setDraftListMetaById((current) => ({
+                        ...current,
+                        [list.id]: {
+                          title: event.target.value,
+                          description: current[list.id]?.description ?? list.description ?? '',
+                        },
+                      }))}
+                      placeholder={t('theaters.listTitlePlaceholder')}
+                    />
+                    <textarea
+                      className={styles.textarea}
+                      value={draftListMetaById[list.id]?.description ?? list.description ?? ''}
+                      onChange={(event) => setDraftListMetaById((current) => ({
+                        ...current,
+                        [list.id]: {
+                          title: current[list.id]?.title ?? list.title,
+                          description: event.target.value,
+                        },
+                      }))}
+                      placeholder={t('theaters.listDescriptionPlaceholder')}
+                      rows={2}
+                    />
+                    <button
+                      className={styles.primaryBtn}
+                      disabled={isMutating}
+                      onClick={() => void handleUpdateList(list.id, list.title, list.description)}
+                    >
+                      {t('theaters.listUpdate')}
+                    </button>
+                  </div>
+                )}
+
+                {list.description && <p className={styles.listDescription}>{list.description}</p>}
+
+                {list.items.length > 0 && (
+                  <div className={styles.itemList}>
+                    {list.items.map((item, index) => (
+                      <div key={item.id} className={styles.listItemRow}>
                         {item.poster_url ? (
                           <Image
                             src={item.poster_url}
@@ -456,27 +475,27 @@ function TheaterDetailContent() {
                               )}
                             </div>
                             {group.is_member && (
-                              <div className={styles.listHeaderActions}>
+                              <div className={styles.itemActions}>
                                 <button
                                   className={styles.inlineBtn}
                                   disabled={isMutating || index === 0}
                                   onClick={() => void handleMoveListItem(list.id, item.id, 'up')}
                                 >
-                                  {t('theaters.listItemMoveUp')}
+                                  <i className="ri-arrow-up-s-line" />
                                 </button>
                                 <button
                                   className={styles.inlineBtn}
                                   disabled={isMutating || index === list.items.length - 1}
                                   onClick={() => void handleMoveListItem(list.id, item.id, 'down')}
                                 >
-                                  {t('theaters.listItemMoveDown')}
+                                  <i className="ri-arrow-down-s-line" />
                                 </button>
                                 <button
                                   className={styles.inlineBtn}
                                   disabled={isMutating}
                                   onClick={() => void deleteListItem(list.id, item.id)}
                                 >
-                                  {t('theaters.listItemRemove')}
+                                  <i className="ri-close-line" />
                                 </button>
                               </div>
                             )}
@@ -485,7 +504,7 @@ function TheaterDetailContent() {
                             <p className={styles.meta}>
                               {[item.genres.join(' / '), item.runtime_minutes ? `${item.runtime_minutes} min` : '']
                                 .filter(Boolean)
-                                .join(' • ')}
+                                .join(' · ')}
                             </p>
                           )}
                           {item.match_tags.length > 0 && (
@@ -518,266 +537,271 @@ function TheaterDetailContent() {
                           )}
                         </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-              {group.is_member && (
-                <div className={styles.composer}>
-                  <input
-                    className={styles.input}
-                    value={draftItemByList[list.id] ?? ''}
-                    onChange={(event) => setDraftItemByList((current) => ({
-                      ...current,
-                      [list.id]: event.target.value,
-                    }))}
-                    placeholder={t('theaters.listItemPlaceholder')}
-                  />
-                  <button
-                    className={styles.secondaryBtn}
-                    disabled={isMutating}
-                    onClick={() => void handleAppendListItem(list.id)}
-                  >
-                    {t('theaters.listItemAdd')}
-                  </button>
-                  <div className={styles.searchComposer}>
-                    <div className={styles.searchInputRow}>
-                      <input
-                        className={styles.input}
-                        value={appendSearchQueryByList[list.id] ?? ''}
-                        onChange={(event) => setAppendSearchQueryByList((current) => ({
-                          ...current,
-                          [list.id]: event.target.value,
-                        }))}
-                        placeholder={t('theaters.listMovieSearchPlaceholder')}
-                      />
-                      <button
-                        className={styles.secondaryBtn}
-                        disabled={isMutating || !!appendSearchingByList[list.id]}
-                        onClick={() => void handleSearchListMovie(list.id)}
-                      >
-                        {appendSearchingByList[list.id] ? t('common.loading') : t('theaters.listMovieSearch')}
-                      </button>
-                    </div>
-                    {appendSearchErrorByList[list.id] && (
-                      <p className={styles.meta}>{appendSearchErrorByList[list.id]}</p>
-                    )}
-                    {(appendSearchResultsByList[list.id] ?? []).length > 0 && (
-                      <div className={styles.searchResults}>
-                        {(appendSearchResultsByList[list.id] ?? []).map((movie) => (
-                          <button
-                            key={movie.tmdb_id}
-                            type="button"
-                            className={styles.searchResultItem}
-                            onClick={() => void handleSelectListMovie(list.id, movie)}
-                          >
-                            {movie.poster_url ? (
-                              <Image
-                                src={movie.poster_url}
-                                alt={movie.title_zh || movie.title_en}
-                                className={styles.searchResultPoster}
-                                width={35}
-                                height={50}
-                                unoptimized
-                              />
-                            ) : (
-                              <div className={styles.searchResultPosterFallback}>
-                                <i className="ri-movie-line" />
-                              </div>
-                            )}
-                            <span className={styles.searchResultText}>
-                              {movie.title_zh || movie.title_en}
-                              {movie.year ? ` (${movie.year})` : ''}
-                            </span>
-                          </button>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
-
-              <div className={styles.replySection}>
-                <p className={styles.label}>{t('theaters.listReplies')}</p>
-                {list.replies.length > 0 ? (
-                  <div className={styles.list}>
-                    {list.replies.map((reply) => (
-                      <div key={reply.id} className={styles.item}>
-                        <div className={styles.itemRow}>
-                          <p className={styles.meta}>{reply.user.name}</p>
-                          {reply.can_delete && (
-                            <button
-                              className={styles.inlineBtn}
-                              disabled={isMutating}
-                              onClick={() => void deleteListReply(list.id, reply.id)}
-                            >
-                              {t('theaters.listReplyDelete')}
-                            </button>
-                          )}
-                        </div>
-                        <p className={styles.itemTitle}>{reply.body}</p>
-                      </div>
                     ))}
                   </div>
-                ) : (
-                  <p className={styles.meta}>{t('theaters.listRepliesEmpty')}</p>
                 )}
+
                 {group.is_member && (
                   <div className={styles.composer}>
                     <input
                       className={styles.input}
-                      value={draftReplyByList[list.id] ?? ''}
-                      onChange={(event) => setDraftReplyByList((current) => ({
+                      value={draftItemByList[list.id] ?? ''}
+                      onChange={(event) => setDraftItemByList((current) => ({
                         ...current,
                         [list.id]: event.target.value,
                       }))}
-                      placeholder={t('theaters.listReplyPlaceholder')}
+                      placeholder={t('theaters.listItemPlaceholder')}
                     />
                     <button
                       className={styles.secondaryBtn}
                       disabled={isMutating}
-                      onClick={() => void handlePostListReply(list.id)}
+                      onClick={() => void handleAppendListItem(list.id)}
                     >
-                      {t('theaters.listReplySend')}
+                      {t('theaters.listItemAdd')}
                     </button>
+                    <div className={styles.searchComposer}>
+                      <div className={styles.searchInputRow}>
+                        <input
+                          className={styles.input}
+                          value={appendSearchQueryByList[list.id] ?? ''}
+                          onChange={(event) => setAppendSearchQueryByList((current) => ({
+                            ...current,
+                            [list.id]: event.target.value,
+                          }))}
+                          placeholder={t('theaters.listMovieSearchPlaceholder')}
+                        />
+                        <button
+                          className={styles.secondaryBtn}
+                          disabled={isMutating || !!appendSearchingByList[list.id]}
+                          onClick={() => void handleSearchListMovie(list.id)}
+                        >
+                          {appendSearchingByList[list.id] ? t('common.loading') : t('theaters.listMovieSearch')}
+                        </button>
+                      </div>
+                      {appendSearchErrorByList[list.id] && (
+                        <p className={styles.meta}>{appendSearchErrorByList[list.id]}</p>
+                      )}
+                      {(appendSearchResultsByList[list.id] ?? []).length > 0 && (
+                        <div className={styles.searchResults}>
+                          {(appendSearchResultsByList[list.id] ?? []).map((movie) => (
+                            <button
+                              key={movie.tmdb_id}
+                              type="button"
+                              className={styles.searchResultItem}
+                              onClick={() => void handleSelectListMovie(list.id, movie)}
+                            >
+                              {movie.poster_url ? (
+                                <Image
+                                  src={movie.poster_url}
+                                  alt={movie.title_zh || movie.title_en}
+                                  className={styles.searchResultPoster}
+                                  width={35}
+                                  height={50}
+                                  unoptimized
+                                />
+                              ) : (
+                                <div className={styles.searchResultPosterFallback}>
+                                  <i className="ri-movie-line" />
+                                </div>
+                              )}
+                              <span className={styles.searchResultText}>
+                                {movie.title_zh || movie.title_en}
+                                {movie.year ? ` (${movie.year})` : ''}
+                              </span>
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                <div className={styles.replySection}>
+                  <p className={styles.label}>{t('theaters.listReplies')}</p>
+                  {list.replies.length > 0 ? (
+                    <div className={styles.list}>
+                      {list.replies.map((reply) => (
+                        <div key={reply.id} className={styles.messageItem}>
+                          <div className={styles.messageMeta}>
+                            <span className={styles.meta}>{reply.user.name}</span>
+                            {reply.can_delete && (
+                              <button
+                                className={styles.inlineBtn}
+                                disabled={isMutating}
+                                onClick={() => void deleteListReply(list.id, reply.id)}
+                              >
+                                {t('theaters.listReplyDelete')}
+                              </button>
+                            )}
+                          </div>
+                          <p className={styles.messageBody}>{reply.body}</p>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className={styles.meta}>{t('theaters.listRepliesEmpty')}</p>
+                  )}
+                  {group.is_member && (
+                    <div className={styles.composer}>
+                      <input
+                        className={styles.input}
+                        value={draftReplyByList[list.id] ?? ''}
+                        onChange={(event) => setDraftReplyByList((current) => ({
+                          ...current,
+                          [list.id]: event.target.value,
+                        }))}
+                        placeholder={t('theaters.listReplyPlaceholder')}
+                      />
+                      <button
+                        className={styles.secondaryBtn}
+                        disabled={isMutating}
+                        onClick={() => void handlePostListReply(list.id)}
+                      >
+                        {t('theaters.listReplySend')}
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </article>
+            )) : (
+              <p className={styles.meta}>{t('theaters.userListsEmpty')}</p>
+            )}
+          </div>
+
+          {group.is_member && (
+            <div className={styles.composer}>
+              <input
+                className={styles.input}
+                value={draftListTitle}
+                onChange={(event) => setDraftListTitle(event.target.value)}
+                placeholder={t('theaters.listTitlePlaceholder')}
+              />
+              <textarea
+                className={styles.textarea}
+                value={draftListDescription}
+                onChange={(event) => setDraftListDescription(event.target.value)}
+                placeholder={t('theaters.listDescriptionPlaceholder')}
+              />
+              <textarea
+                className={styles.textarea}
+                value={draftListItems}
+                onChange={(event) => setDraftListItems(event.target.value)}
+                placeholder={t('theaters.listItemsPlaceholder')}
+              />
+              <div className={styles.searchComposer}>
+                <div className={styles.searchInputRow}>
+                  <input
+                    className={styles.input}
+                    value={draftSearchQuery}
+                    onChange={(event) => setDraftSearchQuery(event.target.value)}
+                    placeholder={t('theaters.listMovieSearchPlaceholder')}
+                  />
+                  <button
+                    className={styles.secondaryBtn}
+                    disabled={isMutating || isDraftSearching}
+                    onClick={() => void handleSearchDraftMovies()}
+                  >
+                    {isDraftSearching ? t('common.loading') : t('theaters.listMovieSearch')}
+                  </button>
+                </div>
+                {draftSearchError && <p className={styles.meta}>{draftSearchError}</p>}
+                {draftSearchResults.length > 0 && (
+                  <div className={styles.searchResults}>
+                    {draftSearchResults.map((movie) => (
+                      <button
+                        key={movie.tmdb_id}
+                        type="button"
+                        className={styles.searchResultItem}
+                        onClick={() => handleSelectDraftMovie(movie)}
+                      >
+                        {movie.poster_url ? (
+                          <Image
+                            src={movie.poster_url}
+                            alt={movie.title_zh || movie.title_en}
+                            className={styles.searchResultPoster}
+                            width={35}
+                            height={50}
+                            unoptimized
+                          />
+                        ) : (
+                          <div className={styles.searchResultPosterFallback}>
+                            <i className="ri-movie-line" />
+                          </div>
+                        )}
+                        <span className={styles.searchResultText}>
+                          {movie.title_zh || movie.title_en}
+                          {movie.year ? ` (${movie.year})` : ''}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+                {draftSelectedMovies.length > 0 && (
+                  <div className={styles.selectedMovieGrid}>
+                    {draftSelectedMovies.map((movie) => (
+                      <div key={movie.tmdb_id} className={styles.selectedMovieChip}>
+                        <span>{movie.title_zh || movie.title_en}</span>
+                        <button
+                          type="button"
+                          className={styles.inlineBtn}
+                          onClick={() => handleRemoveDraftMovie(movie.tmdb_id)}
+                        >
+                          <i className="ri-close-line" />
+                        </button>
+                      </div>
+                    ))}
                   </div>
                 )}
               </div>
-            </article>
-          )) : (
-            <p className={styles.meta}>{t('theaters.userListsEmpty')}</p>
-          )}
-        </div>
-
-        {group.is_member && (
-          <div className={styles.composer}>
-            <input
-              className={styles.input}
-              value={draftListTitle}
-              onChange={(event) => setDraftListTitle(event.target.value)}
-              placeholder={t('theaters.listTitlePlaceholder')}
-            />
-            <textarea
-              className={styles.textarea}
-              value={draftListDescription}
-              onChange={(event) => setDraftListDescription(event.target.value)}
-              placeholder={t('theaters.listDescriptionPlaceholder')}
-            />
-            <textarea
-              className={styles.textarea}
-              value={draftListItems}
-              onChange={(event) => setDraftListItems(event.target.value)}
-              placeholder={t('theaters.listItemsPlaceholder')}
-            />
-            <div className={styles.searchComposer}>
-              <div className={styles.searchInputRow}>
-                <input
-                  className={styles.input}
-                  value={draftSearchQuery}
-                  onChange={(event) => setDraftSearchQuery(event.target.value)}
-                  placeholder={t('theaters.listMovieSearchPlaceholder')}
-                />
-                <button
-                  className={styles.secondaryBtn}
-                  disabled={isMutating || isDraftSearching}
-                  onClick={() => void handleSearchDraftMovies()}
-                >
-                  {isDraftSearching ? t('common.loading') : t('theaters.listMovieSearch')}
-                </button>
-              </div>
-              {draftSearchError && <p className={styles.meta}>{draftSearchError}</p>}
-              {draftSearchResults.length > 0 && (
-                <div className={styles.searchResults}>
-                  {draftSearchResults.map((movie) => (
-                    <button
-                      key={movie.tmdb_id}
-                      type="button"
-                      className={styles.searchResultItem}
-                      onClick={() => handleSelectDraftMovie(movie)}
-                    >
-                      {movie.poster_url ? (
-                        <Image
-                          src={movie.poster_url}
-                          alt={movie.title_zh || movie.title_en}
-                          className={styles.searchResultPoster}
-                          width={35}
-                          height={50}
-                          unoptimized
-                        />
-                      ) : (
-                        <div className={styles.searchResultPosterFallback}>
-                          <i className="ri-movie-line" />
-                        </div>
-                      )}
-                      <span className={styles.searchResultText}>
-                        {movie.title_zh || movie.title_en}
-                        {movie.year ? ` (${movie.year})` : ''}
-                      </span>
-                    </button>
-                  ))}
-                </div>
-              )}
-              {draftSelectedMovies.length > 0 && (
-                <div className={styles.selectedMovieGrid}>
-                  {draftSelectedMovies.map((movie) => (
-                    <div key={movie.tmdb_id} className={styles.selectedMovieChip}>
-                      <span>{movie.title_zh || movie.title_en}</span>
-                      <button
-                        type="button"
-                        className={styles.inlineBtn}
-                        onClick={() => handleRemoveDraftMovie(movie.tmdb_id)}
-                      >
-                        {t('theaters.listItemRemove')}
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
+              <button className={styles.primaryBtn} disabled={isMutating} onClick={() => void handleCreateList()}>
+                {t('theaters.listCreate')}
+              </button>
             </div>
-            <button className={styles.primaryBtn} disabled={isMutating} onClick={() => void handleCreateList()}>
-              {t('theaters.listCreate')}
-            </button>
-          </div>
-        )}
-      </section>
+          )}
+        </section>
 
-      <section className={styles.section}>
-        <p className={styles.label}>{t('theaters.messages')}</p>
-        <p className={styles.meta}>{t('theaters.messagesHint')}</p>
-        {group.recent_messages.length > 0 ? (
-          <div className={styles.list}>
-            {group.recent_messages.map((message) => (
-              <article key={message.id} className={styles.item}>
-                <div className={styles.itemRow}>
-                  <p className={styles.meta}>{message.user.name}</p>
-                  {message.can_delete && (
-                    <button className={styles.inlineBtn} disabled={isMutating} onClick={() => void deleteMessage(message.id)}>
-                      {t('theaters.messageDelete')}
-                    </button>
-                  )}
-                </div>
-                <p className={styles.itemTitle}>{message.body}</p>
-              </article>
-            ))}
+        {/* ── MESSAGES ─────────────────────── */}
+        <section className={styles.messageSection}>
+          <div className={styles.sectionHeader}>
+            <p className={styles.label}>{t('theaters.messages')}</p>
+            <p className={styles.detailText}>{t('theaters.messagesHint')}</p>
           </div>
-        ) : (
-          <p className={styles.meta}>{t('theaters.messagesEmpty')}</p>
-        )}
+          {group.recent_messages.length > 0 ? (
+            <div className={styles.messageList}>
+              {group.recent_messages.map((message) => (
+                <article key={message.id} className={styles.messageItem}>
+                  <div className={styles.messageMeta}>
+                    <span className={styles.meta}>{message.user.name}</span>
+                    {message.can_delete && (
+                      <button className={styles.inlineBtn} disabled={isMutating} onClick={() => void deleteMessage(message.id)}>
+                        {t('theaters.messageDelete')}
+                      </button>
+                    )}
+                  </div>
+                  <p className={styles.messageBody}>{message.body}</p>
+                </article>
+              ))}
+            </div>
+          ) : (
+            <p className={styles.meta}>{t('theaters.messagesEmpty')}</p>
+          )}
 
-        {group.is_member && (
-          <div className={styles.composer}>
-            <textarea
-              className={styles.textarea}
-              value={draftMessage}
-              onChange={(event) => setDraftMessage(event.target.value)}
-              placeholder={t('theaters.messagePlaceholder')}
-            />
-            <button className={styles.primaryBtn} disabled={isMutating} onClick={() => void handlePostMessage()}>
-              {t('theaters.messageSend')}
-            </button>
-          </div>
-        )}
-      </section>
+          {group.is_member && (
+            <div className={styles.composer}>
+              <textarea
+                className={styles.textarea}
+                value={draftMessage}
+                onChange={(event) => setDraftMessage(event.target.value)}
+                placeholder={t('theaters.messagePlaceholder')}
+                rows={3}
+              />
+              <button className={styles.primaryBtn} disabled={isMutating} onClick={() => void handlePostMessage()}>
+                {t('theaters.messageSend')}
+              </button>
+            </div>
+          )}
+        </section>
+      </div>
     </div>
   )
 }

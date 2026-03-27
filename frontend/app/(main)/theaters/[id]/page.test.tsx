@@ -147,7 +147,7 @@ describe('TheaterDetailDynamicPage', () => {
     expect(screen.getByAltText('Arrival')).toBeTruthy()
     expect(screen.getByText('神隱少女')).toBeTruthy()
     expect(screen.getByText('Spirited Away')).toBeTruthy()
-    expect(screen.getByText('Fantasy / Adventure • 125 min')).toBeTruthy()
+    expect(screen.getByText('Fantasy / Adventure · 125 min')).toBeTruthy()
     expect(screen.getByText('The room needs one dream-state classic.')).toBeTruthy()
   })
 })
