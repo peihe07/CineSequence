@@ -177,7 +177,7 @@ class TestAssignArchetype:
         assert result["id"] == "emotional_sponge"
 
     def test_negative_raw_signal_penalizes_matching_archetype(self):
-        """Skip/rejection signals should affect archetype scoring even if display vector is clamped."""
+        """Skip/rejection signals should still affect archetype scoring."""
         vector = [0.0] * 30
         vector[TAG_INDEX["tearjerker"]] = 1.0
         vector[TAG_INDEX["uplifting"]] = 0.9

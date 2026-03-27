@@ -246,18 +246,66 @@ def compute_consistency(picks: list[dict]) -> dict[str, float]:
 # Only core 3 axes are used; missing axes default to 3.0 (neutral).
 # Scale: 1.0-5.0 where 3.0 is neutral.
 ARCHETYPE_QUADRANT: dict[str, dict[str, float]] = {
-    "time_traveler":      {"mainstream_independent": 3.8, "rational_emotional": 2.0, "light_dark": 3.5},
-    "dark_poet":          {"mainstream_independent": 4.0, "rational_emotional": 2.5, "light_dark": 4.5},
-    "emotional_sponge":   {"mainstream_independent": 2.5, "rational_emotional": 4.5, "light_dark": 2.5},
-    "chaos_theorist":     {"mainstream_independent": 4.5, "rational_emotional": 3.0, "light_dark": 3.5},
-    "quiet_observer":     {"mainstream_independent": 3.8, "rational_emotional": 3.5, "light_dark": 3.0},
-    "adrenaline_junkie":  {"mainstream_independent": 1.8, "rational_emotional": 2.5, "light_dark": 3.5},
-    "reality_hunter":     {"mainstream_independent": 3.5, "rational_emotional": 3.0, "light_dark": 3.5},
-    "world_wanderer":     {"mainstream_independent": 4.0, "rational_emotional": 3.5, "light_dark": 3.0},
-    "master_planner":     {"mainstream_independent": 2.5, "rational_emotional": 2.0, "light_dark": 3.0},
-    "dystopia_architect": {"mainstream_independent": 3.5, "rational_emotional": 2.5, "light_dark": 4.5},
-    "dream_weaver":       {"mainstream_independent": 4.2, "rational_emotional": 3.5, "light_dark": 3.0},
-    "lone_wolf":          {"mainstream_independent": 3.5, "rational_emotional": 2.5, "light_dark": 4.0},
+    "time_traveler": {
+        "mainstream_independent": 3.8,
+        "rational_emotional": 2.0,
+        "light_dark": 3.5,
+    },
+    "dark_poet": {
+        "mainstream_independent": 4.0,
+        "rational_emotional": 2.5,
+        "light_dark": 4.5,
+    },
+    "emotional_sponge": {
+        "mainstream_independent": 2.5,
+        "rational_emotional": 4.5,
+        "light_dark": 2.5,
+    },
+    "chaos_theorist": {
+        "mainstream_independent": 4.5,
+        "rational_emotional": 3.0,
+        "light_dark": 3.5,
+    },
+    "quiet_observer": {
+        "mainstream_independent": 3.8,
+        "rational_emotional": 3.5,
+        "light_dark": 3.0,
+    },
+    "adrenaline_junkie": {
+        "mainstream_independent": 1.8,
+        "rational_emotional": 2.5,
+        "light_dark": 3.5,
+    },
+    "reality_hunter": {
+        "mainstream_independent": 3.5,
+        "rational_emotional": 3.0,
+        "light_dark": 3.5,
+    },
+    "world_wanderer": {
+        "mainstream_independent": 4.0,
+        "rational_emotional": 3.5,
+        "light_dark": 3.0,
+    },
+    "master_planner": {
+        "mainstream_independent": 2.5,
+        "rational_emotional": 2.0,
+        "light_dark": 3.0,
+    },
+    "dystopia_architect": {
+        "mainstream_independent": 3.5,
+        "rational_emotional": 2.5,
+        "light_dark": 4.5,
+    },
+    "dream_weaver": {
+        "mainstream_independent": 4.2,
+        "rational_emotional": 3.5,
+        "light_dark": 3.0,
+    },
+    "lone_wolf": {
+        "mainstream_independent": 3.5,
+        "rational_emotional": 2.5,
+        "light_dark": 4.0,
+    },
 }
 
 _QUADRANT_WEIGHT = 0.3  # How much quadrant distance affects archetype scoring
