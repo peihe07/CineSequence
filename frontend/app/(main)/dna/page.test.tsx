@@ -5,6 +5,7 @@ const {
   pushMock,
   fetchResultMock,
   buildDnaMock,
+  autoAssignMock,
   fetchProgressMock,
   extendSequencingMock,
   dnaState,
@@ -27,6 +28,7 @@ const {
     pushMock: vi.fn(),
     fetchResultMock: vi.fn(),
     buildDnaMock: vi.fn(),
+    autoAssignMock: vi.fn(),
     fetchProgressMock: vi.fn(),
     extendSequencingMock: vi.fn(),
     dnaState: {
@@ -63,6 +65,12 @@ vi.mock('@/stores/dnaStore', () => ({
     ...dnaState,
     fetchResult: fetchResultMock,
     buildDna: buildDnaMock,
+  }),
+}))
+
+vi.mock('@/stores/groupStore', () => ({
+  useGroupStore: () => ({
+    autoAssign: autoAssignMock,
   }),
 }))
 
@@ -130,10 +138,12 @@ describe('DnaResultPage', () => {
     pushMock.mockReset()
     fetchResultMock.mockReset()
     buildDnaMock.mockReset()
+    autoAssignMock.mockReset()
     fetchProgressMock.mockReset()
     extendSequencingMock.mockReset()
     fetchResultMock.mockResolvedValue(null)
     buildDnaMock.mockResolvedValue(null)
+    autoAssignMock.mockResolvedValue(undefined)
     fetchProgressMock.mockResolvedValue(null)
     extendSequencingMock.mockResolvedValue(undefined)
     dnaState.result = null
@@ -227,6 +237,9 @@ describe('DnaResultPage', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Enter theaters' }))
 
-    expect(pushMock).toHaveBeenCalledWith('/theaters')
+    await waitFor(() => {
+      expect(autoAssignMock).toHaveBeenCalledTimes(1)
+      expect(pushMock).toHaveBeenCalledWith('/theaters')
+    })
   })
 })

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { ApiError } from '@/lib/api'
 import { useDnaStore } from '@/stores/dnaStore'
+import { useGroupStore } from '@/stores/groupStore'
 import { useSequencingStore } from '@/stores/sequencingStore'
 import { useI18n } from '@/lib/i18n'
 import ArchetypeCard from '@/components/dna/ArchetypeCard'
@@ -29,6 +30,7 @@ function DnaResultContent() {
   const router = useRouter()
   const { t } = useI18n()
   const { result, isBuilding, isLoading, error, buildDna, fetchResult } = useDnaStore()
+  const { autoAssign } = useGroupStore()
   const { progress, fetchProgress, extendSequencing } = useSequencingStore()
   const sectionTransition = { duration: 0.65, ease: 'easeOut' as const }
 
@@ -95,6 +97,11 @@ function DnaResultContent() {
     } catch {
       // Store error state keeps the user on the DNA page.
     }
+  }
+
+  async function handleEnterTheaters() {
+    await autoAssign()
+    router.push('/theaters')
   }
 
   return (
@@ -175,7 +182,7 @@ function DnaResultContent() {
             <Button
               variant="primary"
               size="lg"
-              onClick={() => router.push('/theaters')}
+              onClick={() => void handleEnterTheaters()}
             >
               <i className="ri-movie-line" /> {t('dna.enterTheaters')}
             </Button>
