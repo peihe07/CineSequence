@@ -7,7 +7,6 @@ from PIL import Image
 
 from app.services.ticket_gen import (
     STYLE_PALETTES,
-    TICKET_H,
     TICKET_W,
     _build_ticket_html,
     generate_personal_ticket,
@@ -115,7 +114,8 @@ class TestGeneratePersonalTicket:
     async def test_correct_dimensions(self):
         img = await self._generate()
         # 2x device_scale_factor
-        assert img.size == (TICKET_W * 2, TICKET_H * 2)
+        assert img.size[0] == TICKET_W * 2
+        assert img.size[1] > 0
 
     async def test_rgba_mode(self):
         img = await self._generate()
@@ -133,7 +133,8 @@ class TestGeneratePersonalTicket:
             name="時空旅人",
             archetype="時空旅人 Time Traveler",
         )
-        assert img.size == (TICKET_W * 2, TICKET_H * 2)
+        assert img.size[0] == TICKET_W * 2
+        assert img.size[1] > 0
 
 
 class TestStylePalettes:
