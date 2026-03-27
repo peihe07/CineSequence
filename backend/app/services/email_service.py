@@ -4,6 +4,7 @@ import asyncio
 import html as html_mod
 import logging
 import uuid
+from typing import Any
 from urllib.parse import quote
 
 import resend
@@ -183,5 +184,59 @@ async def send_match_accepted_email(
             f'font-family:monospace;">查看完整票券</a></p>'
             f'<p style="font-size:12px;color:#aaa;">'
             f"所有對話透過 Cine Sequence 進行，你的隱私受到保護。</p>"
+        ),
+    )
+
+
+async def send_announcement_email(
+    to_email: str,
+    subject_zh: str,
+    subject_en: str,
+    body_sections: list[dict[str, Any]],
+    closing_zh: str = "",
+    closing_en: str = "",
+) -> None:
+    """Send a system announcement email.
+
+    body_sections: list of {"title_zh", "title_en", "body_zh", "body_en"} dicts.
+    Each section renders as a titled block.
+    """
+    sections_html = ""
+    for sec in body_sections:
+        title = _esc(sec.get("title_zh", ""))
+        body = _esc(sec.get("body_zh", "")).replace("\n", "<br>")
+        sections_html += (
+            f'<div style="margin-bottom:20px;">'
+            f'<h3 style="margin:0 0 6px;font-size:15px;color:#e0e0e0;">{title}</h3>'
+            f'<p style="margin:0;font-size:13px;color:#999;line-height:1.7;">{body}</p>'
+            f"</div>"
+        )
+
+    closing_html = ""
+    if closing_zh:
+        closing_html = (
+            f'<p style="font-size:12px;color:#777;margin-top:24px;'
+            f'border-top:1px solid #333;padding-top:16px;">'
+            f"{_esc(closing_zh)}</p>"
+        )
+
+    login_url = f"{settings.frontend_url}/login"
+
+    await _send_or_log(
+        to=to_email,
+        subject=f"{subject_zh} — Cine Sequence",
+        html=(
+            f'<div style="max-width:560px;margin:0 auto;font-family:'
+            f"-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;"
+            f'color:#ddd;background:#111;padding:32px 28px;border-radius:12px;">'
+            f'<h2 style="margin:0 0 24px;font-size:18px;color:#fff;'
+            f'font-weight:600;">{_esc(subject_zh)}</h2>'
+            f"{sections_html}"
+            f'<p><a href="{login_url}" '
+            f'style="display:inline-block;padding:10px 24px;margin-top:8px;'
+            f"background:#c06223;color:#fff;text-decoration:none;"
+            f'font-family:monospace;border-radius:6px;">登入 Cine Sequence</a></p>'
+            f"{closing_html}"
+            f"</div>"
         ),
     )

@@ -1,8 +1,9 @@
 """Admin dashboard API — stats and metrics for project maintainers."""
 from datetime import UTC, datetime, timedelta
-from typing import Annotated
+from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends, HTTPException, status
+from pydantic import BaseModel
 from sqlalchemy import func, select, union_all
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -10,8 +11,10 @@ from app.deps import get_current_user, get_db
 from app.models.ai_token_log import AiTokenLog
 from app.models.dna_profile import DnaProfile
 from app.models.match import Match, MatchStatus
+from app.models.notification import NotificationType
 from app.models.user import User
 from app.services.ai_token_tracker import estimate_cost
+from app.services.notification_service import create_notification
 
 router = APIRouter()
 
@@ -265,4 +268,86 @@ async def get_api_usage(
                 + (total_accepted or 0)
             ),
         },
+    }
+
+
+class AnnouncementSection(BaseModel):
+    title_zh: str
+    title_en: str
+    body_zh: str
+    body_en: str
+
+
+class AnnouncementRequest(BaseModel):
+    subject_zh: str
+    subject_en: str
+    sections: list[AnnouncementSection]
+    closing_zh: str = "如有任何問題或回饋，歡迎直接回覆此信。"
+    closing_en: str = "If you have any questions or feedback, feel free to reply to this email."
+    notification_title_zh: str = "系統更新"
+    notification_title_en: str = "System Update"
+    notification_body_zh: str | None = None
+    notification_body_en: str | None = None
+    dry_run: bool = False
+
+
+@router.post("/announce")
+async def send_announcement(
+    body: AnnouncementRequest,
+    _admin: Annotated[User, Depends(require_admin)],
+    db: Annotated[AsyncSession, Depends(get_db)],
+):
+    """Send system announcement email to all users + create in-app notifications.
+
+    Set dry_run=true to preview recipient count without sending.
+    """
+    # Count eligible recipients
+    recipient_count = await db.scalar(
+        select(func.count(User.id)).where(
+            User.email_notifications_enabled.is_(True),
+            User.email.isnot(None),
+        )
+    )
+
+    if body.dry_run:
+        return {
+            "dry_run": True,
+            "recipient_count": recipient_count,
+            "subject": body.subject_zh,
+        }
+
+    # Create in-app notification for all users
+    result = await db.execute(select(User.id))
+    user_ids = [row[0] for row in result.all()]
+    notification_count = 0
+    for user_id in user_ids:
+        await create_notification(
+            db,
+            user_id=user_id,
+            type=NotificationType.system,
+            title_zh=body.notification_title_zh,
+            title_en=body.notification_title_en,
+            body_zh=body.notification_body_zh or body.subject_zh,
+            body_en=body.notification_body_en or body.subject_en,
+            link="/sequencing",
+        )
+        notification_count += 1
+
+    # Enqueue email task via Celery
+    from app.tasks.email_tasks import send_announcement_task
+
+    sections_data = [s.model_dump() for s in body.sections]
+    task = send_announcement_task.delay(
+        subject_zh=body.subject_zh,
+        subject_en=body.subject_en,
+        body_sections=sections_data,
+        closing_zh=body.closing_zh,
+        closing_en=body.closing_en,
+    )
+
+    return {
+        "status": "queued",
+        "task_id": task.id,
+        "email_recipient_count": recipient_count,
+        "notifications_created": notification_count,
     }

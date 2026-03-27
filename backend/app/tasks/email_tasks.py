@@ -65,6 +65,51 @@ def send_accepted_email_task(self, **kwargs):
         raise self.retry(exc=exc)
 
 
+@celery_app.task(bind=True, max_retries=1, default_retry_delay=120)
+def send_announcement_task(self, subject_zh, subject_en, body_sections, closing_zh="", closing_en=""):
+    """Send system announcement to all users with email notifications enabled."""
+    from app.services.email_service import send_announcement_email
+    from app.models.user import User
+    from app.tasks.async_utils import task_session
+    from sqlalchemy import select
+
+    async def _run():
+        async with task_session() as db:
+            result = await db.execute(
+                select(User.email).where(
+                    User.email_notifications_enabled.is_(True),
+                    User.email.isnot(None),
+                )
+            )
+            emails = [row[0] for row in result.all()]
+
+        sent = 0
+        failed = 0
+        for email in emails:
+            try:
+                await send_announcement_email(
+                    to_email=email,
+                    subject_zh=subject_zh,
+                    subject_en=subject_en,
+                    body_sections=body_sections,
+                    closing_zh=closing_zh,
+                    closing_en=closing_en,
+                )
+                sent += 1
+            except Exception:
+                logger.exception("Failed to send announcement to %s", email)
+                failed += 1
+
+        logger.info("Announcement sent: %d succeeded, %d failed out of %d", sent, failed, len(emails))
+        return {"sent": sent, "failed": failed, "total": len(emails)}
+
+    try:
+        return run_async(_run())
+    except Exception as exc:
+        logger.exception("Announcement task failed")
+        raise self.retry(exc=exc)
+
+
 @celery_app.task
 def send_pending_invite_reminders_task():
     """Periodic task: send invite reminders for pending invites after 3 and 7 days."""
