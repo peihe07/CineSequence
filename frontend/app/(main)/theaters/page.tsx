@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
@@ -62,13 +63,31 @@ function FeaturedGroup({ group }: { group: TheaterGroup }) {
           <div className={styles.movieList}>
             {group.recommended_movies.map((movie) => (
               <article key={movie.tmdb_id} className={styles.movieItem}>
-                <p className={styles.movieTitle}>{movie.title_en}</p>
-                <div className={styles.movieTags}>
-                  {movie.match_tags.map((tag) => (
-                    <span key={`${movie.tmdb_id}-${tag}`} className={styles.movieTag}>
-                      {getTagLabel(tag, locale)}
-                    </span>
-                  ))}
+                <div className={styles.movieCard}>
+                  {movie.poster_url ? (
+                    <Image
+                      src={movie.poster_url}
+                      alt={movie.title_en}
+                      className={styles.moviePoster}
+                      width={72}
+                      height={106}
+                      unoptimized
+                    />
+                  ) : (
+                    <div className={styles.moviePosterFallback}>
+                      <span>{movie.title_en.slice(0, 1)}</span>
+                    </div>
+                  )}
+                  <div className={styles.movieCopy}>
+                    <p className={styles.movieTitle}>{movie.title_en}</p>
+                    <div className={styles.movieTags}>
+                      {movie.match_tags.map((tag) => (
+                        <span key={`${movie.tmdb_id}-${tag}`} className={styles.movieTag}>
+                          {getTagLabel(tag, locale)}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               </article>
             ))}
@@ -83,18 +102,36 @@ function FeaturedGroup({ group }: { group: TheaterGroup }) {
           <div className={styles.watchlistList}>
             {group.shared_watchlist.map((movie) => (
               <article key={movie.tmdb_id} className={styles.watchlistItem}>
-                <div className={styles.watchlistMeta}>
-                  <p className={styles.movieTitle}>{movie.title_en}</p>
-                  <span className={styles.supporterBadge}>
-                    {t('theaters.supporters', { count: movie.supporter_count })}
-                  </span>
-                </div>
-                <div className={styles.movieTags}>
-                  {movie.match_tags.map((tag) => (
-                    <span key={`${movie.tmdb_id}-${tag}`} className={styles.movieTag}>
-                      {getTagLabel(tag, locale)}
-                    </span>
-                  ))}
+                <div className={styles.movieCard}>
+                  {movie.poster_url ? (
+                    <Image
+                      src={movie.poster_url}
+                      alt={movie.title_en}
+                      className={styles.moviePoster}
+                      width={72}
+                      height={106}
+                      unoptimized
+                    />
+                  ) : (
+                    <div className={styles.moviePosterFallback}>
+                      <span>{movie.title_en.slice(0, 1)}</span>
+                    </div>
+                  )}
+                  <div className={styles.movieCopy}>
+                    <div className={styles.watchlistMeta}>
+                      <p className={styles.movieTitle}>{movie.title_en}</p>
+                      <span className={styles.supporterBadge}>
+                        {t('theaters.supporters', { count: movie.supporter_count })}
+                      </span>
+                    </div>
+                    <div className={styles.movieTags}>
+                      {movie.match_tags.map((tag) => (
+                        <span key={`${movie.tmdb_id}-${tag}`} className={styles.movieTag}>
+                          {getTagLabel(tag, locale)}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               </article>
             ))}
@@ -216,13 +253,31 @@ function GroupCard({ group, onJoin, onLeave }: {
           <div className={styles.movieList}>
             {group.recommended_movies.map((movie) => (
               <article key={movie.tmdb_id} className={styles.movieItem}>
-                <p className={styles.movieTitle}>{movie.title_en}</p>
-                <div className={styles.movieTags}>
-                  {movie.match_tags.map((tag) => (
-                    <span key={`${movie.tmdb_id}-${tag}`} className={styles.movieTag}>
-                      {getTagLabel(tag, locale)}
-                    </span>
-                  ))}
+                <div className={styles.movieCard}>
+                  {movie.poster_url ? (
+                    <Image
+                      src={movie.poster_url}
+                      alt={movie.title_en}
+                      className={styles.moviePoster}
+                      width={72}
+                      height={106}
+                      unoptimized
+                    />
+                  ) : (
+                    <div className={styles.moviePosterFallback}>
+                      <span>{movie.title_en.slice(0, 1)}</span>
+                    </div>
+                  )}
+                  <div className={styles.movieCopy}>
+                    <p className={styles.movieTitle}>{movie.title_en}</p>
+                    <div className={styles.movieTags}>
+                      {movie.match_tags.map((tag) => (
+                        <span key={`${movie.tmdb_id}-${tag}`} className={styles.movieTag}>
+                          {getTagLabel(tag, locale)}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               </article>
             ))}
@@ -235,11 +290,27 @@ function GroupCard({ group, onJoin, onLeave }: {
             <div className={styles.watchlistListCompact}>
               {group.shared_watchlist.slice(0, 2).map((movie) => (
                 <article key={movie.tmdb_id} className={styles.watchlistItemCompact}>
-                  <div className={styles.watchlistMeta}>
-                    <p className={styles.movieTitle}>{movie.title_en}</p>
-                    <span className={styles.supporterBadge}>
-                      {t('theaters.supporters', { count: movie.supporter_count })}
-                    </span>
+                  <div className={styles.movieCardCompact}>
+                    {movie.poster_url ? (
+                      <Image
+                        src={movie.poster_url}
+                        alt={movie.title_en}
+                        className={styles.moviePosterCompact}
+                        width={44}
+                        height={64}
+                        unoptimized
+                      />
+                    ) : (
+                      <div className={styles.moviePosterCompactFallback}>
+                        <span>{movie.title_en.slice(0, 1)}</span>
+                      </div>
+                    )}
+                    <div className={styles.watchlistMeta}>
+                      <p className={styles.movieTitle}>{movie.title_en}</p>
+                      <span className={styles.supporterBadge}>
+                        {t('theaters.supporters', { count: movie.supporter_count })}
+                      </span>
+                    </div>
                   </div>
                 </article>
               ))}

@@ -29,8 +29,8 @@ const {
       is_member: boolean
       shared_tags: string[]
       member_preview: Array<{ id: string; name: string; avatar_url: string | null }>
-      recommended_movies: Array<{ tmdb_id: number; title_en: string; match_tags: string[] }>
-      shared_watchlist: Array<{ tmdb_id: number; title_en: string; match_tags: string[]; supporter_count: number }>
+      recommended_movies: Array<{ tmdb_id: number; title_en: string; poster_url: string | null; match_tags: string[] }>
+      shared_watchlist: Array<{ tmdb_id: number; title_en: string; poster_url: string | null; match_tags: string[]; supporter_count: number }>
       recent_messages: Array<{ id: string; body: string; created_at: string; can_delete: boolean; user: { id: string; name: string; avatar_url: string | null } }>
       recent_activity: Array<{
         id: string
@@ -179,10 +179,10 @@ describe('TheatersPage', () => {
           { id: 'u2', name: 'Bea', avatar_url: null },
         ],
         recommended_movies: [
-          { tmdb_id: 1, title_en: 'Pulp Fiction', match_tags: ['twist'] },
+          { tmdb_id: 1, title_en: 'Pulp Fiction', poster_url: 'https://image.test/pulp-fiction.jpg', match_tags: ['twist'] },
         ],
         shared_watchlist: [
-          { tmdb_id: 2, title_en: 'Arrival', match_tags: ['mindfuck', 'twist'], supporter_count: 2 },
+          { tmdb_id: 2, title_en: 'Arrival', poster_url: 'https://image.test/arrival.jpg', match_tags: ['mindfuck', 'twist'], supporter_count: 2 },
         ],
         recent_messages: [
           {
@@ -227,7 +227,7 @@ describe('TheatersPage', () => {
         shared_tags: ['slowburn'],
         member_preview: [],
         recommended_movies: [
-          { tmdb_id: 3, title_en: 'Chungking Express', match_tags: ['slowburn'] },
+          { tmdb_id: 3, title_en: 'Chungking Express', poster_url: 'https://image.test/chungking-express.jpg', match_tags: ['slowburn'] },
         ],
         shared_watchlist: [],
         recent_messages: [],
@@ -243,8 +243,10 @@ describe('TheatersPage', () => {
     expect(screen.getAllByText('mindfuck').length).toBeGreaterThan(0)
     expect(screen.getAllByText('Start With').length).toBeGreaterThan(0)
     expect(screen.getByText('Pulp Fiction')).toBeTruthy()
+    expect(screen.getByAltText('Pulp Fiction')).toBeTruthy()
     expect(screen.getAllByText('Shared Watchlist').length).toBeGreaterThan(0)
     expect(screen.getByText('Arrival')).toBeTruthy()
+    expect(screen.getByAltText('Arrival')).toBeTruthy()
     expect(screen.getByText('Recent Activity')).toBeTruthy()
     expect(screen.getByText('Ari started "Late-Night Brain Melt"')).toBeTruthy()
     expect(screen.getByText('Bea replied to "Late-Night Brain Melt"')).toBeTruthy()

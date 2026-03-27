@@ -1,9 +1,14 @@
 """Tests for group engine: affinity computation and auto-assign logic."""
 
+from unittest.mock import AsyncMock
+
+import pytest
+
 from app.services.group_engine import (
     AUTO_ASSIGN_THRESHOLD,
     TAG_INDEX,
     TAG_KEYS,
+    _hydrate_group_movies_with_posters,
     build_shared_watchlist,
     compute_group_affinity,
     get_shared_tags,
@@ -145,6 +150,23 @@ class TestSharedTagsAndRecommendations:
             "mindfuck" in movie["match_tags"] or "twist" in movie["match_tags"]
             for movie in watchlist
         )
+
+    @pytest.mark.asyncio
+    async def test_group_movies_are_hydrated_with_poster_urls(self, monkeypatch):
+        get_movies_mock = AsyncMock(return_value={
+            680: type("Movie", (), {"poster_url": "https://image.tmdb.org/t/p/w500/pulp-fiction.jpg"})(),
+            329: type("Movie", (), {"poster_url": "https://image.tmdb.org/t/p/w500/jurassic-park.jpg"})(),
+        })
+        monkeypatch.setattr("app.services.group_engine.get_movies", get_movies_mock)
+
+        hydrated = await _hydrate_group_movies_with_posters([
+            {"tmdb_id": 680, "title_en": "Pulp Fiction", "match_tags": ["twist"]},
+            {"tmdb_id": 329, "title_en": "Jurassic Park", "match_tags": ["crowdPleaser"]},
+        ])
+
+        assert hydrated[0]["poster_url"] == "https://image.tmdb.org/t/p/w500/pulp-fiction.jpg"
+        assert hydrated[1]["poster_url"] == "https://image.tmdb.org/t/p/w500/jurassic-park.jpg"
+        get_movies_mock.assert_awaited_once_with([329, 680])
 
 
 class TestShouldActivateGroup:

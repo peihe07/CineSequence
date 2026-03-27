@@ -7,6 +7,7 @@ export interface TheaterUserSummary {
 export interface TheaterMovie {
   tmdb_id: number
   title_en: string
+  poster_url: string | null
   match_tags: string[]
 }
 

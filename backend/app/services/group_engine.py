@@ -14,6 +14,7 @@ from app.models.group_message import GroupMessage
 from app.models.theater_list import TheaterList, TheaterListReply
 from app.models.user import User
 from app.services.r2_storage import normalize_public_object_url
+from app.services.tmdb_client import get_movies
 
 logger = logging.getLogger(__name__)
 
@@ -167,6 +168,27 @@ def build_shared_watchlist(
     return [movie for _, movie in scored_movies[:limit]]
 
 
+async def _hydrate_group_movies_with_posters(movie_rows: list[dict]) -> list[dict]:
+    """Attach poster_url to group-level movie payloads from TMDB metadata."""
+    tmdb_ids = sorted({
+        int(movie["tmdb_id"])
+        for movie in movie_rows
+        if int(movie.get("tmdb_id", 0)) > 0
+    })
+    if not tmdb_ids:
+        return movie_rows
+
+    movies_by_id = await get_movies(tmdb_ids)
+    hydrated: list[dict] = []
+    for movie in movie_rows:
+        detailed = movies_by_id.get(int(movie["tmdb_id"]))
+        hydrated.append({
+            **movie,
+            "poster_url": detailed.poster_url if detailed else None,
+        })
+    return hydrated
+
+
 async def _member_preview(
     db: AsyncSession,
     group_id: str,
@@ -316,6 +338,16 @@ async def build_group_payload(
         if member.dna_profile and member.dna_profile.tag_vector is not None
     ]
 
+    recommended_movies = recommend_movies_for_group(group.primary_tags or [], tag_vector)
+    shared_watchlist = build_shared_watchlist(group.primary_tags or [], member_vectors)
+    hydrated_movies = await _hydrate_group_movies_with_posters(
+        [*recommended_movies, *shared_watchlist]
+    )
+    poster_by_tmdb_id = {
+        int(movie["tmdb_id"]): movie.get("poster_url")
+        for movie in hydrated_movies
+    }
+
     return {
         "id": group.id,
         "name": group.name,
@@ -341,8 +373,20 @@ async def build_group_payload(
             viewer_id=viewer.id if viewer else None,
         ),
         "recent_activity": await _recent_activity(db, group.id),
-        "recommended_movies": recommend_movies_for_group(group.primary_tags or [], tag_vector),
-        "shared_watchlist": build_shared_watchlist(group.primary_tags or [], member_vectors),
+        "recommended_movies": [
+            {
+                **movie,
+                "poster_url": poster_by_tmdb_id.get(int(movie["tmdb_id"])),
+            }
+            for movie in recommended_movies
+        ],
+        "shared_watchlist": [
+            {
+                **movie,
+                "poster_url": poster_by_tmdb_id.get(int(movie["tmdb_id"])),
+            }
+            for movie in shared_watchlist
+        ],
     }
 
 
@@ -452,7 +496,8 @@ async def _build_group_payloads_for_groups(
             }
         )
 
-    payloads = []
+    group_movie_payloads: dict[str, tuple[list[dict], list[dict]]] = {}
+    all_group_movies: list[dict] = []
     for group in groups:
         members = members_by_group.get(group.id, [])
         member_vectors = [
@@ -460,13 +505,34 @@ async def _build_group_payloads_for_groups(
             for member in members
             if member.dna_profile and member.dna_profile.tag_vector is not None
         ]
+        recommended_movies = recommend_movies_for_group(
+            group.primary_tags or [],
+            tag_vector,
+        )
+        shared_watchlist = build_shared_watchlist(
+            group.primary_tags or [],
+            member_vectors,
+        )
+        group_movie_payloads[group.id] = (recommended_movies, shared_watchlist)
+        all_group_movies.extend(recommended_movies)
+        all_group_movies.extend(shared_watchlist)
+
+    hydrated_movies = await _hydrate_group_movies_with_posters(all_group_movies)
+    poster_by_tmdb_id = {
+        int(movie["tmdb_id"]): movie.get("poster_url")
+        for movie in hydrated_movies
+    }
+
+    payloads = []
+    for group in groups:
+        recommended_movies, shared_watchlist = group_movie_payloads[group.id]
+        members = members_by_group.get(group.id, [])
         recent_messages = list(reversed(messages_by_group.get(group.id, [])))
         recent_activity = sorted(
             activity_by_group.get(group.id, []),
             key=lambda item: item["created_at"],
             reverse=True,
         )[:6]
-
         payloads.append(
             {
                 "id": group.id,
@@ -489,14 +555,20 @@ async def _build_group_payloads_for_groups(
                 ],
                 "recent_messages": recent_messages,
                 "recent_activity": recent_activity,
-                "recommended_movies": recommend_movies_for_group(
-                    group.primary_tags or [],
-                    tag_vector,
-                ),
-                "shared_watchlist": build_shared_watchlist(
-                    group.primary_tags or [],
-                    member_vectors,
-                ),
+                "recommended_movies": [
+                    {
+                        **movie,
+                        "poster_url": poster_by_tmdb_id.get(int(movie["tmdb_id"])),
+                    }
+                    for movie in recommended_movies
+                ],
+                "shared_watchlist": [
+                    {
+                        **movie,
+                        "poster_url": poster_by_tmdb_id.get(int(movie["tmdb_id"])),
+                    }
+                    for movie in shared_watchlist
+                ],
             }
         )
 

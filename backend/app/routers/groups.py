@@ -45,6 +45,7 @@ class GroupMemberOut(BaseModel):
 class GroupMovieOut(BaseModel):
     tmdb_id: int
     title_en: str
+    poster_url: str | None = None
     match_tags: list[str]
 
 

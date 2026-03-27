@@ -292,11 +292,29 @@ function TheaterDetailContent() {
         <div className={styles.list}>
           {group.recommended_movies.map((movie) => (
             <article key={movie.tmdb_id} className={styles.item}>
-              <p className={styles.itemTitle}>{movie.title_en}</p>
-              <div className={styles.tags}>
-                {movie.match_tags.map((tag) => (
-                  <span key={`${movie.tmdb_id}-${tag}`} className={styles.tag}>{getTagLabel(tag, locale)}</span>
-                ))}
+              <div className={styles.listItemRow}>
+                {movie.poster_url ? (
+                  <Image
+                    src={movie.poster_url}
+                    alt={movie.title_en}
+                    className={styles.itemPoster}
+                    width={72}
+                    height={106}
+                    unoptimized
+                  />
+                ) : (
+                  <div className={styles.itemPosterFallback}>
+                    <span>{movie.title_en.slice(0, 1)}</span>
+                  </div>
+                )}
+                <div className={styles.itemContentBlock}>
+                  <p className={styles.itemTitle}>{movie.title_en}</p>
+                  <div className={styles.tags}>
+                    {movie.match_tags.map((tag) => (
+                      <span key={`${movie.tmdb_id}-${tag}`} className={styles.tag}>{getTagLabel(tag, locale)}</span>
+                    ))}
+                  </div>
+                </div>
               </div>
             </article>
           ))}
@@ -308,14 +326,32 @@ function TheaterDetailContent() {
         <div className={styles.list}>
           {group.shared_watchlist.map((movie) => (
             <article key={movie.tmdb_id} className={styles.item}>
-              <div className={styles.itemRow}>
-                <p className={styles.itemTitle}>{movie.title_en}</p>
-                <span className={styles.supporterBadge}>{t('theaters.supporters', { count: movie.supporter_count })}</span>
-              </div>
-              <div className={styles.tags}>
-                {movie.match_tags.map((tag) => (
-                  <span key={`${movie.tmdb_id}-${tag}`} className={styles.tag}>{getTagLabel(tag, locale)}</span>
-                ))}
+              <div className={styles.listItemRow}>
+                {movie.poster_url ? (
+                  <Image
+                    src={movie.poster_url}
+                    alt={movie.title_en}
+                    className={styles.itemPoster}
+                    width={72}
+                    height={106}
+                    unoptimized
+                  />
+                ) : (
+                  <div className={styles.itemPosterFallback}>
+                    <span>{movie.title_en.slice(0, 1)}</span>
+                  </div>
+                )}
+                <div className={styles.itemContentBlock}>
+                  <div className={styles.itemRow}>
+                    <p className={styles.itemTitle}>{movie.title_en}</p>
+                    <span className={styles.supporterBadge}>{t('theaters.supporters', { count: movie.supporter_count })}</span>
+                  </div>
+                  <div className={styles.tags}>
+                    {movie.match_tags.map((tag) => (
+                      <span key={`${movie.tmdb_id}-${tag}`} className={styles.tag}>{getTagLabel(tag, locale)}</span>
+                    ))}
+                  </div>
+                </div>
               </div>
             </article>
           ))}

@@ -89,8 +89,19 @@ describe('TheaterDetailDynamicPage', () => {
         is_member: true,
         shared_tags: ['mindfuck'],
         member_preview: [],
-        recommended_movies: [{ tmdb_id: 1, title_en: 'Pulp Fiction', match_tags: ['mindfuck'] }],
-        shared_watchlist: [{ tmdb_id: 2, title_en: 'Arrival', match_tags: ['mindfuck'], supporter_count: 2 }],
+        recommended_movies: [{
+          tmdb_id: 1,
+          title_en: 'Pulp Fiction',
+          poster_url: 'https://image.test/pulp-fiction.jpg',
+          match_tags: ['mindfuck'],
+        }],
+        shared_watchlist: [{
+          tmdb_id: 2,
+          title_en: 'Arrival',
+          poster_url: 'https://image.test/arrival.jpg',
+          match_tags: ['mindfuck'],
+          supporter_count: 2,
+        }],
         recent_messages: [],
         recent_activity: [],
       })
@@ -131,7 +142,9 @@ describe('TheaterDetailDynamicPage', () => {
     expect(apiMock).toHaveBeenNthCalledWith(1, '/groups/mobius_loop')
     expect(apiMock).toHaveBeenNthCalledWith(2, '/groups/mobius_loop/lists')
     expect(screen.getByText('Pulp Fiction')).toBeTruthy()
+    expect(screen.getByAltText('Pulp Fiction')).toBeTruthy()
     expect(screen.getByText('Arrival')).toBeTruthy()
+    expect(screen.getByAltText('Arrival')).toBeTruthy()
     expect(screen.getByText('神隱少女')).toBeTruthy()
     expect(screen.getByText('Spirited Away')).toBeTruthy()
     expect(screen.getByText('Fantasy / Adventure • 125 min')).toBeTruthy()
