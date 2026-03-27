@@ -1,6 +1,6 @@
 # Load Testing
 
-This directory contains `k6` scripts for staged load checks against the live or staging deployment.
+This guide covers the `k6` scripts under `loadtest/` for staged load checks against the live or staging deployment.
 
 ## Prerequisite
 

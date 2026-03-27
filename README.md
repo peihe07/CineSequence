@@ -1,6 +1,6 @@
 # Cine Sequence
 
-A movie-taste-based social matching platform. Users go through a 20-round binary movie selection process ("sequencing") that builds a multi-dimensional taste profile ("Movie DNA"), then get matched with people who share similar cinematic preferences.
+A movie-taste-based social matching platform. Users go through a 30-round binary movie selection process ("sequencing") that builds a multi-dimensional taste profile ("Movie DNA"), then get matched with people who share similar cinematic preferences.
 
 ## Architecture
 
@@ -17,13 +17,14 @@ A movie-taste-based social matching platform. Users go through a 20-round binary
 1. **Register** — email (magic link), name, avatar, gender, region
 2. **Set preferences** — who to meet (gender, age) or pure taste match
 3. **Seed movie** — user inputs a seed movie to establish initial signal
-4. **Sequencing (20 rounds, extendable to 35)** — binary movie choices across 3 phases:
-   - Phase 1 (1-5): Quadrant Scan — randomized from 40-pair pool with guaranteed quadrant axis coverage
-   - Phase 2 (6-12): Deep Dive — AI-powered nuance testing with 266-movie curated candidate pool
-   - Phase 3 (13-20): Soul Tags — AI-powered value/personality probing with hard duplicate prevention
-   - Extension (+5 per batch, up to 3 batches): Optional extra rounds for finer profiling
+4. **Sequencing (30 rounds, extendable to 36)** — binary movie choices across 3 phases:
+   - Phase 1 (1-7 at base=30): Quadrant Scan — rule-based pairs with guaranteed core-axis coverage plus supplementary axis sampling
+   - Phase 2 (8-18 at base=30): Deep Dive — AI-powered adaptive tag exploration with curated candidate selection
+   - Phase 3 (19-30 at base=30): Soul Tags / convergence — AI-powered confidence and contradiction retesting with hard duplicate prevention
+   - Phase boundaries scale with `base_rounds`; legacy 20-round sessions remain 1-5 / 6-12 / 13+
+   - Extension (+3 per batch, up to 2 batches): Optional extra Phase 3 rounds for finer profiling
 5. **DNA Result** — archetype, tag cloud, AI personality reading (supports seasonal retest)
-6. **Matching** — cosine-similarity-based candidate discovery, reciprocal preference filtering, group recommendations
+6. **Matching** — candidate discovery uses `0.7 * tag cosine similarity + 0.3 * quadrant similarity`, then applies reciprocal preference filtering and a configurable minimum threshold
 7. **Invite** — the initiator reviews discovered candidates and sends invites individually by email
 8. **Accept** — only the invited recipient can accept or decline; confirmed matches receive a ticket deep link
 
@@ -119,7 +120,7 @@ cd backend
 
 ### Load Testing
 
-Basic `k6` load scripts live under [loadtest/README.md](/Users/peihe/Personal_Projects/movie-dna/loadtest/README.md).
+Basic `k6` load scripts are documented in [docs/loadtest.md](/Users/peihe/Personal_Projects/movie-dna/docs/loadtest.md).
 
 Typical starting runs:
 

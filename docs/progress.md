@@ -1,6 +1,6 @@
 # Cine Sequence - Development Progress
 
-> Last updated: 2026-03-24
+> Last updated: 2026-03-27
 
 ## Overall Status
 
@@ -15,6 +15,20 @@
 | Phase 7: Polish + Infrastructure | Done | 100% |
 | Cross-cutting | Done | 100% |
 | **Overall** | | **100%** |
+
+## 2026-03-27 Issue Cleanup
+
+- [x] Theater post-MVP issue audit completed against `docs/theaters-issues.md`
+- [x] `auto_assign` changed to additive membership updates instead of destructive rebuilds
+- [x] Theater group visibility and single-group fetch paths no longer load the full group list
+- [x] Theater list item delete now enforces item-owner or list-owner authorization
+- [x] Theater detail mutations now use counter-based loading and clear stale error state after success
+- [x] `groupStore.autoAssign` now reuses `/groups/auto-assign` payload instead of double-fetching groups
+- [x] `groupStore.postGroupMessage` now trims body and ignores whitespace-only submissions
+- [x] Theater router request schemas now enforce payload length and list-size limits at the Pydantic layer
+- [x] Theater detail mutation callbacks now guard against empty `groupId` and skip malformed `/groups//...` requests
+- [x] Theater group index payload assembly now batches members, messages, and activity instead of per-group N+1 queries
+- [x] Theater frontend group/list/message/activity types now come from a shared type module instead of duplicated local interfaces
 
 ---
 
@@ -258,6 +272,44 @@
 - [x] Prometheus metrics endpoint (/metrics — request latency, error rate, in-flight, Celery queue depth, app gauges)
 - [x] Grafana dashboard config (request rate, latency percentiles, error rate, queue depth, user funnel)
 - [x] Frontend /admin page (stats overview, funnel chart, daily mini charts, API usage cards, token usage + cost)
+
+### 7f: Theaters As Shared Curation Hub (in progress — 2026-03-27)
+- [x] Product direction chosen: theaters become the primary shared curation surface after DNA
+- [x] Constraint recorded: current theater rules are not being changed yet
+- [x] Roadmap doc created: `docs/theaters-curation-roadmap.md`
+- [x] Phase A: DNA completion → theater auto-assignment + CTA handoff
+  - [x] DNA build success now triggers `/groups/auto-assign`
+  - [x] DNA result page now includes a direct CTA to `/theaters`
+  - [x] Theater page copy now frames theaters as the next step after DNA
+- [x] Phase B: Theaters index IA shift (Why This Hall, Hall Picks, Shared Watchlist first)
+  - [x] Added a featured primary theater block at the top of `/theaters`
+  - [x] Promoted hall picks and shared watchlist above the remaining room library
+  - [x] Join/leave controls are now secondary to content-first room entry
+- [~] Phase C: User-curated theater lists MVP
+  - [x] Added backend models for `theater_lists` and `theater_list_items`
+  - [x] Added migration scaffold for theater list tables
+  - [x] Added list create/list endpoints under `/groups/{group_id}/lists`
+  - [x] Theater detail page now lists and creates basic user-curated lists
+  - [x] Quick-create flow now supports seeding a new list with initial movie titles
+  - [x] Added item append/remove endpoints under `/groups/{group_id}/lists/{list_id}/items`
+  - [x] Theater detail page now supports per-list title add/remove controls
+  - [x] Theater detail page now supports per-list item reorder controls
+  - [x] Theater detail page now supports per-item curator note editing
+  - [x] Theater detail page now supports list title/description editing
+  - [x] Theater detail page now supports deleting a full list
+  - [x] List editing UI is now gated behind explicit edit mode to reduce detail-page density
+  - [x] Visibility is currently fixed to `group` until more scopes are designed
+- [~] Phase D: List-scoped replies
+  - [x] Added backend model + migration scaffold for `theater_list_replies`
+  - [x] Added reply create/delete endpoints under `/groups/{group_id}/lists/{list_id}/replies`
+  - [x] Theater detail page now renders flat replies under each user-created list
+  - [x] Theater members can post and delete their own replies inline
+  - [ ] Threaded replies remain intentionally deferred
+- [~] Phase E: Activity feed + theater signals
+  - [x] Added recent theater activity payloads for list creation and list replies
+  - [x] Featured theater block now surfaces recent activity on `/theaters`
+  - [x] In-app notifications now cover theater assignment and new theater list activity
+  - [x] Legacy theater message board is now visually minimized instead of removed
 - [x] Admin UI: chart color differentiation (teal/blue), text contrast fixes
 - [x] Docker compose: Prometheus + Grafana services (dev + prod)
 
