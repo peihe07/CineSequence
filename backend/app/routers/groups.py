@@ -558,19 +558,35 @@ async def update_theater_list(
 ) -> TheaterListOut:
     """Update theater list title and description."""
     await _require_group_membership(db, group_id=group_id, user_id=user.id)
-    theater_list, creator = await _get_theater_list_with_creator(db, group_id=group_id, list_id=list_id)
+    theater_list, creator = await _get_theater_list_with_creator(
+        db,
+        group_id=group_id,
+        list_id=list_id,
+    )
 
     title = body.title.strip()
     if not title:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="List title cannot be empty")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="List title cannot be empty",
+        )
 
     theater_list.title = title[:120]
-    theater_list.description = body.description.strip()[:1000] if body.description and body.description.strip() else None
+    theater_list.description = (
+        body.description.strip()[:1000]
+        if body.description and body.description.strip()
+        else None
+    )
 
     await db.commit()
     await db.refresh(theater_list)
     reply_authors = await _get_reply_authors(db, theater_list=theater_list)
-    return _serialize_theater_list(theater_list, creator, viewer_id=user.id, reply_authors=reply_authors)
+    return _serialize_theater_list(
+        theater_list,
+        creator,
+        viewer_id=user.id,
+        reply_authors=reply_authors,
+    )
 
 
 @router.delete("/{group_id}/lists/{list_id}", status_code=status.HTTP_204_NO_CONTENT)
@@ -582,7 +598,11 @@ async def delete_theater_list(
 ):
     """Delete a theater list."""
     await _require_group_membership(db, group_id=group_id, user_id=user.id)
-    theater_list, _creator = await _get_theater_list_with_creator(db, group_id=group_id, list_id=list_id)
+    theater_list, _creator = await _get_theater_list_with_creator(
+        db,
+        group_id=group_id,
+        list_id=list_id,
+    )
     await db.delete(theater_list)
     await db.commit()
 

@@ -31,7 +31,7 @@
 
 ## Low — Architecture & Future
 
-- [ ] **Detail route 用 query param** — `/theaters/detail?id=xxx` 而非 `/theaters/[id]`，已有 placeholder 未使用。
+- [x] **Detail route 已改為動態路由** — 主要入口已切到 `/theaters/[id]`，並保留舊 `/theaters/detail?id=...` 作相容層。
 - [ ] **啟動門檻太高** — `min_members_to_activate = 20`，早期幾乎所有群組顯示未啟用。
 - [ ] **無即時更新** — 留言板和片單需手動 refresh，無 WebSocket 或 polling。
 - [ ] **`TheaterListItem` circular eager-load** — `theater_list.py:62` item 反向 relationship 用 `lazy="selectin"` 會額外載入 parent + 所有 sibling items。

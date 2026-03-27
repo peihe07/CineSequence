@@ -30,7 +30,7 @@ function FeaturedGroup({ group }: { group: TheaterGroup }) {
             <p className={styles.groupSubtitle}>{group.subtitle}</p>
           </div>
         </div>
-        <Link href={`/theaters/detail?id=${group.id}`} prefetch={false} className={styles.detailLink}>
+        <Link href={`/theaters/${group.id}`} prefetch={false} className={styles.detailLink}>
           <i className="ri-arrow-right-up-line" /> {t('theaters.open')}
         </Link>
       </div>
@@ -266,7 +266,7 @@ function GroupCard({ group, onJoin, onLeave }: {
       </div>
 
       <div className={styles.cardActions}>
-        <Link href={`/theaters/detail?id=${group.id}`} prefetch={false} className={styles.detailLink}>
+        <Link href={`/theaters/${group.id}`} prefetch={false} className={styles.detailLink}>
           <i className="ri-arrow-right-up-line" /> {t('theaters.open')}
         </Link>
         <div className={styles.cardActionMeta}>

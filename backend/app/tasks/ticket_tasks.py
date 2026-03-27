@@ -1,7 +1,7 @@
 """Celery tasks for repairing missing personal ticket images."""
 
-from inspect import CORO_CREATED, getcoroutinestate
 import logging
+from inspect import CORO_CREATED, getcoroutinestate
 
 from app.tasks.async_utils import run_async, task_session
 from app.tasks.celery_app import celery_app

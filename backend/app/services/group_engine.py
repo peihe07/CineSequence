@@ -1,12 +1,12 @@
 """Group engine: auto-assign users to groups based on DNA tag affinity."""
 
-from collections import defaultdict
 import json
 import logging
 import uuid
+from collections import defaultdict
 from pathlib import Path
 
-from sqlalchemy import func, select
+from sqlalchemy import delete, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.group import Group, group_members
@@ -489,8 +489,14 @@ async def _build_group_payloads_for_groups(
                 ],
                 "recent_messages": recent_messages,
                 "recent_activity": recent_activity,
-                "recommended_movies": recommend_movies_for_group(group.primary_tags or [], tag_vector),
-                "shared_watchlist": build_shared_watchlist(group.primary_tags or [], member_vectors),
+                "recommended_movies": recommend_movies_for_group(
+                    group.primary_tags or [],
+                    tag_vector,
+                ),
+                "shared_watchlist": build_shared_watchlist(
+                    group.primary_tags or [],
+                    member_vectors,
+                ),
             }
         )
 
@@ -522,7 +528,6 @@ async def auto_assign_groups(
         for group in await get_user_groups(db, user.id)
     }
 
-    assigned = []
     for group in all_groups:
         affinity = compute_group_affinity(tag_vector, group.primary_tags or [])
         if affinity >= AUTO_ASSIGN_THRESHOLD and group.id not in existing_group_ids:

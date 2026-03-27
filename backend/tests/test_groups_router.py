@@ -459,7 +459,11 @@ async def test_member_can_delete_theater_list(client, auth_user, db_session):
 
     create_response = await client.post(
         f"/groups/{group.id}/lists",
-        json={"title": "Late-Night Brain Melt", "description": "Built for spiral conversations after midnight.", "items": []},
+        json={
+            "title": "Late-Night Brain Melt",
+            "description": "Built for spiral conversations after midnight.",
+            "items": [],
+        },
         headers=headers,
     )
     list_id = create_response.json()["id"]
@@ -615,7 +619,9 @@ async def test_member_cannot_delete_other_members_list_item(client, auth_user, d
     await db_session.commit()
     await db_session.refresh(other_user)
     await db_session.execute(group_members.insert().values(user_id=user.id, group_id=group.id))
-    await db_session.execute(group_members.insert().values(user_id=other_user.id, group_id=group.id))
+    await db_session.execute(
+        group_members.insert().values(user_id=other_user.id, group_id=group.id)
+    )
     await db_session.commit()
 
     other_headers = {
@@ -936,7 +942,9 @@ async def test_auto_assign_preserves_existing_memberships(client, auth_user, db_
     )
     db_session.add_all([profile, existing_group, matched_group])
     await db_session.commit()
-    await db_session.execute(group_members.insert().values(user_id=user.id, group_id=existing_group.id))
+    await db_session.execute(
+        group_members.insert().values(user_id=user.id, group_id=existing_group.id)
+    )
     await db_session.commit()
 
     response = await client.post("/groups/auto-assign", headers=headers)

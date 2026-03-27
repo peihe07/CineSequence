@@ -29,6 +29,7 @@
 - [x] Theater detail mutation callbacks now guard against empty `groupId` and skip malformed `/groups//...` requests
 - [x] Theater group index payload assembly now batches members, messages, and activity instead of per-group N+1 queries
 - [x] Theater frontend group/list/message/activity types now come from a shared type module instead of duplicated local interfaces
+- [x] Theater detail pages now use `/theaters/[id]` as the primary route, with old query-param links kept compatible
 
 ---
 

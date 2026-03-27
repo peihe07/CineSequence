@@ -215,3 +215,4 @@ Implication:
 - [x] Post-MVP fixes: theater detail mutation guards now short-circuit when `groupId` is missing
 - [x] Post-MVP fixes: `/groups` theater payloads now use batched list assembly instead of per-group N+1 queries
 - [x] Post-MVP fixes: shared frontend theater types consolidated into one source of truth
+- [x] Post-MVP fixes: theater detail routing migrated to `/theaters/[id]` with legacy query-param compatibility

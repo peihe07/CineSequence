@@ -50,6 +50,7 @@ export default function ProfileBasicsCard({
   nameLabel,
   bioLabel,
   bioPlaceholder,
+  addBioLabel,
   bioEmptyDisplayLabel,
   emailLabel,
   genderLabel,
