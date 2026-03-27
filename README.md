@@ -100,6 +100,23 @@ npm run test:backend:security
 If Postgres is unavailable in the current environment, integration tests will be skipped
 instead of failing during fixture setup.
 
+### Ticket Repair
+
+If some completed profiles are missing `personal_ticket_url`, you can backfill only the
+missing tickets:
+
+```bash
+cd backend
+.venv/bin/python scripts/backfill_personal_tickets.py
+```
+
+Use `--force` only when you intentionally want to regenerate every active ticket:
+
+```bash
+cd backend
+.venv/bin/python scripts/backfill_personal_tickets.py --force
+```
+
 ### Load Testing
 
 Basic `k6` load scripts live under [loadtest/README.md](/Users/peihe/Personal_Projects/movie-dna/loadtest/README.md).

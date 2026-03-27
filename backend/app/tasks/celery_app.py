@@ -31,6 +31,11 @@ celery_app.conf.beat_schedule = {
         "task": "app.tasks.match_tasks.batch_rematch_task",
         "schedule": crontab(hour=3, minute=0),  # Daily at 3 AM UTC
     },
+    "backfill-missing-personal-tickets": {
+        "task": "app.tasks.ticket_tasks.backfill_missing_personal_tickets_task",
+        "schedule": crontab(minute=15, hour="*/6"),
+        "args": (50,),
+    },
     "invite-reminders-daily": {
         "task": "app.tasks.email_tasks.send_pending_invite_reminders_task",
         "schedule": crontab(hour=4, minute=0),  # Daily at 4 AM UTC

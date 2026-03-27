@@ -299,10 +299,10 @@ class TestInviteRespondPermissions:
         assert response.status_code == 200
         data = response.json()
         assert data["ticket_image_url"] == "https://ticket.test/generated.png"
+        assert data["partner_email"] == "recipient@test.com"
 
         await db_session.refresh(recipient.dna_profile)
         assert recipient.dna_profile.personal_ticket_url == "https://ticket.test/generated.png"
-        assert data[0]["partner_email"] == "recipient@test.com"
 
     async def test_invite_sets_reminder_tracking_fields(
         self, client: AsyncClient, db_session: AsyncSession

@@ -107,6 +107,9 @@ Start command:
 celery -A app.tasks.celery_app beat --loglevel=info
 ```
 
+Beat also runs a personal-ticket repair scan every 6 hours in batches of 50 profiles.
+This only processes active completed DNA profiles where `personal_ticket_url` is missing.
+
 Both services should use the same production variables as the backend, especially:
 
 - `DATABASE_URL`
@@ -116,6 +119,22 @@ Both services should use the same production variables as the backend, especiall
 - all secrets and external API keys
 
 Neither Celery service needs public networking or a domain.
+
+## Ticket Backfill
+
+For one-time repair of older profiles that missed ticket generation:
+
+```bash
+cd backend
+.venv/bin/python scripts/backfill_personal_tickets.py
+```
+
+Use `--force` only if you want to regenerate every active ticket:
+
+```bash
+cd backend
+.venv/bin/python scripts/backfill_personal_tickets.py --force
+```
 
 ## Validation Flow
 
@@ -152,4 +171,3 @@ Do not block production rollout on `api.cinesequence.xyz` unless you specificall
 - Keep the `workers.dev` domain enabled for testing if useful, but do not use it to validate production cookie behavior.
 - Production login validation must happen on `https://cinesequence.xyz`.
 - Rotate any credentials that were ever pasted into chat, screenshots, logs, or shared documents.
-
