@@ -69,26 +69,40 @@ async def generate_personality(
     )
 
     max_retries = 2
+    client = genai.Client(api_key=settings.gemini_api_key)
+    model_candidates = settings.gemini_model_candidates
+
     for attempt in range(1, max_retries + 1):
-        try:
-            client = genai.Client(api_key=settings.gemini_api_key)
-            response = await client.aio.models.generate_content(
-                model="gemini-2.5-flash",
-                contents=f"{SYSTEM_PROMPT}\n\n---\n\n{context}",
-                config={
-                    "response_mime_type": "application/json",
-                    "temperature": 0.9,
-                    "max_output_tokens": 4096,
-                    "thinking_config": {"thinking_budget": 0},
-                },
-            )
-        except Exception:
-            logger.exception("Gemini API error for personality generation (attempt %d)", attempt)
+        response = None
+        model_used = ""
+        for model_name in model_candidates:
+            try:
+                response = await client.aio.models.generate_content(
+                    model=model_name,
+                    contents=f"{SYSTEM_PROMPT}\n\n---\n\n{context}",
+                    config={
+                        "response_mime_type": "application/json",
+                        "temperature": 0.9,
+                        "max_output_tokens": 4096,
+                        "thinking_config": {"thinking_budget": 0},
+                    },
+                )
+                model_used = model_name
+                break
+            except Exception:
+                logger.exception(
+                    "Gemini API error for personality generation "
+                    "(attempt %d, model %s)",
+                    attempt,
+                    model_name,
+                )
+
+        if response is None:
             if attempt == max_retries:
                 return None
             continue
 
-        await log_token_usage(response, call_type="personality")
+        await log_token_usage(response, call_type="personality", model=model_used)
 
         response_text = response.text.strip()
 

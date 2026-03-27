@@ -60,7 +60,7 @@
   display: flex;
   flex-direction: column;
   gap: 0.85rem;
-  min-height: min(34rem, calc(100vh - 9rem));
+  min-height: min(34rem, calc(100dvh - 9rem));
   justify-content: flex-end;
   background:
     radial-gradient(circle at top right, rgba(255, 255, 255, 0.05), transparent 22%),
@@ -160,6 +160,10 @@
     padding-top: 0.5rem;
   }
 
+  .section {
+    padding: 2.25rem 1rem;
+  }
+
   .title {
     max-width: 9ch;
   }
@@ -173,11 +177,20 @@
   }
 
   .heroSection {
-    min-height: 25rem;
+    min-height: clamp(18rem, calc(100dvh - 11rem), 24rem);
+    padding-top: 3rem;
   }
 
   .sideLabel {
     display: none;
+  }
+
+  .deck {
+    line-height: 1.65;
+  }
+
+  .heroMeta {
+    margin-top: 1.5rem;
   }
 }
 

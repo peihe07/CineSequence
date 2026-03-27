@@ -12,12 +12,34 @@ interface AIReadingProps {
   idealMovieDate: string | null
 }
 
-function useTypewriter(text: string, speed: number = 30) {
+function useShouldAnimateTypewriter() {
+  const [shouldAnimate, setShouldAnimate] = useState(true)
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') return
+
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const isCoarsePointer = window.matchMedia('(hover: none) and (pointer: coarse)').matches
+
+    setShouldAnimate(!prefersReducedMotion && !isCoarsePointer)
+  }, [])
+
+  return shouldAnimate
+}
+
+function useTypewriter(text: string, enabled: boolean, speed: number = 30) {
   const [displayed, setDisplayed] = useState('')
   const [isDone, setIsDone] = useState(false)
 
   useEffect(() => {
     if (!text) {
+      setDisplayed('')
+      setIsDone(true)
+      return
+    }
+
+    if (!enabled) {
+      setDisplayed(text)
       setIsDone(true)
       return
     }
@@ -37,7 +59,7 @@ function useTypewriter(text: string, speed: number = 30) {
     }, speed)
 
     return () => clearInterval(interval)
-  }, [text, speed])
+  }, [text, enabled, speed])
 
   return { displayed, isDone }
 }
@@ -49,9 +71,12 @@ export default function AIReading({
   idealMovieDate,
 }: AIReadingProps) {
   const { t } = useI18n()
-  const { displayed, isDone } = useTypewriter(personalityReading || '', 25)
+  const shouldAnimateTypewriter = useShouldAnimateTypewriter()
+  const { displayed, isDone } = useTypewriter(personalityReading || '', shouldAnimateTypewriter, 25)
 
   if (!personalityReading) return null
+
+  const readingText = isDone ? personalityReading : displayed
 
   return (
     <div className={styles.container}>
@@ -61,7 +86,7 @@ export default function AIReading({
 
       <div className={styles.readingBox}>
         <p className={styles.reading}>
-          {displayed}
+          {readingText}
           {!isDone && <span className={styles.cursor}>|</span>}
         </p>
       </div>

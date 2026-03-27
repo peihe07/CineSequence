@@ -6,6 +6,7 @@ const {
   fetchProgressMock,
   extendSequencingMock,
   buildDnaMock,
+  fetchResultMock,
   progressState,
   playSoundMock,
 } = vi.hoisted(() => ({
@@ -13,6 +14,7 @@ const {
   fetchProgressMock: vi.fn(),
   extendSequencingMock: vi.fn(),
   buildDnaMock: vi.fn(),
+  fetchResultMock: vi.fn(),
   playSoundMock: vi.fn(),
   progressState: {
     progress: {
@@ -39,6 +41,7 @@ vi.mock('@/stores/sequencingStore', () => ({
 vi.mock('@/stores/dnaStore', () => ({
   useDnaStore: () => ({
     buildDna: buildDnaMock,
+    fetchResult: fetchResultMock,
   }),
 }))
 
@@ -82,6 +85,7 @@ describe('SequencingCompletePage', () => {
     fetchProgressMock.mockReset()
     extendSequencingMock.mockReset()
     buildDnaMock.mockReset()
+    fetchResultMock.mockReset()
     playSoundMock.mockReset()
     progressState.progress = {
       extension_batches: 1,
@@ -96,7 +100,7 @@ describe('SequencingCompletePage', () => {
   })
 
   it('renders completion stats and routes to dna', async () => {
-    buildDnaMock.mockResolvedValue({ archetype: { id: 'archivist' } })
+    fetchResultMock.mockResolvedValue({ archetype: { id: 'archivist' } })
 
     render(<SequencingCompletePage />)
 
@@ -112,12 +116,29 @@ describe('SequencingCompletePage', () => {
     fireEvent.click(screen.getByRole('button', { name: 'View DNA' }))
 
     await waitFor(() => {
+      expect(fetchResultMock).toHaveBeenCalledTimes(1)
+      expect(buildDnaMock).not.toHaveBeenCalled()
+      expect(replaceMock).toHaveBeenCalledWith('/dna')
+    })
+  })
+
+  it('builds dna when no stored result exists', async () => {
+    fetchResultMock.mockResolvedValue(null)
+    buildDnaMock.mockResolvedValue({ archetype: { id: 'archivist' } })
+
+    render(<SequencingCompletePage />)
+
+    fireEvent.click(screen.getByRole('button', { name: 'View DNA' }))
+
+    await waitFor(() => {
+      expect(fetchResultMock).toHaveBeenCalledTimes(1)
       expect(buildDnaMock).toHaveBeenCalledTimes(1)
       expect(replaceMock).toHaveBeenCalledWith('/dna')
     })
   })
 
   it('shows the user on the completion page when building the report fails', async () => {
+    fetchResultMock.mockResolvedValue(null)
     buildDnaMock.mockResolvedValue(null)
 
     render(<SequencingCompletePage />)
@@ -125,6 +146,7 @@ describe('SequencingCompletePage', () => {
     fireEvent.click(screen.getByRole('button', { name: 'View DNA' }))
 
     await waitFor(() => {
+      expect(fetchResultMock).toHaveBeenCalledTimes(1)
       expect(buildDnaMock).toHaveBeenCalledTimes(1)
     })
 
@@ -133,6 +155,7 @@ describe('SequencingCompletePage', () => {
   })
 
   it('allows retrying dna generation manually after a failed build', async () => {
+    fetchResultMock.mockResolvedValue(null)
     buildDnaMock
       .mockResolvedValueOnce(null)
       .mockResolvedValueOnce({ archetype: { id: 'archivist' } })
@@ -154,6 +177,7 @@ describe('SequencingCompletePage', () => {
     fireEvent.click(viewDnaButton)
 
     await waitFor(() => {
+      expect(fetchResultMock).toHaveBeenCalledTimes(2)
       expect(buildDnaMock).toHaveBeenCalledTimes(2)
       expect(replaceMock).toHaveBeenCalledWith('/dna')
     })
@@ -173,6 +197,7 @@ describe('SequencingCompletePage', () => {
   })
 
   it('does not route back into sequencing when the extension request fails', async () => {
+    fetchResultMock.mockResolvedValue(null)
     buildDnaMock.mockResolvedValue(null)
     extendSequencingMock.mockRejectedValue(new Error('Extend failed'))
 

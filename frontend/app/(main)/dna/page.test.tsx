@@ -87,6 +87,7 @@ vi.mock('@/lib/i18n', () => ({
         'dna.title': 'Your Cine DNA',
         'dna.deck': 'DNA deck copy',
         'dna.findMatches': 'Find matches',
+        'dna.enterTheaters': 'Enter theaters',
         'complete.extend': 'Extend analysis (+5 rounds)',
       }
       return dict[key] ?? key
@@ -207,5 +208,25 @@ describe('DnaResultPage', () => {
       expect(extendSequencingMock).toHaveBeenCalledTimes(1)
       expect(pushMock).toHaveBeenCalledWith('/sequencing')
     })
+  })
+
+  it('routes to theaters from the dna results page CTA', async () => {
+    dnaState.result = {
+      archetype: { id: 'archivist' },
+      genre_vector: {},
+      quadrant_scores: {},
+      tag_labels: {},
+      personality_reading: null,
+      hidden_traits: [],
+      conversation_style: null,
+      ideal_movie_date: null,
+      can_extend: false,
+    }
+
+    render(<DnaResultPage />)
+
+    fireEvent.click(screen.getByRole('button', { name: 'Enter theaters' }))
+
+    expect(pushMock).toHaveBeenCalledWith('/theaters')
   })
 })

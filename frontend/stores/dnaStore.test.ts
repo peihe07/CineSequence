@@ -78,17 +78,57 @@ describe('dnaStore', () => {
       conversation_style: null,
       ideal_movie_date: null,
       ticket_style: 'classic',
+      can_extend: false,
     }
 
     apiMock
       .mockResolvedValueOnce({ status: 'ready' })
       .mockResolvedValueOnce(result)
+      .mockResolvedValueOnce([])
 
     await expect(useDnaStore.getState().buildDna()).resolves.toEqual(result)
 
     expect(apiMock).toHaveBeenNthCalledWith(1, '/dna/build', { method: 'POST' })
     expect(apiMock).toHaveBeenNthCalledWith(2, '/dna/result')
+    expect(apiMock).toHaveBeenNthCalledWith(3, '/groups/auto-assign', { method: 'POST' })
     expect(useDnaStore.getState().result).toEqual(result)
+    expect(useDnaStore.getState().isBuilding).toBe(false)
+  })
+
+  it('still resolves dna results when theater auto-assignment fails', async () => {
+    const result = {
+      archetype: {
+        id: 'archivist',
+        name: 'Archivist',
+        name_en: 'Archivist',
+        icon: 'film',
+        description: 'Test archetype',
+      },
+      tag_vector: [],
+      tag_labels: {},
+      genre_vector: {},
+      quadrant_scores: {
+        mainstream_independent: 0.4,
+        rational_emotional: 0.5,
+        light_dark: 0.6,
+      },
+      personality_reading: null,
+      hidden_traits: [],
+      conversation_style: null,
+      ideal_movie_date: null,
+      ticket_style: 'classic',
+      can_extend: false,
+    }
+
+    apiMock
+      .mockResolvedValueOnce({ status: 'ready' })
+      .mockResolvedValueOnce(result)
+      .mockRejectedValueOnce(new Error('Auto-assign failed'))
+
+    await expect(useDnaStore.getState().buildDna()).resolves.toEqual(result)
+
+    expect(useDnaStore.getState().result).toEqual(result)
+    expect(useDnaStore.getState().error).toBeNull()
     expect(useDnaStore.getState().isBuilding).toBe(false)
   })
 })

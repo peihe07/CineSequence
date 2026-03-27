@@ -275,23 +275,35 @@ async def _pool_fallback(
 
 async def _call_gemini(user_context: str, round_number: int) -> dict | None:
     """Single Gemini API call, returns parsed result or None."""
-    try:
-        client = genai.Client(api_key=settings.gemini_api_key)
-        response = await client.aio.models.generate_content(
-            model="gemini-2.5-flash",
-            contents=f"{SYSTEM_PROMPT}\n\n---\n\n{user_context}",
-            config={
-                "response_mime_type": "application/json",
-                "temperature": 0.8,
-                "max_output_tokens": 1024,
-                "thinking_config": {"thinking_budget": 0},
-            },
-        )
-    except Exception:
-        logger.exception("Gemini API error for round %s", round_number)
+    client = genai.Client(api_key=settings.gemini_api_key)
+    response = None
+    model_used = ""
+
+    for model_name in settings.gemini_model_candidates:
+        try:
+            response = await client.aio.models.generate_content(
+                model=model_name,
+                contents=f"{SYSTEM_PROMPT}\n\n---\n\n{user_context}",
+                config={
+                    "response_mime_type": "application/json",
+                    "temperature": 0.8,
+                    "max_output_tokens": 1024,
+                    "thinking_config": {"thinking_budget": 0},
+                },
+            )
+            model_used = model_name
+            break
+        except Exception:
+            logger.exception(
+                "Gemini API error for round %s with model %s",
+                round_number,
+                model_name,
+            )
+
+    if response is None:
         return None
 
-    await log_token_usage(response, call_type="ai_pair")
+    await log_token_usage(response, call_type="ai_pair", model=model_used)
 
     response_text = response.text.strip()
 

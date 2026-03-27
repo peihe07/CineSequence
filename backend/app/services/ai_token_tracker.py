@@ -8,10 +8,11 @@ from app.models.ai_token_log import AiTokenLog
 
 logger = logging.getLogger(__name__)
 
-# Gemini 2.5 Flash pricing (per 1M tokens, as of 2025-03)
-# Input: $0.15 / 1M tokens, Output: $0.60 / 1M tokens
-INPUT_PRICE_PER_M = 0.15
-OUTPUT_PRICE_PER_M = 0.60
+MODEL_PRICING_PER_M = {
+    "gemini-2.5-flash": {"input": 0.15, "output": 0.60},
+    "gemini-2.5-flash-lite": {"input": 0.10, "output": 0.40},
+}
+DEFAULT_MODEL = "gemini-2.5-flash-lite"
 
 
 async def log_token_usage(
@@ -51,8 +52,23 @@ async def log_token_usage(
 
 
 def estimate_cost(prompt_tokens: int, completion_tokens: int) -> float:
-    """Estimate USD cost based on Gemini 2.5 Flash pricing."""
+    """Estimate USD cost based on the configured default Gemini model pricing."""
+    return estimate_cost_for_model(
+        prompt_tokens,
+        completion_tokens,
+        model=DEFAULT_MODEL,
+    )
+
+
+def estimate_cost_for_model(
+    prompt_tokens: int,
+    completion_tokens: int,
+    *,
+    model: str,
+) -> float:
+    """Estimate USD cost based on Gemini model pricing."""
+    pricing = MODEL_PRICING_PER_M.get(model, MODEL_PRICING_PER_M[DEFAULT_MODEL])
     return (
-        (prompt_tokens / 1_000_000) * INPUT_PRICE_PER_M
-        + (completion_tokens / 1_000_000) * OUTPUT_PRICE_PER_M
+        (prompt_tokens / 1_000_000) * pricing["input"]
+        + (completion_tokens / 1_000_000) * pricing["output"]
     )

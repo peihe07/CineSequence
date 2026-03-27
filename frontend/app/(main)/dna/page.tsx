@@ -175,6 +175,13 @@ function DnaResultContent() {
             <Button
               variant="primary"
               size="lg"
+              onClick={() => router.push('/theaters')}
+            >
+              <i className="ri-movie-line" /> {t('dna.enterTheaters')}
+            </Button>
+            <Button
+              variant="secondary"
+              size="lg"
               onClick={() => router.push('/matches')}
             >
               <i className="ri-group-line" /> {t('dna.findMatches')}

@@ -3,7 +3,7 @@
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.deps import get_current_user, get_db
@@ -97,6 +97,22 @@ async def build_dna_profile(
         raise HTTPException(status_code=400, detail="Sequencing not completed yet")
 
     session = await get_or_create_session(db, user.id)
+
+    existing_result = await db.execute(
+        select(DnaProfile).where(DnaProfile.session_id == session.id)
+    )
+    existing_profile = existing_result.scalar_one_or_none()
+    latest_pick_at = await db.scalar(
+        select(func.max(Pick.created_at)).where(Pick.session_id == session.id)
+    )
+
+    if (
+        existing_profile
+        and existing_profile.updated_at is not None
+        and (latest_pick_at is None or latest_pick_at <= existing_profile.updated_at)
+    ):
+        return DnaBuildResponse(status="ready", message="DNA profile already up to date")
+
     picks, genre_map = await _get_session_picks_and_genres(db, session.id)
     dna_data = build_dna(picks, genre_map)
 
@@ -111,10 +127,7 @@ async def build_dna_profile(
     )
 
     # Check if DNA already exists for this session (extension re-compute)
-    existing = await db.execute(
-        select(DnaProfile).where(DnaProfile.session_id == session.id)
-    )
-    profile = existing.scalar_one_or_none()
+    profile = existing_profile
 
     if profile:
         # Update existing profile (extension re-computation)

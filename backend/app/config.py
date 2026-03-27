@@ -20,6 +20,8 @@ class Settings(BaseSettings):
     # External APIs
     tmdb_api_key: str = ""
     gemini_api_key: str = ""
+    gemini_model: str = "gemini-2.5-flash-lite"
+    gemini_fallback_models: str = "gemini-2.5-flash"
     resend_api_key: str = ""
 
     # Auth
@@ -76,6 +78,21 @@ class Settings(BaseSettings):
             for email in self.admin_emails.split(",")
             if email.strip()
         }
+
+    @property
+    def gemini_model_candidates(self) -> list[str]:
+        candidates = [self.gemini_model]
+        candidates.extend(
+            model.strip()
+            for model in self.gemini_fallback_models.split(",")
+            if model.strip()
+        )
+
+        deduped: list[str] = []
+        for model in candidates:
+            if model not in deduped:
+                deduped.append(model)
+        return deduped
 
     @model_validator(mode="after")
     def validate_cookie_settings(self):

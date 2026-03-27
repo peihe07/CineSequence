@@ -40,6 +40,14 @@ interface DnaState {
   fetchResult: () => Promise<DnaResult | null>
 }
 
+async function autoAssignTheaters(): Promise<void> {
+  try {
+    await api('/groups/auto-assign', { method: 'POST' })
+  } catch {
+    // Theater assignment should not block DNA completion.
+  }
+}
+
 export const useDnaStore = create<DnaState>((set, get) => ({
   result: null,
   isBuilding: false,
@@ -52,6 +60,9 @@ export const useDnaStore = create<DnaState>((set, get) => ({
       const res = await api<{ status: string }>('/dna/build', { method: 'POST' })
       if (res.status === 'ready') {
         const result = await get().fetchResult()
+        if (result) {
+          await autoAssignTheaters()
+        }
         set({ isBuilding: false })
         return result
       }

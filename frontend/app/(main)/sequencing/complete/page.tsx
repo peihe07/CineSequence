@@ -13,7 +13,7 @@ export default function SequencingCompletePage() {
   const router = useRouter()
   const { t } = useI18n()
   const { progress, fetchProgress, extendSequencing } = useSequencingStore()
-  const { buildDna } = useDnaStore()
+  const { buildDna, fetchResult } = useDnaStore()
   const [isPreparingDna, setIsPreparingDna] = useState(false)
 
   useEffect(() => {
@@ -23,8 +23,14 @@ export default function SequencingCompletePage() {
 
   const handleViewDna = async () => {
     setIsPreparingDna(true)
-    const result = await buildDna()
-    if (result) {
+    const existingResult = await fetchResult()
+    if (existingResult) {
+      router.replace('/dna')
+      return
+    }
+
+    const builtResult = await buildDna()
+    if (builtResult) {
       router.replace('/dna')
       return
     }
