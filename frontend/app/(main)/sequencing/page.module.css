@@ -113,9 +113,32 @@
 }
 
 .heroMeta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
   font-size: 0.68rem;
   letter-spacing: 0.14em;
   color: rgba(255, 255, 255, 0.46);
+}
+
+.infoBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border: none;
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 0.8rem;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.infoBtn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.7);
 }
 
 .ambientGlow {

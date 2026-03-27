@@ -42,9 +42,9 @@ export default function SequencingCompletePage() {
   }
 
   const extensionBatches = progress?.extension_batches ?? 0
-  const maxBatches = progress?.max_extension_batches ?? 3
+  const maxBatches = progress?.max_extension_batches ?? 2
   const canExtend = progress?.can_extend ?? false
-  const totalRounds = progress?.total_rounds ?? 20
+  const totalRounds = progress?.total_rounds ?? 30
   const remaining = maxBatches - extensionBatches
 
   return (

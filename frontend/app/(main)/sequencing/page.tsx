@@ -11,6 +11,7 @@ import PhaseIndicator from '@/components/sequencing/PhaseIndicator'
 import LiveTagCloud from '@/components/sequencing/LiveTagCloud'
 import SkipActions from '@/components/sequencing/SkipActions'
 import OnboardingOverlay from '@/components/sequencing/OnboardingOverlay'
+import SequencingInfoModal from '@/components/sequencing/SequencingInfoModal'
 import styles from './page.module.css'
 
 export default function SequencingPage() {
@@ -18,6 +19,7 @@ export default function SequencingPage() {
   const { t } = useI18n()
   const roundStartTime = useRef<number>(Date.now())
   const [isBootstrapping, setIsBootstrapping] = useState(true)
+  const [showInfo, setShowInfo] = useState(false)
   const {
     currentPair,
     progress,
@@ -103,6 +105,7 @@ export default function SequencingPage() {
       } as React.CSSProperties}
     >
       <OnboardingOverlay />
+      <SequencingInfoModal open={showInfo} onClose={() => setShowInfo(false)} />
 
       <div className={styles.ambientGlow} />
 
@@ -112,20 +115,27 @@ export default function SequencingPage() {
           <div className={styles.heroCopy}>
             <p className={styles.eyebrow}>{t('archive.sequencingCue')}</p>
             <p className={styles.heroMeta}>
-              {t('seq.round', { round: String(roundNumber).padStart(2, '0'), total: progress?.total_rounds ?? 20 })}
+              {t('seq.round', { round: String(roundNumber).padStart(2, '0'), total: progress?.total_rounds ?? 30 })}
               {' // '}
               {t('seq.phase', { phase })}
+              <button
+                className={styles.infoBtn}
+                onClick={() => setShowInfo(true)}
+                aria-label={t('seqInfo.title')}
+              >
+                <i className="ri-information-line" />
+              </button>
             </p>
           </div>
           <div className={styles.header}>
-            <PhaseIndicator phase={phase} round={roundNumber} totalRounds={progress?.total_rounds ?? 20} />
+            <PhaseIndicator phase={phase} round={roundNumber} totalRounds={progress?.total_rounds ?? 30} />
           </div>
         </section>
 
         <section className={`${styles.section} ${styles.stageSection}`}>
           <LiquidTube
             currentRound={roundNumber}
-            totalRounds={progress?.total_rounds ?? 20}
+            totalRounds={progress?.total_rounds ?? 30}
             liquidColor={ambientColor || undefined}
           />
 
