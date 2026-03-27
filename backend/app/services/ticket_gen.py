@@ -172,24 +172,6 @@ def _build_ticket_html(
     if bio:
         bio_html = f'<p class="bio">{escape(bio)}</p>'
 
-    tags_section = ""
-    if top_tags:
-        tags_section = f"""
-        <div class="perforation"></div>
-        <div class="section">
-          <span class="section-label">TASTE TAGS</span>
-          <div class="tags">{tags_html}</div>
-        </div>"""
-
-    favorites_section = ""
-    if favorite_movies:
-        favorites_section = f"""
-        <div class="perforation"></div>
-        <div class="section">
-          <span class="section-label">MUST-WATCH FILMS</span>
-          <div class="favorites">{favorites_html}</div>
-        </div>"""
-
     genres_html = ""
     if top_genres:
         genre_labels = " / ".join(escape(g) for g in top_genres[:5])

@@ -1,18 +1,17 @@
 """Tests for personal ticket generation: HTML rendering via Playwright."""
 
-import pytest
 from io import BytesIO
 
+import pytest
 from PIL import Image
 
 from app.services.ticket_gen import (
     STYLE_PALETTES,
     TICKET_H,
     TICKET_W,
-    generate_personal_ticket,
     _build_ticket_html,
+    generate_personal_ticket,
 )
-
 
 _DEFAULTS = {
     "name": "Alice",
@@ -141,7 +140,16 @@ class TestStylePalettes:
     """Test style palette configuration."""
 
     def test_all_styles_have_required_keys(self):
-        required = {"bg_from", "bg_to", "accent", "accent_alpha", "text", "muted", "stripe", "stripe_end"}
+        required = {
+            "bg_from",
+            "bg_to",
+            "accent",
+            "accent_alpha",
+            "text",
+            "muted",
+            "stripe",
+            "stripe_end",
+        }
         for style, palette in STYLE_PALETTES.items():
             assert required.issubset(palette.keys()), f"{style} missing keys"
 
