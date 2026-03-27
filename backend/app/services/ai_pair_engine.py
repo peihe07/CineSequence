@@ -173,13 +173,6 @@ def _build_user_context(
         if dim:
             tag_freq[dim] = tag_freq.get(dim, 0) + 1
 
-    # Build all seen tmdb_ids to avoid repeats
-    seen_ids = set()
-    for pick in picks:
-        seen_ids.add(pick.get("movie_a_tmdb_id"))
-        seen_ids.add(pick.get("movie_b_tmdb_id"))
-    seen_ids.discard(None)
-
     context: dict = {
         "phase": phase,
         "round": round_number,
@@ -187,7 +180,6 @@ def _build_user_context(
         "skips": skipped_movies[-5:],
         "current_tags": tag_freq,
         "quadrant_vector": quadrant_scores,
-        "already_seen_tmdb_ids": list(seen_ids),
     }
 
     # Include curated candidate pool for Gemini to choose from
@@ -323,21 +315,6 @@ async def get_ai_pair(
     if extra_excluded_tmdb_ids:
         seen_ids.update(extra_excluded_tmdb_ids)
 
-    # Build base context picks with extra exclusions
-    context_picks = list(picks)
-    if extra_excluded_tmdb_ids:
-        context_picks.extend(
-            {
-                "movie_a_tmdb_id": tmdb_id,
-                "movie_b_tmdb_id": None,
-                "chosen_tmdb_id": None,
-                "round_number": round_number,
-                "pick_mode": None,
-                "test_dimension": None,
-            }
-            for tmdb_id in extra_excluded_tmdb_ids
-        )
-
     # Build tag frequency for candidate selection
     tag_freq: dict[str, int] = {}
     for pick in picks:
@@ -350,27 +327,12 @@ async def get_ai_pair(
     retry_excluded: list[int] = []
 
     for attempt in range(1, MAX_RETRIES + 1):
-        # Add retry-excluded IDs to context for this attempt
-        attempt_picks = list(context_picks)
-        if retry_excluded:
-            attempt_picks.extend(
-                {
-                    "movie_a_tmdb_id": tmdb_id,
-                    "movie_b_tmdb_id": None,
-                    "chosen_tmdb_id": None,
-                    "round_number": round_number,
-                    "pick_mode": None,
-                    "test_dimension": None,
-                }
-                for tmdb_id in retry_excluded
-            )
-
         # Select fresh candidates each attempt (excludes seen + retry-excluded)
         all_excluded = seen_ids | set(retry_excluded)
         candidates = _select_candidates(tag_freq, all_excluded, phase)
 
         user_context = _build_user_context(
-            phase, round_number, attempt_picks, quadrant_scores,
+            phase, round_number, picks, quadrant_scores,
             candidates, retry_excluded if retry_excluded else None,
         )
         result = await _call_gemini(user_context, round_number)
