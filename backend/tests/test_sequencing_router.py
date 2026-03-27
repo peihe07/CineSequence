@@ -10,6 +10,7 @@ from app.models.pick import Pick
 from app.models.sequencing_session import SequencingSession
 from app.models.user import SequencingStatus, User
 from app.services.auth_utils import create_access_token
+from app.services.pair_engine import PHASE1_COUNT
 from app.services.tmdb_client import MovieInfo
 
 
@@ -195,7 +196,7 @@ class TestPair:
         session = session_result.scalar_one()
         session.reroll_excluded_tmdb_ids = [4101, 4102]
 
-        for round_number in range(1, 6):
+        for round_number in range(1, PHASE1_COUNT + 1):
             db_session.add(Pick(
                 user_id=user.id,
                 session_id=session.id,
@@ -236,7 +237,7 @@ class TestPair:
         )
         session = session_result.scalar_one()
 
-        for round_number in range(1, 6):
+        for round_number in range(1, PHASE1_COUNT + 1):
             db_session.add(Pick(
                 user_id=user.id,
                 session_id=session.id,
@@ -280,7 +281,7 @@ class TestPair:
         )
         session = session_result.scalar_one()
 
-        for round_number in range(1, 6):
+        for round_number in range(1, PHASE1_COUNT + 1):
             db_session.add(Pick(
                 user_id=user.id,
                 session_id=session.id,
@@ -361,7 +362,7 @@ class TestPick:
         )
         session = session_result.scalar_one()
 
-        for round_number in range(1, 6):
+        for round_number in range(1, PHASE1_COUNT + 1):
             db_session.add(Pick(
                 user_id=user.id,
                 session_id=session.id,
@@ -413,7 +414,7 @@ class TestPick:
         )
         session = session_result.scalar_one()
 
-        for round_number in range(1, 6):
+        for round_number in range(1, PHASE1_COUNT + 1):
             db_session.add(Pick(
                 user_id=user.id,
                 session_id=session.id,
@@ -514,7 +515,7 @@ class TestSkip:
         )
         session = session_result.scalar_one()
 
-        for round_number in range(1, 6):
+        for round_number in range(1, PHASE1_COUNT + 1):
             db_session.add(Pick(
                 user_id=user.id,
                 session_id=session.id,
