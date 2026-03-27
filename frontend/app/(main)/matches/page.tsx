@@ -6,6 +6,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { useMatchStore, MatchItem } from '@/stores/matchStore'
 import { api } from '@/lib/api'
 import { useI18n } from '@/lib/i18n'
+import { getTagLabel } from '@/lib/tagLabels'
 import TicketCard from '@/components/match/TicketCard'
 import FlowGuard from '@/components/guards/FlowGuard'
 import styles from './page.module.css'
@@ -148,7 +149,7 @@ function CarouselDots({ count, activeIndex, onSelect }: {
 
 /** Fullscreen modal overlay showing the partner's personal ticket image */
 function TicketModal({ match, onClose }: { match: MatchItem; onClose: () => void }) {
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
   const pct = Math.round(match.similarity_score * 100)
 
   useEffect(() => {
@@ -195,22 +196,70 @@ function TicketModal({ match, onClose }: { match: MatchItem; onClose: () => void
               <span className={styles.modalArchetype}>{match.partner_archetype}</span>
             )}
           </div>
-          <span className={styles.modalScore}>{pct}%</span>
+          <div className={styles.modalScoreBlock}>
+            <span className={styles.modalScoreLabel}>{t('ticket.similarity')}</span>
+            <span className={styles.modalScore}>{pct}%</span>
+          </div>
         </div>
 
-        <div className={styles.modalImageFrame}>
-          {match.ticket_image_url ? (
-            <img
-              src={match.ticket_image_url}
-              alt={`${t('matches.matched')} — ${match.partner_name}`}
-              className={styles.modalImage}
-            />
-          ) : (
-            <div className={styles.modalPlaceholder}>
-              <i className="ri-ticket-2-line" aria-hidden="true" />
-              <span>{t('matches.ticketGenerating')}</span>
+        <div className={styles.modalTicket}>
+          <div className={styles.modalStub}>
+            <span className={styles.modalStubLabel}>{t('matches.viewTicket')}</span>
+            <span className={styles.modalStubScore}>{pct}%</span>
+          </div>
+
+          <div className={styles.modalPerforation} aria-hidden="true">
+            <div className={styles.modalPunchHole} />
+            <div className={styles.modalDashedLine} />
+            <div className={styles.modalPunchHole} />
+          </div>
+
+          <div className={styles.modalMain}>
+            <div className={styles.modalIdentityRow}>
+              <div className={styles.modalCopy}>
+                <div className={styles.modalName}>{match.partner_name}</div>
+                {match.partner_archetype && (
+                  <div className={styles.modalArchetype}>{match.partner_archetype}</div>
+                )}
+              </div>
+              {match.partner_avatar_url && (
+                <img
+                  src={match.partner_avatar_url}
+                  alt={match.partner_name}
+                  className={styles.modalAvatar}
+                />
+              )}
             </div>
-          )}
+
+            {match.partner_bio && (
+              <p className={styles.modalBio}>{match.partner_bio}</p>
+            )}
+
+            {match.shared_tags.length > 0 && (
+              <div className={styles.modalTags} aria-label={t('ticket.sharedTags')}>
+                {match.shared_tags.slice(0, 5).map((tag) => (
+                  <span key={tag} className={styles.modalTag}>
+                    {getTagLabel(tag, locale)}
+                  </span>
+                ))}
+              </div>
+            )}
+
+            {match.ticket_image_url ? (
+              <div className={styles.modalImageStrip}>
+                <img
+                  src={match.ticket_image_url}
+                  alt={`${t('matches.matched')} — ${match.partner_name}`}
+                  className={styles.modalImage}
+                />
+              </div>
+            ) : (
+              <div className={styles.modalPlaceholder}>
+                <i className="ri-ticket-2-line" aria-hidden="true" />
+                <span>{t('matches.ticketGenerating')}</span>
+              </div>
+            )}
+          </div>
         </div>
 
         {match.partner_email && (
