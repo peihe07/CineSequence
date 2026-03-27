@@ -500,6 +500,57 @@ function TheaterDetailContent() {
                   >
                     {t('theaters.listItemAdd')}
                   </button>
+                  <div className={styles.searchComposer}>
+                    <div className={styles.searchInputRow}>
+                      <input
+                        className={styles.input}
+                        value={appendSearchQueryByList[list.id] ?? ''}
+                        onChange={(event) => setAppendSearchQueryByList((current) => ({
+                          ...current,
+                          [list.id]: event.target.value,
+                        }))}
+                        placeholder={t('theaters.listMovieSearchPlaceholder')}
+                      />
+                      <button
+                        className={styles.secondaryBtn}
+                        disabled={isMutating || !!appendSearchingByList[list.id]}
+                        onClick={() => void handleSearchListMovie(list.id)}
+                      >
+                        {appendSearchingByList[list.id] ? t('common.loading') : t('theaters.listMovieSearch')}
+                      </button>
+                    </div>
+                    {appendSearchErrorByList[list.id] && (
+                      <p className={styles.meta}>{appendSearchErrorByList[list.id]}</p>
+                    )}
+                    {(appendSearchResultsByList[list.id] ?? []).length > 0 && (
+                      <div className={styles.searchResults}>
+                        {(appendSearchResultsByList[list.id] ?? []).map((movie) => (
+                          <button
+                            key={movie.tmdb_id}
+                            type="button"
+                            className={styles.searchResultItem}
+                            onClick={() => void handleSelectListMovie(list.id, movie)}
+                          >
+                            {movie.poster_url ? (
+                              <img
+                                src={movie.poster_url}
+                                alt={movie.title_zh || movie.title_en}
+                                className={styles.searchResultPoster}
+                              />
+                            ) : (
+                              <div className={styles.searchResultPosterFallback}>
+                                <i className="ri-movie-line" />
+                              </div>
+                            )}
+                            <span className={styles.searchResultText}>
+                              {movie.title_zh || movie.title_en}
+                              {movie.year ? ` (${movie.year})` : ''}
+                            </span>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </div>
               )}
 
@@ -575,6 +626,68 @@ function TheaterDetailContent() {
               onChange={(event) => setDraftListItems(event.target.value)}
               placeholder={t('theaters.listItemsPlaceholder')}
             />
+            <div className={styles.searchComposer}>
+              <div className={styles.searchInputRow}>
+                <input
+                  className={styles.input}
+                  value={draftSearchQuery}
+                  onChange={(event) => setDraftSearchQuery(event.target.value)}
+                  placeholder={t('theaters.listMovieSearchPlaceholder')}
+                />
+                <button
+                  className={styles.secondaryBtn}
+                  disabled={isMutating || isDraftSearching}
+                  onClick={() => void handleSearchDraftMovies()}
+                >
+                  {isDraftSearching ? t('common.loading') : t('theaters.listMovieSearch')}
+                </button>
+              </div>
+              {draftSearchError && <p className={styles.meta}>{draftSearchError}</p>}
+              {draftSearchResults.length > 0 && (
+                <div className={styles.searchResults}>
+                  {draftSearchResults.map((movie) => (
+                    <button
+                      key={movie.tmdb_id}
+                      type="button"
+                      className={styles.searchResultItem}
+                      onClick={() => handleSelectDraftMovie(movie)}
+                    >
+                      {movie.poster_url ? (
+                        <img
+                          src={movie.poster_url}
+                          alt={movie.title_zh || movie.title_en}
+                          className={styles.searchResultPoster}
+                        />
+                      ) : (
+                        <div className={styles.searchResultPosterFallback}>
+                          <i className="ri-movie-line" />
+                        </div>
+                      )}
+                      <span className={styles.searchResultText}>
+                        {movie.title_zh || movie.title_en}
+                        {movie.year ? ` (${movie.year})` : ''}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              )}
+              {draftSelectedMovies.length > 0 && (
+                <div className={styles.selectedMovieGrid}>
+                  {draftSelectedMovies.map((movie) => (
+                    <div key={movie.tmdb_id} className={styles.selectedMovieChip}>
+                      <span>{movie.title_zh || movie.title_en}</span>
+                      <button
+                        type="button"
+                        className={styles.inlineBtn}
+                        onClick={() => handleRemoveDraftMovie(movie.tmdb_id)}
+                      >
+                        {t('theaters.listItemRemove')}
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
             <button className={styles.primaryBtn} disabled={isMutating} onClick={() => void handleCreateList()}>
               {t('theaters.listCreate')}
             </button>
