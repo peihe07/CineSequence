@@ -35,6 +35,8 @@ logs/
 # Storage
 uploads/
 generated_tickets/
+output/
+backend/output/
 
 # Docker
 docker-compose.override.yml
