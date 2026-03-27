@@ -3,8 +3,10 @@
 import Link from 'next/link'
 import { useState } from 'react'
 import { useParams } from 'next/navigation'
+import { api } from '@/lib/api'
 import { useI18n } from '@/lib/i18n'
 import { getTagLabel } from '@/lib/tagLabels'
+import type { TheaterMovieSearchResult } from '@/lib/theater-types'
 import FlowGuard from '@/components/guards/FlowGuard'
 import { useTheaterDetail } from '../detail/useTheaterDetail'
 import styles from '../detail/page.module.css'
@@ -17,9 +19,18 @@ function TheaterDetailContent() {
   const [draftListTitle, setDraftListTitle] = useState('')
   const [draftListDescription, setDraftListDescription] = useState('')
   const [draftListItems, setDraftListItems] = useState('')
+  const [draftSelectedMovies, setDraftSelectedMovies] = useState<TheaterMovieSearchResult[]>([])
+  const [draftSearchQuery, setDraftSearchQuery] = useState('')
+  const [draftSearchResults, setDraftSearchResults] = useState<TheaterMovieSearchResult[]>([])
+  const [draftSearchError, setDraftSearchError] = useState<string | null>(null)
+  const [isDraftSearching, setIsDraftSearching] = useState(false)
   const [draftListMetaById, setDraftListMetaById] = useState<Record<string, { title: string; description: string }>>({})
   const [editingListId, setEditingListId] = useState<string | null>(null)
   const [draftItemByList, setDraftItemByList] = useState<Record<string, string>>({})
+  const [appendSearchQueryByList, setAppendSearchQueryByList] = useState<Record<string, string>>({})
+  const [appendSearchResultsByList, setAppendSearchResultsByList] = useState<Record<string, TheaterMovieSearchResult[]>>({})
+  const [appendSearchErrorByList, setAppendSearchErrorByList] = useState<Record<string, string | null>>({})
+  const [appendSearchingByList, setAppendSearchingByList] = useState<Record<string, boolean>>({})
   const [draftNoteByItem, setDraftNoteByItem] = useState<Record<string, string>>({})
   const [draftReplyByList, setDraftReplyByList] = useState<Record<string, string>>({})
   const {
@@ -56,12 +67,69 @@ function TheaterDetailContent() {
       title: draftListTitle,
       description: draftListDescription,
       itemTitles: draftListItems.split('\n'),
+      items: draftSelectedMovies.map((movie) => ({
+        tmdb_id: movie.tmdb_id,
+        title_en: movie.title_en,
+        title_zh: movie.title_zh,
+        poster_url: movie.poster_url,
+        genres: movie.genres,
+        runtime_minutes: movie.runtime_minutes,
+        match_tags: [],
+        note: null,
+      })),
     })
     if (created) {
       setDraftListTitle('')
       setDraftListDescription('')
       setDraftListItems('')
+      setDraftSelectedMovies([])
+      setDraftSearchQuery('')
+      setDraftSearchResults([])
+      setDraftSearchError(null)
     }
+  }
+
+  async function searchMovies(query: string) {
+    if (query.trim().length < 2) {
+      return []
+    }
+
+    return api<TheaterMovieSearchResult[]>(`/sequencing/search?q=${encodeURIComponent(query.trim())}`)
+  }
+
+  async function handleSearchDraftMovies() {
+    if (draftSearchQuery.trim().length < 2) {
+      setDraftSearchResults([])
+      setDraftSearchError(null)
+      return
+    }
+
+    setIsDraftSearching(true)
+    try {
+      const results = await searchMovies(draftSearchQuery)
+      setDraftSearchResults(results)
+      setDraftSearchError(null)
+    } catch (err) {
+      setDraftSearchResults([])
+      setDraftSearchError(err instanceof Error ? err.message : t('common.error'))
+    } finally {
+      setIsDraftSearching(false)
+    }
+  }
+
+  function handleSelectDraftMovie(movie: TheaterMovieSearchResult) {
+    setDraftSelectedMovies((current) => (
+      current.some((entry) => entry.tmdb_id === movie.tmdb_id)
+        ? current
+        : [...current, movie]
+    ))
+    setDraftSearchQuery('')
+    setDraftSearchResults([])
+    setDraftSearchError(null)
+  }
+
+  function handleRemoveDraftMovie(tmdbId: number) {
+    setDraftSelectedMovies((current) => current.filter((movie) => movie.tmdb_id !== tmdbId))
   }
 
   async function handleUpdateList(listId: string, fallbackTitle: string, fallbackDescription: string | null) {
@@ -86,6 +154,49 @@ function TheaterDetailContent() {
     const created = await appendListItem(listId, draftItemByList[listId] ?? '')
     if (created) {
       setDraftItemByList((current) => ({ ...current, [listId]: '' }))
+    }
+  }
+
+  async function handleSearchListMovie(listId: string) {
+    const query = appendSearchQueryByList[listId] ?? ''
+    if (query.trim().length < 2) {
+      setAppendSearchResultsByList((current) => ({ ...current, [listId]: [] }))
+      setAppendSearchErrorByList((current) => ({ ...current, [listId]: null }))
+      return
+    }
+
+    setAppendSearchingByList((current) => ({ ...current, [listId]: true }))
+    try {
+      const results = await searchMovies(query)
+      setAppendSearchResultsByList((current) => ({ ...current, [listId]: results }))
+      setAppendSearchErrorByList((current) => ({ ...current, [listId]: null }))
+    } catch (err) {
+      setAppendSearchResultsByList((current) => ({ ...current, [listId]: [] }))
+      setAppendSearchErrorByList((current) => ({
+        ...current,
+        [listId]: err instanceof Error ? err.message : t('common.error'),
+      }))
+    } finally {
+      setAppendSearchingByList((current) => ({ ...current, [listId]: false }))
+    }
+  }
+
+  async function handleSelectListMovie(listId: string, movie: TheaterMovieSearchResult) {
+    const created = await appendListItem(listId, {
+      tmdb_id: movie.tmdb_id,
+      title_en: movie.title_en,
+      title_zh: movie.title_zh,
+      poster_url: movie.poster_url,
+      genres: movie.genres,
+      runtime_minutes: movie.runtime_minutes,
+      match_tags: [],
+      note: null,
+    })
+
+    if (created) {
+      setAppendSearchQueryByList((current) => ({ ...current, [listId]: '' }))
+      setAppendSearchResultsByList((current) => ({ ...current, [listId]: [] }))
+      setAppendSearchErrorByList((current) => ({ ...current, [listId]: null }))
     }
   }
 
