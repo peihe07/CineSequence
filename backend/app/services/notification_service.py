@@ -1,5 +1,4 @@
 """Service for creating and querying notifications."""
-
 import logging
 import uuid
 from collections.abc import Awaitable, Callable
@@ -13,6 +12,20 @@ from app.models.notification import Notification, NotificationType
 logger = logging.getLogger(__name__)
 
 NotificationCallable = Callable[..., Awaitable[Any]]
+
+
+async def _rollback_async_sessions(*values: Any) -> None:
+    """Rollback any AsyncSession objects embedded in the provided values."""
+    for value in values:
+        if isinstance(value, AsyncSession):
+            try:
+                await value.rollback()
+            except Exception:
+                logger.exception("Failed to rollback async session after notification failure")
+        elif isinstance(value, dict):
+            await _rollback_async_sessions(*value.values())
+        elif isinstance(value, (list, tuple, set)):
+            await _rollback_async_sessions(*value)
 
 
 async def create_notification(
@@ -54,6 +67,7 @@ async def emit_notification_safely(
     try:
         return await notifier(*args, **kwargs)
     except Exception:
+        await _rollback_async_sessions(args, kwargs)
         logger.exception("Notification emission failed: %s", context)
         return None
 

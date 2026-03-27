@@ -1,6 +1,7 @@
 from unittest.mock import AsyncMock
 
 import pytest
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.services.notification_service import emit_notification_safely
 
@@ -24,3 +25,14 @@ class TestEmitNotificationSafely:
 
         assert result is None
         notifier.assert_awaited_once_with("db", 123)
+
+    @pytest.mark.asyncio
+    async def test_rolls_back_async_session_after_notifier_failure(self):
+        db = AsyncMock(spec=AsyncSession)
+        notifier = AsyncMock(side_effect=RuntimeError("boom"))
+
+        result = await emit_notification_safely(notifier, db, 123, context="test-rollback")
+
+        assert result is None
+        notifier.assert_awaited_once_with(db, 123)
+        db.rollback.assert_awaited_once()

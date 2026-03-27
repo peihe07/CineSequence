@@ -1,6 +1,6 @@
 import pytest
 import pytest_asyncio
-from sqlalchemy import select
+from sqlalchemy import select, text
 
 from app.models.dna_profile import DnaProfile
 from app.models.group import Group, group_members
@@ -1083,6 +1083,50 @@ async def test_auto_assign_preserves_existing_memberships(client, auth_user, db_
     )
     group_ids = {group_id for (group_id,) in membership_result.all()}
     assert "afterhours" in group_ids
+    assert "mobius_loop" in group_ids
+
+
+@pytest.mark.asyncio
+async def test_auto_assign_recovers_from_notification_db_failure(
+    client, auth_user, db_session, monkeypatch
+):
+    user, headers = auth_user
+    profile = DnaProfile(
+        user_id=user.id,
+        archetype_id="time_traveler",
+        tag_vector=[0.8] * 30,
+        genre_vector={},
+        quadrant_scores={},
+        ticket_style="classic",
+        version=1,
+        is_active=True,
+    )
+    group = Group(
+        id="mobius_loop",
+        name="Mobius Loop",
+        subtitle="Mind-benders only",
+        icon="ri-tornado-line",
+        primary_tags=["mindfuck", "twist"],
+        is_hidden=False,
+        min_members_to_activate=1,
+        member_count=0,
+        is_active=False,
+    )
+    db_session.add_all([profile, group])
+    await db_session.commit()
+
+    async def failing_notifier(db, user_id, *, theater_name, theater_id):
+        await db.execute(text("SELECT * FROM notifications_table_that_does_not_exist"))
+
+    monkeypatch.setattr("app.routers.groups.notify_theater_assigned", failing_notifier)
+
+    response = await client.post("/groups/auto-assign", headers=headers)
+
+    assert response.status_code == 200
+    membership_result = await db_session.execute(
+        select(group_members.c.group_id).where(group_members.c.user_id == user.id)
+    )
+    group_ids = {group_id for (group_id,) in membership_result.all()}
     assert "mobius_loop" in group_ids
 
 
