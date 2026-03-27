@@ -176,6 +176,23 @@ class TestAssignArchetype:
         result = assign_archetype(vector, {})
         assert result["id"] == "emotional_sponge"
 
+    def test_negative_raw_signal_penalizes_matching_archetype(self):
+        """Skip/rejection signals should affect archetype scoring even if display vector is clamped."""
+        vector = [0.0] * 30
+        vector[TAG_INDEX["tearjerker"]] = 1.0
+        vector[TAG_INDEX["uplifting"]] = 0.9
+        vector[TAG_INDEX["romanticCore"]] = 0.8
+        vector[TAG_INDEX["comingOfAge"]] = 0.7
+        raw_scores = [0.0] * 30
+        raw_scores[TAG_INDEX["tearjerker"]] = -0.3
+        raw_scores[TAG_INDEX["uplifting"]] = -0.3
+        raw_scores[TAG_INDEX["romanticCore"]] = -0.3
+        raw_scores[TAG_INDEX["comingOfAge"]] = -0.3
+
+        score_without_penalty = _score_archetype("emotional_sponge", vector, {})
+        score_with_penalty = _score_archetype("emotional_sponge", vector, {}, raw_scores)
+        assert score_with_penalty < score_without_penalty
+
 
 class TestLogDampenedNormalization:
     """Test that log-dampened normalization compresses repeated-test advantage."""
@@ -366,7 +383,12 @@ class TestBuildDna:
         assert len(result["tag_vector"]) == 30
 
 
-def _score_archetype(archetype_id: str, tag_vector: list[float], genre_vector: dict) -> float:
+def _score_archetype(
+    archetype_id: str,
+    tag_vector: list[float],
+    genre_vector: dict,
+    raw_tag_scores: list[float] | None = None,
+) -> float:
     """Helper to compute score for a specific archetype (mirrors assign_archetype logic)."""
     arch = next(a for a in ARCHETYPES if a["id"] == archetype_id)
     # IDF-weighted tag sum
@@ -375,6 +397,13 @@ def _score_archetype(archetype_id: str, tag_vector: list[float], genre_vector: d
         for tag in arch.get("match_tags", [])
         if tag in TAG_INDEX
     )
+    negative_penalty = 0.0
+    if raw_tag_scores is not None:
+        negative_penalty = sum(
+            abs(min(raw_tag_scores[TAG_INDEX[tag]], 0.0)) * TAG_IDF.get(tag, 1.0)
+            for tag in arch.get("match_tags", [])
+            if tag in TAG_INDEX
+        )
     # Genre affinity × 0.5
     archetype_genre_names = {
         GENRE_ID_TO_NAME[gid]
@@ -389,4 +418,4 @@ def _score_archetype(archetype_id: str, tag_vector: list[float], genre_vector: d
         if matching_genres
         else 0.0
     )
-    return tag_score + genre_score
+    return tag_score + genre_score - negative_penalty
