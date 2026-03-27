@@ -6,7 +6,7 @@ from httpx import AsyncClient
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models.dna_profile import DnaProfile, TAG_VECTOR_DIMENSIONS
+from app.models.dna_profile import TAG_VECTOR_DIMENSIONS, DnaProfile
 from app.models.pick import Pick, PickMode
 from app.models.sequencing_session import SequencingSession, SessionStatus
 from app.models.user import Gender, SequencingStatus, User
