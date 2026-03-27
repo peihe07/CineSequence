@@ -113,24 +113,45 @@ def _get_tag_label(tag_key: str) -> str:
     )
 
 
+def _encode_font_base64(path: Path) -> str | None:
+    """Read a font file and return its base64-encoded data URI."""
+    if not path.exists():
+        return None
+    import base64
+    data = path.read_bytes()
+    b64 = base64.b64encode(data).decode("ascii")
+    return f"data:font/truetype;base64,{b64}"
+
+
+# 啟動時預載字型，避免每次都讀檔
+_FONT_DATA_URIS: dict[str, str | None] = {}
+
+
+def _get_font_data_uri(weight: str) -> str | None:
+    if weight not in _FONT_DATA_URIS:
+        path = _fonts_dir / f"NotoSansTC-{'Bold' if weight == '700' else 'Regular'}.ttf"
+        _FONT_DATA_URIS[weight] = _encode_font_base64(path)
+    return _FONT_DATA_URIS[weight]
+
+
 def _build_font_face_css() -> str:
-    """Build @font-face CSS for bundled Noto Sans TC fonts."""
-    regular = _fonts_dir / "NotoSansTC-Regular.ttf"
-    bold = _fonts_dir / "NotoSansTC-Bold.ttf"
+    """Build @font-face CSS with base64-embedded fonts."""
     css = ""
-    if regular.exists():
+    regular_uri = _get_font_data_uri("400")
+    if regular_uri:
         css += f"""
 @font-face {{
   font-family: 'Noto Sans TC';
-  src: url('file://{regular}') format('truetype');
+  src: url('{regular_uri}') format('truetype');
   font-weight: 400;
   font-style: normal;
 }}"""
-    if bold.exists():
+    bold_uri = _get_font_data_uri("700")
+    if bold_uri:
         css += f"""
 @font-face {{
   font-family: 'Noto Sans TC';
-  src: url('file://{bold}') format('truetype');
+  src: url('{bold_uri}') format('truetype');
   font-weight: 700;
   font-style: normal;
 }}"""
