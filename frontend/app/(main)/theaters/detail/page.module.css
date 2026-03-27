@@ -213,6 +213,67 @@
   gap: 0.75rem;
 }
 
+.searchComposer {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.searchInputRow {
+  display: flex;
+  align-items: stretch;
+  gap: 0.75rem;
+}
+
+.searchResults,
+.selectedMovieGrid {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.searchResultItem,
+.selectedMovieChip {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.7rem 0.8rem;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.searchResultItem {
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  color: rgba(255, 255, 255, 0.84);
+}
+
+.searchResultPoster,
+.searchResultPosterFallback {
+  width: 2.2rem;
+  height: 3.1rem;
+  flex-shrink: 0;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.searchResultPoster {
+  object-fit: cover;
+}
+
+.searchResultPosterFallback {
+  display: grid;
+  place-items: center;
+  color: rgba(255, 255, 255, 0.66);
+}
+
+.searchResultText {
+  font-size: 0.85rem;
+  line-height: 1.45;
+}
+
+.selectedMovieChip {
+  justify-content: space-between;
+  color: rgba(255, 255, 255, 0.84);
+}
+
 .replyItem {
   padding: 0.8rem;
   background: rgba(255, 255, 255, 0.025);
