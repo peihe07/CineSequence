@@ -107,7 +107,7 @@ Start command:
 celery -A app.tasks.celery_app beat --loglevel=info
 ```
 
-Beat also runs a personal-ticket repair scan every 6 hours in batches of 50 profiles.
+Beat also runs a personal-ticket repair scan every 3 hours in batches of 50 profiles.
 This only processes active completed DNA profiles where `personal_ticket_url` is missing.
 
 Both services should use the same production variables as the backend, especially:

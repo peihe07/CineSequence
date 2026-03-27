@@ -76,11 +76,12 @@ async def backfill_personal_tickets(
         ]
 
         genre_vector = profile.genre_vector or {}
-        top_genres = [
-            genre
-            for genre, score in sorted(genre_vector.items(), key=lambda item: item[1], reverse=True)[:5]
-            if score >= 0.1
-        ]
+        sorted_genres = sorted(
+            genre_vector.items(),
+            key=lambda item: item[1],
+            reverse=True,
+        )
+        top_genres = [genre for genre, score in sorted_genres[:5] if score >= 0.1]
 
         favorites_result = await db.execute(
             select(UserFavoriteMovie)

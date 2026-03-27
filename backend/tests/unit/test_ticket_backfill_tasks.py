@@ -1,4 +1,4 @@
-from unittest.mock import AsyncMock, patch
+from unittest.mock import patch
 
 
 @patch("app.tasks.ticket_tasks.logger")

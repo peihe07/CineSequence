@@ -33,7 +33,7 @@ celery_app.conf.beat_schedule = {
     },
     "backfill-missing-personal-tickets": {
         "task": "app.tasks.ticket_tasks.backfill_missing_personal_tickets_task",
-        "schedule": crontab(minute=15, hour="*/6"),
+        "schedule": crontab(minute=15, hour="*/3"),
         "args": (50,),
     },
     "invite-reminders-daily": {
