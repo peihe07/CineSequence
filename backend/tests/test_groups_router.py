@@ -253,6 +253,71 @@ async def test_member_can_create_theater_list(client, auth_user, db_session):
 
 
 @pytest.mark.asyncio
+async def test_manual_theater_list_items_are_enriched_and_deduped(
+    client,
+    auth_user,
+    db_session,
+    monkeypatch,
+):
+    user, headers = auth_user
+    group = Group(
+        id="mobius_loop",
+        name="Mobius Loop",
+        subtitle="Mind-benders only",
+        icon="ri-tornado-line",
+        primary_tags=["mindfuck", "twist"],
+        is_hidden=False,
+        min_members_to_activate=1,
+        member_count=1,
+        is_active=True,
+    )
+    db_session.add(group)
+    await db_session.commit()
+    await db_session.execute(group_members.insert().values(user_id=user.id, group_id=group.id))
+    await db_session.commit()
+
+    from app.routers import groups as groups_router
+
+    async def fake_prepare_items(_db, items, _existing_items=None):
+        return [
+            groups_router.TheaterListItemCreate(
+                tmdb_id=11,
+                title_en="Arrival",
+                title_zh="異星入境",
+                poster_url="https://image.tmdb.org/t/p/w500/arrival.jpg",
+                genres=["Science Fiction"],
+                runtime_minutes=116,
+                match_tags=[],
+                note="Seeded from quick-create flow.",
+            )
+        ]
+
+    monkeypatch.setattr(groups_router, "_prepare_theater_list_items", fake_prepare_items)
+
+    response = await client.post(
+        f"/groups/{group.id}/lists",
+        json={
+            "title": "Late-Night Brain Melt",
+            "description": "Built for spiral conversations after midnight.",
+            "items": [
+                {"tmdb_id": 0, "title_en": "Arrival"},
+                {"tmdb_id": 0, "title_en": "Arrival"},
+            ],
+        },
+        headers=headers,
+    )
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert len(payload["items"]) == 1
+    assert payload["items"][0]["tmdb_id"] == 11
+    assert payload["items"][0]["poster_url"] == "https://image.tmdb.org/t/p/w500/arrival.jpg"
+    assert payload["items"][0]["title_zh"] == "異星入境"
+    assert payload["items"][0]["genres"] == ["Science Fiction"]
+    assert payload["items"][0]["runtime_minutes"] == 116
+
+
+@pytest.mark.asyncio
 async def test_group_message_schema_rejects_body_over_500_chars(client, auth_user, db_session):
     user, headers = auth_user
     group = Group(
@@ -550,6 +615,69 @@ async def test_member_can_append_theater_list_item(client, auth_user, db_session
     payload = response.json()
     assert len(payload["items"]) == 1
     assert payload["items"][0]["title_en"] == "The Master"
+
+
+@pytest.mark.asyncio
+async def test_member_cannot_append_duplicate_theater_list_item(
+    client,
+    auth_user,
+    db_session,
+    monkeypatch,
+):
+    user, headers = auth_user
+    group = Group(
+        id="mobius_loop",
+        name="Mobius Loop",
+        subtitle="Mind-benders only",
+        icon="ri-tornado-line",
+        primary_tags=["mindfuck", "twist"],
+        is_hidden=False,
+        min_members_to_activate=1,
+        member_count=1,
+        is_active=True,
+    )
+    db_session.add(group)
+    await db_session.commit()
+    await db_session.execute(group_members.insert().values(user_id=user.id, group_id=group.id))
+    await db_session.commit()
+
+    create_response = await client.post(
+        f"/groups/{group.id}/lists",
+        json={
+            "title": "Late-Night Brain Melt",
+            "description": "Built for spiral conversations after midnight.",
+            "items": [{"tmdb_id": 11, "title_en": "Arrival", "match_tags": ["mindfuck"]}],
+        },
+        headers=headers,
+    )
+    list_id = create_response.json()["id"]
+
+    from app.routers import groups as groups_router
+
+    async def fake_prepare_items(_db, items, _existing_items=None):
+        return [
+            groups_router.TheaterListItemCreate(
+                tmdb_id=11,
+                title_en="Arrival",
+                title_zh="異星入境",
+                poster_url="https://image.tmdb.org/t/p/w500/arrival.jpg",
+                genres=["Science Fiction"],
+                runtime_minutes=116,
+                match_tags=[],
+                note=None,
+            )
+        ]
+
+    monkeypatch.setattr(groups_router, "_prepare_theater_list_items", fake_prepare_items)
+
+    response = await client.post(
+        f"/groups/{group.id}/lists/{list_id}/items",
+        json={"tmdb_id": 0, "title_en": "Arrival"},
+        headers=headers,
+    )
+
+    assert response.status_code == 409
+    assert response.json()["detail"] == "Movie already exists in this list"
 
 
 @pytest.mark.asyncio

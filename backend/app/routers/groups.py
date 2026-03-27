@@ -27,6 +27,11 @@ from app.services.notification_service import (
     notify_theater_assigned,
 )
 from app.services.r2_storage import normalize_public_object_url
+from app.services.theater_list_items import (
+    TheaterListItemData,
+    item_fingerprint,
+    prepare_theater_list_items,
+)
 
 router = APIRouter()
 
@@ -366,6 +371,55 @@ def _serialize_theater_list(
     )
 
 
+async def _prepare_theater_list_items(
+    _db: AsyncSession,
+    items: list[TheaterListItemCreate],
+    existing_items: list[TheaterListItem] | None = None,
+) -> list[TheaterListItemCreate]:
+    existing_fingerprints = {
+        fingerprint
+        for item in (existing_items or [])
+        if (fingerprint := item_fingerprint(item.tmdb_id, item.title_en, item.title_zh))
+    }
+    prepared = await prepare_theater_list_items(
+        [
+            TheaterListItemData(
+                tmdb_id=item.tmdb_id,
+                title_en=item.title_en.strip()[:255],
+                title_zh=(
+                    item.title_zh.strip()[:255]
+                    if item.title_zh and item.title_zh.strip()
+                    else None
+                ),
+                poster_url=(
+                    item.poster_url.strip()[:500]
+                    if item.poster_url and item.poster_url.strip()
+                    else None
+                ),
+                genres=item.genres[:5],
+                runtime_minutes=item.runtime_minutes,
+                match_tags=item.match_tags[:5],
+                note=item.note.strip()[:500] if item.note and item.note.strip() else None,
+            )
+            for item in items
+        ],
+        existing_fingerprints=existing_fingerprints,
+    )
+    return [
+        TheaterListItemCreate(
+            tmdb_id=item.tmdb_id,
+            title_en=item.title_en,
+            title_zh=item.title_zh,
+            poster_url=item.poster_url,
+            genres=item.genres or [],
+            runtime_minutes=item.runtime_minutes,
+            match_tags=item.match_tags or [],
+            note=item.note,
+        )
+        for item in prepared
+    ]
+
+
 @router.get("")
 async def list_groups(
     user: Annotated[User, Depends(get_current_user)],
@@ -576,7 +630,9 @@ async def create_theater_list(
     db.add(theater_list)
     await db.flush()
 
-    for index, item in enumerate(body.items):
+    prepared_items = await _prepare_theater_list_items(db, body.items)
+
+    for index, item in enumerate(prepared_items):
         db.add(
             TheaterListItem(
                 list_id=theater_list.id,
@@ -701,25 +757,34 @@ async def append_theater_list_item(
             status_code=status.HTTP_400_BAD_REQUEST, detail="Item title cannot be empty"
         )
 
+    prepared_items = await _prepare_theater_list_items(db, [body], theater_list.items)
+    if not prepared_items:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Movie already exists in this list",
+        )
+
+    prepared = prepared_items[0]
+
     db.add(
         TheaterListItem(
             list_id=theater_list.id,
-            tmdb_id=body.tmdb_id,
-            title_en=title[:255],
+            tmdb_id=prepared.tmdb_id,
+            title_en=prepared.title_en[:255],
             title_zh=(
-                body.title_zh.strip()[:255]
-                if body.title_zh and body.title_zh.strip()
+                prepared.title_zh.strip()[:255]
+                if prepared.title_zh and prepared.title_zh.strip()
                 else None
             ),
             poster_url=(
-                body.poster_url.strip()[:500]
-                if body.poster_url and body.poster_url.strip()
+                prepared.poster_url.strip()[:500]
+                if prepared.poster_url and prepared.poster_url.strip()
                 else None
             ),
-            genres=body.genres[:5],
-            runtime_minutes=body.runtime_minutes,
-            match_tags=body.match_tags[:5],
-            note=body.note.strip()[:500] if body.note and body.note.strip() else None,
+            genres=(prepared.genres or [])[:5],
+            runtime_minutes=prepared.runtime_minutes,
+            match_tags=(prepared.match_tags or [])[:5],
+            note=prepared.note.strip()[:500] if prepared.note and prepared.note.strip() else None,
             position=len(theater_list.items),
             added_by=user.id,
         )
