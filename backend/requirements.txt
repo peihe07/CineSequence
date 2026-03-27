@@ -24,6 +24,7 @@ resend>=2.5.0
 
 # Image generation (ticket)
 Pillow>=11.0.0
+playwright>=1.40.0
 
 # Auth
 python-jose[cryptography]>=3.3.0

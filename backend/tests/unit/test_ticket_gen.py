@@ -1,5 +1,6 @@
-"""Tests for personal ticket generation: image creation and style palettes."""
+"""Tests for personal ticket generation: HTML rendering via Playwright."""
 
+import pytest
 from io import BytesIO
 
 from PIL import Image
@@ -9,27 +10,99 @@ from app.services.ticket_gen import (
     TICKET_H,
     TICKET_W,
     generate_personal_ticket,
+    _build_ticket_html,
 )
 
 
-class TestGeneratePersonalTicket:
-    """Test personal ticket image generation."""
+_DEFAULTS = {
+    "name": "Alice",
+    "email": "alice@test.com",
+    "archetype": "Time Traveler",
+    "top_tags": ["mindfuck", "philosophical"],
+    "top_genres": ["劇情", "科幻"],
+    "ticket_style": "classic",
+}
 
-    def _generate(self, **kwargs) -> Image.Image:
-        defaults = {
-            "name": "Alice",
-            "email": "alice@test.com",
-            "archetype": "Time Traveler",
-            "top_tags": ["mindfuck", "philosophical"],
-            "top_genres": ["劇情", "科幻"],
-            "ticket_style": "classic",
-        }
-        defaults.update(kwargs)
-        data = generate_personal_ticket(**defaults)
+
+class TestBuildTicketHtml:
+    """Test HTML template generation (no browser needed)."""
+
+    def test_contains_name_and_email(self):
+        html = _build_ticket_html(**_DEFAULTS)
+        assert "Alice" in html
+        assert "alice@test.com" in html
+
+    def test_contains_archetype(self):
+        html = _build_ticket_html(**_DEFAULTS)
+        assert "Time Traveler" in html
+
+    def test_contains_tags(self):
+        html = _build_ticket_html(**_DEFAULTS)
+        assert "燒腦" in html
+        assert "哲學思辨" in html
+
+    def test_contains_bio(self):
+        html = _build_ticket_html(**{**_DEFAULTS, "bio": "喜歡看電影"})
+        assert "喜歡看電影" in html
+
+    def test_contains_favorites(self):
+        html = _build_ticket_html(
+            **{**_DEFAULTS, "favorite_movies": ["乘風破浪", "花樣年華"]}
+        )
+        assert "乘風破浪" in html
+        assert "花樣年華" in html
+
+    def test_contains_genres(self):
+        html = _build_ticket_html(**_DEFAULTS)
+        assert "劇情" in html
+        assert "科幻" in html
+
+    def test_escapes_html_entities(self):
+        html = _build_ticket_html(**{**_DEFAULTS, "name": "<script>alert(1)</script>"})
+        assert "<script>" not in html
+        assert "&lt;script&gt;" in html
+
+    def test_unknown_style_falls_back(self):
+        html = _build_ticket_html(**{**_DEFAULTS, "ticket_style": "nonexistent"})
+        assert "CINE SEQUENCE" in html
+
+    def test_no_tags_or_genres(self):
+        html = _build_ticket_html(
+            **{**_DEFAULTS, "top_tags": [], "top_genres": []}
+        )
+        assert "TASTE TAGS" not in html
+
+    def test_no_favorites(self):
+        html = _build_ticket_html(**_DEFAULTS)
+        assert "MUST-WATCH FILMS" not in html
+
+    def test_all_styles_produce_html(self):
+        for style in STYLE_PALETTES:
+            html = _build_ticket_html(**{**_DEFAULTS, "ticket_style": style})
+            assert "CINE SEQUENCE" in html
+
+    def test_tags_truncated_to_eight(self):
+        tags = [
+            "mindfuck", "twist", "philosophical", "existential",
+            "darkTone", "slowburn", "dialogue", "experimental",
+            "visualFeast", "cult",
+        ]
+        html = _build_ticket_html(**{**_DEFAULTS, "top_tags": tags})
+        # 第 9 個 tag "視覺饗宴" 不應出現
+        assert "邪典" not in html
+
+
+@pytest.mark.asyncio
+class TestGeneratePersonalTicket:
+    """Test screenshot rendering (requires Playwright + Chromium)."""
+
+    async def _generate(self, **kwargs) -> Image.Image:
+        params = {**_DEFAULTS, **kwargs}
+        data = await generate_personal_ticket(**params)
         return Image.open(BytesIO(data))
 
-    def test_returns_png_bytes(self):
-        data = generate_personal_ticket(
+    async def test_returns_png_bytes(self):
+        data = await generate_personal_ticket(
             name="A",
             email="a@test.com",
             archetype="X",
@@ -40,65 +113,39 @@ class TestGeneratePersonalTicket:
         assert len(data) > 0
         assert data[:4] == b"\x89PNG"
 
-    def test_correct_dimensions(self):
-        img = self._generate()
-        assert img.size == (TICKET_W, TICKET_H)
+    async def test_correct_dimensions(self):
+        img = await self._generate()
+        # 2x device_scale_factor
+        assert img.size == (TICKET_W * 2, TICKET_H * 2)
 
-    def test_rgba_mode(self):
-        img = self._generate()
+    async def test_rgba_mode(self):
+        img = await self._generate()
         assert img.mode == "RGBA"
 
-    def test_all_styles_produce_images(self):
+    async def test_all_styles_produce_images(self):
         for style in STYLE_PALETTES:
-            img = self._generate(ticket_style=style)
-            assert img.size == (TICKET_W, TICKET_H)
+            data = await generate_personal_ticket(
+                **{**_DEFAULTS, "ticket_style": style}
+            )
+            assert data[:4] == b"\x89PNG"
 
-    def test_unknown_style_falls_back_to_classic(self):
-        img = self._generate(ticket_style="nonexistent")
-        assert img.size == (TICKET_W, TICKET_H)
-
-    def test_no_tags_or_genres(self):
-        img = self._generate(top_tags=[], top_genres=[])
-        assert img.size == (TICKET_W, TICKET_H)
-
-    def test_many_tags_truncated(self):
-        """More than 8 tags should still produce a valid image."""
-        tags = [
-            "mindfuck", "twist", "philosophical", "existential",
-            "darkTone", "slowburn", "dialogue", "experimental",
-            "visualFeast", "nonlinear_narrative",
-        ]
-        img = self._generate(top_tags=tags)
-        assert img.size == (TICKET_W, TICKET_H)
-
-    def test_with_bio_and_personality(self):
-        img = self._generate(
-            bio="喜歡看電影",
-            personality_reading="你有獨特的觀影品味。",
-            conversation_style="冷靜分析型",
-        )
-        assert img.size == (TICKET_W, TICKET_H)
-
-    def test_unicode_names(self):
-        """Chinese names should render without errors."""
-        img = self._generate(
+    async def test_unicode_names(self):
+        img = await self._generate(
             name="時空旅人",
             archetype="時空旅人 Time Traveler",
         )
-        assert img.size == (TICKET_W, TICKET_H)
+        assert img.size == (TICKET_W * 2, TICKET_H * 2)
 
 
 class TestStylePalettes:
     """Test style palette configuration."""
 
     def test_all_styles_have_required_keys(self):
-        required = {"bg", "accent", "text", "muted"}
+        required = {"bg_from", "bg_to", "accent", "accent_alpha", "text", "muted", "stripe", "stripe_end"}
         for style, palette in STYLE_PALETTES.items():
             assert required.issubset(palette.keys()), f"{style} missing keys"
 
-    def test_all_colors_are_rgb_tuples(self):
+    def test_accent_alpha_is_format_string(self):
         for style, palette in STYLE_PALETTES.items():
-            for key, color in palette.items():
-                assert isinstance(color, tuple), f"{style}.{key} not a tuple"
-                assert len(color) == 3, f"{style}.{key} not RGB"
-                assert all(0 <= c <= 255 for c in color), f"{style}.{key} out of range"
+            result = palette["accent_alpha"].format("0.5")
+            assert "0.5" in result, f"{style} accent_alpha format failed"

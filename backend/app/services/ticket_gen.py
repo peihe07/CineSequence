@@ -1,14 +1,10 @@
-"""Ticket generation service: create personal movie ID card images with Pillow."""
+"""Ticket generation service: render HTML ticket to PNG via Playwright."""
 
 import json
 import logging
 import uuid
-from io import BytesIO
+from html import escape
 from pathlib import Path
-from urllib.error import URLError
-from urllib.request import urlopen
-
-from PIL import Image, ImageDraw, ImageFont, ImageOps
 
 from app.config import settings
 from app.services.r2_storage import upload_bytes
@@ -17,6 +13,7 @@ logger = logging.getLogger(__name__)
 
 _data_dir = Path(__file__).parent.parent / "data"
 _taxonomy = json.loads((_data_dir / "tag_taxonomy.json").read_text())
+_fonts_dir = Path(__file__).parent.parent / "fonts"
 
 _TAG_ZH_LABELS = {
     "twist": "反轉結局",
@@ -51,162 +48,419 @@ _TAG_ZH_LABELS = {
     "absurdist": "荒誕",
 }
 
-# Ticket dimensions (portrait card, like a real movie ticket)
-TICKET_W = 800
-TICKET_H = 1200
+# 票券寬度固定，高度由內容撐開
+TICKET_W = 900
 
-# Color palettes per ticket_style
+# 各風格的色彩（深色系 glassmorphism）
 STYLE_PALETTES = {
     "scifi": {
-        "bg": (15, 23, 42),
-        "accent": (56, 189, 248),
-        "text": (226, 232, 240),
-        "muted": (100, 116, 139),
+        "bg_from": "rgba(15, 23, 42, 0.97)",
+        "bg_to": "rgba(8, 14, 30, 0.95)",
+        "accent": "rgb(56, 189, 248)",
+        "accent_alpha": "rgba(56, 189, 248, {})",
+        "text": "rgba(226, 232, 240, 0.95)",
+        "muted": "rgba(100, 116, 139, 0.7)",
+        "stripe": "rgba(56, 189, 248, 0.72)",
+        "stripe_end": "rgba(56, 189, 248, 0.08)",
     },
     "noir": {
-        "bg": (24, 24, 27),
-        "accent": (239, 68, 68),
-        "text": (228, 228, 231),
-        "muted": (113, 113, 122),
+        "bg_from": "rgba(24, 24, 27, 0.97)",
+        "bg_to": "rgba(17, 18, 21, 0.95)",
+        "accent": "rgb(239, 68, 68)",
+        "accent_alpha": "rgba(239, 68, 68, {})",
+        "text": "rgba(228, 228, 231, 0.95)",
+        "muted": "rgba(113, 113, 122, 0.7)",
+        "stripe": "rgba(239, 68, 68, 0.72)",
+        "stripe_end": "rgba(239, 68, 68, 0.08)",
     },
     "classic": {
-        "bg": (254, 249, 239),
-        "accent": (180, 83, 9),
-        "text": (68, 64, 60),
-        "muted": (168, 162, 158),
+        "bg_from": "rgba(42, 36, 28, 0.97)",
+        "bg_to": "rgba(32, 27, 20, 0.95)",
+        "accent": "rgb(217, 152, 89)",
+        "accent_alpha": "rgba(217, 152, 89, {})",
+        "text": "rgba(240, 233, 224, 0.95)",
+        "muted": "rgba(168, 162, 158, 0.6)",
+        "stripe": "rgba(217, 152, 89, 0.72)",
+        "stripe_end": "rgba(217, 152, 89, 0.08)",
     },
     "indie": {
-        "bg": (236, 234, 227),
-        "accent": (22, 101, 52),
-        "text": (68, 81, 75),
-        "muted": (138, 145, 137),
+        "bg_from": "rgba(22, 28, 24, 0.97)",
+        "bg_to": "rgba(14, 20, 16, 0.95)",
+        "accent": "rgb(74, 222, 128)",
+        "accent_alpha": "rgba(74, 222, 128, {})",
+        "text": "rgba(220, 230, 224, 0.95)",
+        "muted": "rgba(138, 145, 137, 0.6)",
+        "stripe": "rgba(74, 222, 128, 0.72)",
+        "stripe_end": "rgba(74, 222, 128, 0.08)",
     },
     "action": {
-        "bg": (30, 27, 24),
-        "accent": (249, 115, 22),
-        "text": (231, 229, 228),
-        "muted": (120, 113, 108),
+        "bg_from": "rgba(30, 27, 24, 0.97)",
+        "bg_to": "rgba(17, 15, 13, 0.95)",
+        "accent": "rgb(249, 115, 22)",
+        "accent_alpha": "rgba(249, 115, 22, {})",
+        "text": "rgba(231, 229, 228, 0.95)",
+        "muted": "rgba(120, 113, 108, 0.6)",
+        "stripe": "rgba(249, 115, 22, 0.72)",
+        "stripe_end": "rgba(249, 115, 22, 0.08)",
     },
 }
 
 
-_fonts_dir = Path(__file__).parent.parent / "fonts"
-
-_FONT_PATHS = {
-    "regular": [
-        _fonts_dir / "NotoSansTC-Regular.ttf",
-        Path("/System/Library/Fonts/Hiragino Sans GB.ttc"),
-        Path("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"),
-    ],
-    "bold": [
-        _fonts_dir / "NotoSansTC-Bold.ttf",
-        Path("/System/Library/Fonts/STHeiti Light.ttc"),
-        Path("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"),
-    ],
-}
+def _get_tag_label(tag_key: str) -> str:
+    return _TAG_ZH_LABELS.get(
+        tag_key,
+        _taxonomy["tags"].get(tag_key, {}).get("zh", tag_key),
+    )
 
 
-def _get_font(size: int, bold: bool = False) -> ImageFont.FreeTypeFont:
-    """Get a CJK-compatible font, trying bundled fonts first."""
-    candidates = _FONT_PATHS["bold"] if bold else _FONT_PATHS["regular"]
-    for path in candidates:
-        try:
-            return ImageFont.truetype(str(path), size)
-        except OSError:
-            continue
-    return ImageFont.load_default()
+def _build_font_face_css() -> str:
+    """Build @font-face CSS for bundled Noto Sans TC fonts."""
+    regular = _fonts_dir / "NotoSansTC-Regular.ttf"
+    bold = _fonts_dir / "NotoSansTC-Bold.ttf"
+    css = ""
+    if regular.exists():
+        css += f"""
+@font-face {{
+  font-family: 'Noto Sans TC';
+  src: url('file://{regular}') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}}"""
+    if bold.exists():
+        css += f"""
+@font-face {{
+  font-family: 'Noto Sans TC';
+  src: url('file://{bold}') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+}}"""
+    return css
 
 
-def _draw_punch_holes(draw: ImageDraw.ImageDraw, y: int, color: tuple):
-    """Draw perforated line across the ticket at given y position."""
-    for x in range(0, TICKET_W, 20):
-        draw.ellipse([x + 6, y - 3, x + 12, y + 3], fill=color)
+def _build_ticket_html(
+    name: str,
+    email: str,
+    archetype: str,
+    top_tags: list[str],
+    top_genres: list[str],
+    bio: str | None = None,
+    ticket_style: str = "classic",
+    avatar_url: str | None = None,
+    favorite_movies: list[str] | None = None,
+) -> str:
+    """Build self-contained HTML for the ticket card."""
+    palette = STYLE_PALETTES.get(ticket_style, STYLE_PALETTES["classic"])
+    favorite_movies = favorite_movies or []
+    serial = f"#{uuid.uuid4().hex[:8].upper()}"
 
+    font_face_css = _build_font_face_css()
 
-def _draw_tag_pills(
-    draw: ImageDraw.ImageDraw,
-    tags: list[str],
-    x_start: int,
-    y_start: int,
-    font: ImageFont.FreeTypeFont,
-    palette: dict,
-    max_tags: int = 8,
-) -> int:
-    """Draw tag pill badges. Returns the y position after the last row."""
-    tag_x = x_start
-    tag_y = y_start
-    for tag_key in tags[:max_tags]:
-        tag_label = _TAG_ZH_LABELS.get(
-            tag_key,
-            _taxonomy["tags"].get(tag_key, {}).get("zh", tag_key),
-        )
-        bbox_tag = draw.textbbox((0, 0), tag_label, font=font)
-        tw = bbox_tag[2] - bbox_tag[0]
+    tags_html = ""
+    for tag_key in top_tags[:8]:
+        label = escape(_get_tag_label(tag_key))
+        tags_html += f'<span class="tag">{label}</span>\n'
 
-        draw.rounded_rectangle(
-            [tag_x - 4, tag_y - 4, tag_x + tw + 12, tag_y + 26],
-            radius=4,
-            fill=(*palette["accent"], 30),
-            outline=(*palette["accent"], 80),
-        )
-        draw.text((tag_x + 4, tag_y), tag_label, fill=palette["accent"], font=font)
-        tag_x += tw + 28
-        if tag_x > TICKET_W - 80:
-            tag_x = x_start
-            tag_y += 40
-    return tag_y + 40
-
-
-def _load_avatar_image(avatar_url: str | None, size: int) -> Image.Image | None:
-    """Fetch and fit an avatar image for the ticket if available."""
-    if not avatar_url:
-        return None
-
-    try:
-        with urlopen(avatar_url, timeout=4) as response:
-            avatar = Image.open(BytesIO(response.read())).convert("RGB")
-    except (OSError, URLError, ValueError):
-        logger.info("Skipping avatar render for ticket: %s", avatar_url)
-        return None
-
-    avatar = ImageOps.fit(avatar, (size, size), method=Image.Resampling.LANCZOS)
-    mask = Image.new("L", (size, size), 0)
-    mask_draw = ImageDraw.Draw(mask)
-    mask_draw.rounded_rectangle((0, 0, size, size), radius=28, fill=255)
-    avatar.putalpha(mask)
-    return avatar
-
-
-def _wrap_text(text: str, max_chars: int) -> list[str]:
-    """Wrap text to fit within max_chars per line."""
-    lines = []
-    for line in text.split("\n"):
-        while len(line) > max_chars:
-            lines.append(line[:max_chars])
-            line = line[max_chars:]
-        if line:
-            lines.append(line)
-    return lines
-
-
-def _draw_favorite_movies(
-    draw: ImageDraw.ImageDraw,
-    favorite_movies: list[str],
-    x_start: int,
-    y_start: int,
-    font: ImageFont.FreeTypeFont,
-    palette: dict,
-) -> int:
-    """Draw a compact favorite-movies list and return the next y offset."""
+    favorites_html = ""
     for movie in favorite_movies[:3]:
-        for line in _wrap_text(movie, 24)[:2]:
-            draw.text((x_start, y_start), f"· {line}", fill=palette["text"], font=font)
-            y_start += 24
-        y_start += 4
-    return y_start
+        favorites_html += f'<span class="favorite">· {escape(movie)}</span>\n'
+
+    avatar_html = ""
+    if avatar_url:
+        avatar_html = f'<img src="{escape(avatar_url)}" alt="" class="avatar" />'
+
+    bio_html = ""
+    if bio:
+        bio_html = f'<p class="bio">{escape(bio)}</p>'
+
+    tags_section = ""
+    if top_tags:
+        tags_section = f"""
+        <div class="perforation"></div>
+        <div class="section">
+          <span class="section-label">TASTE TAGS</span>
+          <div class="tags">{tags_html}</div>
+        </div>"""
+
+    favorites_section = ""
+    if favorite_movies:
+        favorites_section = f"""
+        <div class="perforation"></div>
+        <div class="section">
+          <span class="section-label">MUST-WATCH FILMS</span>
+          <div class="favorites">{favorites_html}</div>
+        </div>"""
+
+    genres_html = ""
+    if top_genres:
+        genre_labels = " / ".join(escape(g) for g in top_genres[:5])
+        genres_html = f'<p class="genres">{genre_labels}</p>'
+
+    return f"""<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+{font_face_css}
+
+* {{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}}
+
+body {{
+  width: {TICKET_W}px;
+  background: transparent;
+  font-family: 'Noto Sans TC', -apple-system, 'Helvetica Neue', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}}
+
+.ticket {{
+  position: relative;
+  width: {TICKET_W}px;
+  display: flex;
+  flex-direction: column;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 3px,
+      rgba(255, 255, 255, 0.012) 3px,
+      rgba(255, 255, 255, 0.012) 4px
+    ),
+    linear-gradient(135deg, {palette['bg_from']}, {palette['bg_to']});
+  border-radius: 24px;
+  overflow: hidden;
+  color: {palette['text']};
+}}
+
+/* 頂部 accent 橫線 */
+.ticket::before {{
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 32px;
+  right: 32px;
+  height: 2px;
+  background: linear-gradient(90deg, {palette['stripe']}, {palette['stripe_end']});
+  border-radius: 2px;
+}}
+
+/* 微光暈 */
+.ticket::after {{
+  content: '';
+  position: absolute;
+  top: -80px;
+  right: -40px;
+  width: 240px;
+  height: 240px;
+  background: radial-gradient(circle, {palette['accent_alpha'].format('0.05')}, transparent 70%);
+  pointer-events: none;
+}}
+
+.header {{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 28px 0 28px;
+}}
+
+.brand {{
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  color: {palette['accent_alpha'].format('0.76')};
+}}
+
+.catalog-no {{
+  font-size: 9px;
+  letter-spacing: 0.16em;
+  color: {palette['muted']};
+}}
+
+.body {{
+  display: flex;
+  flex: 1;
+  gap: 0;
+  padding: 12px 28px 0 28px;
+  overflow: hidden;
+}}
+
+/* 左欄：身份 */
+.left {{
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  padding-right: 24px;
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
+}}
+
+.identity-row {{
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}}
+
+.identity-copy {{
+  flex: 1;
+  min-width: 0;
+}}
+
+.name {{
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: {palette['text']};
+  margin-bottom: 4px;
+}}
+
+.archetype {{
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: {palette['muted']};
+  margin-bottom: 6px;
+}}
+
+.email {{
+  font-size: 11px;
+  color: {palette['accent_alpha'].format('0.72')};
+  margin-bottom: 4px;
+}}
+
+.genres {{
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  color: {palette['muted']};
+}}
+
+.bio {{
+  font-size: 12px;
+  line-height: 1.6;
+  color: {palette['text'].replace('0.95', '0.6')};
+  margin-top: 10px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}}
+
+.avatar {{
+  width: 72px;
+  height: 72px;
+  border-radius: 16px;
+  object-fit: cover;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  flex-shrink: 0;
+}}
+
+/* 右欄：tags + favorites */
+.right {{
+  width: 310px;
+  flex-shrink: 0;
+  padding-left: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}}
+
+.section-label {{
+  display: block;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: {palette['muted']};
+  margin-bottom: 8px;
+}}
+
+.tags {{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}}
+
+.tag {{
+  display: inline-block;
+  padding: 3px 10px;
+  font-size: 12px;
+  color: {palette['accent_alpha'].format('0.88')};
+  background: {palette['accent_alpha'].format('0.10')};
+  border: 1px solid {palette['accent_alpha'].format('0.16')};
+  border-radius: 999px;
+}}
+
+.favorites {{
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}}
+
+.favorite {{
+  font-size: 12px;
+  line-height: 1.5;
+  color: {palette['text'].replace('0.95', '0.72')};
+}}
+
+.footer {{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 28px 16px 28px;
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  color: {palette['muted']};
+}}
+
+</style>
+</head>
+<body>
+  <div class="ticket">
+    <div class="header">
+      <span class="brand">CINE SEQUENCE</span>
+      <span class="catalog-no">PERSONAL DOSSIER</span>
+    </div>
+
+    <div class="body">
+      <div class="left">
+        <div class="identity-row">
+          {avatar_html}
+          <div class="identity-copy">
+            <h2 class="name">{escape(name)}</h2>
+            <p class="archetype">{escape(archetype)}</p>
+            <p class="email">{escape(email)}</p>
+            {genres_html}
+          </div>
+        </div>
+        {bio_html}
+      </div>
+
+      <div class="right">
+        {f'''<div>
+          <span class="section-label">TASTE TAGS</span>
+          <div class="tags">{tags_html}</div>
+        </div>''' if top_tags else ''}
+
+        {f'''<div>
+          <span class="section-label">MUST-WATCH FILMS</span>
+          <div class="favorites">{favorites_html}</div>
+        </div>''' if favorite_movies else ''}
+      </div>
+    </div>
+
+    <div class="footer">
+      <span>cinesequence.app</span>
+      <span>{serial}</span>
+    </div>
+  </div>
+</body>
+</html>"""
 
 
-def generate_personal_ticket(
+async def generate_personal_ticket(
     name: str,
     email: str,
     archetype: str,
@@ -219,95 +473,43 @@ def generate_personal_ticket(
     avatar_url: str | None = None,
     favorite_movies: list[str] | None = None,
 ) -> bytes:
-    """Generate a personal movie ID card for one user.
+    """Generate a personal movie ID card as PNG via Playwright.
 
     Returns PNG image as bytes.
     """
-    palette = STYLE_PALETTES.get(ticket_style, STYLE_PALETTES["classic"])
+    from playwright.async_api import async_playwright
 
-    img = Image.new("RGBA", (TICKET_W, TICKET_H), palette["bg"])
-    draw = ImageDraw.Draw(img)
-
-    font_title = _get_font(44, bold=True)
-    font_md = _get_font(20)
-    font_sm = _get_font(16)
-    font_xs = _get_font(13)
-    favorite_movies = favorite_movies or []
-
-    # Subtle scan lines
-    scan_step = 6 if palette["bg"][0] < 50 else 4
-    for sy in range(0, TICKET_H, scan_step):
-        draw.line([(0, sy), (TICKET_W, sy)], fill=(*palette["bg"][:3], 10), width=1)
-
-    pad = 48
-    cursor_y = 40
-
-    # ── Header ──
-    draw.text((pad, cursor_y), "CINE SEQUENCE", fill=palette["accent"], font=font_md)
-    cursor_y += 50
-    _draw_punch_holes(draw, cursor_y, palette["muted"])
-    cursor_y += 24
-
-    avatar = _load_avatar_image(avatar_url, size=132)
-    info_width = TICKET_W - (pad * 2) - (148 if avatar else 0)
-    if avatar:
-        img.alpha_composite(avatar, (TICKET_W - pad - 132, cursor_y))
-
-    # ── Name + Archetype ──
-    draw.text((pad, cursor_y), name, fill=palette["text"], font=font_title)
-    cursor_y += 56
-    draw.text((pad, cursor_y), archetype, fill=palette["muted"], font=font_md)
-    cursor_y += 32
-
-    # ── Email ──
-    draw.text((pad, cursor_y), email, fill=palette["accent"], font=font_sm)
-    cursor_y += 32
-
-    # ── Bio ──
-    if bio:
-        bio_chars = 34 if info_width < 560 else 38
-        for line in _wrap_text(bio, bio_chars)[:3]:
-            draw.text((pad, cursor_y), line, fill=palette["text"], font=font_sm)
-            cursor_y += 24
-        cursor_y += 8
-
-    if avatar:
-        cursor_y = max(cursor_y, 40 + 132 + 16)
-
-    _draw_punch_holes(draw, cursor_y, palette["muted"])
-    cursor_y += 24
-
-    # ── Taste DNA (tags) ──
-    draw.text((pad, cursor_y), "TASTE TAGS", fill=palette["muted"], font=font_xs)
-    cursor_y += 24
-    cursor_y = _draw_tag_pills(draw, top_tags, pad, cursor_y, font_sm, palette)
-
-    # ── Favorite movies ──
-    if favorite_movies:
-        _draw_punch_holes(draw, cursor_y, palette["muted"])
-        cursor_y += 20
-        draw.text((pad, cursor_y), "MUST-WATCH FILMS", fill=palette["muted"], font=font_xs)
-        cursor_y += 24
-        cursor_y = _draw_favorite_movies(draw, favorite_movies, pad, cursor_y, font_sm, palette)
-        cursor_y += 8
-
-    # ── Footer ──
-    _draw_punch_holes(draw, TICKET_H - 60, palette["muted"])
-    draw.text((pad, TICKET_H - 40), "cinesequence.app", fill=palette["muted"], font=font_xs)
-
-    serial = f"#{uuid.uuid4().hex[:8].upper()}"
-    bbox_serial = draw.textbbox((0, 0), serial, font=font_xs)
-    serial_w = bbox_serial[2] - bbox_serial[0]
-    draw.text(
-        (TICKET_W - pad - serial_w, TICKET_H - 40),
-        serial,
-        fill=palette["muted"],
-        font=font_xs,
+    html = _build_ticket_html(
+        name=name,
+        email=email,
+        archetype=archetype,
+        top_tags=top_tags,
+        top_genres=top_genres,
+        bio=bio,
+        ticket_style=ticket_style,
+        avatar_url=avatar_url,
+        favorite_movies=favorite_movies,
     )
 
-    buf = BytesIO()
-    img.save(buf, format="PNG", optimize=True)
-    return buf.getvalue()
+    async with async_playwright() as p:
+        browser = await p.chromium.launch()
+        page = await browser.new_page(
+            viewport={"width": TICKET_W, "height": 800},
+            device_scale_factor=2,
+        )
+        await page.set_content(html, wait_until="networkidle")
+        # 取得實際內容高度
+        ticket_height = await page.evaluate(
+            "document.querySelector('.ticket').offsetHeight"
+        )
+        screenshot = await page.screenshot(
+            type="png",
+            clip={"x": 0, "y": 0, "width": TICKET_W, "height": ticket_height},
+            omit_background=True,
+        )
+        await browser.close()
+
+    return screenshot
 
 
 async def generate_and_upload_personal_ticket(
@@ -328,7 +530,7 @@ async def generate_and_upload_personal_ticket(
 
     Returns public URL of the uploaded ticket.
     """
-    image_bytes = generate_personal_ticket(
+    image_bytes = await generate_personal_ticket(
         name=name,
         email=email,
         archetype=archetype,
