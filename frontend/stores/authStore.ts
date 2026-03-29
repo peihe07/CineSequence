@@ -3,6 +3,7 @@ import { ApiError, api, clearToken } from '@/lib/api'
 import { translateStatic } from '@/lib/i18n'
 import type {
   LoginRequest,
+  LoginResponse,
   RegisterRequest,
   RegisterResponse,
   User,
@@ -18,7 +19,7 @@ interface AuthState {
 
   register: (data: RegisterRequest) => Promise<RegisterResponse>
 
-  login: (email: string, nextPath?: string) => Promise<void>
+  login: (email: string, nextPath?: string) => Promise<LoginResponse>
   verify: (token: string) => Promise<void>
   fetchProfile: () => Promise<void>
   logout: () => Promise<void>
@@ -51,11 +52,12 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     set({ isLoading: true, error: null })
     try {
       const payload: LoginRequest = { email, next_path: nextPath }
-      await api('/auth/login', {
+      const response = await api<LoginResponse>('/auth/login', {
         method: 'POST',
         body: JSON.stringify(payload),
       })
       set({ isLoading: false })
+      return response
     } catch (err) {
       const message = err instanceof Error ? err.message : translateStatic('common.error')
       set({ isLoading: false, error: message })

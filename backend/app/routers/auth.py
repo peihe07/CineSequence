@@ -15,6 +15,7 @@ from app.models.user import Gender, User
 from app.models.waitlist_entry import WaitlistEntry
 from app.schemas.auth import (
     AdminQuickLoginRequest,
+    LoginResponse,
     LoginRequest,
     RegisterRequest,
     RegisterResponse,
@@ -48,6 +49,8 @@ def sync_admin_flag(user: User) -> bool:
 
 REGISTER_SUCCESS_MESSAGE = "If this email is eligible, a magic link has been sent."
 LOGIN_UNKNOWN_EMAIL_MESSAGE = "Account not found. Please register first."
+LOGIN_MAGIC_LINK_MESSAGE = "A magic link has been sent."
+LOGIN_ADMIN_PASSCODE_MESSAGE = "Admin passcode required."
 WAITLIST_SUCCESS_MESSAGE = (
     "You're on the waitlist. We're developing new features and performing maintenance. "
     "We'll email you again when access reopens."
@@ -176,7 +179,7 @@ async def create_admin_session(
     return TokenResponse(access_token=access_token)
 
 
-@router.post("/login")
+@router.post("/login", response_model=LoginResponse)
 @limiter.limit("5/minute")
 async def login(
     request: Request,
@@ -195,13 +198,20 @@ async def login(
 
     if sync_admin_flag(user):
         await db.flush()
+    if user.is_admin and settings.admin_quick_login_passcode.strip():
+        await db.commit()
+        return LoginResponse(
+            mode="admin_passcode_required",
+            message=LOGIN_ADMIN_PASSCODE_MESSAGE,
+        )
+
     token, expires_at = create_magic_link_token(body.email)
     user.magic_link_token = token
     user.magic_link_expires_at = expires_at
     await db.commit()
     await send_magic_link(body.email, token, body.next_path)
 
-    return {"message": "A magic link has been sent."}
+    return LoginResponse(mode="magic_link", message=LOGIN_MAGIC_LINK_MESSAGE)
 
 
 @router.post("/verify", response_model=TokenResponse)

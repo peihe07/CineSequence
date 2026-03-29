@@ -32,14 +32,23 @@ export default function LoginForm({
   const { login, fetchProfile, isLoading, error, clearError } = useAuthStore()
   const { t, locale } = useI18n()
   const [email, setEmail] = useState('')
+  const [adminPasscode, setAdminPasscode] = useState('')
   const [sent, setSent] = useState(false)
   const [emailError, setEmailError] = useState('')
   const [showRegisterPrompt, setShowRegisterPrompt] = useState(false)
+  const [showAdminQuickLogin, setShowAdminQuickLogin] = useState(false)
   const [devLoading, setDevLoading] = useState(false)
   const waitlistLabel = locale === 'zh' ? '加入候補名單' : 'Join waitlist'
   const waitlistHint = locale === 'zh'
     ? '新帳號目前改為 waitlist 登記。留下 email，等重新開放後我們會再通知你。'
     : 'New accounts are currently routed to the waitlist. Leave your email and we will notify you when access reopens.'
+  const adminPasscodeLabel = locale === 'zh' ? 'Admin Passcode' : 'Admin Passcode'
+  const adminPasscodePlaceholder = locale === 'zh' ? '輸入 admin passcode' : 'Enter admin passcode'
+  const adminContinueLabel = locale === 'zh' ? '下一步' : 'Continue'
+  const adminOpenLabel = locale === 'zh' ? '直接進入管理台' : 'Open Dashboard'
+  const adminHint = locale === 'zh'
+    ? '偵測到管理員帳號。輸入 passcode 後可直接進入管理台，不會發送 magic link。'
+    : 'Admin account detected. Enter the passcode to open the dashboard directly without sending a magic link.'
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -52,8 +61,36 @@ export default function LoginForm({
       return
     }
 
+    if (showAdminQuickLogin) {
+      if (!adminPasscode.trim()) {
+        setEmailError(locale === 'zh' ? '請輸入 admin passcode。' : 'Enter the admin passcode.')
+        return
+      }
+
+      try {
+        await api<{ access_token: string }>('/auth/admin/session', {
+          method: 'POST',
+          body: JSON.stringify({
+            email,
+            passcode: adminPasscode,
+          }),
+        })
+        await fetchProfile()
+        router.push('/admin')
+        router.refresh()
+        return
+      } catch {
+        return
+      }
+    }
+
     try {
-      await login(email, nextPath)
+      const response = await login(email, nextPath)
+      if (response.mode === 'admin_passcode_required') {
+        setShowAdminQuickLogin(true)
+        setAdminPasscode('')
+        return
+      }
       setSent(true)
       onMagicLinkSent?.()
     } catch (err) {
@@ -124,12 +161,28 @@ export default function LoginForm({
         value={email}
         onChange={(e) => {
           setEmail(e.target.value)
+          setShowAdminQuickLogin(false)
+          setAdminPasscode('')
+          setEmailError('')
           if (showRegisterPrompt) {
             setShowRegisterPrompt(false)
           }
         }}
         error={emailError}
       />
+
+      {showAdminQuickLogin && (
+        <>
+          <p className={styles.registerPromptText}>{adminHint}</p>
+          <Input
+            type="password"
+            label={adminPasscodeLabel}
+            placeholder={adminPasscodePlaceholder}
+            value={adminPasscode}
+            onChange={(e) => setAdminPasscode(e.target.value)}
+          />
+        </>
+      )}
 
       {error && <p className={styles.error}>{error}</p>}
       {showRegisterPrompt && (
@@ -152,7 +205,7 @@ export default function LoginForm({
       )}
 
       <Button type="submit" size="lg" loading={isLoading}>
-        {isLoading ? t('auth.sending') : t('auth.sendLink')}
+        {isLoading ? t('auth.sending') : showAdminQuickLogin ? adminOpenLabel : adminContinueLabel}
       </Button>
 
       {SHOW_DEV_LOGIN && (

@@ -60,6 +60,11 @@ class RegisterResponse(BaseModel):
     message: str
 
 
+class LoginResponse(BaseModel):
+    mode: str
+    message: str
+
+
 class WaitlistRequest(BaseModel):
     email: EmailStr
 

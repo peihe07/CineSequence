@@ -28,6 +28,11 @@ export interface RegisterResponse {
   message: string
 }
 
+export interface LoginResponse {
+  mode: 'magic_link' | 'admin_passcode_required'
+  message: string
+}
+
 export interface WaitlistRequest {
   email: string
 }
