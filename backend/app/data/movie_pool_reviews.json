@@ -3,9 +3,12 @@
     "title_en": "Forrest Gump",
     "confidence": "high",
     "coverage_reason": "phase1_anchor",
-    "confounds": [],
+    "confounds": [
+      "canon_familiarity",
+      "prestige_signal"
+    ],
     "replacement_needed": false,
-    "notes": ""
+    "notes": "Useful as an uplifting and nostalgic mainstream anchor, but should be paired carefully because familiarity can overpower the intended tone signal."
   },
   "14": {
     "title_en": "American Beauty",
@@ -35,9 +38,12 @@
     "title_en": "2001: A Space Odyssey",
     "confidence": "high",
     "coverage_reason": "phase1_anchor",
-    "confounds": [],
+    "confounds": [
+      "canon_familiarity",
+      "form_vs_theme"
+    ],
     "replacement_needed": false,
-    "notes": ""
+    "notes": "High-value anchor for experimental, philosophical, and slow-cinema tolerance. Best used when the pair is explicitly testing patience or abstraction."
   },
   "68": {
     "title_en": "Brazil",
@@ -51,9 +57,12 @@
     "title_en": "Million Dollar Baby",
     "confidence": "high",
     "coverage_reason": "phase1_anchor",
-    "confounds": [],
+    "confounds": [
+      "prestige_signal",
+      "tone_vs_genre"
+    ],
     "replacement_needed": false,
-    "notes": ""
+    "notes": "Reliable dark tearjerker anchor for emotionally heavy realism, though awards familiarity can blur whether the user is choosing tone or reputation."
   },
   "73": {
     "title_en": "American History X",
@@ -155,9 +164,12 @@
     "title_en": "Akira",
     "confidence": "medium",
     "coverage_reason": "region_balance",
-    "confounds": [],
+    "confounds": [
+      "canon_familiarity",
+      "style_overlap"
+    ],
     "replacement_needed": false,
-    "notes": ""
+    "notes": "Foundational anime-canon coverage for urban dread, kinetic spectacle, and youth revolt. Important because it gives the animation lane a harder sci-fi and countercultural edge."
   },
   "153": {
     "title_en": "Lost in Translation",
@@ -171,9 +183,12 @@
     "title_en": "The Dark Knight",
     "confidence": "high",
     "coverage_reason": "phase1_anchor",
-    "confounds": [],
+    "confounds": [
+      "canon_familiarity",
+      "budget_signal"
+    ],
     "replacement_needed": false,
-    "notes": ""
+    "notes": "Core mainstream anchor with unusually broad familiarity. Keep in rotation because it quickly stabilizes the accessible spectacle end of Phase 1."
   },
   "160": {
     "title_en": "Equilibrium",
@@ -211,9 +226,11 @@
     "title_en": "Amelie",
     "confidence": "high",
     "coverage_reason": "phase1_anchor",
-    "confounds": [],
+    "confounds": [
+      "style_overlap"
+    ],
     "replacement_needed": false,
-    "notes": ""
+    "notes": "Useful non-English warmth anchor for image-forward romantic uplift. Helps broaden Phase 1 without relying on austere festival titles only."
   },
   "197": {
     "title_en": "Braveheart",
@@ -251,9 +268,12 @@
     "title_en": "Stalker",
     "confidence": "medium",
     "coverage_reason": "region_balance",
-    "confounds": [],
+    "confounds": [
+      "form_vs_theme",
+      "prestige_signal"
+    ],
     "replacement_needed": false,
-    "notes": ""
+    "notes": "Essential Tarkovsky reference for metaphysical slowness and spiritual uncertainty. Keeps the pool's philosophical-cinema lane from becoming too plot-driven."
   },
   "311": {
     "title_en": "Once Upon a Time in America",
@@ -283,9 +303,12 @@
     "title_en": "Seven Samurai",
     "confidence": "medium",
     "coverage_reason": "region_balance",
-    "confounds": [],
+    "confounds": [
+      "canon_familiarity",
+      "scope_vs_structure"
+    ],
     "replacement_needed": false,
-    "notes": ""
+    "notes": "Important Kurosawa coverage for ensemble heroics, moral rigor, and action-classic lineage. Valuable as a non-Western epic canon anchor even when not frequently surfaced."
   },
   "348": {
     "title_en": "Alien",
@@ -331,17 +354,22 @@
     "title_en": "Amour",
     "confidence": "medium",
     "coverage_reason": "region_balance",
-    "confounds": [],
+    "confounds": [
+      "prestige_signal",
+      "style_overlap"
+    ],
     "replacement_needed": false,
-    "notes": ""
+    "notes": "Important Haneke-adjacent late-life intimacy reference for emotional austerity and unsentimental tenderness. Useful for keeping the international emotional lane mature rather than melodramatic."
   },
   "406": {
     "title_en": "La Haine",
     "confidence": "medium",
     "coverage_reason": "region_balance",
-    "confounds": [],
+    "confounds": [
+      "tone_overlap"
+    ],
     "replacement_needed": false,
-    "notes": ""
+    "notes": "Key French urban-angst and social-critique reference. It keeps political volatility and street-level tension visible in the international lane."
   },
   "424": {
     "title_en": "Schindler's List",
@@ -355,9 +383,12 @@
     "title_en": "Caché",
     "confidence": "medium",
     "coverage_reason": "region_balance",
-    "confounds": [],
+    "confounds": [
+      "form_vs_theme",
+      "prestige_signal"
+    ],
     "replacement_needed": false,
-    "notes": ""
+    "notes": "Important Haneke coverage for dread-through-observation and bourgeois guilt. Useful as a colder, more withholding counterpart to overt thriller entries."
   },
   "453": {
     "title_en": "A Beautiful Mind",
@@ -403,9 +434,11 @@
     "title_en": "Cinema Paradiso",
     "confidence": "medium",
     "coverage_reason": "region_balance",
-    "confounds": [],
+    "confounds": [
+      "prestige_signal"
+    ],
     "replacement_needed": false,
-    "notes": ""
+    "notes": "Classic international nostalgia anchor that carries cinephilia itself as a subject. Helpful for keeping warmth and memory in the non-English lane."
   },
   "510": {
     "title_en": "Being John Malkovich",
@@ -427,9 +460,12 @@
     "title_en": "Rashomon",
     "confidence": "medium",
     "coverage_reason": "region_balance",
-    "confounds": [],
+    "confounds": [
+      "canon_familiarity",
+      "form_vs_theme"
+    ],
     "replacement_needed": false,
-    "notes": ""
+    "notes": "Classic Kurosawa reference for subjectivity, testimony, and moral ambiguity. Valuable because it grounds non-Western narrative experimentation in foundational film history."
   },
   "550": {
     "title_en": "Fight Club",
@@ -523,9 +559,12 @@
     "title_en": "Life Is Beautiful",
     "confidence": "medium",
     "coverage_reason": "region_balance",
-    "confounds": [],
+    "confounds": [
+      "tone_overlap",
+      "prestige_signal"
+    ],
     "replacement_needed": false,
-    "notes": ""
+    "notes": "Important for the bittersweet uplift lane in international cinema, though its tonal split can blur whether the user is reacting to sentiment or historical framing."
   },
   "638": {
     "title_en": "The Time Machine",
@@ -659,9 +698,12 @@
     "title_en": "Persona",
     "confidence": "medium",
     "coverage_reason": "region_balance",
-    "confounds": [],
+    "confounds": [
+      "prestige_signal",
+      "form_vs_theme"
+    ],
     "replacement_needed": false,
-    "notes": ""
+    "notes": "Essential Bergman coverage for psychological fracture and modernist identity play. Keep as a reference point for users whose taste leans toward austere formal intensity."
   },
   "807": {
     "title_en": "Se7en",
@@ -739,9 +781,12 @@
     "title_en": "In the Mood for Love",
     "confidence": "high",
     "coverage_reason": "phase1_anchor",
-    "confounds": [],
+    "confounds": [
+      "style_overlap",
+      "prestige_signal"
+    ],
     "replacement_needed": false,
-    "notes": ""
+    "notes": "Foundational Wong Kar-wai anchor for restrained longing, visual elegance, and nostalgia. Important because it carries both cinephile legitimacy and broad emotional readability."
   },
   "960": {
     "title_en": "Heat",
@@ -763,9 +808,12 @@
     "title_en": "Ringu",
     "confidence": "medium",
     "coverage_reason": "region_balance",
-    "confounds": [],
+    "confounds": [
+      "canon_familiarity",
+      "tone_overlap"
+    ],
     "replacement_needed": false,
-    "notes": ""
+    "notes": "Important J-horror reference for dread by atmosphere rather than gore. Helps preserve a quieter supernatural-horror lane beside louder psychological entries."
   },
   "1124": {
     "title_en": "The Prestige",
@@ -811,9 +859,12 @@
     "title_en": "Mirror",
     "confidence": "medium",
     "coverage_reason": "region_balance",
-    "confounds": [],
+    "confounds": [
+      "form_vs_theme",
+      "prestige_signal"
+    ],
     "replacement_needed": false,
-    "notes": ""
+    "notes": "High-value Tarkovsky entry for memory logic and spiritual abstraction. Best kept as depth coverage rather than a frequently surfaced first-contact title."
   },
   "1402": {
     "title_en": "The Silence of the Lambs",
@@ -915,9 +966,12 @@
     "title_en": "Memories of Murder",
     "confidence": "medium",
     "coverage_reason": "region_balance",
-    "confounds": [],
+    "confounds": [
+      "tone_overlap",
+      "canon_familiarity"
+    ],
     "replacement_needed": false,
-    "notes": ""
+    "notes": "Important Bong Joon-ho coverage for procedural unease, institutional failure, and tonal instability. Keeps Korean crime cinema from being represented only by twist-heavy or prestige titles."
   },
   "2048": {
     "title_en": "I Am Legend",
@@ -939,9 +993,12 @@
     "title_en": "Still Life",
     "confidence": "high",
     "coverage_reason": "phase1_anchor",
-    "confounds": [],
+    "confounds": [
+      "form_vs_theme",
+      "prestige_signal"
+    ],
     "replacement_needed": false,
-    "notes": ""
+    "notes": "Strong cinephile anchor for ruin-poetics, social critique, and slow observation. Important for signaling that the system understands non-mainstream taste early."
   },
   "2493": {
     "title_en": "The Terminator",
@@ -1051,9 +1108,12 @@
     "title_en": "Paprika",
     "confidence": "medium",
     "coverage_reason": "region_balance",
-    "confounds": [],
+    "confounds": [
+      "style_overlap",
+      "canon_familiarity"
+    ],
     "replacement_needed": false,
-    "notes": ""
+    "notes": "Important Satoshi Kon coverage for dream-logic animation and identity slippage. Helps preserve a distinct animation lane beyond either family warmth or pure horror."
   },
   "7326": {
     "title_en": "Pan's Labyrinth",
@@ -1099,9 +1159,12 @@
     "title_en": "Ghost in the Shell",
     "confidence": "medium",
     "coverage_reason": "region_balance",
-    "confounds": [],
+    "confounds": [
+      "canon_familiarity",
+      "style_overlap"
+    ],
     "replacement_needed": false,
-    "notes": ""
+    "notes": "Core anime-cinephile reference for philosophical cyberpunk and visual immersion. Valuable as a bridge between contemplative sci-fi and animation-focused taste."
   },
   "9693": {
     "title_en": "Children of Men",
@@ -1147,17 +1210,22 @@
     "title_en": "Perfect Blue",
     "confidence": "high",
     "coverage_reason": "phase1_anchor",
-    "confounds": [],
+    "confounds": [
+      "tone_overlap",
+      "canon_familiarity"
+    ],
     "replacement_needed": false,
-    "notes": ""
+    "notes": "High-impact animation anchor for psychologically intense viewers. It is especially valuable because it separates animation fandom from family-animation assumptions."
   },
   "10515": {
     "title_en": "Castle in the Sky",
     "confidence": "medium",
     "coverage_reason": "region_balance",
-    "confounds": [],
+    "confounds": [
+      "style_overlap"
+    ],
     "replacement_needed": false,
-    "notes": ""
+    "notes": "Useful Miyazaki coverage for adventure warmth and airborne wonder. It keeps animation breadth from leaning too heavily toward only melancholy or destabilizing titles."
   },
   "10528": {
     "title_en": "Sherlock Holmes",
@@ -1187,17 +1255,23 @@
     "title_en": "Spring, Summer, Fall, Winter... and Spring",
     "confidence": "medium",
     "coverage_reason": "region_balance",
-    "confounds": [],
+    "confounds": [
+      "form_vs_theme",
+      "prestige_signal"
+    ],
     "replacement_needed": false,
-    "notes": ""
+    "notes": "Important Korean contemplative-cinema reference for cyclical spirituality and visual restraint. It broadens Korean coverage beyond crime, horror, and social pressure."
   },
   "10835": {
     "title_en": "Chungking Express",
     "confidence": "medium",
     "coverage_reason": "region_balance",
-    "confounds": [],
+    "confounds": [
+      "style_overlap",
+      "canon_familiarity"
+    ],
     "replacement_needed": false,
-    "notes": ""
+    "notes": "High-value Wong Kar-wai coverage for urban loneliness, impulsive romance, and pop restlessness. Important as a looser counterpart to the restraint of In the Mood for Love."
   },
   "10867": {
     "title_en": "The Secret in Their Eyes",
@@ -1219,9 +1293,11 @@
     "title_en": "After the Storm",
     "confidence": "medium",
     "coverage_reason": "region_balance",
-    "confounds": [],
+    "confounds": [
+      "scope_vs_structure"
+    ],
     "replacement_needed": false,
-    "notes": ""
+    "notes": "Useful Kore-eda family-drama entry for everyday disappointment and gentle observation. It gives the Japanese lane a domestic realism register distinct from transcendence or mood-piece abstraction."
   },
   "11202": {
     "title_en": "Dogtooth",
@@ -1235,9 +1311,12 @@
     "title_en": "Fallen Angels",
     "confidence": "medium",
     "coverage_reason": "region_balance",
-    "confounds": [],
+    "confounds": [
+      "style_overlap",
+      "canon_familiarity"
+    ],
     "replacement_needed": false,
-    "notes": ""
+    "notes": "Useful for Wong Kar-wai's nocturnal alienation and jagged energy. It preserves the more abrasive side of his cinema instead of only the elegant-romantic register."
   },
   "11232": {
     "title_en": "About Time",
@@ -1291,9 +1370,12 @@
     "title_en": "Tropical Malady",
     "confidence": "medium",
     "coverage_reason": "region_balance",
-    "confounds": [],
+    "confounds": [
+      "form_vs_theme",
+      "prestige_signal"
+    ],
     "replacement_needed": false,
-    "notes": ""
+    "notes": "Important companion piece to Uncle Boonmee for Apichatpong's sensual, elusive mode. Useful when the pool needs a more intimate form of dreamlike slowness."
   },
   "11610": {
     "title_en": "Chungking Express",
@@ -1331,9 +1413,12 @@
     "title_en": "Vive L'Amour",
     "confidence": "high",
     "coverage_reason": "phase1_anchor",
-    "confounds": [],
+    "confounds": [
+      "form_vs_theme",
+      "canon_familiarity"
+    ],
     "replacement_needed": false,
-    "notes": ""
+    "notes": "Key Tsai Ming-liang entry for urban alienation and slow formalism. Keep as a deliberate Phase 1 marker of arthouse patience and loneliness."
   },
   "12244": {
     "title_en": "Sleepers",
@@ -1411,9 +1496,12 @@
     "title_en": "Beau Travail",
     "confidence": "medium",
     "coverage_reason": "region_balance",
-    "confounds": [],
+    "confounds": [
+      "form_vs_theme",
+      "prestige_signal"
+    ],
     "replacement_needed": false,
-    "notes": ""
+    "notes": "Keeps the pool's sensorial European formalism from collapsing into only nostalgia-coded or dialogue-heavy entries. A key art-cinema body-language reference point."
   },
   "14710": {
     "title_en": "Synecdoche New York",
@@ -1443,9 +1531,12 @@
     "title_en": "A City of Sadness",
     "confidence": "medium",
     "coverage_reason": "region_balance",
-    "confounds": [],
+    "confounds": [
+      "prestige_signal",
+      "form_vs_theme"
+    ],
     "replacement_needed": false,
-    "notes": ""
+    "notes": "Important Hou Hsiao-hsien coverage for historical memory and Taiwanese New Cinema lineage. Keep for breadth even if it is not a frequent sequencing surface title."
   },
   "15997": {
     "title_en": "Amores Perros",
@@ -1467,25 +1558,32 @@
     "title_en": "Fantastic Planet",
     "confidence": "medium",
     "coverage_reason": "region_balance",
-    "confounds": [],
+    "confounds": [
+      "style_overlap"
+    ],
     "replacement_needed": false,
-    "notes": ""
+    "notes": "Useful cult-animation outlier for surreal world-building and alienation. Protects the pool from treating animation only as Japanese or family-facing."
   },
   "16662": {
     "title_en": "Cleo from 5 to 7",
     "confidence": "medium",
     "coverage_reason": "region_balance",
-    "confounds": [],
+    "confounds": [
+      "style_overlap"
+    ],
     "replacement_needed": false,
-    "notes": ""
+    "notes": "Important Varda coverage for feminine subjectivity, urban drift, and formal lightness. Helps keep the European arthouse lane from becoming too severe or masculine."
   },
   "16672": {
     "title_en": "Woman in the Dunes",
     "confidence": "medium",
     "coverage_reason": "region_balance",
-    "confounds": [],
+    "confounds": [
+      "form_vs_theme",
+      "prestige_signal"
+    ],
     "replacement_needed": false,
-    "notes": ""
+    "notes": "Strong classic-art-cinema reference for existential entrapment and tactile formalism. Important for older non-Western canon coverage."
   },
   "16869": {
     "title_en": "Inglourious Basterds",
@@ -1499,17 +1597,22 @@
     "title_en": "A Prophet",
     "confidence": "medium",
     "coverage_reason": "region_balance",
-    "confounds": [],
+    "confounds": [
+      "tone_overlap"
+    ],
     "replacement_needed": false,
-    "notes": ""
+    "notes": "Useful French crime-art-cinema bridge for ambition, violence, and institutional pressure. It gives the pool a tougher international crime register beyond canon classics."
   },
   "18329": {
     "title_en": "Happy Together",
     "confidence": "medium",
     "coverage_reason": "region_balance",
-    "confounds": [],
+    "confounds": [
+      "style_overlap",
+      "prestige_signal"
+    ],
     "replacement_needed": false,
-    "notes": ""
+    "notes": "Key Wong Kar-wai addition that widens the romantic and queer-cinema lane without softening the emotional volatility. Useful as a more restless counterpart to In the Mood for Love."
   },
   "18491": {
     "title_en": "Neon Genesis Evangelion: The End of Evangelion",
@@ -1547,25 +1650,33 @@
     "title_en": "Eat Drink Man Woman",
     "confidence": "medium",
     "coverage_reason": "region_balance",
-    "confounds": [],
+    "confounds": [
+      "scope_vs_structure"
+    ],
     "replacement_needed": false,
-    "notes": ""
+    "notes": "Important Ang Lee family-drama coverage for intergenerational warmth, ritual, and emotional restraint. It provides a more accessible Taiwanese counterweight to the New Cinema auteurs."
   },
   "25237": {
     "title_en": "Come and See",
     "confidence": "medium",
     "coverage_reason": "region_balance",
-    "confounds": [],
+    "confounds": [
+      "tone_overlap",
+      "prestige_signal"
+    ],
     "replacement_needed": false,
-    "notes": ""
+    "notes": "Important anti-war extremity reference for traumatic intensity and moral horror. Best kept as depth coverage rather than a frequently surfaced taste probe."
   },
   "25538": {
     "title_en": "Yi Yi",
     "confidence": "medium",
     "coverage_reason": "region_balance",
-    "confounds": [],
+    "confounds": [
+      "prestige_signal",
+      "scope_vs_structure"
+    ],
     "replacement_needed": false,
-    "notes": ""
+    "notes": "Essential Yang anchor for humane ensemble observation and modern family sprawl. It gives the pool a patient, emotionally precise counterweight to more stylized auteurs."
   },
   "27205": {
     "title_en": "Inception",
@@ -1579,17 +1690,23 @@
     "title_en": "Close-Up",
     "confidence": "medium",
     "coverage_reason": "region_balance",
-    "confounds": [],
+    "confounds": [
+      "form_vs_theme",
+      "prestige_signal"
+    ],
     "replacement_needed": false,
-    "notes": ""
+    "notes": "Important Kiarostami entry for docu-fiction ambiguity and self-reflexive realism. Valuable for serious cinephile coverage even if too rarefied for frequent pairing."
   },
   "30020": {
     "title_en": "Taste of Cherry",
     "confidence": "medium",
     "coverage_reason": "region_balance",
-    "confounds": [],
+    "confounds": [
+      "form_vs_theme",
+      "prestige_signal"
+    ],
     "replacement_needed": false,
-    "notes": ""
+    "notes": "Keeps the Iranian existential lane explicit in the pool. Best used as deep coverage for viewers who consistently favor contemplative moral and philosophical cinema."
   },
   "31414": {
     "title_en": "Sátántangó",
@@ -1603,9 +1720,11 @@
     "title_en": "Millennium Actress",
     "confidence": "high",
     "coverage_reason": "phase1_anchor",
-    "confounds": [],
+    "confounds": [
+      "style_overlap"
+    ],
     "replacement_needed": false,
-    "notes": ""
+    "notes": "Useful bridge title between cinephile animation and emotional visual storytelling. Helps keep animation coverage from collapsing into either child-facing or purely dark entries."
   },
   "36557": {
     "title_en": "Casino Royale",
@@ -1643,25 +1762,34 @@
     "title_en": "The White Ribbon",
     "confidence": "medium",
     "coverage_reason": "region_balance",
-    "confounds": [],
+    "confounds": [
+      "prestige_signal",
+      "form_vs_theme"
+    ],
     "replacement_needed": false,
-    "notes": ""
+    "notes": "Important Haneke period reference for repression, cruelty, and cold social order. Useful for the severe historical-art-cinema lane."
   },
   "38368": {
     "title_en": "Uncle Boonmee Who Can Recall His Past Lives",
     "confidence": "medium",
     "coverage_reason": "region_balance",
-    "confounds": [],
+    "confounds": [
+      "form_vs_theme",
+      "prestige_signal"
+    ],
     "replacement_needed": false,
-    "notes": ""
+    "notes": "Crucial Apichatpong coverage for spiritual drift, rural stillness, and dreamlike patience. It is one of the pool's clearest signals that Southeast Asian arthouse cinema matters here."
   },
   "44012": {
     "title_en": "Jeanne Dielman, 23, quai du Commerce, 1080 Bruxelles",
     "confidence": "medium",
     "coverage_reason": "region_balance",
-    "confounds": [],
+    "confounds": [
+      "form_vs_theme",
+      "prestige_signal"
+    ],
     "replacement_needed": false,
-    "notes": ""
+    "notes": "High-value Akerman reference for extreme routine, duration, and domestic formalism. Important as a canon marker even if it remains a low-frequency sequencing candidate."
   },
   "44214": {
     "title_en": "Black Swan",
@@ -1675,17 +1803,23 @@
     "title_en": "Flowers of Shanghai",
     "confidence": "medium",
     "coverage_reason": "region_balance",
-    "confounds": [],
+    "confounds": [
+      "style_overlap",
+      "prestige_signal"
+    ],
     "replacement_needed": false,
-    "notes": ""
+    "notes": "Adds a denser, more interior Hou mode than The Assassin. Useful for preserving historical visual-poise coverage without defaulting to Western period prestige."
   },
   "45999": {
     "title_en": "A Time to Live, a Time to Die",
     "confidence": "medium",
     "coverage_reason": "region_balance",
-    "confounds": [],
+    "confounds": [
+      "prestige_signal",
+      "scope_vs_structure"
+    ],
     "replacement_needed": false,
-    "notes": ""
+    "notes": "Important autobiographical Hou coverage for memory, family, and Taiwanese historical texture. Strengthens the pool's non-Western coming-of-age depth."
   },
   "46738": {
     "title_en": "Waltz with Bashir",
@@ -1699,9 +1833,12 @@
     "title_en": "Certified Copy",
     "confidence": "medium",
     "coverage_reason": "region_balance",
-    "confounds": [],
+    "confounds": [
+      "style_overlap",
+      "prestige_signal"
+    ],
     "replacement_needed": false,
-    "notes": ""
+    "notes": "Important Kiarostami coverage for ambiguity in intimacy and identity performance. It broadens the Iranian lane beyond explicitly existential road or rural cinema."
   },
   "49026": {
     "title_en": "The Dark Knight Rises",
@@ -1715,9 +1852,12 @@
     "title_en": "Poetry",
     "confidence": "high",
     "coverage_reason": "phase1_anchor",
-    "confounds": [],
+    "confounds": [
+      "prestige_signal",
+      "style_overlap"
+    ],
     "replacement_needed": false,
-    "notes": ""
+    "notes": "High-value Lee Chang-dong anchor for moral attention, social pain, and lyrical restraint. Useful when the system needs a humane, emotionally precise arthouse counterweight."
   },
   "49519": {
     "title_en": "Source Code",
@@ -1755,9 +1895,11 @@
     "title_en": "Rebels of the Neon God",
     "confidence": "medium",
     "coverage_reason": "region_balance",
-    "confounds": [],
+    "confounds": [
+      "form_vs_theme"
+    ],
     "replacement_needed": false,
-    "notes": ""
+    "notes": "Key Tsai Ming-liang entry for youth alienation and urban drift. Useful as a sharper, more restless counterpart to Vive L'Amour in the same auteur lane."
   },
   "59967": {
     "title_en": "Looper",
@@ -1771,9 +1913,12 @@
     "title_en": "A Separation",
     "confidence": "high",
     "coverage_reason": "phase1_anchor",
-    "confounds": [],
+    "confounds": [
+      "style_overlap",
+      "prestige_signal"
+    ],
     "replacement_needed": false,
-    "notes": ""
+    "notes": "Critical non-English anchor for dialogue, moral ambiguity, and social realism. Important for keeping the pool's serious-realist lane internationally grounded."
   },
   "68718": {
     "title_en": "Django Unchained",
@@ -1827,9 +1972,11 @@
     "title_en": "Snowpiercer",
     "confidence": "medium",
     "coverage_reason": "region_balance",
-    "confounds": [],
+    "confounds": [
+      "tone_overlap"
+    ],
     "replacement_needed": false,
-    "notes": ""
+    "notes": "Useful Bong Joon-ho bridge title between accessible genre energy and overt class allegory. It helps the international lane keep momentum without becoming purely prestige-oriented."
   },
   "76341": {
     "title_en": "Mad Max: Fury Road",
@@ -1859,9 +2006,12 @@
     "title_en": "Terrorizers",
     "confidence": "medium",
     "coverage_reason": "region_balance",
-    "confounds": [],
+    "confounds": [
+      "form_vs_theme",
+      "prestige_signal"
+    ],
     "replacement_needed": false,
-    "notes": ""
+    "notes": "Important Yang coverage for fractured urban narratives and emotional distance. Gives the Taiwanese New Cinema lane more than a single family-epic reference."
   },
   "82695": {
     "title_en": "Eternal Sunshine of the Spotless Mind",
@@ -1875,9 +2025,11 @@
     "title_en": "No",
     "confidence": "medium",
     "coverage_reason": "region_balance",
-    "confounds": [],
+    "confounds": [
+      "style_overlap"
+    ],
     "replacement_needed": false,
-    "notes": ""
+    "notes": "Important Latin American political-cinema reference for media strategy, irony, and democratic performance. It adds a lighter-toned but still serious political register."
   },
   "83542": {
     "title_en": "Cloud Atlas",
@@ -1891,9 +2043,11 @@
     "title_en": "Jagten",
     "confidence": "medium",
     "coverage_reason": "region_balance",
-    "confounds": [],
+    "confounds": [
+      "tone_overlap"
+    ],
     "replacement_needed": false,
-    "notes": ""
+    "notes": "Important Scandinavian moral-pressure drama reference. Useful for keeping social-panic realism in the pool outside Anglophone prestige cinema."
   },
   "87827": {
     "title_en": "Life of Pi",
@@ -1907,9 +2061,11 @@
     "title_en": "Goodbye South, Goodbye",
     "confidence": "medium",
     "coverage_reason": "region_balance",
-    "confounds": [],
+    "confounds": [
+      "form_vs_theme"
+    ],
     "replacement_needed": false,
-    "notes": ""
+    "notes": "Useful for preserving the drifting, low-key criminal underside of Hou's cinema. It expands the pool's texture beyond stately prestige selections."
   },
   "101299": {
     "title_en": "The Hunt",
@@ -1947,9 +2103,12 @@
     "title_en": "Ida",
     "confidence": "medium",
     "coverage_reason": "region_balance",
-    "confounds": [],
+    "confounds": [
+      "prestige_signal",
+      "style_overlap"
+    ],
     "replacement_needed": false,
-    "notes": ""
+    "notes": "Important Polish austerity-and-memory reference for spare black-and-white spiritual searching. It strengthens the pool's compact formalist lane."
   },
   "120467": {
     "title_en": "The Grand Budapest Hotel",
@@ -1995,9 +2154,11 @@
     "title_en": "The Tale of the Princess Kaguya",
     "confidence": "medium",
     "coverage_reason": "region_balance",
-    "confounds": [],
+    "confounds": [
+      "style_overlap"
+    ],
     "replacement_needed": false,
-    "notes": ""
+    "notes": "Important animation-canon coverage for hand-drawn fragility, melancholy, and classical storytelling. It widens the pool's animation lane beyond techno-surreal entries."
   },
   "150540": {
     "title_en": "Inside Out",
@@ -2019,17 +2180,22 @@
     "title_en": "Interstellar",
     "confidence": "high",
     "coverage_reason": "phase1_anchor",
-    "confounds": [],
+    "confounds": [
+      "budget_signal",
+      "tone_overlap"
+    ],
     "replacement_needed": false,
-    "notes": ""
+    "notes": "Reliable broad-spectrum spectacle anchor that still carries philosophical and emotional weight. Useful when the contrast needs a recognizable large-scale film with sincerity."
   },
   "187022": {
     "title_en": "A Touch of Sin",
     "confidence": "medium",
     "coverage_reason": "region_balance",
-    "confounds": [],
+    "confounds": [
+      "tone_overlap"
+    ],
     "replacement_needed": false,
-    "notes": ""
+    "notes": "Keeps Jia Zhangke's sharper and more violent social-critique mode in the pool. Useful as a counterweight to more observational Chinese arthouse selections."
   },
   "194662": {
     "title_en": "Blue Is the Warmest Colour",
@@ -2091,9 +2257,12 @@
     "title_en": "The Assassin",
     "confidence": "high",
     "coverage_reason": "phase1_anchor",
-    "confounds": [],
+    "confounds": [
+      "style_overlap",
+      "form_vs_theme"
+    ],
     "replacement_needed": false,
-    "notes": ""
+    "notes": "High-value Hou Hsiao-hsien anchor for image-driven stillness and formal distance. Essential to the upgraded pool because it sharpens the gaze-versus-momentum contrast."
   },
   "256591": {
     "title_en": "Nightcrawler",
@@ -2131,9 +2300,11 @@
     "title_en": "Timbuktu",
     "confidence": "medium",
     "coverage_reason": "region_balance",
-    "confounds": [],
+    "confounds": [
+      "prestige_signal"
+    ],
     "replacement_needed": false,
-    "notes": ""
+    "notes": "Critical Africa coverage for moral pressure, restraint, and political violence. Important because it prevents the international lane from being dominated only by Europe and East Asia."
   },
   "271677": {
     "title_en": "Now You See Me",
@@ -2187,9 +2358,12 @@
     "title_en": "The Wailing",
     "confidence": "medium",
     "coverage_reason": "region_balance",
-    "confounds": [],
+    "confounds": [
+      "tone_overlap",
+      "canon_familiarity"
+    ],
     "replacement_needed": false,
-    "notes": ""
+    "notes": "Important Korean horror-cinephile anchor for folk dread, dread accumulation, and tonal instability. Keeps horror coverage from collapsing into only US cult references."
   },
   "296096": {
     "title_en": "Me Before You",
@@ -2203,9 +2377,12 @@
     "title_en": "The Handmaiden",
     "confidence": "medium",
     "coverage_reason": "region_balance",
-    "confounds": [],
+    "confounds": [
+      "style_overlap",
+      "canon_familiarity"
+    ],
     "replacement_needed": false,
-    "notes": ""
+    "notes": "Strong Park Chan-wook coverage for erotic tension, deception, and ornate visual control. Useful as a more baroque complement to the colder Korean entries."
   },
   "310131": {
     "title_en": "The Witch",
@@ -2227,9 +2404,12 @@
     "title_en": "Your Name",
     "confidence": "medium",
     "coverage_reason": "region_balance",
-    "confounds": [],
+    "confounds": [
+      "canon_familiarity",
+      "style_overlap"
+    ],
     "replacement_needed": false,
-    "notes": ""
+    "notes": "Important anime-mainstream bridge for emotion, fantasy, and youth longing. It helps the animation lane speak to both cinephile and broader audiences."
   },
   "316029": {
     "title_en": "The Greatest Showman",
@@ -2291,9 +2471,12 @@
     "title_en": "Embrace of the Serpent",
     "confidence": "medium",
     "coverage_reason": "region_balance",
-    "confounds": [],
+    "confounds": [
+      "prestige_signal",
+      "form_vs_theme"
+    ],
     "replacement_needed": false,
-    "notes": ""
+    "notes": "Key Latin American coverage for spiritual journey, colonial violence, and black-and-white visual austerity. Important for extending the pool beyond Euro-American art-cinema defaults."
   },
   "338766": {
     "title_en": "Burning",
@@ -2331,9 +2514,11 @@
     "title_en": "Right Now, Wrong Then",
     "confidence": "medium",
     "coverage_reason": "region_balance",
-    "confounds": [],
+    "confounds": [
+      "style_overlap"
+    ],
     "replacement_needed": false,
-    "notes": ""
+    "notes": "Important Hong Sang-soo entry for repetition, conversational variation, and emotional self-revision. It defines a quieter authorial lane that would otherwise be missing."
   },
   "354912": {
     "title_en": "Coco",
@@ -2419,9 +2604,11 @@
     "title_en": "A Silent Voice",
     "confidence": "medium",
     "coverage_reason": "region_balance",
-    "confounds": [],
+    "confounds": [
+      "tone_overlap"
+    ],
     "replacement_needed": false,
-    "notes": ""
+    "notes": "Important animation coverage for shame, repair, and adolescent emotional injury. It widens the Japanese animation lane beyond fantasy and mind-bending entries."
   },
   "398818": {
     "title_en": "Call Me by Your Name",
@@ -2459,9 +2646,12 @@
     "title_en": "Weathering with You",
     "confidence": "medium",
     "coverage_reason": "region_balance",
-    "confounds": [],
+    "confounds": [
+      "style_overlap",
+      "canon_familiarity"
+    ],
     "replacement_needed": false,
-    "notes": ""
+    "notes": "Useful Shinkai coverage for romantic weather-melancholy and contemporary urban fantasy. It gives the animation lane a glossy emotional-modern register."
   },
   "419430": {
     "title_en": "Sicario",
@@ -2491,17 +2681,21 @@
     "title_en": "A Sun",
     "confidence": "medium",
     "coverage_reason": "region_balance",
-    "confounds": [],
+    "confounds": [
+      "tone_overlap"
+    ],
     "replacement_needed": false,
-    "notes": ""
+    "notes": "Important contemporary Taiwan coverage for family rupture, masculinity, and quiet despair. It keeps the Taiwanese lane contemporary rather than purely canonical."
   },
   "434773": {
     "title_en": "On the Beach at Night Alone",
     "confidence": "medium",
     "coverage_reason": "region_balance",
-    "confounds": [],
+    "confounds": [
+      "style_overlap"
+    ],
     "replacement_needed": false,
-    "notes": ""
+    "notes": "Important Hong Sang-soo coverage for conversational intimacy, repetition, and emotional self-exposure. It helps define a quieter dialogue-driven auteur lane."
   },
   "438631": {
     "title_en": "Dune",
@@ -2547,9 +2741,11 @@
     "title_en": "Dear Ex",
     "confidence": "medium",
     "coverage_reason": "region_balance",
-    "confounds": [],
+    "confounds": [
+      "tone_overlap"
+    ],
     "replacement_needed": false,
-    "notes": ""
+    "notes": "Useful Taiwan coverage for queer family melodrama with sharper emotional volatility. It broadens the region's representation beyond austere slow cinema."
   },
   "475557": {
     "title_en": "Joker",
@@ -2571,17 +2767,23 @@
     "title_en": "Long Day's Journey Into Night",
     "confidence": "medium",
     "coverage_reason": "region_balance",
-    "confounds": [],
+    "confounds": [
+      "style_overlap",
+      "prestige_signal"
+    ],
     "replacement_needed": false,
-    "notes": ""
+    "notes": "Important Bi Gan coverage for memory drift and oneiric visual immersion. It keeps the pool's Chinese arthouse lane contemporary rather than purely canonical."
   },
   "490125": {
     "title_en": "Capernaum",
     "confidence": "medium",
     "coverage_reason": "region_balance",
-    "confounds": [],
+    "confounds": [
+      "tone_overlap",
+      "prestige_signal"
+    ],
     "replacement_needed": false,
-    "notes": ""
+    "notes": "Important Middle Eastern social-realist coverage for childhood precarity and institutional neglect. Keeps the humanitarian-realist lane visible beyond Europe and East Asia."
   },
   "490132": {
     "title_en": "Green Book",
@@ -2595,17 +2797,23 @@
     "title_en": "Burning",
     "confidence": "high",
     "coverage_reason": "phase1_anchor",
-    "confounds": [],
+    "confounds": [
+      "prestige_signal",
+      "tone_overlap"
+    ],
     "replacement_needed": false,
-    "notes": ""
+    "notes": "Strong anchor for ambiguous menace, class anxiety, and slow psychological burn. One of the most important new films for the cinephile-facing opening pairs."
   },
   "496243": {
     "title_en": "Parasite",
     "confidence": "high",
     "coverage_reason": "phase1_anchor",
-    "confounds": [],
+    "confounds": [
+      "canon_familiarity",
+      "tone_overlap"
+    ],
     "replacement_needed": false,
-    "notes": ""
+    "notes": "Now widely familiar, but still a high-value bridge between accessibility and sharper social critique. Keep as a cross-audience anchor, not as the only Korean representative."
   },
   "496450": {
     "title_en": "Tenet",
@@ -2683,9 +2891,12 @@
     "title_en": "Portrait of a Lady on Fire",
     "confidence": "high",
     "coverage_reason": "phase1_anchor",
-    "confounds": [],
+    "confounds": [
+      "prestige_signal",
+      "style_overlap"
+    ],
     "replacement_needed": false,
-    "notes": ""
+    "notes": "Key formal-romantic anchor for slowburn visual intimacy. Helps define the contemplative end of the pool without defaulting to heterosexual nostalgia coding."
   },
   "523607": {
     "title_en": "Everything Everywhere All at Once",
@@ -2779,9 +2990,11 @@
     "title_en": "Minari",
     "confidence": "medium",
     "coverage_reason": "region_balance",
-    "confounds": [],
+    "confounds": [
+      "scope_vs_structure"
+    ],
     "replacement_needed": false,
-    "notes": ""
+    "notes": "Important Korean diasporic family-drama coverage for tenderness, labor, and intergenerational tension. It adds a quieter immigrant perspective absent from the harsher Korean entries."
   },
   "620683": {
     "title_en": "Guillermo del Toro's Pinocchio",
@@ -2803,9 +3016,12 @@
     "title_en": "Drive My Car",
     "confidence": "high",
     "coverage_reason": "phase1_anchor",
-    "confounds": [],
+    "confounds": [
+      "style_overlap",
+      "prestige_signal"
+    ],
     "replacement_needed": false,
-    "notes": ""
+    "notes": "Important Hamaguchi anchor for dialogue-rich existential patience. It deepens the pool's contemporary festival canon without leaning on visual maximalism."
   },
   "637920": {
     "title_en": "Aftersun",
