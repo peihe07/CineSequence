@@ -1,0 +1,362 @@
+{
+  "p1_01": {
+    "confidence": "medium",
+    "confounds": ["canon_familiarity"],
+    "why_valid": "Contrasts mainstream accessibility against a more auteur-leaning or formally distinctive option without collapsing into pure language or region preference.",
+    "replacement_needed": false
+  },
+  "p1_02": {
+    "confidence": "medium",
+    "confounds": ["canon_familiarity"],
+    "why_valid": "Contrasts mainstream accessibility against a more auteur-leaning or formally distinctive option without collapsing into pure language or region preference.",
+    "replacement_needed": false
+  },
+  "p1_03": {
+    "confidence": "medium",
+    "confounds": ["canon_familiarity"],
+    "why_valid": "Contrasts mainstream accessibility against a more auteur-leaning or formally distinctive option without collapsing into pure language or region preference.",
+    "replacement_needed": false
+  },
+  "p1_04": {
+    "confidence": "medium",
+    "confounds": ["canon_familiarity"],
+    "why_valid": "Contrasts mainstream accessibility against a more auteur-leaning or formally distinctive option without collapsing into pure language or region preference.",
+    "replacement_needed": false
+  },
+  "p1_05": {
+    "confidence": "medium",
+    "confounds": ["canon_familiarity"],
+    "why_valid": "Contrasts mainstream accessibility against a more auteur-leaning or formally distinctive option without collapsing into pure language or region preference.",
+    "replacement_needed": false
+  },
+  "p1_06": {
+    "confidence": "medium",
+    "confounds": ["canon_familiarity"],
+    "why_valid": "Contrasts mainstream accessibility against a more auteur-leaning or formally distinctive option without collapsing into pure language or region preference.",
+    "replacement_needed": false
+  },
+  "p1_07": {
+    "confidence": "medium",
+    "confounds": ["genre_overlap"],
+    "why_valid": "The pair primarily separates analytic or systems-driven engagement from feeling-led or memory-led engagement.",
+    "replacement_needed": false
+  },
+  "p1_08": {
+    "confidence": "medium",
+    "confounds": ["genre_overlap"],
+    "why_valid": "The pair primarily separates analytic or systems-driven engagement from feeling-led or memory-led engagement.",
+    "replacement_needed": false
+  },
+  "p1_09": {
+    "confidence": "medium",
+    "confounds": ["genre_overlap"],
+    "why_valid": "The pair primarily separates analytic or systems-driven engagement from feeling-led or memory-led engagement.",
+    "replacement_needed": false
+  },
+  "p1_10": {
+    "confidence": "medium",
+    "confounds": ["genre_overlap"],
+    "why_valid": "The pair primarily separates analytic or systems-driven engagement from feeling-led or memory-led engagement.",
+    "replacement_needed": false
+  },
+  "p1_11": {
+    "confidence": "medium",
+    "confounds": ["genre_overlap"],
+    "why_valid": "The pair primarily separates analytic or systems-driven engagement from feeling-led or memory-led engagement.",
+    "replacement_needed": false
+  },
+  "p1_12": {
+    "confidence": "medium",
+    "confounds": ["genre_overlap"],
+    "why_valid": "The pair primarily separates analytic or systems-driven engagement from feeling-led or memory-led engagement.",
+    "replacement_needed": false
+  },
+  "p1_13": {
+    "confidence": "medium",
+    "confounds": ["genre_overlap"],
+    "why_valid": "The pair primarily separates analytic or systems-driven engagement from feeling-led or memory-led engagement.",
+    "replacement_needed": false
+  },
+  "p1_14": {
+    "confidence": "high",
+    "confounds": ["tone_vs_genre"],
+    "why_valid": "The emotional temperature split is legible on first contact and helps anchor the quadrant quickly.",
+    "replacement_needed": false
+  },
+  "p1_15": {
+    "confidence": "high",
+    "confounds": ["tone_vs_genre"],
+    "why_valid": "The emotional temperature split is legible on first contact and helps anchor the quadrant quickly.",
+    "replacement_needed": false
+  },
+  "p1_16": {
+    "confidence": "high",
+    "confounds": ["tone_vs_genre"],
+    "why_valid": "The emotional temperature split is legible on first contact and helps anchor the quadrant quickly.",
+    "replacement_needed": false
+  },
+  "p1_17": {
+    "confidence": "high",
+    "confounds": ["tone_vs_genre"],
+    "why_valid": "The emotional temperature split is legible on first contact and helps anchor the quadrant quickly.",
+    "replacement_needed": false
+  },
+  "p1_18": {
+    "confidence": "high",
+    "confounds": ["tone_vs_genre"],
+    "why_valid": "The emotional temperature split is legible on first contact and helps anchor the quadrant quickly.",
+    "replacement_needed": false
+  },
+  "p1_19": {
+    "confidence": "high",
+    "confounds": ["tone_vs_genre"],
+    "why_valid": "The emotional temperature split is legible on first contact and helps anchor the quadrant quickly.",
+    "replacement_needed": false
+  },
+  "p1_20": {
+    "confidence": "high",
+    "confounds": ["tone_vs_genre"],
+    "why_valid": "The emotional temperature split is legible on first contact and helps anchor the quadrant quickly.",
+    "replacement_needed": false
+  },
+  "p1_21": {
+    "confidence": "high",
+    "confounds": ["form_vs_theme"],
+    "why_valid": "The contrast isolates pacing and viewer patience more than worldview or region.",
+    "replacement_needed": false
+  },
+  "p1_22": {
+    "confidence": "high",
+    "confounds": ["form_vs_theme"],
+    "why_valid": "The contrast isolates pacing and viewer patience more than worldview or region.",
+    "replacement_needed": false
+  },
+  "p1_23": {
+    "confidence": "high",
+    "confounds": ["form_vs_theme"],
+    "why_valid": "The contrast isolates pacing and viewer patience more than worldview or region.",
+    "replacement_needed": false
+  },
+  "p1_24": {
+    "confidence": "medium",
+    "confounds": ["scope_vs_structure"],
+    "why_valid": "The pair asks whether the viewer prefers collective dynamics or intense single-subject immersion.",
+    "replacement_needed": false
+  },
+  "p1_25": {
+    "confidence": "medium",
+    "confounds": ["scope_vs_structure"],
+    "why_valid": "The pair asks whether the viewer prefers collective dynamics or intense single-subject immersion.",
+    "replacement_needed": false
+  },
+  "p1_26": {
+    "confidence": "high",
+    "confounds": ["style_overlap"],
+    "why_valid": "The contrast tests whether image-driven immersion or language-driven pleasure is the stronger pull.",
+    "replacement_needed": false
+  },
+  "p1_27": {
+    "confidence": "high",
+    "confounds": ["style_overlap"],
+    "why_valid": "The contrast tests whether image-driven immersion or language-driven pleasure is the stronger pull.",
+    "replacement_needed": false
+  },
+  "p1_28": {
+    "confidence": "high",
+    "confounds": ["style_overlap"],
+    "why_valid": "The contrast tests whether image-driven immersion or language-driven pleasure is the stronger pull.",
+    "replacement_needed": false
+  },
+  "p1_29": {
+    "confidence": "medium",
+    "confounds": ["scope_vs_structure"],
+    "why_valid": "The pair asks whether the viewer prefers collective dynamics or intense single-subject immersion.",
+    "replacement_needed": false
+  },
+  "p1_30": {
+    "confidence": "high",
+    "confounds": ["budget_signal"],
+    "why_valid": "The pair separates scale-driven attraction from intimate character focus without relying on culture-war framing.",
+    "replacement_needed": false
+  },
+  "p1_31": {
+    "confidence": "high",
+    "confounds": ["budget_signal"],
+    "why_valid": "The pair separates scale-driven attraction from intimate character focus without relying on culture-war framing.",
+    "replacement_needed": false
+  },
+  "p1_32": {
+    "confidence": "high",
+    "confounds": ["budget_signal"],
+    "why_valid": "The pair separates scale-driven attraction from intimate character focus without relying on culture-war framing.",
+    "replacement_needed": false
+  },
+  "p1_33": {
+    "confidence": "medium",
+    "confounds": ["satire_overlap"],
+    "why_valid": "The pair checks tolerance for overtly self-aware or structurally reflexive storytelling against direct narrative momentum.",
+    "replacement_needed": false
+  },
+  "p1_34": {
+    "confidence": "medium",
+    "confounds": ["satire_overlap"],
+    "why_valid": "The pair checks tolerance for overtly self-aware or structurally reflexive storytelling against direct narrative momentum.",
+    "replacement_needed": false
+  },
+  "p1_35": {
+    "confidence": "high",
+    "confounds": ["tone_overlap"],
+    "why_valid": "The contrast asks whether grounded observation or allegorical or fantastical transformation is more appealing.",
+    "replacement_needed": false
+  },
+  "p1_36": {
+    "confidence": "high",
+    "confounds": ["tone_overlap"],
+    "why_valid": "The contrast asks whether grounded observation or allegorical or fantastical transformation is more appealing.",
+    "replacement_needed": false
+  },
+  "p1_37": {
+    "confidence": "medium",
+    "confounds": ["prestige_signal"],
+    "why_valid": "The pair isolates present-day urgency against historical or period remove.",
+    "replacement_needed": false
+  },
+  "p1_38": {
+    "confidence": "medium",
+    "confounds": ["prestige_signal"],
+    "why_valid": "The pair isolates present-day urgency against historical or period remove.",
+    "replacement_needed": false
+  },
+  "p1_39": {
+    "confidence": "medium",
+    "confounds": ["humor_variation"],
+    "why_valid": "The pair distinguishes ironic distance from earnest emotional openness.",
+    "replacement_needed": false
+  },
+  "p1_40": {
+    "confidence": "medium",
+    "confounds": ["humor_variation"],
+    "why_valid": "The pair distinguishes ironic distance from earnest emotional openness.",
+    "replacement_needed": false
+  },
+  "p1_41": {
+    "confidence": "medium",
+    "confounds": ["canon_familiarity"],
+    "why_valid": "Contrasts mainstream accessibility against a more auteur-leaning or formally distinctive option without collapsing into pure language or region preference.",
+    "replacement_needed": false
+  },
+  "p1_42": {
+    "confidence": "medium",
+    "confounds": ["canon_familiarity"],
+    "why_valid": "Contrasts mainstream accessibility against a more auteur-leaning or formally distinctive option without collapsing into pure language or region preference.",
+    "replacement_needed": false
+  },
+  "p1_43": {
+    "confidence": "medium",
+    "confounds": ["canon_familiarity"],
+    "why_valid": "Contrasts mainstream accessibility against a more auteur-leaning or formally distinctive option without collapsing into pure language or region preference.",
+    "replacement_needed": false
+  },
+  "p1_44": {
+    "confidence": "medium",
+    "confounds": ["canon_familiarity"],
+    "why_valid": "Contrasts mainstream accessibility against a more auteur-leaning or formally distinctive option without collapsing into pure language or region preference.",
+    "replacement_needed": false
+  },
+  "p1_45": {
+    "confidence": "medium",
+    "confounds": ["genre_overlap"],
+    "why_valid": "The pair primarily separates analytic or systems-driven engagement from feeling-led or memory-led engagement.",
+    "replacement_needed": false
+  },
+  "p1_46": {
+    "confidence": "medium",
+    "confounds": ["genre_overlap"],
+    "why_valid": "The pair primarily separates analytic or systems-driven engagement from feeling-led or memory-led engagement.",
+    "replacement_needed": false
+  },
+  "p1_47": {
+    "confidence": "high",
+    "confounds": ["tone_vs_genre"],
+    "why_valid": "The emotional temperature split is legible on first contact and helps anchor the quadrant quickly.",
+    "replacement_needed": false
+  },
+  "p1_48": {
+    "confidence": "high",
+    "confounds": ["tone_vs_genre"],
+    "why_valid": "The emotional temperature split is legible on first contact and helps anchor the quadrant quickly.",
+    "replacement_needed": false
+  },
+  "p1_49": {
+    "confidence": "high",
+    "confounds": ["tone_vs_genre"],
+    "why_valid": "The emotional temperature split is legible on first contact and helps anchor the quadrant quickly.",
+    "replacement_needed": false
+  },
+  "p1_50": {
+    "confidence": "high",
+    "confounds": ["form_vs_theme"],
+    "why_valid": "The contrast isolates pacing and viewer patience more than worldview or region.",
+    "replacement_needed": false
+  },
+  "p1_51": {
+    "confidence": "high",
+    "confounds": ["form_vs_theme"],
+    "why_valid": "The contrast isolates pacing and viewer patience more than worldview or region.",
+    "replacement_needed": false
+  },
+  "p1_52": {
+    "confidence": "medium",
+    "confounds": ["scope_vs_structure"],
+    "why_valid": "The pair asks whether the viewer prefers collective dynamics or intense single-subject immersion.",
+    "replacement_needed": false
+  },
+  "p1_53": {
+    "confidence": "medium",
+    "confounds": ["scope_vs_structure"],
+    "why_valid": "The pair asks whether the viewer prefers collective dynamics or intense single-subject immersion.",
+    "replacement_needed": false
+  },
+  "p1_54": {
+    "confidence": "high",
+    "confounds": ["style_overlap"],
+    "why_valid": "The contrast tests whether image-driven immersion or language-driven pleasure is the stronger pull.",
+    "replacement_needed": false
+  },
+  "p1_55": {
+    "confidence": "high",
+    "confounds": ["style_overlap"],
+    "why_valid": "The contrast tests whether image-driven immersion or language-driven pleasure is the stronger pull.",
+    "replacement_needed": false
+  },
+  "p1_56": {
+    "confidence": "high",
+    "confounds": ["budget_signal"],
+    "why_valid": "The pair separates scale-driven attraction from intimate character focus without relying on culture-war framing.",
+    "replacement_needed": false
+  },
+  "p1_57": {
+    "confidence": "medium",
+    "confounds": ["satire_overlap"],
+    "why_valid": "The pair checks tolerance for overtly self-aware or structurally reflexive storytelling against direct narrative momentum.",
+    "replacement_needed": false
+  },
+  "p1_58": {
+    "confidence": "high",
+    "confounds": ["tone_overlap"],
+    "why_valid": "The contrast asks whether grounded observation or allegorical or fantastical transformation is more appealing.",
+    "replacement_needed": false
+  },
+  "p1_59": {
+    "confidence": "medium",
+    "confounds": ["humor_variation"],
+    "why_valid": "The pair distinguishes ironic distance from earnest emotional openness.",
+    "replacement_needed": false
+  },
+  "p1_60": {
+    "confidence": "medium",
+    "confounds": ["scope_vs_structure"],
+    "why_valid": "The pair asks whether the viewer prefers collective dynamics or intense single-subject immersion.",
+    "replacement_needed": false
+  }
+}

@@ -1,5 +1,8 @@
 """Tests for pair engine: Phase 1 pair selection with randomized coverage."""
 
+import json
+from pathlib import Path
+
 import pytest
 
 from app.services.pair_engine import (
@@ -12,6 +15,11 @@ from app.services.pair_engine import (
     get_phase1_pairs,
     get_reroll_pair_for_round,
 )
+
+DATA_DIR = Path(__file__).resolve().parent.parent.parent / "app" / "data"
+
+with open(DATA_DIR / "phase1_pair_reviews.json") as f:
+    PAIR_REVIEWS = json.load(f)
 
 
 class TestGetPhase1Pairs:
@@ -229,8 +237,12 @@ class TestPhase1PairsData:
                 )
                 ids[tid] = f"{pair['id']} ({side})"
 
-    def test_has_at_least_40_pairs(self):
-        assert len(ALL_PAIRS) >= 40
+    def test_deprecated_western_vs_eastern_dimension_removed(self):
+        dimensions = {pair["dimension"] for pair in ALL_PAIRS}
+        assert "western_vs_eastern" not in dimensions
+
+    def test_has_at_least_60_pairs(self):
+        assert len(ALL_PAIRS) >= 60
 
     def test_sufficient_pairs_per_quadrant_axis(self):
         """Each quadrant axis should have enough pairs for variety."""
@@ -252,6 +264,22 @@ class TestPhase1PairsData:
                 assert "乘勝" not in zh, (
                     f"{pair['id']} {side}: title_zh still has placeholder '{zh}'"
                 )
+
+    def test_all_pairs_have_review_metadata(self):
+        review_ids = set(PAIR_REVIEWS.keys())
+        pair_ids = {pair["id"] for pair in ALL_PAIRS}
+        assert review_ids == pair_ids
+
+    def test_review_metadata_schema(self):
+        valid_confidence = {"high", "medium", "low"}
+        for pair in ALL_PAIRS:
+            review = PAIR_REVIEWS[pair["id"]]
+            assert review["confidence"] in valid_confidence
+            assert isinstance(review["confounds"], list)
+            assert all(isinstance(item, str) and item for item in review["confounds"])
+            assert isinstance(review["why_valid"], str)
+            assert review["why_valid"].strip()
+            assert isinstance(review["replacement_needed"], bool)
 
 
 class TestDimensionDiversity:

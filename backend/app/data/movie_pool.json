@@ -3403,6 +3403,444 @@
         "slowburn"
       ],
       "region": "fr"
+    },
+    {
+      "tmdb_id": 78450,
+      "title_en": "Terrorizers",
+      "tags": [
+        "experimental",
+        "slowburn",
+        "darkTone",
+        "existential"
+      ],
+      "region": "tw"
+    },
+    {
+      "tmdb_id": 57564,
+      "title_en": "Rebels of the Neon God",
+      "tags": [
+        "experimental",
+        "slowburn",
+        "darkTone",
+        "existential",
+        "comingOfAge"
+      ],
+      "region": "tw"
+    },
+    {
+      "tmdb_id": 11985,
+      "title_en": "Vive L'Amour",
+      "tags": [
+        "experimental",
+        "slowburn",
+        "solo",
+        "darkTone",
+        "existential"
+      ],
+      "region": "tw"
+    },
+    {
+      "tmdb_id": 88811,
+      "title_en": "Goodbye South, Goodbye",
+      "tags": [
+        "experimental",
+        "slowburn",
+        "existential"
+      ],
+      "region": "tw"
+    },
+    {
+      "tmdb_id": 253450,
+      "title_en": "The Assassin",
+      "tags": [
+        "visualFeast",
+        "experimental",
+        "slowburn",
+        "revenge"
+      ],
+      "region": "tw"
+    },
+    {
+      "tmdb_id": 45935,
+      "title_en": "Flowers of Shanghai",
+      "tags": [
+        "experimental",
+        "slowburn",
+        "visualFeast",
+        "nostalgic"
+      ],
+      "region": "tw"
+    },
+    {
+      "tmdb_id": 45999,
+      "title_en": "A Time to Live, a Time to Die",
+      "tags": [
+        "comingOfAge",
+        "experimental",
+        "slowburn",
+        "tearjerker"
+      ],
+      "region": "tw"
+    },
+    {
+      "tmdb_id": 18329,
+      "title_en": "Happy Together",
+      "tags": [
+        "experimental",
+        "slowburn",
+        "socialCritique",
+        "romanticCore",
+        "visualFeast"
+      ],
+      "region": "hk"
+    },
+    {
+      "tmdb_id": 11220,
+      "title_en": "Fallen Angels",
+      "tags": [
+        "experimental",
+        "slowburn",
+        "darkTone",
+        "existential",
+        "visualFeast"
+      ],
+      "region": "hk"
+    },
+    {
+      "tmdb_id": 2346,
+      "title_en": "Still Life",
+      "tags": [
+        "experimental",
+        "slowburn",
+        "socialCritique",
+        "existential"
+      ],
+      "region": "cn"
+    },
+    {
+      "tmdb_id": 187022,
+      "title_en": "A Touch of Sin",
+      "tags": [
+        "experimental",
+        "slowburn",
+        "violentAesthetic",
+        "socialCritique"
+      ],
+      "region": "cn"
+    },
+    {
+      "tmdb_id": 486898,
+      "title_en": "Long Day's Journey Into Night",
+      "tags": [
+        "experimental",
+        "slowburn",
+        "mindfuck",
+        "visualFeast"
+      ],
+      "region": "cn"
+    },
+    {
+      "tmdb_id": 38368,
+      "title_en": "Uncle Boonmee Who Can Recall His Past Lives",
+      "tags": [
+        "experimental",
+        "slowburn",
+        "philosophical",
+        "existential"
+      ],
+      "region": "th"
+    },
+    {
+      "tmdb_id": 11534,
+      "title_en": "Tropical Malady",
+      "tags": [
+        "experimental",
+        "slowburn",
+        "socialCritique",
+        "existential"
+      ],
+      "region": "th"
+    },
+    {
+      "tmdb_id": 354275,
+      "title_en": "Right Now, Wrong Then",
+      "tags": [
+        "dialogue",
+        "experimental",
+        "slowburn"
+      ],
+      "region": "kr"
+    },
+    {
+      "tmdb_id": 434773,
+      "title_en": "On the Beach at Night Alone",
+      "tags": [
+        "dialogue",
+        "experimental",
+        "slowburn",
+        "solo",
+        "existential"
+      ],
+      "region": "kr"
+    },
+    {
+      "tmdb_id": 293670,
+      "title_en": "The Wailing",
+      "tags": [
+        "darkTone",
+        "psychoThriller",
+        "cult"
+      ],
+      "region": "kr"
+    },
+    {
+      "tmdb_id": 491584,
+      "title_en": "Burning",
+      "tags": [
+        "psychoThriller",
+        "slowburn",
+        "socialCritique",
+        "experimental"
+      ],
+      "region": "kr"
+    },
+    {
+      "tmdb_id": 16672,
+      "title_en": "Woman in the Dunes",
+      "tags": [
+        "existential",
+        "experimental",
+        "slowburn"
+      ],
+      "region": "jp"
+    },
+    {
+      "tmdb_id": 10494,
+      "title_en": "Perfect Blue",
+      "tags": [
+        "psychoThriller",
+        "cult",
+        "mindfuck"
+      ],
+      "region": "jp"
+    },
+    {
+      "tmdb_id": 33320,
+      "title_en": "Millennium Actress",
+      "tags": [
+        "experimental",
+        "satirical",
+        "visualFeast"
+      ],
+      "region": "jp"
+    },
+    {
+      "tmdb_id": 149871,
+      "title_en": "The Tale of the Princess Kaguya",
+      "tags": [
+        "visualFeast",
+        "existential",
+        "nostalgic"
+      ],
+      "region": "jp"
+    },
+    {
+      "tmdb_id": 16306,
+      "title_en": "Fantastic Planet",
+      "tags": [
+        "experimental",
+        "dystopia",
+        "philosophical",
+        "cult"
+      ],
+      "region": "fr"
+    },
+    {
+      "tmdb_id": 149,
+      "title_en": "Akira",
+      "tags": [
+        "cult",
+        "visualFeast",
+        "dystopia",
+        "philosophical"
+      ],
+      "region": "jp"
+    },
+    {
+      "tmdb_id": 9323,
+      "title_en": "Ghost in the Shell",
+      "tags": [
+        "philosophical",
+        "dystopia",
+        "visualFeast"
+      ],
+      "region": "jp"
+    },
+    {
+      "tmdb_id": 4977,
+      "title_en": "Paprika",
+      "tags": [
+        "mindfuck",
+        "visualFeast",
+        "experimental"
+      ],
+      "region": "jp"
+    },
+    {
+      "tmdb_id": 797,
+      "title_en": "Persona",
+      "tags": [
+        "experimental",
+        "psychoThriller",
+        "slowburn"
+      ],
+      "region": "se"
+    },
+    {
+      "tmdb_id": 406,
+      "title_en": "La Haine",
+      "tags": [
+        "socialCritique",
+        "darkTone",
+        "existential",
+        "comingOfAge"
+      ],
+      "region": "fr"
+    },
+    {
+      "tmdb_id": 14626,
+      "title_en": "Beau Travail",
+      "tags": [
+        "visualFeast",
+        "experimental",
+        "slowburn"
+      ],
+      "region": "fr"
+    },
+    {
+      "tmdb_id": 44012,
+      "title_en": "Jeanne Dielman, 23, quai du Commerce, 1080 Bruxelles",
+      "tags": [
+        "experimental",
+        "slowburn",
+        "socialCritique"
+      ],
+      "region": "be"
+    },
+    {
+      "tmdb_id": 1396,
+      "title_en": "Mirror",
+      "tags": [
+        "experimental",
+        "mindfuck",
+        "slowburn"
+      ],
+      "region": "ru"
+    },
+    {
+      "tmdb_id": 25237,
+      "title_en": "Come and See",
+      "tags": [
+        "darkTone",
+        "survival"
+      ],
+      "region": "ru"
+    },
+    {
+      "tmdb_id": 31414,
+      "title_en": "Sátántangó",
+      "tags": [
+        "experimental",
+        "slowburn"
+      ],
+      "region": "hu"
+    },
+    {
+      "tmdb_id": 30017,
+      "title_en": "Close-Up",
+      "tags": [
+        "experimental",
+        "slowburn",
+        "satirical",
+        "trueStory"
+      ],
+      "region": "ir"
+    },
+    {
+      "tmdb_id": 30020,
+      "title_en": "Taste of Cherry",
+      "tags": [
+        "existential",
+        "slowburn",
+        "experimental"
+      ],
+      "region": "ir"
+    },
+    {
+      "tmdb_id": 445,
+      "title_en": "Caché",
+      "tags": [
+        "psychoThriller",
+        "socialCritique",
+        "experimental",
+        "slowburn"
+      ],
+      "region": "fr"
+    },
+    {
+      "tmdb_id": 37903,
+      "title_en": "The White Ribbon",
+      "tags": [
+        "darkTone",
+        "experimental",
+        "slowburn",
+        "nostalgic"
+      ],
+      "region": "de"
+    },
+    {
+      "tmdb_id": 48303,
+      "title_en": "Certified Copy",
+      "tags": [
+        "dialogue",
+        "philosophical",
+        "experimental",
+        "slowburn"
+      ],
+      "region": "ir"
+    },
+    {
+      "tmdb_id": 103328,
+      "title_en": "Holy Motors",
+      "tags": [
+        "experimental",
+        "cult",
+        "slowburn",
+        "absurdist"
+      ],
+      "region": "fr"
+    },
+    {
+      "tmdb_id": 265228,
+      "title_en": "Timbuktu",
+      "tags": [
+        "socialCritique",
+        "slowburn",
+        "experimental"
+      ],
+      "region": "mr"
+    },
+    {
+      "tmdb_id": 336808,
+      "title_en": "Embrace of the Serpent",
+      "tags": [
+        "visualFeast",
+        "experimental",
+        "slowburn",
+        "philosophical",
+        "existential"
+      ],
+      "region": "co"
     }
   ]
 }

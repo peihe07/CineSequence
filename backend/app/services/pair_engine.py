@@ -29,7 +29,6 @@ SUPPLEMENTARY_AXIS = {
     "fast_vs_slow": "fast_slow",
     "ensemble_vs_solo": "ensemble_solo",
     "visual_vs_dialogue": "visual_dialogue",
-    "western_vs_eastern": "western_eastern",
     "spectacle_vs_intimate": "spectacle_intimate",
     "straightforward_vs_meta": "straightforward_meta",
     "realism_vs_fantasy": "realism_fantasy",

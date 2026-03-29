@@ -1,7 +1,7 @@
 [
   {
     "id": "p1_01",
-    "label": "超級英雄大片 vs 親密成長片",
+    "label": "類型片高峰 vs 作者電影宣言",
     "dimension": "mainstream_vs_independent",
     "movie_a": {
       "tmdb_id": 155,
@@ -9,29 +9,29 @@
       "title_zh": "黑暗騎士"
     },
     "movie_b": {
-      "tmdb_id": 376867,
-      "title_en": "Moonlight",
-      "title_zh": "月光下的藍色男孩"
+      "tmdb_id": 491584,
+      "title_en": "Burning",
+      "title_zh": "燃燒烈愛"
     }
   },
   {
     "id": "p1_02",
-    "label": "宇宙級 franchise vs 青春獨立小品",
+    "label": "敘事快感 vs 凝視的力量",
     "dimension": "mainstream_vs_independent",
     "movie_a": {
-      "tmdb_id": 299536,
-      "title_en": "Avengers: Infinity War",
-      "title_zh": "復仇者聯盟3：無限之戰"
+      "tmdb_id": 680,
+      "title_en": "Pulp Fiction",
+      "title_zh": "黑色追緝令"
     },
     "movie_b": {
-      "tmdb_id": 391713,
-      "title_en": "Lady Bird",
-      "title_zh": "淑女鳥"
+      "tmdb_id": 253450,
+      "title_en": "The Assassin",
+      "title_zh": "刺客聶隱娘"
     }
   },
   {
     "id": "p1_03",
-    "label": "世界建構鉅片 vs 邊緣寫實獨立片",
+    "label": "世界觀建構 vs 城市廢墟詩學",
     "dimension": "mainstream_vs_independent",
     "movie_a": {
       "tmdb_id": 19995,
@@ -39,14 +39,14 @@
       "title_zh": "阿凡達"
     },
     "movie_b": {
-      "tmdb_id": 393457,
-      "title_en": "The Florida Project",
-      "title_zh": "歡迎光臨奇幻城堡"
+      "tmdb_id": 2346,
+      "title_en": "Still Life",
+      "title_zh": "三峽好人"
     }
   },
   {
     "id": "p1_04",
-    "label": "迪士尼主流動畫 vs 公路獨立喜劇",
+    "label": "闔家歡動畫 vs 影迷向動畫",
     "dimension": "mainstream_vs_independent",
     "movie_a": {
       "tmdb_id": 109445,
@@ -54,29 +54,29 @@
       "title_zh": "冰雪奇緣"
     },
     "movie_b": {
-      "tmdb_id": 773,
-      "title_en": "Little Miss Sunshine",
-      "title_zh": "小太陽的願望"
+      "tmdb_id": 10494,
+      "title_en": "Perfect Blue",
+      "title_zh": "藍色恐懼"
     }
   },
   {
     "id": "p1_05",
-    "label": "間諜 franchise vs 對話導向愛情片",
+    "label": "郊區中產寫實 vs 都市邊緣孤寂",
     "dimension": "mainstream_vs_independent",
     "movie_a": {
-      "tmdb_id": 37724,
-      "title_en": "Skyfall",
-      "title_zh": "007：空降危機"
+      "tmdb_id": 391713,
+      "title_en": "Lady Bird",
+      "title_zh": "淑女鳥"
     },
     "movie_b": {
-      "tmdb_id": 76,
-      "title_en": "Before Sunrise",
-      "title_zh": "愛在黎明破曉時"
+      "tmdb_id": 11985,
+      "title_en": "Vive L'Amour",
+      "title_zh": "愛情萬歲"
     }
   },
   {
     "id": "p1_06",
-    "label": "情緒系主流佳作 vs 記憶感獨立電影",
+    "label": "情緒系佳作 vs 記憶系低語",
     "dimension": "mainstream_vs_independent",
     "movie_a": {
       "tmdb_id": 150540,
@@ -346,12 +346,12 @@
   },
   {
     "id": "p1_24",
-    "label": "群星會 vs 獨角戲",
+    "label": "命運群像 vs 孤海求生",
     "dimension": "ensemble_vs_solo",
     "movie_a": {
-      "tmdb_id": 680,
-      "title_en": "Pulp Fiction",
-      "title_zh": "黑色追緝令"
+      "tmdb_id": 334,
+      "title_en": "Magnolia",
+      "title_zh": "心靈角落"
     },
     "movie_b": {
       "tmdb_id": 152747,
@@ -406,47 +406,47 @@
   },
   {
     "id": "p1_28",
-    "label": "西方經典 vs 東方美學",
-    "dimension": "western_vs_eastern",
+    "label": "沙丘巨景 vs 車內對白",
+    "dimension": "visual_vs_dialogue",
     "movie_a": {
-      "tmdb_id": 238,
-      "title_en": "The Godfather",
-      "title_zh": "教父"
+      "tmdb_id": 438631,
+      "title_en": "Dune",
+      "title_zh": "沙丘"
     },
     "movie_b": {
-      "tmdb_id": 346,
-      "title_en": "Seven Samurai",
-      "title_zh": "七武士"
+      "tmdb_id": 630566,
+      "title_en": "Drive My Car",
+      "title_zh": "在車上"
     }
   },
   {
     "id": "p1_29",
-    "label": "好萊塢傳記 vs 日本動畫",
-    "dimension": "western_vs_eastern",
+    "label": "共享生存 vs 單人青春傷痕",
+    "dimension": "ensemble_vs_solo",
     "movie_a": {
-      "tmdb_id": 98,
-      "title_en": "Gladiator",
-      "title_zh": "神鬼戰士"
+      "tmdb_id": 578189,
+      "title_en": "Shoplifters",
+      "title_zh": "小偷家族"
     },
     "movie_b": {
-      "tmdb_id": 372058,
-      "title_en": "Your Name",
-      "title_zh": "你的名字"
+      "tmdb_id": 4247,
+      "title_en": "Moonlight",
+      "title_zh": "月光下的藍色男孩"
     }
   },
   {
     "id": "p1_30",
-    "label": "美式青春 vs 台灣新電影",
-    "dimension": "western_vs_eastern",
+    "label": "感官奇觀 vs 情感暗流",
+    "dimension": "spectacle_vs_intimate",
     "movie_a": {
-      "tmdb_id": 1891,
-      "title_en": "The Empire Strikes Back",
-      "title_zh": "星際大戰五部曲：帝國大反擊"
+      "tmdb_id": 76600,
+      "title_en": "Avatar: The Way of Water",
+      "title_zh": "阿凡達：水之道"
     },
     "movie_b": {
-      "tmdb_id": 25538,
-      "title_en": "Yi Yi",
-      "title_zh": "一一"
+      "tmdb_id": 664767,
+      "title_en": "Decision to Leave",
+      "title_zh": "分手的決心"
     }
   },
   {
@@ -597,6 +597,306 @@
       "tmdb_id": 508442,
       "title_en": "Soul",
       "title_zh": "靈魂急轉彎"
+    }
+  },
+  {
+    "id": "p1_41",
+    "label": "漫畫宇宙狂歡 vs 動畫作者自傳",
+    "dimension": "mainstream_vs_independent",
+    "movie_a": {
+      "tmdb_id": 429617,
+      "title_en": "Spider-Man: Into the Spider-Verse",
+      "title_zh": "蜘蛛人：新宇宙"
+    },
+    "movie_b": {
+      "tmdb_id": 33320,
+      "title_en": "Millennium Actress",
+      "title_zh": "千年女優"
+    }
+  },
+  {
+    "id": "p1_42",
+    "label": "流行文化現象 vs 青春史詩凝視",
+    "dimension": "mainstream_vs_independent",
+    "movie_a": {
+      "tmdb_id": 346698,
+      "title_en": "Barbie",
+      "title_zh": "芭比"
+    },
+    "movie_b": {
+      "tmdb_id": 1585,
+      "title_en": "A Brighter Summer Day",
+      "title_zh": "牯嶺街少年殺人事件"
+    }
+  },
+  {
+    "id": "p1_43",
+    "label": "英雄凱旋快感 vs 社會邊角低鳴",
+    "dimension": "mainstream_vs_independent",
+    "movie_a": {
+      "tmdb_id": 361743,
+      "title_en": "Top Gun: Maverick",
+      "title_zh": "捍衛戰士：獨行俠"
+    },
+    "movie_b": {
+      "tmdb_id": 49084,
+      "title_en": "Poetry",
+      "title_zh": "生命之詩"
+    }
+  },
+  {
+    "id": "p1_44",
+    "label": "時代命題大片 vs 愛情肌理小品",
+    "dimension": "mainstream_vs_independent",
+    "movie_a": {
+      "tmdb_id": 872585,
+      "title_en": "Oppenheimer",
+      "title_zh": "奧本海默"
+    },
+    "movie_b": {
+      "tmdb_id": 939,
+      "title_en": "In the Mood for Love",
+      "title_zh": "花樣年華"
+    }
+  },
+  {
+    "id": "p1_45",
+    "label": "宇宙命題推演 vs 命運情感回聲",
+    "dimension": "rational_vs_emotional",
+    "movie_a": {
+      "tmdb_id": 62,
+      "title_en": "2001: A Space Odyssey",
+      "title_zh": "2001太空漫遊"
+    },
+    "movie_b": {
+      "tmdb_id": 652837,
+      "title_en": "Past Lives",
+      "title_zh": "之前的我們"
+    }
+  },
+  {
+    "id": "p1_46",
+    "label": "體制觀察 vs 家庭情感傷口",
+    "dimension": "rational_vs_emotional",
+    "movie_a": {
+      "tmdb_id": 4348,
+      "title_en": "The Lives of Others",
+      "title_zh": "竊聽風暴"
+    },
+    "movie_b": {
+      "tmdb_id": 508883,
+      "title_en": "Shoplifters",
+      "title_zh": "小偷家族"
+    }
+  },
+  {
+    "id": "p1_47",
+    "label": "明亮童話 vs 階級黑色寓言",
+    "dimension": "light_vs_dark",
+    "movie_a": {
+      "tmdb_id": 194,
+      "title_en": "Amelie",
+      "title_zh": "艾蜜莉的異想世界"
+    },
+    "movie_b": {
+      "tmdb_id": 496243,
+      "title_en": "Parasite",
+      "title_zh": "寄生上流"
+    }
+  },
+  {
+    "id": "p1_48",
+    "label": "家族祝福 vs 完美崩解",
+    "dimension": "light_vs_dark",
+    "movie_a": {
+      "tmdb_id": 568124,
+      "title_en": "Encanto",
+      "title_zh": "魔法滿屋"
+    },
+    "movie_b": {
+      "tmdb_id": 44214,
+      "title_en": "Black Swan",
+      "title_zh": "黑天鵝"
+    }
+  },
+  {
+    "id": "p1_49",
+    "label": "溫柔失序 vs 儀式性惡夢",
+    "dimension": "light_vs_dark",
+    "movie_a": {
+      "tmdb_id": 773,
+      "title_en": "Little Miss Sunshine",
+      "title_zh": "小太陽的願望"
+    },
+    "movie_b": {
+      "tmdb_id": 530385,
+      "title_en": "Midsommar",
+      "title_zh": "仲夏魘"
+    }
+  },
+  {
+    "id": "p1_50",
+    "label": "直衝復仇 vs 日常凝視",
+    "dimension": "fast_vs_slow",
+    "movie_a": {
+      "tmdb_id": 245891,
+      "title_en": "John Wick",
+      "title_zh": "捍衛任務"
+    },
+    "movie_b": {
+      "tmdb_id": 680901,
+      "title_en": "Perfect Days",
+      "title_zh": "我的完美日常"
+    }
+  },
+  {
+    "id": "p1_51",
+    "label": "多線追逐 vs 都市心事",
+    "dimension": "fast_vs_slow",
+    "movie_a": {
+      "tmdb_id": 718930,
+      "title_en": "Bullet Train",
+      "title_zh": "子彈列車"
+    },
+    "movie_b": {
+      "tmdb_id": 153,
+      "title_en": "Lost in Translation",
+      "title_zh": "愛情不用翻譯"
+    }
+  },
+  {
+    "id": "p1_52",
+    "label": "城市眾聲 vs 肉身獨困",
+    "dimension": "ensemble_vs_solo",
+    "movie_a": {
+      "tmdb_id": 598,
+      "title_en": "City of God",
+      "title_zh": "上帝之城"
+    },
+    "movie_b": {
+      "tmdb_id": 11694,
+      "title_en": "The Diving Bell and the Butterfly",
+      "title_zh": "潛水鐘與蝴蝶"
+    }
+  },
+  {
+    "id": "p1_53",
+    "label": "家族混亂 vs 創傷密室",
+    "dimension": "ensemble_vs_solo",
+    "movie_a": {
+      "tmdb_id": 4550,
+      "title_en": "The Host",
+      "title_zh": "駭人怪物"
+    },
+    "movie_b": {
+      "tmdb_id": 264644,
+      "title_en": "Room",
+      "title_zh": "不存在的房間"
+    }
+  },
+  {
+    "id": "p1_54",
+    "label": "自然奇景 vs 天亮前的對話",
+    "dimension": "visual_vs_dialogue",
+    "movie_a": {
+      "tmdb_id": 128,
+      "title_en": "Princess Mononoke",
+      "title_zh": "魔法公主"
+    },
+    "movie_b": {
+      "tmdb_id": 4935,
+      "title_en": "Before Sunrise",
+      "title_zh": "愛在黎明破曉時"
+    }
+  },
+  {
+    "id": "p1_55",
+    "label": "一鏡到底震盪 vs 法庭與家務辯證",
+    "dimension": "visual_vs_dialogue",
+    "movie_a": {
+      "tmdb_id": 500244,
+      "title_en": "1917",
+      "title_zh": "1917"
+    },
+    "movie_b": {
+      "tmdb_id": 60243,
+      "title_en": "A Separation",
+      "title_zh": "分居風暴"
+    }
+  },
+  {
+    "id": "p1_56",
+    "label": "鋼鐵對撞 vs 欲望私語",
+    "dimension": "spectacle_vs_intimate",
+    "movie_a": {
+      "tmdb_id": 68726,
+      "title_en": "Pacific Rim",
+      "title_zh": "環太平洋"
+    },
+    "movie_b": {
+      "tmdb_id": 346646,
+      "title_en": "The Handmaiden",
+      "title_zh": "下女的誘惑"
+    }
+  },
+  {
+    "id": "p1_57",
+    "label": "任務式敘事 vs 階級後設解剖",
+    "dimension": "straightforward_vs_meta",
+    "movie_a": {
+      "tmdb_id": 36557,
+      "title_en": "Casino Royale",
+      "title_zh": "007首部曲：皇家夜總會"
+    },
+    "movie_b": {
+      "tmdb_id": 582014,
+      "title_en": "Triangle of Sadness",
+      "title_zh": "瘋狂富作用"
+    }
+  },
+  {
+    "id": "p1_58",
+    "label": "家庭寫實 vs 黑暗奇幻",
+    "dimension": "realism_vs_fantasy",
+    "movie_a": {
+      "tmdb_id": 14537,
+      "title_en": "Still Walking",
+      "title_zh": "橫山家之味"
+    },
+    "movie_b": {
+      "tmdb_id": 7326,
+      "title_en": "Pan's Labyrinth",
+      "title_zh": "羊男的迷宮"
+    }
+  },
+  {
+    "id": "p1_59",
+    "label": "冷酷諷刺 vs 直球善意",
+    "dimension": "cynical_vs_sincere",
+    "movie_a": {
+      "tmdb_id": 1359,
+      "title_en": "American Psycho",
+      "title_zh": "美國殺人魔"
+    },
+    "movie_b": {
+      "tmdb_id": 490132,
+      "title_en": "Green Book",
+      "title_zh": "幸福綠皮書"
+    }
+  },
+  {
+    "id": "p1_60",
+    "label": "戰場群像 vs 單人身份辯證",
+    "dimension": "ensemble_vs_solo",
+    "movie_a": {
+      "tmdb_id": 857,
+      "title_en": "Saving Private Ryan",
+      "title_zh": "搶救雷恩大兵"
+    },
+    "movie_b": {
+      "tmdb_id": 378064,
+      "title_en": "A Fantastic Woman",
+      "title_zh": "不思議女人"
     }
   }
 ]

@@ -11,6 +11,37 @@ with open(DATA_DIR / "movie_pool.json") as f:
 with open(DATA_DIR / "tag_taxonomy.json") as f:
     VALID_TAGS = set(json.load(f)["tags"].keys())
 
+LEGACY_TAGS = {
+    "anime",
+    "auteur",
+    "classicMasterpiece",
+    "cyberpunk",
+    "docufiction",
+    "dreamLogic",
+    "familyDrama",
+    "feminist",
+    "folkHorror",
+    "folklore",
+    "horror",
+    "isolation",
+    "metaNarrative",
+    "minimalist",
+    "neonNoir",
+    "periodPiece",
+    "queerCinema",
+    "roadMovie",
+    "romance",
+    "samurai",
+    "scifi",
+    "slowCinema",
+    "spiritual",
+    "surreal",
+    "urbanDread",
+    "warFilm",
+    "wuxia",
+    "youth",
+}
+
 with open(DATA_DIR / "phase1_pairs.json") as f:
     PHASE1_PAIRS = json.load(f)
 
@@ -44,6 +75,14 @@ class TestMoviePoolIntegrity:
                     f"Invalid tag '{tag}' in "
                     f"{movie['title_en']} (tmdb_id={movie['tmdb_id']})"
                 )
+
+    def test_legacy_tags_do_not_reappear(self):
+        for movie in POOL:
+            legacy_tags = sorted(set(movie["tags"]) & LEGACY_TAGS)
+            assert not legacy_tags, (
+                f"Legacy tags {legacy_tags} still present in "
+                f"{movie['title_en']} (tmdb_id={movie['tmdb_id']})"
+            )
 
     def test_minimum_movies_per_tag(self):
         """Every tag should have at least 8 movies in the pool."""
