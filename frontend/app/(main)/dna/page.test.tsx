@@ -37,6 +37,7 @@ const {
         genre_vector: Record<string, number>
         quadrant_scores: Record<string, number>
         tag_labels: Record<string, number>
+        top_tags: string[]
         personality_reading: string | null
         hidden_traits: string[]
         conversation_style: string | null
@@ -183,6 +184,7 @@ describe('DnaResultPage', () => {
       genre_vector: {},
       quadrant_scores: {},
       tag_labels: {},
+      top_tags: [],
       personality_reading: null,
       hidden_traits: [],
       conversation_style: null,
@@ -202,6 +204,7 @@ describe('DnaResultPage', () => {
       genre_vector: {},
       quadrant_scores: {},
       tag_labels: {},
+      top_tags: [],
       personality_reading: null,
       hidden_traits: [],
       conversation_style: null,
@@ -226,6 +229,7 @@ describe('DnaResultPage', () => {
       genre_vector: {},
       quadrant_scores: {},
       tag_labels: {},
+      top_tags: [],
       personality_reading: null,
       hidden_traits: [],
       conversation_style: null,

@@ -20,6 +20,7 @@ interface DnaResult {
   archetype: ArchetypeInfo
   tag_vector: number[]
   tag_labels: Record<string, number>
+  top_tags: string[]
   genre_vector: Record<string, number>
   quadrant_scores: QuadrantScores
   personality_reading: string | null

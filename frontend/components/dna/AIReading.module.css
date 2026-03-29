@@ -56,16 +56,68 @@
   pointer-events: none;
 }
 
+.signalStrip {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.9rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.signalLabel {
+  font-size: 0.66rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.52);
+}
+
+.signalTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.signalTag {
+  padding: 0.28rem 0.64rem;
+  font-size: 0.72rem;
+  font-family: var(--font-mono);
+  color: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
 .reading {
   position: relative;
   z-index: 1;
   font-size: 0.96rem;
-  line-height: 2;
+  line-height: 1.9;
   color: rgba(255, 255, 255, 0.9);
   white-space: pre-wrap;
   overflow-wrap: anywhere;
   transform: translateZ(0);
   -webkit-font-smoothing: antialiased;
+}
+
+.toggle {
+  position: relative;
+  z-index: 1;
+  margin-top: 1rem;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--accent);
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.toggle:hover {
+  color: rgba(255, 255, 255, 0.92);
 }
 
 .cursor {
@@ -132,7 +184,7 @@
 
   .reading {
     font-size: 0.92rem;
-    line-height: 1.8;
+    line-height: 1.75;
   }
 
   .sectionText {

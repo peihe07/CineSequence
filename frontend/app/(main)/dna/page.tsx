@@ -165,6 +165,7 @@ function DnaResultContent() {
           transition={{ ...sectionTransition, delay: 0.2 }}
         >
           <AIReading
+            topTags={result.top_tags}
             personalityReading={result.personality_reading}
             hiddenTraits={result.hidden_traits}
             conversationStyle={result.conversation_style}

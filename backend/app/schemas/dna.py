@@ -19,6 +19,7 @@ class DnaResultResponse(BaseModel):
     archetype: ArchetypeInfo
     tag_vector: list[float]
     tag_labels: dict[str, float] = {}
+    top_tags: list[str] = []
     genre_vector: dict[str, float] = {}
     quadrant_scores: QuadrantScores
     personality_reading: str | None = None

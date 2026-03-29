@@ -12,6 +12,7 @@ from app.services.dna_builder import (
     compute_tag_vector,
     get_excluded_tags,
     get_tag_labels,
+    get_top_tags,
 )
 
 
@@ -128,6 +129,19 @@ class TestGetTagLabels:
         labels = get_tag_labels(vector, top_n=3)
         scores = list(labels.values())
         assert scores == sorted(scores, reverse=True)
+
+
+class TestGetTopTags:
+    """Test top tag name extraction."""
+
+    def test_returns_ranked_tag_names(self):
+        vector = [0.0] * 30
+        vector[0] = 0.4
+        vector[1] = 0.9
+        vector[2] = 0.6
+
+        tags = get_top_tags(vector, top_n=2)
+        assert tags == [TAG_KEYS[1], TAG_KEYS[2]]
 
 
 class TestGetExcludedTags:
@@ -376,11 +390,13 @@ class TestBuildDna:
         assert "archetype_id" in result
         assert "tag_vector" in result
         assert "tag_labels" in result
+        assert "top_tags" in result
         assert "genre_vector" in result
         assert "quadrant_scores" in result
         assert "ticket_style" in result
         assert "archetype" in result
         assert len(result["tag_vector"]) == 30
+        assert len(result["top_tags"]) <= 3
 
 
 def _score_archetype(

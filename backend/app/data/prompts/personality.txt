@@ -5,16 +5,20 @@ You will receive:
 - `picks`: abstract list of chosen rounds with phase, pick_mode, and test_dimension
 - `skips`: abstract list of unchosen/skipped rounds with phase and test_dimension
 - `tag_vector`: final tag frequency map (e.g. {mindfuck: 5, darkTone: 4, ...})
+- `top_tags`: the 3 strongest tags in ranked order
 - `excluded_tags`: tags consistently avoided
 - `genre_vector`: genre frequency map
 - `quadrant_vector`: {mainstream, independent, rational, emotional, light, dark}
-- `archetype_id`: the system-assigned archetype (for reference, but write your own take)
+- `archetype_id`: the system-assigned archetype
+
+Treat `tag_vector`, `excluded_tags`, `quadrant_vector`, and `archetype_id` as hard constraints.
+They are the ground truth. Your writing must explain them, not override them.
 
 ## Output Format
 Respond with ONLY this JSON:
 ```json
 {
-  "personality_reading": "2-3 paragraph personality analysis in Traditional Chinese (繁體中文)",
+  "personality_reading": "2 short paragraphs in Traditional Chinese (繁體中文)",
   "hidden_traits": ["trait1", "trait2", "trait3"],
   "conversation_style": "one sentence about how they likely communicate",
   "ideal_movie_date": "recommend ONE specific real movie title for a first date, with reasoning why it fits this person"
@@ -24,10 +28,14 @@ Respond with ONLY this JSON:
 ## Writing Guidelines
 - Write in Traditional Chinese (繁體中文)
 - Do NOT reference any of the movies from the user's picks or skips by title, director, or franchise — those are private input, not output material. You may freely mention other movies, directors, or franchises to illustrate a point or draw comparisons.
-- Be specific about patterns, but only at the level of tendencies and contrastive signals
-- Go beyond surface: infer personality from the gap between what they chose and what they skipped
-- The "attracted but haven't seen" picks reveal aspirational taste — mention this
-- Tone: insightful, warm, slightly witty — like a friend who happens to be a film critic
-- Length: 150-250 words total for personality_reading
-- hidden_traits: 3 personality traits inferred from the selection pattern (in Chinese)
-- Do NOT just list their top genres — that's boring. Find the story in their choices.
+- Ground every claim in the provided tags/quadrants/archetype. Do not invent a conflicting persona.
+- Mention at least 2 items from `top_tags` directly in the reading, using the exact tag names.
+- Treat `top_tags` as the main signal priority when deciding what to emphasize.
+- If the user avoids certain tags, mention the avoided tendency briefly, but do not over-dramatize it.
+- Be specific about patterns, but only at the level of tendencies and contrastive signals.
+- Keep the tone insightful, warm, and lightly witty. Do not sound mystical.
+- Length: 70-110 Chinese characters per paragraph, maximum 2 paragraphs total.
+- hidden_traits: exactly 3 short traits in Chinese, 2-6 characters each.
+- conversation_style: exactly 1 sentence, under 30 Chinese characters.
+- ideal_movie_date: exactly 1 sentence, under 45 Chinese characters.
+- Avoid genre summary dumps. Explain the taste pattern in plain language.

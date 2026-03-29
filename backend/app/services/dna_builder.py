@@ -159,6 +159,13 @@ def get_tag_labels(vector: list[float], top_n: int = 8) -> dict[str, float]:
     return {tag: round(score, 3) for tag, score in pairs[:top_n]}
 
 
+def get_top_tags(vector: list[float], top_n: int = 3) -> list[str]:
+    """Return the strongest tag names in ranked order."""
+    pairs = [(TAG_KEYS[i], vector[i]) for i in range(len(vector)) if vector[i] > 0]
+    pairs.sort(key=lambda x: x[1], reverse=True)
+    return [tag for tag, _ in pairs[:top_n]]
+
+
 def get_excluded_tags(vector: list[float]) -> list[str]:
     """Return tags that scored exactly 0 — consistently avoided."""
     return [TAG_KEYS[i] for i in range(len(vector)) if vector[i] == 0.0]
@@ -399,6 +406,7 @@ def build_dna(
         "archetype_id": archetype["id"],
         "tag_vector": tag_vector,
         "tag_labels": tag_labels,
+        "top_tags": get_top_tags(tag_vector),
         "excluded_tags": excluded_tags,
         "genre_vector": genre_vector,
         "quadrant_scores": quadrant_scores,

@@ -2,6 +2,7 @@
 
 import json
 import logging
+import re
 import time
 from copy import deepcopy
 from hashlib import sha256
@@ -20,9 +21,54 @@ _PERSONALITY_CACHE_TTL_SECONDS = 3600
 _PERSONALITY_CACHE: dict[str, tuple[float, dict]] = {}
 
 
+def _clean_text(value: str | None, *, max_len: int, fallback: str = "") -> str:
+    if not value:
+        return fallback
+    cleaned = re.sub(r"\s+", " ", value).strip()
+    if len(cleaned) <= max_len:
+        return cleaned
+
+    truncated = cleaned[:max_len].rstrip("，、；：,.!！？ ")
+    return f"{truncated}。"
+
+
+def _clean_traits(value: list | None) -> list[str]:
+    if not isinstance(value, list):
+        return []
+
+    traits: list[str] = []
+    for item in value:
+        cleaned = _clean_text(str(item), max_len=6)
+        if not cleaned or cleaned in traits:
+            continue
+        traits.append(cleaned)
+        if len(traits) == 3:
+            break
+    return traits
+
+
+def _normalize_personality_result(result: dict) -> dict:
+    return {
+        "personality_reading": _clean_text(
+            result.get("personality_reading"),
+            max_len=220,
+        ),
+        "hidden_traits": _clean_traits(result.get("hidden_traits")),
+        "conversation_style": _clean_text(
+            result.get("conversation_style"),
+            max_len=30,
+        ),
+        "ideal_movie_date": _clean_text(
+            result.get("ideal_movie_date"),
+            max_len=45,
+        ),
+    }
+
+
 def _build_context(
     picks: list[dict],
     tag_labels: dict[str, float],
+    top_tags: list[str],
     excluded_tags: list[str],
     genre_vector: dict[str, float],
     quadrant_scores: dict,
@@ -48,6 +94,7 @@ def _build_context(
         "picks": chosen,
         "skips": skipped,
         "tag_vector": tag_labels,
+        "top_tags": top_tags[:3],
         "excluded_tags": excluded_tags[:10],
         "genre_vector": genre_vector,
         "quadrant_vector": quadrant_scores,
@@ -86,6 +133,7 @@ def _clear_personality_cache() -> None:
 async def generate_personality(
     picks: list[dict],
     tag_labels: dict[str, float],
+    top_tags: list[str],
     excluded_tags: list[str],
     genre_vector: dict[str, float],
     quadrant_scores: dict,
@@ -97,7 +145,7 @@ async def generate_personality(
     conversation_style, ideal_movie_date.
     """
     context = _build_context(
-        picks, tag_labels, excluded_tags,
+        picks, tag_labels, top_tags, excluded_tags,
         genre_vector, quadrant_scores, archetype_id,
     )
     cache_key = _make_personality_cache_key(context)
@@ -161,12 +209,7 @@ async def generate_personality(
                 return None
             continue
 
-        final_result = {
-            "personality_reading": result.get("personality_reading", ""),
-            "hidden_traits": result.get("hidden_traits", []),
-            "conversation_style": result.get("conversation_style", ""),
-            "ideal_movie_date": result.get("ideal_movie_date", ""),
-        }
+        final_result = _normalize_personality_result(result)
         _store_cached_personality(cache_key, final_result)
         return final_result
 

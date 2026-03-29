@@ -84,6 +84,7 @@ async def build_dna_for_user(user_id: str):
         personality = await generate_personality(
             picks=picks,
             tag_labels=dna_data["tag_labels"],
+            top_tags=dna_data["top_tags"],
             excluded_tags=dna_data["excluded_tags"],
             genre_vector=dna_data["genre_vector"],
             quadrant_scores=dna_data["quadrant_scores"],

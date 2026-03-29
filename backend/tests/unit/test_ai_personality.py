@@ -7,6 +7,7 @@ import pytest
 from app.services.ai_personality import (
     _build_context,
     _clear_personality_cache,
+    _normalize_personality_result,
     generate_personality,
 )
 
@@ -48,6 +49,7 @@ def test_build_context_strips_movie_titles_and_keeps_abstract_signals():
     context = _build_context(
         picks=picks,
         tag_labels={"mindfuck": 1.0},
+        top_tags=["mindfuck", "darkTone", "dialogue"],
         excluded_tags=["tearjerker"],
         genre_vector={"Science Fiction": 1.0},
         quadrant_scores={"light_dark": 4.0},
@@ -72,6 +74,7 @@ def test_build_context_strips_movie_titles_and_keeps_abstract_signals():
             "test_dimension": "slowburn",
         }
     ]
+    assert payload["top_tags"] == ["mindfuck", "darkTone", "dialogue"]
     assert "title" not in context
     assert "chosen_title" not in context
     assert "movie_a_title" not in context
@@ -101,6 +104,7 @@ async def test_generate_personality_reuses_cached_result_for_identical_context()
         kwargs = {
             "picks": [],
             "tag_labels": {"mindfuck": 1.0},
+            "top_tags": ["mindfuck", "darkTone", "dialogue"],
             "excluded_tags": ["tearjerker"],
             "genre_vector": {"Science Fiction": 1.0},
             "quadrant_scores": {"light_dark": 4.0},
@@ -111,3 +115,17 @@ async def test_generate_personality_reuses_cached_result_for_identical_context()
 
     assert generate_content.await_count == 1
     assert first == second
+
+
+def test_normalize_personality_result_trims_and_limits_fields():
+    result = _normalize_personality_result({
+        "personality_reading": "  這是一段很長的文字 " * 30,
+        "hidden_traits": ["敏銳觀察者", "敏銳觀察者", "冷面幽默派", "節奏潔癖型"],
+        "conversation_style": "  先冷靜觀察，再精準補一句有意思的話。這句之後不該留下。  ",
+        "ideal_movie_date": "  《午餐盒》適合你們，因為它安靜、細膩，而且能自然打開對話，後面這段也應該被裁掉。  ",
+    })
+
+    assert len(result["personality_reading"]) <= 221
+    assert result["hidden_traits"] == ["敏銳觀察者", "冷面幽默派", "節奏潔癖型"]
+    assert len(result["conversation_style"]) <= 31
+    assert len(result["ideal_movie_date"]) <= 46

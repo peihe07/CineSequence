@@ -18,7 +18,7 @@ from app.schemas.dna import (
     QuadrantScores,
 )
 from app.services.ai_personality import generate_personality
-from app.services.dna_builder import ARCHETYPES, build_dna, get_tag_labels
+from app.services.dna_builder import ARCHETYPES, build_dna, get_tag_labels, get_top_tags
 from app.services.session_service import can_extend, get_or_create_session
 from app.services.tmdb_client import get_movie
 
@@ -120,6 +120,7 @@ async def build_dna_profile(
     personality = await generate_personality(
         picks=picks,
         tag_labels=dna_data["tag_labels"],
+        top_tags=dna_data["top_tags"],
         excluded_tags=dna_data["excluded_tags"],
         genre_vector=dna_data["genre_vector"],
         quadrant_scores=dna_data["quadrant_scores"],
@@ -198,6 +199,7 @@ async def get_dna_result(
         archetype=archetype_info,
         tag_vector=tag_vector,
         tag_labels=tag_labels,
+        top_tags=get_top_tags(tag_vector),
         genre_vector=profile.genre_vector or {},
         quadrant_scores=QuadrantScores(**(profile.quadrant_scores or {})),
         personality_reading=profile.personality_reading,
