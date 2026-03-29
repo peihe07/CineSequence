@@ -15,8 +15,8 @@ from app.models.user import Gender, User
 from app.models.waitlist_entry import WaitlistEntry
 from app.schemas.auth import (
     AdminQuickLoginRequest,
-    LoginResponse,
     LoginRequest,
+    LoginResponse,
     RegisterRequest,
     RegisterResponse,
     TokenResponse,
