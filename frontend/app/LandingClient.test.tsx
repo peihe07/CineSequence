@@ -34,7 +34,8 @@ vi.mock('next/link', () => ({
 
 vi.mock('@/lib/i18n', () => ({
   useI18n: () => ({
-    t: (key: string, vars?: Record<string, string>) => {
+    locale: 'en',
+    t: (key: string) => {
       const dict: Record<string, string> = {
         'landing.termLine1': 'line 1',
         'landing.termLine2': 'line 2',
@@ -51,18 +52,7 @@ vi.mock('@/lib/i18n', () => ({
         'landing.step5Title': 'Step 5',
         'landing.step5Desc': 'Desc 5',
         'landing.fileLabel': 'FILE',
-        'landing.start': 'Join waitlist',
         'landing.login': 'Login',
-        'landing.waitlistTitle': 'Join the waitlist',
-        'landing.waitlistBody': 'Maintenance and feature work are in progress.',
-        'landing.waitlistEmailLabel': 'Email',
-        'landing.waitlistEmailPlaceholder': 'you@example.com',
-        'landing.waitlistSubmit': 'Notify me',
-        'landing.waitlistSubmitting': 'Submitting...',
-        'landing.waitlistSuccess': "We'll email {{email}} when access reopens.",
-      }
-      if (key === 'landing.waitlistSuccess' && vars?.email) {
-        return `success:${vars.email}`
       }
       return dict[key] ?? key
     },
@@ -135,6 +125,6 @@ describe('LandingClient', () => {
         body: JSON.stringify({ email: 'user@example.com' }),
       })
     })
-    expect(screen.getByText('success:user@example.com')).toBeTruthy()
+    expect(screen.getByText('We have saved user@example.com. We will email you again when access reopens.')).toBeTruthy()
   })
 })

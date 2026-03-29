@@ -12,15 +12,8 @@ vi.mock('next/navigation', () => ({
 
 vi.mock('@/lib/i18n', () => ({
   useI18n: () => ({
-    t: (key: string) => {
-      const dict: Record<string, string> = {
-        'waitlist.closedTitle': 'Registration is temporarily paused',
-        'waitlist.closedBody': 'We are developing new features and performing maintenance.',
-        'waitlist.closedNotify': 'Once the system reopens, we will send another email notification.',
-        'waitlist.closedBackHome': 'Back to home',
-      }
-      return dict[key] ?? key
-    },
+    locale: 'en',
+    t: (key: string) => key,
   }),
 }))
 
@@ -39,7 +32,7 @@ describe('RegisterPage', () => {
     render(<RegisterPage />)
 
     expect(await screen.findByText('Registration is temporarily paused')).toBeTruthy()
-    expect(screen.getByText('We are developing new features and performing maintenance.')).toBeTruthy()
+    expect(screen.getByText('We are developing new features and performing maintenance, so account creation is currently unavailable.')).toBeTruthy()
     expect(screen.getByText('Once the system reopens, we will send another email notification.')).toBeTruthy()
     expect(screen.getByRole('link', { name: 'Back to home' }).getAttribute('href')).toBe('/')
     expect(screen.queryByText('register.title')).toBeNull()
