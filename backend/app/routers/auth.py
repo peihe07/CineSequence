@@ -10,7 +10,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import settings
-from app.deps import get_db, get_current_user
+from app.deps import get_current_user, get_db
 from app.models.user import Gender, User
 from app.models.waitlist_entry import WaitlistEntry
 from app.schemas.auth import (
