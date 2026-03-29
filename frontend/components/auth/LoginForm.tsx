@@ -79,7 +79,12 @@ export default function LoginForm({
         router.push('/admin')
         router.refresh()
         return
-      } catch {
+      } catch (err) {
+        setEmailError(
+          err instanceof Error
+            ? err.message
+            : (locale === 'zh' ? '管理員登入失敗。' : 'Admin login failed.')
+        )
         return
       }
     }
