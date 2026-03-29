@@ -166,6 +166,10 @@ function DnaResultContent() {
         >
           <AIReading
             topTags={result.top_tags}
+            supportingSignals={result.supporting_signals}
+            avoidedSignals={result.avoided_signals}
+            mixedSignals={result.mixed_signals}
+            comparisonEvidence={result.comparison_evidence}
             personalityReading={result.personality_reading}
             hiddenTraits={result.hidden_traits}
             conversationStyle={result.conversation_style}

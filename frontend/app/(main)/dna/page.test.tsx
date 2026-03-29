@@ -38,6 +38,9 @@ const {
         quadrant_scores: Record<string, number>
         tag_labels: Record<string, number>
         top_tags: string[]
+        supporting_signals: Array<Record<string, unknown>>
+        avoided_signals: Array<Record<string, unknown>>
+        mixed_signals: Array<Record<string, unknown>>
         personality_reading: string | null
         hidden_traits: string[]
         conversation_style: string | null
@@ -185,6 +188,9 @@ describe('DnaResultPage', () => {
       quadrant_scores: {},
       tag_labels: {},
       top_tags: [],
+      supporting_signals: [],
+      avoided_signals: [],
+      mixed_signals: [],
       personality_reading: null,
       hidden_traits: [],
       conversation_style: null,
@@ -205,6 +211,9 @@ describe('DnaResultPage', () => {
       quadrant_scores: {},
       tag_labels: {},
       top_tags: [],
+      supporting_signals: [],
+      avoided_signals: [],
+      mixed_signals: [],
       personality_reading: null,
       hidden_traits: [],
       conversation_style: null,
@@ -230,6 +239,9 @@ describe('DnaResultPage', () => {
       quadrant_scores: {},
       tag_labels: {},
       top_tags: [],
+      supporting_signals: [],
+      avoided_signals: [],
+      mixed_signals: [],
       personality_reading: null,
       hidden_traits: [],
       conversation_style: null,

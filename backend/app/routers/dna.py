@@ -12,13 +12,23 @@ from app.models.pick import Pick
 from app.models.user import SequencingStatus, User
 from app.schemas.dna import (
     ArchetypeInfo,
+    ComparisonEvidence,
     DnaBuildResponse,
     DnaHistorySummary,
     DnaResultResponse,
     QuadrantScores,
+    SignalDetail,
 )
 from app.services.ai_personality import generate_personality
-from app.services.dna_builder import ARCHETYPES, build_dna, get_tag_labels, get_top_tags
+from app.services.dna_builder import (
+    ARCHETYPES,
+    build_comparison_evidence,
+    build_dna,
+    compute_confidence,
+    compute_consistency,
+    get_tag_labels,
+    get_top_tags,
+)
 from app.services.session_service import can_extend, get_or_create_session
 from app.services.tmdb_client import get_movie
 
@@ -87,6 +97,61 @@ async def _get_session_picks_and_genres(
     return picks, genre_map
 
 
+def _build_signal_details(
+    tag_labels: dict[str, float],
+    top_tags: list[str],
+    tag_confidence: dict[str, float],
+    tag_consistency: dict[str, float],
+) -> tuple[list[SignalDetail], list[SignalDetail], list[SignalDetail]]:
+    supporting = [
+        SignalDetail(
+            tag=tag,
+            score=round(float(tag_labels.get(tag, 0.0)), 3),
+            confidence=round(float(tag_confidence.get(tag, 0.0)), 3),
+            consistency=round(float(tag_consistency.get(tag, 0.5)), 3),
+        )
+        for tag in top_tags[:3]
+    ]
+
+    avoided = [
+        SignalDetail(
+            tag=tag,
+            score=round(float(tag_labels.get(tag, 0.0)), 3) if tag in tag_labels else None,
+            confidence=round(float(tag_confidence.get(tag, 0.0)), 3),
+            consistency=round(float(ratio), 3),
+        )
+        for tag, ratio in sorted(
+            (
+                (tag, ratio)
+                for tag, ratio in tag_consistency.items()
+                if ratio <= 0.34
+            ),
+            key=lambda item: (tag_confidence.get(item[0], 0.0), 1 - item[1]),
+            reverse=True,
+        )[:3]
+    ]
+
+    mixed = [
+        SignalDetail(
+            tag=tag,
+            score=round(float(tag_labels.get(tag, 0.0)), 3) if tag in tag_labels else None,
+            confidence=round(float(tag_confidence.get(tag, 0.0)), 3),
+            consistency=round(float(ratio), 3),
+        )
+        for tag, ratio in sorted(
+            (
+                (tag, ratio)
+                for tag, ratio in tag_consistency.items()
+                if 0.35 <= ratio <= 0.65 and tag_confidence.get(tag, 0.0) >= 0.67
+            ),
+            key=lambda item: tag_confidence.get(item[0], 0.0),
+            reverse=True,
+        )[:3]
+    ]
+
+    return supporting, avoided, mixed
+
+
 @router.post("/build", response_model=DnaBuildResponse)
 async def build_dna_profile(
     user: Annotated[User, Depends(get_current_user)],
@@ -122,9 +187,12 @@ async def build_dna_profile(
         tag_labels=dna_data["tag_labels"],
         top_tags=dna_data["top_tags"],
         excluded_tags=dna_data["excluded_tags"],
+        tag_confidence=dna_data["tag_confidence"],
+        tag_consistency=dna_data["tag_consistency"],
         genre_vector=dna_data["genre_vector"],
         quadrant_scores=dna_data["quadrant_scores"],
         archetype_id=dna_data["archetype_id"],
+        comparison_evidence=build_comparison_evidence(picks, dna_data["top_tags"]),
     )
 
     # Check if DNA already exists for this session (extension re-compute)
@@ -194,12 +262,30 @@ async def get_dna_result(
     archetype_info = _get_archetype_info(profile.archetype_id)
     tag_vector = list(profile.tag_vector) if profile.tag_vector is not None else []
     tag_labels = get_tag_labels(tag_vector)
+    top_tags = get_top_tags(tag_vector)
+    picks, _genre_map = await _get_session_picks_and_genres(db, session.id)
+    tag_confidence = compute_confidence(picks)
+    tag_consistency = compute_consistency(picks)
+    supporting_signals, avoided_signals, mixed_signals = _build_signal_details(
+        tag_labels,
+        top_tags,
+        tag_confidence,
+        tag_consistency,
+    )
+    comparison_evidence = [
+        ComparisonEvidence(**item)
+        for item in build_comparison_evidence(picks, top_tags)
+    ]
 
     return DnaResultResponse(
         archetype=archetype_info,
         tag_vector=tag_vector,
         tag_labels=tag_labels,
-        top_tags=get_top_tags(tag_vector),
+        top_tags=top_tags,
+        supporting_signals=supporting_signals,
+        avoided_signals=avoided_signals,
+        mixed_signals=mixed_signals,
+        comparison_evidence=comparison_evidence,
         genre_vector=profile.genre_vector or {},
         quadrant_scores=QuadrantScores(**(profile.quadrant_scores or {})),
         personality_reading=profile.personality_reading,

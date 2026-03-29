@@ -172,10 +172,21 @@ class TestAssignArchetype:
         assert "name" in result
 
     def test_dark_poet_from_dark_tags(self):
-        """High darkTone + antiHero should lean toward dark_poet."""
+        """Cult + violent + psycho signals should lean toward dark_poet."""
         vector = [0.0] * 30
-        vector[TAG_INDEX["darkTone"]] = 1.0
-        vector[TAG_INDEX["antiHero"]] = 0.9
+        vector[TAG_INDEX["cult"]] = 1.0
+        vector[TAG_INDEX["violentAesthetic"]] = 0.9
+        vector[TAG_INDEX["psychoThriller"]] = 0.8
+        vector[TAG_INDEX["antiHero"]] = 0.5
+        result = assign_archetype(vector, {})
+        assert result["id"] == "dark_poet"
+
+    def test_dark_poet_distinguishes_from_lone_wolf(self):
+        vector = [0.0] * 30
+        vector[TAG_INDEX["solo"]] = 0.6
+        vector[TAG_INDEX["antiHero"]] = 0.6
+        vector[TAG_INDEX["cult"]] = 1.0
+        vector[TAG_INDEX["violentAesthetic"]] = 0.9
         vector[TAG_INDEX["psychoThriller"]] = 0.8
         result = assign_archetype(vector, {})
         assert result["id"] == "dark_poet"
@@ -233,6 +244,42 @@ class TestLogDampenedNormalization:
         picks = [{"test_dimension": "twist", "chosen_tmdb_id": 1, "pick_mode": "watched"}]
         vector = compute_tag_vector(picks)
         assert vector[TAG_INDEX["twist"]] == 1.0
+
+    def test_contradicted_tag_is_downweighted_against_stable_tag(self):
+        """Tags with mixed positive/negative signals should carry less final weight."""
+        picks = [
+            {
+                "test_dimension": "mindfuck",
+                "chosen_tmdb_id": 603,
+                "movie_a_tmdb_id": 603,
+                "movie_b_tmdb_id": 278,
+                "pick_mode": "watched",
+            },
+            {
+                "test_dimension": "mindfuck",
+                "chosen_tmdb_id": None,
+                "movie_a_tmdb_id": 603,
+                "movie_b_tmdb_id": 278,
+                "pick_mode": None,
+            },
+            {
+                "test_dimension": "darkTone",
+                "chosen_tmdb_id": 807,
+                "movie_a_tmdb_id": 807,
+                "movie_b_tmdb_id": 278,
+                "pick_mode": "watched",
+            },
+            {
+                "test_dimension": "darkTone",
+                "chosen_tmdb_id": 807,
+                "movie_a_tmdb_id": 807,
+                "movie_b_tmdb_id": 13,
+                "pick_mode": "watched",
+            },
+        ]
+
+        vector = compute_tag_vector(picks)
+        assert vector[TAG_INDEX["darkTone"]] > vector[TAG_INDEX["mindfuck"]]
 
 
 class TestGenreOverlapFix:
@@ -317,19 +364,17 @@ class TestNewArchetypes:
         vector = [0.0] * 30
         vector[TAG_INDEX["solo"]] = 1.0
         vector[TAG_INDEX["antiHero"]] = 0.9
-        vector[TAG_INDEX["revenge"]] = 0.8
         vector[TAG_INDEX["darkTone"]] = 0.7
         vector[TAG_INDEX["survival"]] = 0.6
         result = assign_archetype(vector, {})
         assert result["id"] == "lone_wolf"
 
-    def test_dream_weaver_from_visual_experimental(self):
+    def test_dream_weaver_from_visual_nostalgic_signals(self):
         vector = [0.0] * 30
         vector[TAG_INDEX["visualFeast"]] = 1.0
-        vector[TAG_INDEX["experimental"]] = 0.9
-        vector[TAG_INDEX["timeTravel"]] = 0.8
-        vector[TAG_INDEX["nostalgic"]] = 0.7
-        vector[TAG_INDEX["comingOfAge"]] = 0.6
+        vector[TAG_INDEX["nostalgic"]] = 0.9
+        vector[TAG_INDEX["comingOfAge"]] = 0.8
+        vector[TAG_INDEX["timeTravel"]] = 0.7
         result = assign_archetype(vector, {"Animation": 0.9})
         assert result["id"] == "dream_weaver"
 

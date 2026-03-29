@@ -163,6 +163,8 @@ class TestDnaBuildEndpoint:
             "tag_vector": [0.2] * TAG_VECTOR_DIMENSIONS,
             "tag_labels": {"mindfuck": 1.0},
             "excluded_tags": [],
+            "tag_confidence": {"mindfuck": 1.0},
+            "tag_consistency": {"mindfuck": 1.0},
             "genre_vector": {"Drama": 1.0},
             "quadrant_scores": {
                 "mainstream_independent": 3.0,

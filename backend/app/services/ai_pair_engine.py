@@ -86,12 +86,20 @@ def _clear_ai_pair_cache() -> None:
     _AI_PAIR_CACHE.clear()
 
 
+def _session_rng(session_seed: str | None) -> random.Random:
+    if not session_seed:
+        return random.Random()
+    seed_int = int(sha256(session_seed.encode("utf-8")).hexdigest()[:16], 16)
+    return random.Random(seed_int)
+
+
 def _select_candidates(
     tag_freq: dict[str, int],
     seen_ids: set[int],
     phase: int,
     low_confidence_tags: set[str] | None = None,
     contradicted_tags: set[str] | None = None,
+    session_seed: str | None = None,
 ) -> list[dict]:
     """Select relevant candidate movies from the pool.
 
@@ -102,6 +110,8 @@ def _select_candidates(
     low_confidence_tags: tags with confidence < 0.5 (need more testing)
     contradicted_tags: tags with consistency ∈ [0.35, 0.65] (ambiguous signal)
     """
+    rng = _session_rng(session_seed)
+
     # Identify undertested tags (low or zero frequency)
     all_tags = list(_TASTE_TAGS)
     tested_tags = set(tag_freq.keys())
@@ -149,7 +159,7 @@ def _select_candidates(
     top = [m for _, m in scored[:_CANDIDATE_LIMIT * 2]]
 
     # Shuffle within top candidates for variety, then trim
-    random.shuffle(top)
+    rng.shuffle(top)
     candidates = top[:_CANDIDATE_LIMIT]
 
     # B4: Ensure region diversity — at least _MIN_NON_ENGLISH non-US/UK
@@ -164,7 +174,7 @@ def _select_candidates(
             if m.get("region") not in ("us", "uk")
             and m["tmdb_id"] not in candidate_ids
         ]
-        random.shuffle(non_english_pool)
+        rng.shuffle(non_english_pool)
         needed = _MIN_NON_ENGLISH - non_english_count
         # Replace lowest-scored English candidates
         english_candidates = [
@@ -189,7 +199,7 @@ def _select_candidates(
                 if tag in m.get("tags", []) and m["tmdb_id"] not in candidate_ids
             ]
             if tagged_movies and len(candidates) < _CANDIDATE_LIMIT + 5:
-                pick = random.choice(tagged_movies)
+                pick = rng.choice(tagged_movies)
                 candidates.append(pick)
                 candidate_ids.add(pick["tmdb_id"])
                 covered_tags.update(pick.get("tags", []))
@@ -272,12 +282,14 @@ async def _pool_fallback(
     tag_freq: dict[str, int],
     excluded_ids: set[int],
     phase: int,
+    session_seed: str | None = None,
 ) -> dict | None:
     """Rule-based fallback: pick a pair from the pool when AI retries all fail.
 
     Finds the least-tested tag, then picks two movies from the pool —
     one that has the tag (movie_a) and one that doesn't (movie_b).
     """
+    rng = _session_rng(session_seed)
     available = [m for m in _MOVIE_POOL if m["tmdb_id"] not in excluded_ids]
     if len(available) < 2:
         return None
@@ -293,12 +305,12 @@ async def _pool_fallback(
 
     if not with_tag or not without_tag:
         # Fallback: just pick any two different movies
-        random.shuffle(available)
+        rng.shuffle(available)
         pick_a, pick_b = available[0], available[1]
         target_tag = ""
     else:
-        pick_a = random.choice(with_tag)
-        pick_b = random.choice(without_tag)
+        pick_a = rng.choice(with_tag)
+        pick_b = rng.choice(without_tag)
 
     # Validate both movies exist on TMDB
     movie_a = await get_movie(pick_a["tmdb_id"])
@@ -373,6 +385,7 @@ async def get_ai_pair(
     picks: list[dict],
     quadrant_scores: dict,
     extra_excluded_tmdb_ids: list[int] | None = None,
+    session_seed: str | None = None,
 ) -> dict | None:
     """Call Gemini API to generate the next movie pair for Phase 2 or 3.
 
@@ -421,6 +434,7 @@ async def get_ai_pair(
             tag_freq, all_excluded, phase,
             low_confidence_tags=low_confidence_tags,
             contradicted_tags=contradicted_tags,
+            session_seed=f"{session_seed or 'default'}:{phase}:{round_number}:{attempt}",
         )
 
         user_context = _build_user_context(
@@ -492,7 +506,12 @@ async def get_ai_pair(
         "All %d AI attempts failed for round %s, using pool fallback",
         MAX_RETRIES, round_number,
     )
-    fallback = await _pool_fallback(tag_freq, seen_ids | set(retry_excluded), phase)
+    fallback = await _pool_fallback(
+        tag_freq,
+        seen_ids | set(retry_excluded),
+        phase,
+        session_seed=f"{session_seed or 'default'}:{phase}:{round_number}:fallback",
+    )
     if fallback:
         _store_cached_ai_pair(cache_key, fallback)
         return fallback

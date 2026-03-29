@@ -8,10 +8,31 @@ import styles from './AIReading.module.css'
 
 interface AIReadingProps {
   topTags: string[]
+  supportingSignals?: SignalDetail[]
+  avoidedSignals?: SignalDetail[]
+  mixedSignals?: SignalDetail[]
+  comparisonEvidence?: ComparisonEvidence[]
   personalityReading: string | null
   hiddenTraits: string[]
   conversationStyle: string | null
   idealMovieDate: string | null
+}
+
+interface SignalDetail {
+  tag: string
+  score: number | null
+  confidence: number | null
+  consistency: number | null
+}
+
+interface ComparisonEvidence {
+  round: number | null
+  chosen_title: string
+  rejected_title: string
+  dimension: string | null
+  focus_tags: string[]
+  chosen_tags: string[]
+  rejected_tags: string[]
 }
 
 function useShouldAnimateTypewriter() {
@@ -74,6 +95,10 @@ function getReadingPreview(text: string, maxLength: number = 110) {
 
 export default function AIReading({
   topTags,
+  supportingSignals = [],
+  avoidedSignals = [],
+  mixedSignals = [],
+  comparisonEvidence = [],
   personalityReading,
   hiddenTraits,
   conversationStyle,
@@ -92,6 +117,23 @@ export default function AIReading({
 
   const canExpand = personalityReading.length > previewText.length
   const readingText = isDone ? (expanded ? personalityReading : previewText) : displayed
+
+  function renderSignalMetric(label: string, value: number | null) {
+    if (value == null) return null
+    return (
+      <span className={styles.signalMetric}>
+        {label} {Math.round(value * 100)}%
+      </span>
+    )
+  }
+
+  function renderComparisonLine(item: ComparisonEvidence) {
+    const focus = item.focus_tags[0] ? getTagLabel(item.focus_tags[0], locale) : null
+    if (locale === 'zh') {
+      return `${item.chosen_title} 優先於 ${item.rejected_title}${focus ? `，偏向 ${focus}` : ''}`
+    }
+    return `${item.chosen_title} over ${item.rejected_title}${focus ? `, leaning ${focus}` : ''}`
+  }
 
   return (
     <div className={styles.container}>
@@ -134,6 +176,83 @@ export default function AIReading({
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
         >
+          {(supportingSignals.length > 0 || avoidedSignals.length > 0 || mixedSignals.length > 0) && (
+            <div className={styles.section}>
+              <h4 className={styles.sectionTitle}>
+                <i className="ri-fingerprint-line" /> {t('dna.evidence')}
+              </h4>
+              <div className={styles.signalGroups}>
+                {supportingSignals.length > 0 && (
+                  <div className={styles.signalGroup}>
+                    <p className={styles.signalGroupTitle}>{t('dna.highConfidence')}</p>
+                    <div className={styles.signalCards}>
+                      {supportingSignals.map((signal) => (
+                        <div key={`support-${signal.tag}`} className={styles.signalCard}>
+                          <span className={styles.signalCardTag}>
+                            {getTagLabel(signal.tag, locale)}
+                          </span>
+                          <div className={styles.signalCardMeta}>
+                            {renderSignalMetric(t('dna.matchStrength'), signal.score)}
+                            {renderSignalMetric(t('dna.stability'), signal.consistency)}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {avoidedSignals.length > 0 && (
+                  <div className={styles.signalGroup}>
+                    <p className={styles.signalGroupTitle}>{t('dna.lowAffinity')}</p>
+                    <div className={styles.signalCards}>
+                      {avoidedSignals.map((signal) => (
+                        <div key={`avoid-${signal.tag}`} className={styles.signalCard}>
+                          <span className={styles.signalCardTag}>
+                            {getTagLabel(signal.tag, locale)}
+                          </span>
+                          <div className={styles.signalCardMeta}>
+                            {renderSignalMetric(t('dna.stability'), signal.consistency)}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {mixedSignals.length > 0 && (
+                  <div className={styles.signalGroup}>
+                    <p className={styles.signalGroupTitle}>{t('dna.mixedSignal')}</p>
+                    <div className={styles.signalCards}>
+                      {mixedSignals.map((signal) => (
+                        <div key={`mixed-${signal.tag}`} className={styles.signalCard}>
+                          <span className={styles.signalCardTag}>
+                            {getTagLabel(signal.tag, locale)}
+                          </span>
+                          <div className={styles.signalCardMeta}>
+                            {renderSignalMetric(t('dna.readStability'), signal.consistency)}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {comparisonEvidence.length > 0 && (
+                  <div className={styles.signalGroup}>
+                    <p className={styles.signalGroupTitle}>{t('dna.comparisonEvidence')}</p>
+                    <div className={styles.comparisonList}>
+                      {comparisonEvidence.map((item, index) => (
+                        <p key={`${item.chosen_title}-${item.rejected_title}-${index}`} className={styles.comparisonItem}>
+                          {renderComparisonLine(item)}
+                        </p>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
           {hiddenTraits.length > 0 && (
             <div className={styles.section}>
               <h4 className={styles.sectionTitle}>

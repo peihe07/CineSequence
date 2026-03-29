@@ -19,7 +19,7 @@ def clear_personality_cache():
     _clear_personality_cache()
 
 
-def test_build_context_strips_movie_titles_and_keeps_abstract_signals():
+def test_build_context_keeps_movie_titles_signal_details_and_comparisons():
     picks = [
         {
             "round_number": 1,
@@ -51,9 +51,22 @@ def test_build_context_strips_movie_titles_and_keeps_abstract_signals():
         tag_labels={"mindfuck": 1.0},
         top_tags=["mindfuck", "darkTone", "dialogue"],
         excluded_tags=["tearjerker"],
+        tag_confidence={"mindfuck": 1.0, "darkTone": 0.67, "dialogue": 0.67, "slowburn": 1.0},
+        tag_consistency={"mindfuck": 1.0, "darkTone": 0.75, "dialogue": 0.67, "slowburn": 0.0},
         genre_vector={"Science Fiction": 1.0},
         quadrant_scores={"light_dark": 4.0},
         archetype_id="dark_poet",
+        comparison_evidence=[
+            {
+                "round": 1,
+                "chosen_title": "Inception",
+                "rejected_title": "La La Land",
+                "dimension": "mindfuck",
+                "focus_tags": ["mindfuck"],
+                "chosen_tags": ["mindfuck", "visualFeast"],
+                "rejected_tags": ["romanticCore"],
+            }
+        ],
     )
 
     payload = json.loads(context)
@@ -64,6 +77,8 @@ def test_build_context_strips_movie_titles_and_keeps_abstract_signals():
             "phase": 1,
             "pick_mode": "watched",
             "test_dimension": "mindfuck",
+            "chosen_title": "Inception",
+            "rejected_title": "La La Land",
         }
     ]
     assert payload["skips"] == [
@@ -75,10 +90,32 @@ def test_build_context_strips_movie_titles_and_keeps_abstract_signals():
         }
     ]
     assert payload["top_tags"] == ["mindfuck", "darkTone", "dialogue"]
-    assert "title" not in context
-    assert "chosen_title" not in context
-    assert "movie_a_title" not in context
-    assert "movie_b_title" not in context
+    assert payload["top_tag_details"][0] == {
+        "tag": "mindfuck",
+        "score": 1.0,
+        "confidence": 1.0,
+        "consistency": 1.0,
+    }
+    assert payload["low_affinity_tags"] == [
+        {
+            "tag": "slowburn",
+            "confidence": 1.0,
+            "consistency": 0.0,
+        }
+    ]
+    assert payload["comparison_evidence"] == [
+        {
+            "round": 1,
+            "chosen_title": "Inception",
+            "rejected_title": "La La Land",
+            "dimension": "mindfuck",
+            "focus_tags": ["mindfuck"],
+            "chosen_tags": ["mindfuck", "visualFeast"],
+            "rejected_tags": ["romanticCore"],
+        }
+    ]
+    assert "chosen_title" in context
+    assert "rejected_title" in context
 
 
 @pytest.mark.asyncio
@@ -106,9 +143,12 @@ async def test_generate_personality_reuses_cached_result_for_identical_context()
             "tag_labels": {"mindfuck": 1.0},
             "top_tags": ["mindfuck", "darkTone", "dialogue"],
             "excluded_tags": ["tearjerker"],
+            "tag_confidence": {"mindfuck": 1.0},
+            "tag_consistency": {"mindfuck": 1.0},
             "genre_vector": {"Science Fiction": 1.0},
             "quadrant_scores": {"light_dark": 4.0},
             "archetype_id": "dark_poet",
+            "comparison_evidence": [],
         }
         first = await generate_personality(**kwargs)
         second = await generate_personality(**kwargs)
@@ -122,10 +162,10 @@ def test_normalize_personality_result_trims_and_limits_fields():
         "personality_reading": "  這是一段很長的文字 " * 30,
         "hidden_traits": ["敏銳觀察者", "敏銳觀察者", "冷面幽默派", "節奏潔癖型"],
         "conversation_style": "  先冷靜觀察，再精準補一句有意思的話。這句之後不該留下。  ",
-        "ideal_movie_date": "  《午餐盒》適合你們，因為它安靜、細膩，而且能自然打開對話，後面這段也應該被裁掉。  ",
+        "ideal_movie_date": "  《午餐盒》《愛在黎明破曉時》《花束般的戀愛》適合你們，因為都能自然打開對話，後面這段也應該被裁掉。  ",
     })
 
     assert len(result["personality_reading"]) <= 221
     assert result["hidden_traits"] == ["敏銳觀察者", "冷面幽默派", "節奏潔癖型"]
     assert len(result["conversation_style"]) <= 31
-    assert len(result["ideal_movie_date"]) <= 46
+    assert len(result["ideal_movie_date"]) <= 71

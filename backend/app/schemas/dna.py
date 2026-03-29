@@ -15,11 +15,32 @@ class QuadrantScores(BaseModel):
     light_dark: float = 3.0
 
 
+class SignalDetail(BaseModel):
+    tag: str
+    score: float | None = None
+    confidence: float | None = None
+    consistency: float | None = None
+
+
+class ComparisonEvidence(BaseModel):
+    round: int | None = None
+    chosen_title: str
+    rejected_title: str
+    dimension: str | None = None
+    focus_tags: list[str] = []
+    chosen_tags: list[str] = []
+    rejected_tags: list[str] = []
+
+
 class DnaResultResponse(BaseModel):
     archetype: ArchetypeInfo
     tag_vector: list[float]
     tag_labels: dict[str, float] = {}
     top_tags: list[str] = []
+    supporting_signals: list[SignalDetail] = []
+    avoided_signals: list[SignalDetail] = []
+    mixed_signals: list[SignalDetail] = []
+    comparison_evidence: list[ComparisonEvidence] = []
     genre_vector: dict[str, float] = {}
     quadrant_scores: QuadrantScores
     personality_reading: str | None = None

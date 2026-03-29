@@ -16,11 +16,32 @@ interface QuadrantScores {
   light_dark: number
 }
 
+interface SignalDetail {
+  tag: string
+  score: number | null
+  confidence: number | null
+  consistency: number | null
+}
+
+interface ComparisonEvidence {
+  round: number | null
+  chosen_title: string
+  rejected_title: string
+  dimension: string | null
+  focus_tags: string[]
+  chosen_tags: string[]
+  rejected_tags: string[]
+}
+
 interface DnaResult {
   archetype: ArchetypeInfo
   tag_vector: number[]
   tag_labels: Record<string, number>
   top_tags: string[]
+  supporting_signals: SignalDetail[]
+  avoided_signals: SignalDetail[]
+  mixed_signals: SignalDetail[]
+  comparison_evidence: ComparisonEvidence[]
   genre_vector: Record<string, number>
   quadrant_scores: QuadrantScores
   personality_reading: string | null

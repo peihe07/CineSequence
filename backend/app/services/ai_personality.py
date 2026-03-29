@@ -60,9 +60,67 @@ def _normalize_personality_result(result: dict) -> dict:
         ),
         "ideal_movie_date": _clean_text(
             result.get("ideal_movie_date"),
-            max_len=45,
+            max_len=70,
         ),
     }
+
+
+def _build_tag_details(
+    top_tags: list[str],
+    tag_labels: dict[str, float],
+    tag_confidence: dict[str, float],
+    tag_consistency: dict[str, float],
+) -> list[dict[str, float | str]]:
+    details: list[dict[str, float | str]] = []
+    for tag in top_tags[:3]:
+        details.append({
+            "tag": tag,
+            "score": round(float(tag_labels.get(tag, 0.0)), 3),
+            "confidence": round(float(tag_confidence.get(tag, 0.0)), 3),
+            "consistency": round(float(tag_consistency.get(tag, 0.5)), 3),
+        })
+    return details
+
+
+def _build_low_affinity_tags(
+    excluded_tags: list[str],
+    tag_confidence: dict[str, float],
+    tag_consistency: dict[str, float],
+) -> list[dict[str, float | str]]:
+    low_affinity = [
+        {
+            "tag": tag,
+            "confidence": round(float(tag_confidence.get(tag, 0.0)), 3),
+            "consistency": round(float(ratio), 3),
+        }
+        for tag, ratio in tag_consistency.items()
+        if ratio <= 0.34
+    ]
+    low_affinity.sort(key=lambda item: (item["confidence"], 1 - item["consistency"]), reverse=True)
+    if low_affinity:
+        return low_affinity[:3]
+
+    return [
+        {"tag": tag, "confidence": 0.0, "consistency": 0.0}
+        for tag in excluded_tags[:3]
+    ]
+
+
+def _build_contradiction_tags(
+    tag_confidence: dict[str, float],
+    tag_consistency: dict[str, float],
+) -> list[dict[str, float | str]]:
+    contradictions = [
+        {
+            "tag": tag,
+            "confidence": round(float(tag_confidence.get(tag, 0.0)), 3),
+            "consistency": round(float(ratio), 3),
+        }
+        for tag, ratio in tag_consistency.items()
+        if 0.35 <= ratio <= 0.65 and tag_confidence.get(tag, 0.0) >= 0.67
+    ]
+    contradictions.sort(key=lambda item: item["confidence"], reverse=True)
+    return contradictions[:3]
 
 
 def _build_context(
@@ -70,9 +128,12 @@ def _build_context(
     tag_labels: dict[str, float],
     top_tags: list[str],
     excluded_tags: list[str],
+    tag_confidence: dict[str, float],
+    tag_consistency: dict[str, float],
     genre_vector: dict[str, float],
     quadrant_scores: dict,
     archetype_id: str,
+    comparison_evidence: list[dict] | None = None,
 ) -> str:
     """Build user context for the personality prompt."""
     chosen = []
@@ -86,6 +147,12 @@ def _build_context(
             "test_dimension": pick.get("test_dimension"),
         }
         if pick.get("chosen_tmdb_id"):
+            entry["chosen_title"] = pick.get("chosen_title")
+            entry["rejected_title"] = (
+                pick.get("movie_b_title")
+                if pick.get("chosen_tmdb_id") == pick.get("movie_a_tmdb_id")
+                else pick.get("movie_a_title")
+            )
             chosen.append(entry)
         else:
             skipped.append(entry)
@@ -95,10 +162,14 @@ def _build_context(
         "skips": skipped,
         "tag_vector": tag_labels,
         "top_tags": top_tags[:3],
+        "top_tag_details": _build_tag_details(top_tags, tag_labels, tag_confidence, tag_consistency),
+        "low_affinity_tags": _build_low_affinity_tags(excluded_tags, tag_confidence, tag_consistency),
+        "contradiction_tags": _build_contradiction_tags(tag_confidence, tag_consistency),
         "excluded_tags": excluded_tags[:10],
         "genre_vector": genre_vector,
         "quadrant_vector": quadrant_scores,
         "archetype_id": archetype_id,
+        "comparison_evidence": comparison_evidence or [],
     }, ensure_ascii=False)
 
 
@@ -135,9 +206,12 @@ async def generate_personality(
     tag_labels: dict[str, float],
     top_tags: list[str],
     excluded_tags: list[str],
+    tag_confidence: dict[str, float],
+    tag_consistency: dict[str, float],
     genre_vector: dict[str, float],
     quadrant_scores: dict,
     archetype_id: str,
+    comparison_evidence: list[dict] | None = None,
 ) -> dict | None:
     """Call Gemini API to generate personality reading.
 
@@ -146,7 +220,8 @@ async def generate_personality(
     """
     context = _build_context(
         picks, tag_labels, top_tags, excluded_tags,
-        genre_vector, quadrant_scores, archetype_id,
+        tag_confidence, tag_consistency,
+        genre_vector, quadrant_scores, archetype_id, comparison_evidence,
     )
     cache_key = _make_personality_cache_key(context)
     cached = _get_cached_personality(cache_key)

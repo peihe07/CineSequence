@@ -68,6 +68,9 @@ describe('dnaStore', () => {
       tag_vector: [],
       tag_labels: {},
       top_tags: [],
+      supporting_signals: [],
+      avoided_signals: [],
+      mixed_signals: [],
       genre_vector: {},
       quadrant_scores: {
         mainstream_independent: 0.4,
@@ -108,6 +111,9 @@ describe('dnaStore', () => {
       tag_vector: [],
       tag_labels: {},
       top_tags: [],
+      supporting_signals: [],
+      avoided_signals: [],
+      mixed_signals: [],
       genre_vector: {},
       quadrant_scores: {
         mainstream_independent: 0.4,

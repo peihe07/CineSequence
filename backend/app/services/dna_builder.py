@@ -95,6 +95,49 @@ def _compute_raw_tag_scores(picks: list[dict]) -> list[float]:
     return raw
 
 
+def _compute_signal_counts(picks: list[dict]) -> tuple[dict[str, int], dict[str, int]]:
+    """Count positive and negative encounters for each taxonomy tag."""
+    picks_for: dict[str, int] = {}
+    picks_against: dict[str, int] = {}
+
+    for pick in picks:
+        dim = pick.get("test_dimension")
+        chosen_id = pick.get("chosen_tmdb_id")
+        movie_a_id = pick.get("movie_a_tmdb_id")
+        movie_b_id = pick.get("movie_b_tmdb_id")
+
+        if chosen_id is None:
+            if dim and dim in TAG_INDEX:
+                picks_against[dim] = picks_against.get(dim, 0) + 1
+            continue
+
+        if dim and dim in TAG_INDEX:
+            picks_for[dim] = picks_for.get(dim, 0) + 1
+
+        rejected_id = movie_b_id if chosen_id == movie_a_id else movie_a_id
+        for tag in _POOL_TAGS.get(chosen_id, []):
+            if tag in TAG_INDEX and tag != dim:
+                picks_for[tag] = picks_for.get(tag, 0) + 1
+        for tag in _POOL_TAGS.get(rejected_id, []):
+            if tag in TAG_INDEX and tag != dim:
+                picks_against[tag] = picks_against.get(tag, 0) + 1
+
+    return picks_for, picks_against
+
+
+def _consistency_multiplier(tag: str, picks_for: dict[str, int], picks_against: dict[str, int]) -> float:
+    """Reduce impact for tags with contradictory evidence, keep low-sample tags neutral."""
+    positive = picks_for.get(tag, 0)
+    negative = picks_against.get(tag, 0)
+    total = positive + negative
+
+    if total < 2:
+        return 1.0
+
+    ratio = positive / total
+    return 0.5 + abs(ratio - 0.5)
+
+
 def compute_tag_vector(picks: list[dict]) -> list[float]:
     """Build a 30-dimensional display tag vector from three signal layers.
 
@@ -114,9 +157,16 @@ def compute_tag_vector(picks: list[dict]) -> list[float]:
     Negative values are preserved as 0 after normalization.
     """
     raw = _compute_raw_tag_scores(picks)
+    picks_for, picks_against = _compute_signal_counts(picks)
 
-    # Clamp negatives to 0, then log-dampen and normalize to [0, 1]
-    vector = [max(0.0, v) for v in raw]
+    # Clamp negatives to 0, consistency-weight contradictory tags,
+    # then log-dampen and normalize to [0, 1].
+    vector = []
+    for i, value in enumerate(raw):
+        positive = max(0.0, value)
+        weighted = positive * _consistency_multiplier(TAG_KEYS[i], picks_for, picks_against)
+        vector.append(weighted)
+
     vector = [math.log1p(v) for v in vector]
     max_val = max(vector) if vector else 1.0
     if max_val > 0:
@@ -209,33 +259,7 @@ def compute_consistency(picks: list[dict]) -> dict[str, float]:
     0.0 = always avoided, 0.5 = contradictory, 1.0 = always preferred.
     Only includes tags with ≥2 encounters.
     """
-    picks_for: dict[str, int] = {}
-    picks_against: dict[str, int] = {}
-
-    for pick in picks:
-        dim = pick.get("test_dimension")
-        chosen_id = pick.get("chosen_tmdb_id")
-        movie_a_id = pick.get("movie_a_tmdb_id")
-        movie_b_id = pick.get("movie_b_tmdb_id")
-
-        if chosen_id is None:
-            # Skip: count against the test_dimension
-            if dim and dim in TAG_INDEX:
-                picks_against[dim] = picks_against.get(dim, 0) + 1
-            continue
-
-        # Explicit signal
-        if dim and dim in TAG_INDEX:
-            picks_for[dim] = picks_for.get(dim, 0) + 1
-
-        # Implicit signals
-        rejected_id = movie_b_id if chosen_id == movie_a_id else movie_a_id
-        for tag in _POOL_TAGS.get(chosen_id, []):
-            if tag in TAG_INDEX and tag != dim:
-                picks_for[tag] = picks_for.get(tag, 0) + 1
-        for tag in _POOL_TAGS.get(rejected_id, []):
-            if tag in TAG_INDEX and tag != dim:
-                picks_against[tag] = picks_against.get(tag, 0) + 1
+    picks_for, picks_against = _compute_signal_counts(picks)
 
     all_tags = set(picks_for) | set(picks_against)
     result = {}
@@ -247,6 +271,67 @@ def compute_consistency(picks: list[dict]) -> dict[str, float]:
             result[tag] = round(f / total, 3)
 
     return result
+
+
+def build_comparison_evidence(picks: list[dict], focus_tags: list[str], limit: int = 3) -> list[dict]:
+    """Extract representative chosen-vs-rejected comparisons for the strongest signals."""
+    evidence: list[dict] = []
+
+    for pick in picks:
+        chosen_id = pick.get("chosen_tmdb_id")
+        if chosen_id is None:
+            continue
+
+        chosen_title = pick.get("chosen_title")
+        movie_a_id = pick.get("movie_a_tmdb_id")
+        movie_b_id = pick.get("movie_b_tmdb_id")
+        rejected_id = movie_b_id if chosen_id == movie_a_id else movie_a_id
+        rejected_title = (
+            pick.get("movie_b_title")
+            if chosen_id == movie_a_id
+            else pick.get("movie_a_title")
+        )
+        if not chosen_title or not rejected_title or not rejected_id:
+            continue
+
+        chosen_tags = [tag for tag in _POOL_TAGS.get(chosen_id, []) if tag in TAG_INDEX]
+        rejected_tags = [tag for tag in _POOL_TAGS.get(rejected_id, []) if tag in TAG_INDEX]
+        shared_focus = [tag for tag in focus_tags if tag in chosen_tags and tag not in rejected_tags]
+        dimension = pick.get("test_dimension")
+
+        relevance = len(shared_focus)
+        if dimension in focus_tags:
+            relevance += 2
+        if dimension in chosen_tags and dimension not in rejected_tags:
+            relevance += 1
+
+        if relevance <= 0:
+            continue
+
+        evidence.append({
+            "round": pick.get("round_number"),
+            "chosen_title": chosen_title,
+            "rejected_title": rejected_title,
+            "dimension": dimension,
+            "focus_tags": shared_focus[:2] if shared_focus else ([dimension] if dimension else []),
+            "chosen_tags": chosen_tags[:4],
+            "rejected_tags": rejected_tags[:4],
+            "_relevance": relevance,
+        })
+
+    evidence.sort(
+        key=lambda item: (
+            item["_relevance"],
+            len(item["focus_tags"]),
+            -(item.get("round") or 999),
+        ),
+        reverse=True,
+    )
+
+    trimmed = evidence[:limit]
+    for item in trimmed:
+        item.pop("_relevance", None)
+    return trimmed
 
 
 # Ideal quadrant profile for each archetype (axis → expected value).

@@ -15,7 +15,7 @@
     "name_en": "Dark Poet",
     "icon": "ri-quill-pen-line",
     "description": "你享受在灰色地帶游走，對人性的複雜性著迷。別人眼中的反派，在你看來可能只是說了真話的人。",
-    "match_tags": ["darkTone", "antiHero", "psychoThriller", "cult", "violentAesthetic"],
+    "match_tags": ["antiHero", "psychoThriller", "cult", "violentAesthetic"],
     "match_genres": [80, 53, 27],
     "ticket_style": "noir"
   },
@@ -35,7 +35,7 @@
     "name_en": "Chaos Theorist",
     "icon": "ri-dice-line",
     "description": "你被那些打破敘事規則的作品吸引。越不按牌理出牌，你越興奮。藝術的意義在於挑戰。",
-    "match_tags": ["experimental", "absurdist", "cult", "mindfuck", "satirical"],
+    "match_tags": ["experimental", "absurdist", "cult", "mindfuck", "satirical", "psychoThriller"],
     "match_genres": [878, 14, 16],
     "ticket_style": "indie"
   },
@@ -45,7 +45,7 @@
     "name_en": "Quiet Observer",
     "icon": "ri-search-line",
     "description": "你偏好用對白和細節堆疊的故事。爆炸和追逐沒辦法打動你，但一句精準的台詞可以讓你反覆咀嚼三天。",
-    "match_tags": ["dialogue", "slowburn", "socialCritique", "existential", "satirical"],
+    "match_tags": ["dialogue", "slowburn", "socialCritique", "existential", "satirical", "nostalgic"],
     "match_genres": [18, 99, 36],
     "ticket_style": "indie"
   },
@@ -55,7 +55,7 @@
     "name_en": "Adrenaline Junkie",
     "icon": "ri-flashlight-line",
     "description": "電影對你來說是一場感官之旅。你追求視覺的極致、節奏的快感，以及那種讓你屏住呼吸的瞬間。",
-    "match_tags": ["visualFeast", "survival", "revenge", "ensemble", "nostalgic"],
+    "match_tags": ["visualFeast", "survival", "revenge", "ensemble"],
     "match_genres": [28, 12, 10752],
     "ticket_style": "action"
   },
@@ -105,7 +105,7 @@
     "name_en": "Dream Weaver",
     "icon": "ri-magic-line",
     "description": "現實對你來說只是起點。你追求的是那些用視覺和想像力重新定義可能性的作品，每一幀都是一個新宇宙。",
-    "match_tags": ["visualFeast", "experimental", "timeTravel", "nostalgic", "comingOfAge"],
+    "match_tags": ["visualFeast", "timeTravel", "nostalgic", "comingOfAge"],
     "match_genres": [16, 14, 878],
     "ticket_style": "scifi"
   },
@@ -115,7 +115,7 @@
     "name_en": "Lone Wolf",
     "icon": "ri-user-line",
     "description": "你被獨自對抗世界的角色吸引。不需要大場面或群戲，一個人的掙扎就是最動人的史詩。",
-    "match_tags": ["solo", "antiHero", "revenge", "darkTone", "survival"],
+    "match_tags": ["solo", "antiHero", "darkTone", "survival"],
     "match_genres": [53, 28, 80],
     "ticket_style": "noir"
   }

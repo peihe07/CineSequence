@@ -306,6 +306,7 @@ async def get_pair(
             picks,
             quadrant,
             extra_excluded_tmdb_ids=session.reroll_excluded_tmdb_ids,
+            session_seed=str(session.id),
         )
 
         if not result:
@@ -399,6 +400,7 @@ async def reroll_pair(
             session.reroll_excluded_tmdb_ids,
             exclude_tmdb_ids,
         ),
+        session_seed=str(session.id),
     )
 
     if not result:

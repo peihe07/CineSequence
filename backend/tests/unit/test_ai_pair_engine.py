@@ -91,6 +91,16 @@ class TestSelectCandidates:
             assert "tags" in c
             assert isinstance(c["tags"], list)
 
+    def test_session_seed_is_deterministic(self):
+        first = _select_candidates({}, set(), phase=2, session_seed="session-a")
+        second = _select_candidates({}, set(), phase=2, session_seed="session-a")
+        assert [c["tmdb_id"] for c in first] == [c["tmdb_id"] for c in second]
+
+    def test_different_session_seeds_produce_variation(self):
+        first = _select_candidates({}, set(), phase=2, session_seed="session-a")
+        second = _select_candidates({}, set(), phase=2, session_seed="session-b")
+        assert [c["tmdb_id"] for c in first] != [c["tmdb_id"] for c in second]
+
 
 class TestCandidateRegionDiversity:
     """B6: Test region diversity in candidate selection."""

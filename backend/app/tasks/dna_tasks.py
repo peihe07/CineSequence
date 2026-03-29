@@ -21,7 +21,7 @@ async def build_dna_for_user(user_id: str):
     from app.models.user import SequencingStatus, User
     from app.models.user_favorite_movie import UserFavoriteMovie
     from app.services.ai_personality import generate_personality
-    from app.services.dna_builder import build_dna
+    from app.services.dna_builder import build_comparison_evidence, build_dna
     from app.services.session_service import get_or_create_session
     from app.services.tmdb_client import get_movie
 
@@ -86,9 +86,12 @@ async def build_dna_for_user(user_id: str):
             tag_labels=dna_data["tag_labels"],
             top_tags=dna_data["top_tags"],
             excluded_tags=dna_data["excluded_tags"],
+            tag_confidence=dna_data["tag_confidence"],
+            tag_consistency=dna_data["tag_consistency"],
             genre_vector=dna_data["genre_vector"],
             quadrant_scores=dna_data["quadrant_scores"],
             archetype_id=dna_data["archetype_id"],
+            comparison_evidence=build_comparison_evidence(picks, dna_data["top_tags"]),
         )
 
         # Create or update DNA profile
