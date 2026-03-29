@@ -1,0 +1,108 @@
+.shell {
+  display: grid;
+  gap: 1rem;
+}
+
+.hero {
+  max-width: 36rem;
+}
+
+.page {
+  width: min(100%, 32rem);
+  padding: 2rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(10, 11, 12, 0.82);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
+}
+
+.copy {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.52);
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-zh), var(--font-sans);
+  font-size: clamp(1.4rem, 2.8vw, 2.2rem);
+  line-height: 1.08;
+  color: rgba(255, 255, 255, 0.96);
+}
+
+.body,
+.note,
+.success {
+  margin: 0;
+  line-height: 1.7;
+}
+
+.body {
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.note {
+  color: rgba(255, 255, 255, 0.62);
+  font-size: 0.94rem;
+}
+
+.form {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.secondaryLink,
+.secondaryButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.9rem;
+  padding: 0.82rem 1.35rem;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: none;
+  background: rgba(255, 255, 255, 0.04);
+  font-family: var(--font-sans), sans-serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.secondaryButton {
+  appearance: none;
+  cursor: pointer;
+}
+
+.success {
+  color: #f1b37f;
+}
+
+@media (max-width: 640px) {
+  .page {
+    padding: 1.5rem;
+  }
+
+  .actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .secondaryLink,
+  .secondaryButton {
+    width: 100%;
+  }
+}

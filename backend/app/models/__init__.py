@@ -21,3 +21,4 @@ from app.models.theater_list import (  # noqa: E402, F401
 )
 from app.models.user import User  # noqa: E402, F401
 from app.models.user_favorite_movie import UserFavoriteMovie  # noqa: E402, F401
+from app.models.waitlist_entry import WaitlistEntry  # noqa: E402, F401

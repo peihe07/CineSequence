@@ -28,6 +28,14 @@ export interface RegisterResponse {
   message: string
 }
 
+export interface WaitlistRequest {
+  email: string
+}
+
+export interface WaitlistResponse {
+  message: string
+}
+
 export interface VerifyRequest {
   token: string
 }

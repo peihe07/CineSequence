@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import LoginModal from '@/components/auth/LoginModal'
+import WaitlistForm from '@/components/auth/WaitlistForm'
 import { useI18n } from '@/lib/i18n'
 import { useAuthStore } from '@/stores/authStore'
 import FloatingLocaleToggle from '@/components/ui/FloatingLocaleToggle'
@@ -146,21 +147,6 @@ export default function LandingClient() {
     void openAuthFlow('login', target || undefined)
   }, [openAuthFlow])
 
-  // Magnetic button effect
-  const handleMagnet = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
-    const btn = e.currentTarget
-    const rect = btn.getBoundingClientRect()
-    const x = e.clientX - rect.left - rect.width / 2
-    const y = e.clientY - rect.top - rect.height / 2
-    btn.style.setProperty('--magnet-x', `${x * 0.15}px`)
-    btn.style.setProperty('--magnet-y', `${y * 0.15}px`)
-  }, [])
-
-  const handleMagnetLeave = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
-    e.currentTarget.style.setProperty('--magnet-x', '0')
-    e.currentTarget.style.setProperty('--magnet-y', '0')
-  }, [])
-
   return (
     <main className={styles.main}>
       <LoginModal
@@ -249,24 +235,7 @@ export default function LandingClient() {
               ))}
             </div>
             <div className={`${styles.heroCta} ${done ? styles.heroCtaVisible : ''}`}>
-              <button
-                type="button"
-                className={styles.ctaPrimary}
-                onMouseMove={handleMagnet}
-                onMouseLeave={handleMagnetLeave}
-                onClick={() => void openAuthFlow('register')}
-              >
-                {t('landing.start')}
-              </button>
-              <button
-                type="button"
-                className={styles.ctaSecondary}
-                onMouseMove={handleMagnet}
-                onMouseLeave={handleMagnetLeave}
-                onClick={() => void openAuthFlow('login')}
-              >
-                {t('landing.login')}
-              </button>
+              <WaitlistForm onSecondaryClick={() => void openAuthFlow('login')} />
             </div>
           </div>
         </div>

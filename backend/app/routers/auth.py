@@ -10,12 +10,15 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.deps import get_current_user, get_db
 from app.models.user import User
+from app.models.waitlist_entry import WaitlistEntry
 from app.schemas.auth import (
     LoginRequest,
     RegisterRequest,
     RegisterResponse,
     TokenResponse,
     VerifyRequest,
+    WaitlistRequest,
+    WaitlistResponse,
 )
 from app.security import get_client_ip, validate_csrf_origin
 from app.services.auth_cookies import clear_auth_cookie, set_auth_cookie
@@ -42,6 +45,10 @@ def sync_admin_flag(user: User) -> bool:
 
 REGISTER_SUCCESS_MESSAGE = "If this email is eligible, a magic link has been sent."
 LOGIN_UNKNOWN_EMAIL_MESSAGE = "Account not found. Please register first."
+WAITLIST_SUCCESS_MESSAGE = (
+    "You're on the waitlist. We're developing new features and performing maintenance. "
+    "We'll email you again when access reopens."
+)
 
 
 @router.post("/register", response_model=RegisterResponse, status_code=status.HTTP_201_CREATED)
@@ -88,6 +95,27 @@ async def register(
     await send_magic_link(body.email, token, body.next_path)
 
     return RegisterResponse(message=REGISTER_SUCCESS_MESSAGE)
+
+
+@router.post("/waitlist", response_model=WaitlistResponse, status_code=status.HTTP_201_CREATED)
+@limiter.limit("5/minute")
+async def join_waitlist(
+    request: Request,
+    body: WaitlistRequest,
+    db: Annotated[AsyncSession, Depends(get_db)],
+):
+    """Add an email to the reopen waitlist."""
+    validate_csrf_origin(request)
+
+    result = await db.execute(
+        select(WaitlistEntry).where(WaitlistEntry.email == body.email)
+    )
+    existing = result.scalar_one_or_none()
+    if existing is None:
+        db.add(WaitlistEntry(email=body.email))
+        await db.commit()
+
+    return WaitlistResponse(message=WAITLIST_SUCCESS_MESSAGE)
 
 
 @router.post("/login")

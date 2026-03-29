@@ -60,6 +60,14 @@ class RegisterResponse(BaseModel):
     message: str
 
 
+class WaitlistRequest(BaseModel):
+    email: EmailStr
+
+
+class WaitlistResponse(BaseModel):
+    message: str
+
+
 class VerifyRequest(BaseModel):
     token: str
 

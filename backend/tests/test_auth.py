@@ -5,7 +5,7 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 from httpx import AsyncClient
-from sqlalchemy import select
+from sqlalchemy import select, text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import settings
@@ -262,6 +262,45 @@ class TestLoginEndpoint:
             assert result.scalar_one().is_admin is True
         finally:
             settings.admin_emails = original
+
+
+@pytest.mark.asyncio
+class TestWaitlistEndpoint:
+    async def test_waitlist_creates_entry(self, client: AsyncClient, db_session: AsyncSession):
+        response = await client.post("/auth/waitlist", json={"email": "waitlist@test.com"})
+
+        assert response.status_code == 201
+        assert response.json() == {
+            "message": (
+                "You're on the waitlist. We're developing new features and performing maintenance. "
+                "We'll email you again when access reopens."
+            )
+        }
+
+        result = await db_session.execute(
+            select(User).where(User.email == "waitlist@test.com")
+        )
+        assert result.scalar_one_or_none() is None
+
+        waitlist_entry = await db_session.execute(text(
+            "SELECT email FROM waitlist_entries WHERE email = :email"
+        ), {"email": "waitlist@test.com"})
+        assert waitlist_entry.scalar_one() == "waitlist@test.com"
+
+    async def test_waitlist_is_idempotent_for_existing_email(
+        self, client: AsyncClient, db_session: AsyncSession
+    ):
+        first = await client.post("/auth/waitlist", json={"email": "repeat@test.com"})
+        second = await client.post("/auth/waitlist", json={"email": "repeat@test.com"})
+
+        assert first.status_code == 201
+        assert second.status_code == 201
+
+        count = await db_session.execute(
+            text("SELECT COUNT(*) FROM waitlist_entries WHERE email = :email"),
+            {"email": "repeat@test.com"},
+        )
+        assert count.scalar_one() == 1
 
     async def test_login_rejects_untrusted_origin(self, client: AsyncClient):
         response = await client.post(

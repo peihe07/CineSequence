@@ -1,9 +1,10 @@
-import { cleanup, fireEvent, render, screen } from '@testing-library/react'
+import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-const { pushMock, fetchProfileMock, authState } = vi.hoisted(() => ({
+const { pushMock, fetchProfileMock, authState, waitlistMock } = vi.hoisted(() => ({
   pushMock: vi.fn(),
   fetchProfileMock: vi.fn(() => new Promise<void>(() => {})),
+  waitlistMock: vi.fn(),
   authState: {
     isAuthenticated: false,
   },
@@ -33,7 +34,7 @@ vi.mock('next/link', () => ({
 
 vi.mock('@/lib/i18n', () => ({
   useI18n: () => ({
-    t: (key: string) => {
+    t: (key: string, vars?: Record<string, string>) => {
       const dict: Record<string, string> = {
         'landing.termLine1': 'line 1',
         'landing.termLine2': 'line 2',
@@ -50,12 +51,26 @@ vi.mock('@/lib/i18n', () => ({
         'landing.step5Title': 'Step 5',
         'landing.step5Desc': 'Desc 5',
         'landing.fileLabel': 'FILE',
-        'landing.start': 'Start',
+        'landing.start': 'Join waitlist',
         'landing.login': 'Login',
+        'landing.waitlistTitle': 'Join the waitlist',
+        'landing.waitlistBody': 'Maintenance and feature work are in progress.',
+        'landing.waitlistEmailLabel': 'Email',
+        'landing.waitlistEmailPlaceholder': 'you@example.com',
+        'landing.waitlistSubmit': 'Notify me',
+        'landing.waitlistSubmitting': 'Submitting...',
+        'landing.waitlistSuccess': "We'll email {{email}} when access reopens.",
+      }
+      if (key === 'landing.waitlistSuccess' && vars?.email) {
+        return `success:${vars.email}`
       }
       return dict[key] ?? key
     },
   }),
+}))
+
+vi.mock('@/lib/api', () => ({
+  api: (...args: unknown[]) => waitlistMock(...args),
 }))
 
 vi.mock('@/stores/authStore', () => ({
@@ -85,6 +100,7 @@ describe('LandingClient', () => {
     cleanup()
     pushMock.mockReset()
     fetchProfileMock.mockClear()
+    waitlistMock.mockReset()
     authState.isAuthenticated = false
   })
 
@@ -100,11 +116,25 @@ describe('LandingClient', () => {
     expect(screen.getByTestId('login-modal').textContent).toBe('login')
   })
 
-  it('opens the register modal immediately without waiting for profile fetch', () => {
+  it('submits the waitlist form from the hero', async () => {
+    waitlistMock.mockResolvedValue({
+      message:
+        "You're on the waitlist. We're developing new features and performing maintenance. We'll email you again when access reopens.",
+    })
+
     render(<LandingClient />)
 
-    fireEvent.click(screen.getByRole('button', { name: 'Start' }))
+    fireEvent.change(screen.getByLabelText('Email'), {
+      target: { value: 'user@example.com' },
+    })
+    fireEvent.click(screen.getByRole('button', { name: 'Notify me' }))
 
-    expect(screen.getByTestId('login-modal').textContent).toBe('register')
+    await waitFor(() => {
+      expect(waitlistMock).toHaveBeenCalledWith('/auth/waitlist', {
+        method: 'POST',
+        body: JSON.stringify({ email: 'user@example.com' }),
+      })
+    })
+    expect(screen.getByText('success:user@example.com')).toBeTruthy()
   })
 })
