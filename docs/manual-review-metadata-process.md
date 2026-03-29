@@ -44,22 +44,34 @@ Required fields:
 
 ### 2. Movie Pool Review
 
-Primary source file:
+Source files:
 
 - `backend/app/data/movie_pool.json`
+- `backend/app/data/movie_pool_reviews.json`
 
-The movie pool does not currently have a separate machine-readable review file.
-Until that exists, review notes should be recorded in:
+Every pool movie now has a matching review entry keyed by `tmdb_id` as a string.
 
-- [movie-pool-changelog.md](/Users/peihe/Personal_Projects/movie-dna/docs/movie-pool-changelog.md) for major curation changes
-- [progress.md](/Users/peihe/Personal_Projects/movie-dna/docs/progress.md) when the change is part of an active workstream
+Current required fields:
 
-For smaller ongoing review, use a lightweight note block in the changelog with:
+- `title_en`
+- `confidence`
+  Allowed values:
+  - `high`
+  - `medium`
+  - `low`
+- `coverage_reason`
+  Current allowed values:
+  - `phase1_anchor`
+  - `region_balance`
+  - `tag_coverage`
+- `confounds`
+- `replacement_needed`
+- `notes`
 
-- movie title
-- reason for add or retag
-- tags added or removed
-- review concern if any
+Major pool changes should still be summarized in:
+
+- [movie-pool-changelog.md](/Users/peihe/Personal_Projects/movie-dna/docs/movie-pool-changelog.md)
+- [progress.md](/Users/peihe/Personal_Projects/movie-dna/docs/progress.md) when part of an active workstream
 
 ## Review Standards
 
@@ -121,10 +133,11 @@ Add a new confound label only when an existing label clearly does not fit.
 ### B. Updating The Movie Pool
 
 1. Edit `backend/app/data/movie_pool.json`.
-2. Confirm all tags map to `backend/app/data/tag_taxonomy.json`.
-3. Record notable curation rationale in `docs/movie-pool-changelog.md`.
-4. If the change is part of active upgrade work, update `docs/progress.md`.
-5. Run validation:
+2. Add or update the matching entry in `backend/app/data/movie_pool_reviews.json`.
+3. Confirm all tags map to `backend/app/data/tag_taxonomy.json`.
+4. Record notable curation rationale in `docs/movie-pool-changelog.md`.
+5. If the change is part of active upgrade work, update `docs/progress.md`.
+6. Run validation:
    - `node scripts/validate_movie_pool.js`
    - `cd backend && ./.venv/bin/python -m pytest tests/unit/test_movie_pool.py`
 
@@ -180,17 +193,4 @@ Minimum expected review points:
 
 ## Future Extension
 
-This process assumes pair review metadata is machine-readable and pool review metadata is still document-based.
-
-If pool curation becomes more active, add a dedicated file such as:
-
-- `backend/app/data/movie_pool_reviews.json`
-
-Recommended future fields:
-
-- `tmdb_id`
-- `confidence`
-- `coverage_reason`
-- `confounds`
-- `replacement_needed`
-- `notes`
+The current pool review file is intentionally lightweight. As curation quality increases, expand `coverage_reason`, `confounds`, and `notes` beyond bootstrap defaults for high-impact titles first.

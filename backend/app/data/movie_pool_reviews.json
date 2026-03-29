@@ -1,0 +1,2922 @@
+{
+  "13": {
+    "title_en": "Forrest Gump",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "14": {
+    "title_en": "American Beauty",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "19": {
+    "title_en": "Metropolis",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "24": {
+    "title_en": "Kill Bill: Volume 2",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "62": {
+    "title_en": "2001: A Space Odyssey",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "68": {
+    "title_en": "Brazil",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "70": {
+    "title_en": "Million Dollar Baby",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "73": {
+    "title_en": "American History X",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "77": {
+    "title_en": "Memento",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "98": {
+    "title_en": "Gladiator",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "101": {
+    "title_en": "Leon: The Professional",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "105": {
+    "title_en": "Back to the Future",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "115": {
+    "title_en": "The Big Lebowski",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "120": {
+    "title_en": "The Lord of the Rings: The Fellowship of the Ring",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "121": {
+    "title_en": "The Lord of the Rings: The Two Towers",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "122": {
+    "title_en": "The Lord of the Rings: The Return of the King",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "128": {
+    "title_en": "Princess Mononoke",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "129": {
+    "title_en": "Spirited Away",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "141": {
+    "title_en": "Donnie Darko",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "149": {
+    "title_en": "Akira",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "153": {
+    "title_en": "Lost in Translation",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "155": {
+    "title_en": "The Dark Knight",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "160": {
+    "title_en": "Equilibrium",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "161": {
+    "title_en": "Ocean's Eleven",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "170": {
+    "title_en": "28 Days Later",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "185": {
+    "title_en": "A Clockwork Orange",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "194": {
+    "title_en": "Amelie",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "197": {
+    "title_en": "Braveheart",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "238": {
+    "title_en": "The Godfather",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "240": {
+    "title_en": "The Godfather Part II",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "278": {
+    "title_en": "The Shawshank Redemption",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "310": {
+    "title_en": "Stalker",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "311": {
+    "title_en": "Once Upon a Time in America",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "329": {
+    "title_en": "Ikiru",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "334": {
+    "title_en": "Magnolia",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "346": {
+    "title_en": "Seven Samurai",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "348": {
+    "title_en": "Alien",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "361": {
+    "title_en": "Waking Life",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "380": {
+    "title_en": "A Clockwork Orange",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "389": {
+    "title_en": "12 Angry Men",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "393": {
+    "title_en": "Kill Bill: Volume 1",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "400": {
+    "title_en": "Amour",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "406": {
+    "title_en": "La Haine",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "424": {
+    "title_en": "Schindler's List",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "445": {
+    "title_en": "Caché",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "453": {
+    "title_en": "A Beautiful Mind",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "489": {
+    "title_en": "Good Will Hunting",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "490": {
+    "title_en": "The Seventh Continent",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "497": {
+    "title_en": "The Green Mile",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "500": {
+    "title_en": "Reservoir Dogs",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "508": {
+    "title_en": "Cinema Paradiso",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "510": {
+    "title_en": "Being John Malkovich",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "539": {
+    "title_en": "Psycho",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "548": {
+    "title_en": "Rashomon",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "550": {
+    "title_en": "Fight Club",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "557": {
+    "title_en": "Spider-Man",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "567": {
+    "title_en": "Rear Window",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "578": {
+    "title_en": "Jaws",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "585": {
+    "title_en": "Monsters, Inc.",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "597": {
+    "title_en": "Titanic",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "598": {
+    "title_en": "City of God",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "600": {
+    "title_en": "Full Metal Jacket",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "603": {
+    "title_en": "The Matrix",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "607": {
+    "title_en": "Men in Black",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "629": {
+    "title_en": "The Usual Suspects",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "637": {
+    "title_en": "Life Is Beautiful",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "638": {
+    "title_en": "The Time Machine",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "640": {
+    "title_en": "Catch Me If You Can",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "644": {
+    "title_en": "A.I. Artificial Intelligence",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "654": {
+    "title_en": "In the Mood for Love",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "664": {
+    "title_en": "Requiem for a Dream",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "670": {
+    "title_en": "Oldboy",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "671": {
+    "title_en": "Harry Potter and the Philosopher's Stone",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "675": {
+    "title_en": "Solaris",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "679": {
+    "title_en": "Aliens",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "680": {
+    "title_en": "Pulp Fiction",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "694": {
+    "title_en": "The Shining",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "740": {
+    "title_en": "Before Sunset",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "745": {
+    "title_en": "The Usual Suspects",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "755": {
+    "title_en": "No Country for Old Men",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "769": {
+    "title_en": "Goodfellas",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "773": {
+    "title_en": "Little Miss Sunshine",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "797": {
+    "title_en": "Persona",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "807": {
+    "title_en": "Se7en",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "838": {
+    "title_en": "The Seventh Seal",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "840": {
+    "title_en": "Close Encounters of the Third Kind",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "841": {
+    "title_en": "Mulholland Drive",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "857": {
+    "title_en": "Saving Private Ryan",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "862": {
+    "title_en": "Toy Story",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "872": {
+    "title_en": "Singin' in the Rain",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "901": {
+    "title_en": "The Diving Bell and the Butterfly",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "935": {
+    "title_en": "Dr. Strangelove",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "939": {
+    "title_en": "In the Mood for Love",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "960": {
+    "title_en": "Heat",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "985": {
+    "title_en": "Carrie",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "1111": {
+    "title_en": "Ringu",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "1124": {
+    "title_en": "The Prestige",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "1160": {
+    "title_en": "Unforgiven",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "1271": {
+    "title_en": "Nostalgia",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "1359": {
+    "title_en": "American Psycho",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "1366": {
+    "title_en": "Rocky",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "1396": {
+    "title_en": "Mirror",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "1402": {
+    "title_en": "The Silence of the Lambs",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "1422": {
+    "title_en": "The Departed",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "1427": {
+    "title_en": "Perfume: The Story of a Murderer",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "1538": {
+    "title_en": "Collateral",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "1542": {
+    "title_en": "Blue Velvet",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "1581": {
+    "title_en": "The Taste of Tea",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "1585": {
+    "title_en": "A Brighter Summer Day",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "1725": {
+    "title_en": "The Italian Job",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "1884": {
+    "title_en": "The Machinist",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "1891": {
+    "title_en": "The Empire Strikes Back",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "1895": {
+    "title_en": "Star Wars: Episode III",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "1933": {
+    "title_en": "The Princess Bride",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "2017": {
+    "title_en": "Memories of Murder",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "2048": {
+    "title_en": "I Am Legend",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "2062": {
+    "title_en": "Amores Perros",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "2346": {
+    "title_en": "Still Life",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "2493": {
+    "title_en": "The Terminator",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "2675": {
+    "title_en": "Let the Right One In",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "2757": {
+    "title_en": "Groundhog Day",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "3782": {
+    "title_en": "Departures",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "3989": {
+    "title_en": "Grave of the Fireflies",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "4057": {
+    "title_en": "The Bank Job",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "4108": {
+    "title_en": "The Thomas Crown Affair",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "4247": {
+    "title_en": "Moonlight",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "4348": {
+    "title_en": "The Lives of Others",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "4476": {
+    "title_en": "Y Tu Mama Tambien",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "4538": {
+    "title_en": "Before Midnight",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "4550": {
+    "title_en": "The Host",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "4935": {
+    "title_en": "Before Sunrise",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "4977": {
+    "title_en": "Paprika",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "7326": {
+    "title_en": "Pan's Labyrinth",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "8363": {
+    "title_en": "Frequency",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "8536": {
+    "title_en": "Looper",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "8967": {
+    "title_en": "The Sixth Sense",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "9032": {
+    "title_en": "Trainspotting",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "9323": {
+    "title_en": "Ghost in the Shell",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "9693": {
+    "title_en": "Children of Men",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "9800": {
+    "title_en": "The Fountain",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "9806": {
+    "title_en": "The Incredibles",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "10191": {
+    "title_en": "How to Train Your Dragon",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "10195": {
+    "title_en": "The Girl Who Leapt Through Time",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "10494": {
+    "title_en": "Perfect Blue",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "10515": {
+    "title_en": "Castle in the Sky",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "10528": {
+    "title_en": "Sherlock Holmes",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "10674": {
+    "title_en": "Payback",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "10681": {
+    "title_en": "WALL-E",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "10687": {
+    "title_en": "Spring, Summer, Fall, Winter... and Spring",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "10835": {
+    "title_en": "Chungking Express",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "10867": {
+    "title_en": "The Secret in Their Eyes",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "11036": {
+    "title_en": "The Notebook",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "11090": {
+    "title_en": "After the Storm",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "11202": {
+    "title_en": "Dogtooth",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "11220": {
+    "title_en": "Fallen Angels",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "11232": {
+    "title_en": "About Time",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "11321": {
+    "title_en": "Seven Pounds",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "11324": {
+    "title_en": "Shutter Island",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "11377": {
+    "title_en": "Stalker",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "11399": {
+    "title_en": "Waking Life",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "11517": {
+    "title_en": "Departures",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "11534": {
+    "title_en": "Tropical Malady",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "11610": {
+    "title_en": "Chungking Express",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "11694": {
+    "title_en": "The Diving Bell and the Butterfly",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "11887": {
+    "title_en": "Amelie",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "11953": {
+    "title_en": "Nobody Knows",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "11985": {
+    "title_en": "Vive L'Amour",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "12244": {
+    "title_en": "Sleepers",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "12405": {
+    "title_en": "Slumdog Millionaire",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "12444": {
+    "title_en": "Harry Potter and the Deathly Hallows Part 2",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "12477": {
+    "title_en": "Grave of the Fireflies",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "13187": {
+    "title_en": "Grave of the Fireflies",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "13223": {
+    "title_en": "Gran Torino",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "14337": {
+    "title_en": "Primer",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "14537": {
+    "title_en": "Still Walking",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "14574": {
+    "title_en": "The Count of Monte Cristo",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "14626": {
+    "title_en": "Beau Travail",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "14710": {
+    "title_en": "Synecdoche New York",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "14801": {
+    "title_en": "Predestination",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "14836": {
+    "title_en": "Coraline",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "15899": {
+    "title_en": "A City of Sadness",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "15997": {
+    "title_en": "Amores Perros",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "16234": {
+    "title_en": "Sin City",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "16306": {
+    "title_en": "Fantastic Planet",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "16662": {
+    "title_en": "Cleo from 5 to 7",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "16672": {
+    "title_en": "Woman in the Dunes",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "16869": {
+    "title_en": "Inglourious Basterds",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "17431": {
+    "title_en": "A Prophet",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "18329": {
+    "title_en": "Happy Together",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "18491": {
+    "title_en": "Neon Genesis Evangelion: The End of Evangelion",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "19404": {
+    "title_en": "Dilwale Dulhania Le Jayenge",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "19726": {
+    "title_en": "Cape No. 7",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "20453": {
+    "title_en": "3 Idiots",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "22429": {
+    "title_en": "Eat Drink Man Woman",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "25237": {
+    "title_en": "Come and See",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "25538": {
+    "title_en": "Yi Yi",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "27205": {
+    "title_en": "Inception",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "30017": {
+    "title_en": "Close-Up",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "30020": {
+    "title_en": "Taste of Cherry",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "31414": {
+    "title_en": "Sátántangó",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "33320": {
+    "title_en": "Millennium Actress",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "36557": {
+    "title_en": "Casino Royale",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "36643": {
+    "title_en": "Atonement",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "36685": {
+    "title_en": "The Pianist",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "37165": {
+    "title_en": "The Truman Show",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "37903": {
+    "title_en": "The White Ribbon",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "38368": {
+    "title_en": "Uncle Boonmee Who Can Recall His Past Lives",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "44012": {
+    "title_en": "Jeanne Dielman, 23, quai du Commerce, 1080 Bruxelles",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "44214": {
+    "title_en": "Black Swan",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "45935": {
+    "title_en": "Flowers of Shanghai",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "45999": {
+    "title_en": "A Time to Live, a Time to Die",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "46738": {
+    "title_en": "Waltz with Bashir",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "48303": {
+    "title_en": "Certified Copy",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "49026": {
+    "title_en": "The Dark Knight Rises",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "49084": {
+    "title_en": "Poetry",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "49519": {
+    "title_en": "Source Code",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "49521": {
+    "title_en": "Man of Steel",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "49797": {
+    "title_en": "Source Code",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "57214": {
+    "title_en": "About Time",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "57564": {
+    "title_en": "Rebels of the Neon God",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "59967": {
+    "title_en": "Looper",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "60243": {
+    "title_en": "A Separation",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "68718": {
+    "title_en": "Django Unchained",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "68726": {
+    "title_en": "Pacific Rim",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "72105": {
+    "title_en": "Elysium",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "72190": {
+    "title_en": "World War Z",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "72313": {
+    "title_en": "Looper",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "73723": {
+    "title_en": "The Dark Knight",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "76170": {
+    "title_en": "Snowpiercer",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "76341": {
+    "title_en": "Mad Max: Fury Road",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "76600": {
+    "title_en": "Avatar: The Way of Water",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "77338": {
+    "title_en": "The Intouchables",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "78450": {
+    "title_en": "Terrorizers",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "82695": {
+    "title_en": "Eternal Sunshine of the Spotless Mind",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "83201": {
+    "title_en": "No",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "83542": {
+    "title_en": "Cloud Atlas",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "87414": {
+    "title_en": "Jagten",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "87827": {
+    "title_en": "Life of Pi",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "88811": {
+    "title_en": "Goodbye South, Goodbye",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "101299": {
+    "title_en": "The Hunt",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "103328": {
+    "title_en": "Holy Motors",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "106646": {
+    "title_en": "The Wolf of Wall Street",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "109445": {
+    "title_en": "Frozen",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "119049": {
+    "title_en": "Ida",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "120467": {
+    "title_en": "The Grand Budapest Hotel",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "131631": {
+    "title_en": "The Maze Runner",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "137113": {
+    "title_en": "Edge of Tomorrow",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "146233": {
+    "title_en": "Prisoners",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "149870": {
+    "title_en": "The Wind Rises",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "149871": {
+    "title_en": "The Tale of the Princess Kaguya",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "150540": {
+    "title_en": "Inside Out",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "152601": {
+    "title_en": "Her",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "157336": {
+    "title_en": "Interstellar",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "187022": {
+    "title_en": "A Touch of Sin",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "194662": {
+    "title_en": "Blue Is the Warmest Colour",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "205596": {
+    "title_en": "The Imitation Game",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "207703": {
+    "title_en": "WALL-E",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "207933": {
+    "title_en": "Inside Man",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "228150": {
+    "title_en": "Baby Driver",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "244786": {
+    "title_en": "Whiplash",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "245891": {
+    "title_en": "John Wick",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "253450": {
+    "title_en": "The Assassin",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "256591": {
+    "title_en": "Nightcrawler",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "261023": {
+    "title_en": "Wild Tales",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "264644": {
+    "title_en": "Room",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "264660": {
+    "title_en": "Ex Machina",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "265228": {
+    "title_en": "Timbuktu",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "271677": {
+    "title_en": "Now You See Me",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "274479": {
+    "title_en": "The Notebook",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "274855": {
+    "title_en": "Baby Driver",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "281957": {
+    "title_en": "The Revenant",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "283445": {
+    "title_en": "Under the Shadow",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "286217": {
+    "title_en": "The Martian",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "293670": {
+    "title_en": "The Wailing",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "296096": {
+    "title_en": "Me Before You",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "301528": {
+    "title_en": "The Handmaiden",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "310131": {
+    "title_en": "The Witch",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "313369": {
+    "title_en": "La La Land",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "315837": {
+    "title_en": "Your Name",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "316029": {
+    "title_en": "The Greatest Showman",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "324786": {
+    "title_en": "Hacksaw Ridge",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "324857": {
+    "title_en": "Spider-Man: Homecoming",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "329865": {
+    "title_en": "Arrival",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "334541": {
+    "title_en": "Manchester by the Sea",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "335983": {
+    "title_en": "Venom",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "335984": {
+    "title_en": "Blade Runner 2049",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "336808": {
+    "title_en": "Embrace of the Serpent",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "338766": {
+    "title_en": "Burning",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "346364": {
+    "title_en": "It's a Flickering Life",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "346646": {
+    "title_en": "The Handmaiden",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "346698": {
+    "title_en": "Barbie",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "354275": {
+    "title_en": "Right Now, Wrong Then",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "354912": {
+    "title_en": "Coco",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "359940": {
+    "title_en": "Three Billboards Outside Ebbing, Missouri",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "361743": {
+    "title_en": "Top Gun: Maverick",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "372058": {
+    "title_en": "Your Name",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "376867": {
+    "title_en": "Moonlight",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "378064": {
+    "title_en": "A Fantastic Woman",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "381284": {
+    "title_en": "Hidden Figures",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "381288": {
+    "title_en": "Split",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "381289": {
+    "title_en": "A Taxi Driver",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "387886": {
+    "title_en": "A Taxi Driver",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "392044": {
+    "title_en": "A Silent Voice",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "398818": {
+    "title_en": "Call Me by Your Name",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "399055": {
+    "title_en": "The Shape of Water",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "399106": {
+    "title_en": "The Farewell",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "406997": {
+    "title_en": "The Florida Project",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "413594": {
+    "title_en": "Weathering with You",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "419430": {
+    "title_en": "Sicario",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "419704": {
+    "title_en": "Get Out",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "429617": {
+    "title_en": "Spider-Man: Into the Spider-Verse",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "434405": {
+    "title_en": "A Sun",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "434773": {
+    "title_en": "On the Beach at Night Alone",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "438631": {
+    "title_en": "Dune",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "438695": {
+    "title_en": "Sing 2",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "441282": {
+    "title_en": "Night Is Short Walk on Girl",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "447365": {
+    "title_en": "Guardians of the Galaxy Vol. 3",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "454983": {
+    "title_en": "The Lighthouse",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "459581": {
+    "title_en": "Dear Ex",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "475557": {
+    "title_en": "Joker",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "481848": {
+    "title_en": "The Lobster",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "486898": {
+    "title_en": "Long Day's Journey Into Night",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "490125": {
+    "title_en": "Capernaum",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "490132": {
+    "title_en": "Green Book",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "491584": {
+    "title_en": "Burning",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "496243": {
+    "title_en": "Parasite",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "496450": {
+    "title_en": "Tenet",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "497698": {
+    "title_en": "Black Panther: Wakanda Forever",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "500244": {
+    "title_en": "1917",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "503736": {
+    "title_en": "Army of the Dead",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "504253": {
+    "title_en": "Memories of Murder",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "505954": {
+    "title_en": "Detention",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "508442": {
+    "title_en": "Soul",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "508883": {
+    "title_en": "Shoplifters",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "508947": {
+    "title_en": "Turning Red",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "517814": {
+    "title_en": "Portrait of a Lady on Fire",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "523607": {
+    "title_en": "Everything Everywhere All at Once",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "530385": {
+    "title_en": "Midsommar",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "530915": {
+    "title_en": "1917",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "532639": {
+    "title_en": "Tumbbad",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "539681": {
+    "title_en": "DC League of Super-Pets",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "550988": {
+    "title_en": "Free Guy",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "568124": {
+    "title_en": "Encanto",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "578189": {
+    "title_en": "Shoplifters",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "582014": {
+    "title_en": "Triangle of Sadness",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "585083": {
+    "title_en": "Hotel Mumbai",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "614560": {
+    "title_en": "Palm Springs",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "614696": {
+    "title_en": "Minari",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "620683": {
+    "title_en": "Guillermo del Toro's Pinocchio",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "629542": {
+    "title_en": "The Banshees of Inisherin",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "630566": {
+    "title_en": "Drive My Car",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "637920": {
+    "title_en": "Aftersun",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "639720": {
+    "title_en": "A Leg",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "640146": {
+    "title_en": "Ant-Man and the Wasp: Quantumania",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "652837": {
+    "title_en": "Past Lives",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "654299": {
+    "title_en": "Infernal Affairs",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "662768": {
+    "title_en": "A Leg",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "664767": {
+    "title_en": "Decision to Leave",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "680901": {
+    "title_en": "Perfect Days",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "696374": {
+    "title_en": "The Lunchbox",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "718930": {
+    "title_en": "Bullet Train",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "762441": {
+    "title_en": "A Man Called Otto",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "787699": {
+    "title_en": "Wonka",
+    "confidence": "medium",
+    "coverage_reason": "tag_coverage",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "823754": {
+    "title_en": "A Sun",
+    "confidence": "medium",
+    "coverage_reason": "region_balance",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  },
+  "872585": {
+    "title_en": "Oppenheimer",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": [],
+    "replacement_needed": false,
+    "notes": ""
+  }
+}

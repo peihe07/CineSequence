@@ -39,6 +39,12 @@
 - Required every pair to carry `confidence`, `confounds`, `why_valid`, and `replacement_needed`.
 - Extended validator and unit-test coverage so pair data and review metadata stay in sync.
 
+### Pool Reviewability
+
+- Added `backend/app/data/movie_pool_reviews.json` so every curated pool entry now has a matching review record.
+- Bootstrapped lightweight coverage metadata using `phase1_anchor`, `region_balance`, and `tag_coverage` as the first controlled vocabulary for pool review.
+- Extended movie-pool validation and unit-test coverage so review metadata stays in parity with `movie_pool.json`.
+
 ### DNA Stability Follow-Up
 
 - Added consistency weighting in `backend/app/services/dna_builder.py` so contradicted tags are downweighted relative to stable tags.

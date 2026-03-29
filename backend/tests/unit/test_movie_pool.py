@@ -8,8 +8,14 @@ DATA_DIR = Path(__file__).resolve().parent.parent.parent / "app" / "data"
 with open(DATA_DIR / "movie_pool.json") as f:
     POOL = json.load(f)["movies"]
 
+with open(DATA_DIR / "movie_pool_reviews.json") as f:
+    POOL_REVIEWS = json.load(f)
+
 with open(DATA_DIR / "tag_taxonomy.json") as f:
     VALID_TAGS = set(json.load(f)["tags"].keys())
+
+VALID_REVIEW_CONFIDENCE = {"high", "medium", "low"}
+VALID_COVERAGE_REASONS = {"phase1_anchor", "region_balance", "tag_coverage"}
 
 LEGACY_TAGS = {
     "anime",
@@ -104,3 +110,19 @@ class TestMoviePoolIntegrity:
 
     def test_pool_size_minimum(self):
         assert len(POOL) >= 300, f"Pool has {len(POOL)} movies, expected >= 300"
+
+    def test_movie_pool_review_metadata_covers_all_movies(self):
+        pool_ids = {movie["tmdb_id"] for movie in POOL}
+        review_ids = {int(review_id) for review_id in POOL_REVIEWS}
+        assert review_ids == pool_ids
+
+    def test_movie_pool_review_metadata_schema(self):
+        for movie in POOL:
+            review = POOL_REVIEWS[str(movie["tmdb_id"])]
+            assert review["title_en"] == movie["title_en"]
+            assert review["confidence"] in VALID_REVIEW_CONFIDENCE
+            assert review["coverage_reason"] in VALID_COVERAGE_REASONS
+            assert isinstance(review["confounds"], list)
+            assert all(isinstance(item, str) for item in review["confounds"])
+            assert isinstance(review["replacement_needed"], bool)
+            assert isinstance(review["notes"], str)

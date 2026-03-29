@@ -56,7 +56,7 @@ Definition of done:
 |------|--------|--------------|-------|
 | `dna-system-design.md` | DONE | 2026-03-29 | Added an implementation-aligned design document covering sequencing, scoring, archetype assignment, AI reading, and retrieval flow. |
 | `movie-pool-changelog.md` | DONE | 2026-03-29 | Added a changelog covering pool expansion, taxonomy normalization, Phase 1 rebuild, metadata coverage, and DNA stability follow-up work. |
-| Manual review metadata process | DONE | 2026-03-29 | Added a maintenance workflow document covering pair review fields, movie-pool review expectations, controlled confound labels, and validation steps. |
+| Manual review metadata process | DONE | 2026-03-29 | Added a maintenance workflow document and moved movie-pool review into dedicated structured metadata with validator and unit-test coverage. |
 | Progress tracking file | DONE | 2026-03-29 | This file replaces week-based tracking for current execution work. |
 
 ## Current Snapshot
@@ -70,7 +70,7 @@ Definition of done:
 
 ### Immediate Next Step
 
-- Decide whether movie-pool review metadata should stay document-based or move into a dedicated `movie_pool_reviews.json` file.
+- Backfill higher-signal `coverage_reason`, `confounds`, and `notes` for the highest-impact movie-pool entries instead of leaving them on bootstrap defaults.
 
 ## Verification Log
 
@@ -90,6 +90,7 @@ Definition of done:
 | 2026-03-29 | Backend unit suite after DNA stability work | `npm run test:backend:unit` | PASS | 188 passed, 5 skipped, 159 deselected. |
 | 2026-03-29 | DNA system documentation | Added `docs/dna-system-design.md` aligned to current backend flow and updated progress tracking | PASS | Documentation only. No behavior change. |
 | 2026-03-29 | Manual review metadata process | Added `docs/manual-review-metadata-process.md` and updated progress tracking | PASS | Documentation only. No behavior change. |
+| 2026-03-29 | Movie pool review metadata coverage | `node scripts/validate_movie_pool.js` + `cd backend && ./.venv/bin/python -m pytest tests/unit/test_movie_pool.py` | PASS | Added `movie_pool_reviews.json` parity and schema validation for all 365 pool entries. |
 
 ## Decision Log
 
