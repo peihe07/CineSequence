@@ -61,6 +61,15 @@ class User(Base):
     active_session_id: Mapped[uuid.UUID | None] = mapped_column(
         UUID(as_uuid=True), ForeignKey("sequencing_sessions.id", use_alter=True), nullable=True
     )
+    free_retest_credits: Mapped[int] = mapped_column(
+        Integer, default=1, server_default="1", nullable=False
+    )
+    paid_sequencing_credits: Mapped[int] = mapped_column(
+        Integer, default=0, server_default="0", nullable=False
+    )
+    beta_entitlement_override: Mapped[bool] = mapped_column(
+        Boolean, default=False, server_default="false", nullable=False
+    )
 
     # Admin
     is_admin: Mapped[bool] = mapped_column(Boolean, default=False)
@@ -96,6 +105,9 @@ class User(Base):
     favorite_movies: Mapped[list["UserFavoriteMovie"]] = relationship(
         back_populates="user", lazy="selectin",
         order_by="UserFavoriteMovie.display_order",
+    )
+    sequencing_entitlements: Mapped[list["SequencingEntitlement"]] = relationship(
+        back_populates="user", lazy="selectin", order_by="SequencingEntitlement.created_at"
     )
 
     @property

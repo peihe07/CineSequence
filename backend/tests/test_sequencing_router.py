@@ -7,6 +7,7 @@ import pytest_asyncio
 from sqlalchemy import select
 
 from app.models.pick import Pick
+from app.models.sequencing_entitlement import EntitlementKind, EntitlementSource, SequencingEntitlement
 from app.models.sequencing_session import SequencingSession
 from app.models.user import SequencingStatus, User
 from app.services.auth_utils import create_access_token
@@ -64,6 +65,15 @@ class TestProgress:
         response = await client.get("/sequencing/progress")
         assert response.status_code == 401
 
+    @pytest.mark.asyncio
+    async def test_progress_exposes_entitlement_snapshot(self, client, auth_user):
+        _, headers = auth_user
+        response = await client.get("/sequencing/progress", headers=headers)
+        assert response.status_code == 200
+        data = response.json()
+        assert data["free_retest_credits"] == 1
+        assert data["paid_sequencing_credits"] == 0
+
 
 class TestSeedMovie:
     """POST /sequencing/seed-movie"""
@@ -120,6 +130,111 @@ class TestSearch:
         _, headers = auth_user
         response = await client.get("/sequencing/search?q=", headers=headers)
         assert response.status_code == 422  # Validation error: min_length=1
+
+
+class TestEntitlementGates:
+    @pytest.mark.asyncio
+    async def test_extend_requires_paid_credit(self, client, auth_user, db_session):
+        user, headers = auth_user
+        await client.get("/sequencing/progress", headers=headers)
+
+        result = await db_session.execute(
+            select(SequencingSession).where(SequencingSession.user_id == user.id)
+        )
+        session = result.scalar_one()
+        session.status = "completed"
+        user.paid_sequencing_credits = 0
+        await db_session.commit()
+
+        response = await client.post("/sequencing/extend", headers=headers)
+        assert response.status_code == 403
+        data = response.json()["detail"]
+        assert data["action"] == "extend"
+        assert data["credits_required"] == 1
+        assert data["paid_credits_remaining"] == 0
+
+    @pytest.mark.asyncio
+    async def test_extend_consumes_paid_credit(self, client, auth_user, db_session):
+        user, headers = auth_user
+        await client.get("/sequencing/progress", headers=headers)
+
+        result = await db_session.execute(
+            select(SequencingSession).where(SequencingSession.user_id == user.id)
+        )
+        session = result.scalar_one()
+        session.status = "completed"
+        user.paid_sequencing_credits = 1
+        db_session.add(
+            SequencingEntitlement(
+                user_id=user.id,
+                kind=EntitlementKind.paid_credit,
+                quantity=1,
+                used_quantity=0,
+                source=EntitlementSource.admin,
+                notes="test grant",
+            )
+        )
+        await db_session.commit()
+
+        response = await client.post("/sequencing/extend", headers=headers)
+        assert response.status_code == 200
+        data = response.json()
+        assert data["credits_remaining"] == 0
+
+        await db_session.refresh(user)
+        assert user.paid_sequencing_credits == 0
+
+    @pytest.mark.asyncio
+    async def test_retest_uses_free_credit_before_paid_credit(self, client, auth_user, db_session):
+        user, headers = auth_user
+        user.free_retest_credits = 1
+        user.paid_sequencing_credits = 2
+        db_session.add(
+            SequencingEntitlement(
+                user_id=user.id,
+                kind=EntitlementKind.free_retest,
+                quantity=1,
+                used_quantity=0,
+                source=EntitlementSource.launch_grant,
+                notes="launch grant",
+            )
+        )
+        db_session.add(
+            SequencingEntitlement(
+                user_id=user.id,
+                kind=EntitlementKind.paid_credit,
+                quantity=2,
+                used_quantity=0,
+                source=EntitlementSource.admin,
+                notes="test grant",
+            )
+        )
+        await db_session.commit()
+
+        response = await client.post("/sequencing/retest", headers=headers)
+        assert response.status_code == 200
+        data = response.json()
+        assert data["free_retests_remaining"] == 0
+        assert data["credits_remaining"] == 2
+
+        await db_session.refresh(user)
+        assert user.free_retest_credits == 0
+        assert user.paid_sequencing_credits == 2
+
+    @pytest.mark.asyncio
+    async def test_retest_requires_credit_after_free_one_is_used(self, client, auth_user, db_session):
+        user, headers = auth_user
+        user.free_retest_credits = 0
+        user.paid_sequencing_credits = 0
+        await db_session.commit()
+
+        response = await client.post("/sequencing/retest", headers=headers)
+        assert response.status_code == 403
+        data = response.json()["detail"]
+        assert data["action"] == "retest"
+        assert data["credits_required"] == 1
+        assert data["free_retests_remaining"] == 0
+        assert data["paid_credits_remaining"] == 0
 
 
 class TestPair:

@@ -13,6 +13,7 @@ from app.models.group_message import GroupMessage  # noqa: E402, F401
 from app.models.match import Match  # noqa: E402, F401
 from app.models.notification import Notification  # noqa: E402, F401
 from app.models.pick import Pick  # noqa: E402, F401
+from app.models.sequencing_entitlement import SequencingEntitlement  # noqa: E402, F401
 from app.models.sequencing_session import SequencingSession  # noqa: E402, F401
 from app.models.theater_list import (  # noqa: E402, F401
     TheaterList,

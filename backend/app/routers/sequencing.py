@@ -30,6 +30,12 @@ from app.services.pair_engine import (
     get_phase1_pairs,
     get_reroll_pair_for_round,
 )
+from app.services.sequencing_entitlements import (
+    can_start_extension as can_start_extension_by_credit,
+    can_start_retest as can_start_retest_by_credit,
+    consume_extension_credit,
+    consume_retest_credit,
+)
 from app.services.session_service import (
     can_extend,
     complete_base,
@@ -125,7 +131,7 @@ async def _movie_to_info(movie) -> MovieInfo:
     )
 
 
-def _build_progress(session, pick_count: int) -> ProgressResponse:
+def _build_progress(session, pick_count: int, user: User) -> ProgressResponse:
     """Build ProgressResponse from session state."""
     next_round = pick_count + 1
     completed = next_round > session.total_rounds
@@ -142,6 +148,8 @@ def _build_progress(session, pick_count: int) -> ProgressResponse:
         max_extension_batches=session.max_extension_batches,
         session_version=session.version,
         is_extending=is_extending,
+        free_retest_credits=user.free_retest_credits,
+        paid_sequencing_credits=user.paid_sequencing_credits,
     )
 
 
@@ -493,7 +501,7 @@ async def submit_pick(
     await db.commit()
     if round_number >= session.total_rounds:
         await _enqueue_dna_build(user.id)
-    return _build_progress(session, len(picks) + 1)
+    return _build_progress(session, len(picks) + 1, user)
 
 
 @router.post("/skip", response_model=ProgressResponse)
@@ -563,7 +571,7 @@ async def skip_pair(
     await db.commit()
     if round_number >= session.total_rounds:
         await _enqueue_dna_build(user.id)
-    return _build_progress(session, len(picks) + 1)
+    return _build_progress(session, len(picks) + 1, user)
 
 
 @router.get("/progress", response_model=ProgressResponse)
@@ -577,7 +585,7 @@ async def get_progress(
         select(func.count()).select_from(Pick).where(Pick.session_id == session.id)
     )
     pick_count = result.scalar() or 0
-    return _build_progress(session, pick_count)
+    return _build_progress(session, pick_count, user)
 
 
 @router.post("/extend", response_model=ExtendResponse)
@@ -587,11 +595,24 @@ async def extend_sequencing(
 ):
     """Unlock more rounds after base sequencing is completed."""
     session = await get_or_create_session(db, user.id)
-
     try:
         session = await start_extension(db, session)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
+
+    gate = await can_start_extension_by_credit(db, user)
+    if not gate.allowed:
+        raise HTTPException(
+            status_code=403,
+            detail={
+                "action": "extend",
+                "reason": gate.reason,
+                "credits_required": gate.credits_required,
+                "free_retests_remaining": gate.free_retests_remaining,
+                "paid_credits_remaining": gate.paid_credits_remaining,
+            },
+        )
+    consumption = await consume_extension_credit(db, user)
 
     _clear_pending_pair(session)
     # Flush session changes first to avoid circular FK dependency with User
@@ -605,6 +626,7 @@ async def extend_sequencing(
         total_rounds=session.total_rounds,
         extension_batches=session.extension_batches,
         max_extension_batches=session.max_extension_batches,
+        credits_remaining=consumption.credits_remaining,
     )
 
 
@@ -614,6 +636,19 @@ async def retest_sequencing(
     db: Annotated[AsyncSession, Depends(get_db)],
 ):
     """Start a fresh sequencing session, preserving old DNA."""
+    gate = await can_start_retest_by_credit(db, user)
+    if not gate.allowed:
+        raise HTTPException(
+            status_code=403,
+            detail={
+                "action": "retest",
+                "reason": gate.reason,
+                "credits_required": gate.credits_required,
+                "free_retests_remaining": gate.free_retests_remaining,
+                "paid_credits_remaining": gate.paid_credits_remaining,
+            },
+        )
+    consumption = await consume_retest_credit(db, user)
     new_session = await start_retest(db, user.id)
     # Flush session changes first to avoid circular FK dependency with User
     await db.flush()
@@ -623,4 +658,8 @@ async def retest_sequencing(
     user.seed_movie_tmdb_id = None
     await db.commit()
 
-    return RetestResponse(version=new_session.version)
+    return RetestResponse(
+        version=new_session.version,
+        credits_remaining=consumption.credits_remaining,
+        free_retests_remaining=consumption.free_retests_remaining,
+    )

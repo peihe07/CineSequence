@@ -54,6 +54,8 @@ class ProgressResponse(BaseModel):
     max_extension_batches: int = 2
     session_version: int = 1
     is_extending: bool = False
+    free_retest_credits: int = 0
+    paid_sequencing_credits: int = 0
 
 
 class SeedMovieRequest(BaseModel):
@@ -74,8 +76,11 @@ class ExtendResponse(BaseModel):
     total_rounds: int
     extension_batches: int
     max_extension_batches: int
+    credits_remaining: int = 0
 
 
 class RetestResponse(BaseModel):
     version: int
     message: str = "New sequencing session started"
+    credits_remaining: int = 0
+    free_retests_remaining: int = 0
