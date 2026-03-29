@@ -3,6 +3,7 @@
 import { Suspense, useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { sanitizeNextPath } from '@/lib/authProtection'
+import AdminQuickLoginForm from '@/components/auth/AdminQuickLoginForm'
 import LoginForm from '@/components/auth/LoginForm'
 import { useAuthStore } from '@/stores/authStore'
 
@@ -10,6 +11,7 @@ function LoginInner() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const nextPath = sanitizeNextPath(searchParams.get('next')) ?? '/sequencing'
+  const adminMode = searchParams.get('admin') === '1'
   const { isAuthenticated, isLoading, fetchProfile } = useAuthStore()
   const [hasCheckedAuth, setHasCheckedAuth] = useState(false)
 
@@ -50,7 +52,7 @@ function LoginInner() {
     return null
   }
 
-  return <LoginForm nextPath={nextPath} />
+  return adminMode ? <AdminQuickLoginForm /> : <LoginForm nextPath={nextPath} />
 }
 
 export default function LoginPage() {

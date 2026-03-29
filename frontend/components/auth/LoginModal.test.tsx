@@ -1,4 +1,4 @@
-import { cleanup, render, screen } from '@testing-library/react'
+import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 const { replaceMock, onCloseMock, authState } = vi.hoisted(() => ({
@@ -40,6 +40,7 @@ vi.mock('next/link', () => ({
 
 vi.mock('@/lib/i18n', () => ({
   useI18n: () => ({
+    locale: 'en',
     t: (key: string) => {
       const dict: Record<string, string> = {
         'auth.modalLabel': 'Login modal',
@@ -81,8 +82,8 @@ vi.mock('./LoginForm', () => ({
   default: () => <div>Login form</div>,
 }))
 
-vi.mock('./RegisterForm', () => ({
-  default: () => <div>Register form</div>,
+vi.mock('./WaitlistForm', () => ({
+  default: () => <div>Waitlist form</div>,
 }))
 
 vi.mock('./LoginModal.module.css', () => ({
@@ -118,5 +119,13 @@ describe('LoginModal', () => {
 
     expect(onCloseMock).toHaveBeenCalledTimes(1)
     expect(replaceMock).toHaveBeenCalledWith('/dna')
+  })
+
+  it('switches the popup signup tab to waitlist content', () => {
+    render(<LoginModal open={true} onClose={onCloseMock} />)
+
+    fireEvent.click(screen.getByRole('button', { name: 'Waitlist' }))
+
+    expect(screen.getByText('Waitlist form')).toBeTruthy()
   })
 })

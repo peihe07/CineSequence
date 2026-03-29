@@ -42,6 +42,7 @@ class Settings(BaseSettings):
     api_url: str = "http://127.0.0.1:8000"
     environment: str = "development"
     admin_emails: str = ""
+    admin_quick_login_passcode: str = ""
     auth_cookie_name: str = "cine_sequence_session"
     auth_cookie_domain: str | None = None
     auth_cookie_samesite: Literal["lax", "strict", "none"] = "lax"

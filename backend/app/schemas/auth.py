@@ -68,6 +68,11 @@ class WaitlistResponse(BaseModel):
     message: str
 
 
+class AdminQuickLoginRequest(BaseModel):
+    email: EmailStr
+    passcode: str = Field(..., min_length=1, max_length=200)
+
+
 class VerifyRequest(BaseModel):
     token: str
 

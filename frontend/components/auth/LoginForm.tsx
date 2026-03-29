@@ -30,12 +30,16 @@ export default function LoginForm({
 }: LoginFormProps) {
   const router = useRouter()
   const { login, fetchProfile, isLoading, error, clearError } = useAuthStore()
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
   const [email, setEmail] = useState('')
   const [sent, setSent] = useState(false)
   const [emailError, setEmailError] = useState('')
   const [showRegisterPrompt, setShowRegisterPrompt] = useState(false)
   const [devLoading, setDevLoading] = useState(false)
+  const waitlistLabel = locale === 'zh' ? '加入候補名單' : 'Join waitlist'
+  const waitlistHint = locale === 'zh'
+    ? '新帳號目前改為 waitlist 登記。留下 email，等重新開放後我們會再通知你。'
+    : 'New accounts are currently routed to the waitlist. Leave your email and we will notify you when access reopens.'
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -130,10 +134,10 @@ export default function LoginForm({
       {error && <p className={styles.error}>{error}</p>}
       {showRegisterPrompt && (
         <div className={styles.registerPrompt}>
-          <p className={styles.registerPromptText}>{t('auth.registerHint')}</p>
+          <p className={styles.registerPromptText}>{waitlistHint}</p>
           {onRegisterClick ? (
             <Button type="button" variant="secondary" onClick={onRegisterClick}>
-              {t('auth.signUp')}
+              {waitlistLabel}
             </Button>
           ) : (
             <Link
@@ -141,7 +145,7 @@ export default function LoginForm({
               prefetch={false}
               className={styles.registerPromptLink}
             >
-              {t('auth.signUp')}
+              {waitlistLabel}
             </Link>
           )}
         </div>
@@ -171,7 +175,7 @@ export default function LoginForm({
         {t('auth.noAccount')}{' '}
         {onRegisterClick ? (
           <button type="button" className={styles.textButton} onClick={onRegisterClick}>
-            {t('auth.signUp')}
+            {waitlistLabel}
           </button>
         ) : (
           <Link
@@ -179,7 +183,7 @@ export default function LoginForm({
             prefetch={false}
             className={styles.link}
           >
-            {t('auth.signUp')}
+            {waitlistLabel}
           </Link>
         )}
       </p>

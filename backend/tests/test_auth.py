@@ -418,6 +418,65 @@ class TestSessionEndpoints:
 
 
 @pytest.mark.asyncio
+class TestAdminQuickLoginEndpoint:
+    async def test_admin_quick_login_sets_cookie_for_allowlisted_email(
+        self, client: AsyncClient, db_session: AsyncSession
+    ):
+        original_emails = settings.admin_emails
+        original_passcode = settings.admin_quick_login_passcode
+        settings.admin_emails = "admin@test.com"
+        settings.admin_quick_login_passcode = "super-secret"
+        try:
+            response = await client.post("/auth/admin/session", json={
+                "email": "admin@test.com",
+                "passcode": "super-secret",
+            })
+            assert response.status_code == 200
+            assert "access_token" in response.json()
+            assert response.cookies.get("cine_sequence_session") == response.json()["access_token"]
+
+            result = await db_session.execute(
+                select(User).where(User.email == "admin@test.com")
+            )
+            assert result.scalar_one().is_admin is True
+        finally:
+            settings.admin_emails = original_emails
+            settings.admin_quick_login_passcode = original_passcode
+
+    async def test_admin_quick_login_rejects_invalid_passcode(self, client: AsyncClient):
+        original_emails = settings.admin_emails
+        original_passcode = settings.admin_quick_login_passcode
+        settings.admin_emails = "admin@test.com"
+        settings.admin_quick_login_passcode = "super-secret"
+        try:
+            response = await client.post("/auth/admin/session", json={
+                "email": "admin@test.com",
+                "passcode": "wrong-passcode",
+            })
+            assert response.status_code == 403
+            assert response.json() == {"detail": "Invalid admin credentials."}
+        finally:
+            settings.admin_emails = original_emails
+            settings.admin_quick_login_passcode = original_passcode
+
+    async def test_admin_quick_login_rejects_non_admin_email(self, client: AsyncClient):
+        original_emails = settings.admin_emails
+        original_passcode = settings.admin_quick_login_passcode
+        settings.admin_emails = "admin@test.com"
+        settings.admin_quick_login_passcode = "super-secret"
+        try:
+            response = await client.post("/auth/admin/session", json={
+                "email": "user@test.com",
+                "passcode": "super-secret",
+            })
+            assert response.status_code == 403
+            assert response.json() == {"detail": "Invalid admin credentials."}
+        finally:
+            settings.admin_emails = original_emails
+            settings.admin_quick_login_passcode = original_passcode
+
+
+@pytest.mark.asyncio
 class TestProtectedEndpoint:
     async def test_no_token_returns_403(self, client: AsyncClient):
         response = await client.get("/profile")
