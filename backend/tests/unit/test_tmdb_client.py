@@ -1,6 +1,12 @@
 """Tests for TMDB client: parsing and utility functions."""
 
-from app.services.tmdb_client import MovieInfo, _parse_movie, _poster_url
+from app.services.tmdb_client import (
+    MovieInfo,
+    _normalize_title,
+    _parse_movie,
+    _poster_url,
+    _score_search_match,
+)
 
 
 class TestPosterUrl:
@@ -103,3 +109,51 @@ class TestMovieInfo:
         )
         assert movie.tmdb_id == 100
         assert movie.genres == ["Action"]
+
+
+class TestSearchNormalization:
+    """Test local title normalization and ranking helpers."""
+
+    def test_normalize_title_strips_punctuation(self):
+        assert _normalize_title("橫道世之介!!!") == "橫道世之介"
+        assert _normalize_title("Before Sunrise (1995)") == "beforesunrise1995"
+
+    def test_prefix_match_scores_above_non_match(self):
+        target = MovieInfo(
+            tmdb_id=1,
+            title_en="A Story of Yonosuke",
+            title_zh="橫道世之介",
+            poster_url=None,
+            year=2013,
+            genres=[],
+        )
+        other = MovieInfo(
+            tmdb_id=2,
+            title_en="Monster",
+            title_zh="怪物",
+            poster_url=None,
+            year=2023,
+            genres=[],
+        )
+
+        assert _score_search_match("橫道", target) > _score_search_match("橫道", other)
+
+    def test_exact_match_scores_above_prefix_match(self):
+        exact = MovieInfo(
+            tmdb_id=1,
+            title_en="Yonosuke Yokomichi",
+            title_zh="橫道世之介",
+            poster_url=None,
+            year=2013,
+            genres=[],
+        )
+        prefix_only = MovieInfo(
+            tmdb_id=2,
+            title_en="Yokomichi Days",
+            title_zh="橫道青春",
+            poster_url=None,
+            year=2014,
+            genres=[],
+        )
+
+        assert _score_search_match("橫道世之介", exact) > _score_search_match("橫道", prefix_only)

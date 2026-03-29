@@ -2,6 +2,7 @@
 
 import json
 import logging
+import re
 from dataclasses import dataclass, field
 
 import httpx
@@ -14,6 +15,7 @@ logger = logging.getLogger(__name__)
 TMDB_BASE_URL = "https://api.themoviedb.org/3"
 TMDB_IMAGE_BASE = "https://image.tmdb.org/t/p"
 CACHE_PREFIX = "tmdb:movie:"
+SEARCH_LANGUAGES = ("zh-TW", "ja-JP", "en-US")
 
 
 @dataclass
@@ -32,6 +34,13 @@ def _poster_url(path: str | None, size: str = "w500") -> str | None:
     if not path:
         return None
     return f"{TMDB_IMAGE_BASE}/{size}{path}"
+
+
+def _normalize_title(title: str | None) -> str:
+    if not title:
+        return ""
+    lowered = title.casefold()
+    return re.sub(r"[^a-z0-9\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff]+", "", lowered)
 
 
 def _parse_movie(data: dict) -> MovieInfo:
@@ -107,31 +116,52 @@ async def get_movies(tmdb_ids: list[int]) -> dict[int, MovieInfo]:
     return results
 
 
-async def search_movies(query: str, limit: int = 8) -> list[MovieInfo]:
-    """Search TMDB for movies by title. Used for seed movie autocomplete."""
-    try:
-        async with httpx.AsyncClient() as client:
-            response = await client.get(
-                f"{TMDB_BASE_URL}/search/movie",
-                params={
-                    "api_key": settings.tmdb_api_key,
-                    "language": "zh-TW",
-                    "query": query,
-                    "page": 1,
-                },
-                timeout=10.0,
-            )
-            response.raise_for_status()
-    except httpx.HTTPError:
-        logger.exception("TMDB search error for query '%s'", query)
-        return []
+def _score_search_match(query: str, movie: MovieInfo) -> tuple[int, int, int, int]:
+    normalized_query = _normalize_title(query)
+    normalized_zh = _normalize_title(movie.title_zh)
+    normalized_en = _normalize_title(movie.title_en)
 
-    results = response.json().get("results", [])[:limit]
-    movies = []
-    for item in results:
+    if not normalized_query:
+        return (0, 0, 0, 0)
+
+    exact_match = int(
+        normalized_query == normalized_zh or normalized_query == normalized_en
+    )
+    prefix_match = int(
+        normalized_zh.startswith(normalized_query)
+        or normalized_en.startswith(normalized_query)
+    )
+    contains_match = int(
+        normalized_query in normalized_zh or normalized_query in normalized_en
+    )
+    localized_title = int(bool(movie.title_zh))
+    return (exact_match, prefix_match, contains_match, localized_title)
+
+
+async def _search_movies_for_language(
+    client: httpx.AsyncClient,
+    query: str,
+    *,
+    language: str,
+    page: int = 1,
+) -> list[MovieInfo]:
+    response = await client.get(
+        f"{TMDB_BASE_URL}/search/movie",
+        params={
+            "api_key": settings.tmdb_api_key,
+            "language": language,
+            "query": query,
+            "page": page,
+        },
+        timeout=10.0,
+    )
+    response.raise_for_status()
+
+    results = []
+    for item in response.json().get("results", []):
         release_date = item.get("release_date", "")
         year = int(release_date[:4]) if release_date and len(release_date) >= 4 else None
-        movies.append(MovieInfo(
+        results.append(MovieInfo(
             tmdb_id=item["id"],
             title_en=item.get("original_title") or item.get("title", ""),
             title_zh=item.get("title"),
@@ -141,4 +171,36 @@ async def search_movies(query: str, limit: int = 8) -> list[MovieInfo]:
             runtime_minutes=None,
             overview=item.get("overview"),
         ))
-    return movies
+    return results
+
+
+async def search_movies(query: str, limit: int = 8) -> list[MovieInfo]:
+    """Search TMDB for movies by title. Used for seed movie autocomplete."""
+    normalized_query = _normalize_title(query)
+    if not normalized_query:
+        return []
+
+    try:
+        async with httpx.AsyncClient() as client:
+            merged: dict[int, MovieInfo] = {}
+            for language in SEARCH_LANGUAGES:
+                for movie in await _search_movies_for_language(client, query, language=language):
+                    existing = merged.get(movie.tmdb_id)
+                    if existing is None:
+                        merged[movie.tmdb_id] = movie
+                        continue
+                    if not existing.title_zh and movie.title_zh:
+                        merged[movie.tmdb_id] = movie
+    except httpx.HTTPError:
+        logger.exception("TMDB search error for query '%s'", query)
+        return []
+
+    movies = list(merged.values())
+    movies.sort(
+        key=lambda movie: (
+            _score_search_match(query, movie),
+            movie.year or 0,
+        ),
+        reverse=True,
+    )
+    return movies[:limit]
