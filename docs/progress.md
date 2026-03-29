@@ -63,20 +63,20 @@ Definition of done:
 
 ### Completed Before This Tracking File
 
-- `movie_pool.json` already received a non-mainstream expansion per `docs/cinephile-upgrade-plan.md`.
+- `movie_pool.json` already received a non-mainstream expansion per `docs/archive/cinephile-upgrade-plan.md`.
 - `phase1_pairs.json` already has the first 6 upgraded sample pairs drafted.
 - Validator scripts already exist for movie pool and phase 1 pair integrity.
 - Pair engine already supports deterministic seeded selection with required-axis coverage.
 
 ### Immediate Next Step
 
-- Backfill higher-signal `coverage_reason`, `confounds`, and `notes` for the highest-impact movie-pool entries instead of leaving them on bootstrap defaults.
+- No active cinephile upgrade execution remains in this file. Use `roadmap.md` for future prioritization and keep this file as historical execution + verification log.
 
 ## Verification Log
 
 | Date | Scope | Verification | Result | Notes |
 |------|-------|--------------|--------|-------|
-| 2026-03-29 | Progress tracking setup | Created execution-facing progress document aligned with `cinephile-upgrade-plan.md` and `roadmap.md` | PASS | No code behavior change. Documentation only. |
+| 2026-03-29 | Progress tracking setup | Created execution-facing progress document aligned with `archive/cinephile-upgrade-plan.md` and `roadmap.md` | PASS | No code behavior change. Documentation only. |
 | 2026-03-29 | Movie pool tag mapping normalization | `node scripts/validate_movie_pool.js` | PASS | Validator now passes with 365 movies and no taxonomy-external tags. |
 | 2026-03-29 | Movie pool unit coverage | `cd backend && ./.venv/bin/python -m pytest tests/unit/test_movie_pool.py` | PASS | 7 tests passed, including new legacy-tag regression coverage. |
 | 2026-03-29 | Phase 1 pair data integrity | `node scripts/validate_phase1_pairs.js` | PASS | Validator passes with 60 pairs and no duplicate TMDB IDs across pairs. |

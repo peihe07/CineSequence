@@ -66,7 +66,7 @@ LIMIT 50;
 **Decision**: Phase 1 rule-based, Phase 2-3 Gemini API with curated candidate pool, DNA result Gemini API.
 
 **Rationale**:
-- Phase 1 needs to be fast and deterministic — 40 pre-curated pairs, 5 randomly selected per session with guaranteed quadrant axis coverage (session_seed for deterministic randomness)
+- Phase 1 needs to be fast and deterministic — 60 pre-curated pairs, 7 randomly selected per session with guaranteed core-axis coverage (session_seed for deterministic randomness)
 - Phase 2-3 benefit from AI flexibility to probe nuanced taste dimensions — guided by a 266-movie curated candidate pool (30 tag dimensions, 21 regions) to improve diversity
 - Hard duplicate prevention: backend validates returned TMDB IDs against seen history, retries up to 3 times on collision
 - Pick submission now tracks both movie IDs (movie_a + movie_b) so the exclusion list is complete
@@ -172,10 +172,10 @@ server restarts and lacks retry/scheduling capabilities.
 
 ## ADR-013: Extension and seasonal retest
 
-**Decision**: Support extending sequencing sessions (+5 rounds) and seasonal retest (fresh session).
+**Decision**: Support extending sequencing sessions (+3 rounds per batch) and seasonal retest (fresh session).
 
 **Rationale**:
-- Extension allows users who want finer profiling to continue beyond 20 rounds
+- Extension allows users who want finer profiling to continue beyond the 30-round base session
 - Seasonal retest lets users refresh their DNA profile as taste evolves
 - SequencingSession model tracks session state (round count, extension status)
 - DNA profiles are versioned — retest creates a new version, old versions remain accessible via `/dna/history`
@@ -199,17 +199,17 @@ Note: `ice_breaker.txt` prompt exists but ice breakers are currently rule-based 
 
 | Scenario | Pair generation | Personality | Total calls |
 |----------|----------------|-------------|-------------|
-| Standard 20 rounds | 15 (rounds 6-20) | 1 | **16** |
-| Extension +5 rounds | 20 (rounds 6-25) | 1 | **21** |
-| Seasonal retest | +15 to +20 | +1 | +16 to +21 |
+| Standard 30 rounds | 23 (rounds 8-30) | 1 | **24** |
+| Extension +3 rounds | 26 (rounds 8-33) | 1 | **27** |
+| Seasonal retest | +23 to +26 | +1 | +24 to +27 |
 
 ### Token estimate per call
 
 **ai_pair_engine (per call, average across rounds):**
 - System prompt (pair_picker.txt): ~800 tokens
-- User context (picks, quadrant, seen_ids): ~100 tokens (round 6) to ~500 tokens (round 20), avg ~300
+- User context (picks, quadrant, seen_ids): ~150 tokens (round 8) to ~700 tokens (round 30), avg ~425
 - Candidate pool (~40 movies with tags): ~800 tokens
-- **Input avg: ~1,900 tokens/call**
+- **Input avg: ~2,025 tokens/call**
 - **Output avg: ~150 tokens/call** (max 500, actual JSON response ~150)
 - Note: up to 3 retries on duplicate/invalid responses (worst case 3x input cost per round)
 
@@ -223,30 +223,30 @@ Note: `ice_breaker.txt` prompt exists but ice breakers are currently rule-based 
 
 | Scenario | Input tokens | Output tokens | Total tokens |
 |----------|-------------|---------------|--------------|
-| Standard 20 rounds | ~30,000 | ~2,750 | **~32,750** |
-| Extension 25 rounds | ~39,500 | ~3,550 | **~43,050** |
-| Retest (additional) | +30,000 to +39,500 | +2,750 to +3,550 | +32,750 to +43,050 |
+| Standard 30 rounds | ~47,985 | ~3,950 | **~51,935** |
+| Extension 33 rounds | ~54,060 | ~4,400 | **~58,460** |
+| Retest (additional) | +47,985 to +54,060 | +3,950 to +4,400 | +51,935 to +58,460 |
 
 Note: candidate pool context (~800 tokens/call) increases input substantially. Retry on duplicates may add up to 2x per affected round, but typically <5% of rounds trigger a retry.
 
 ### Cost per user (Gemini 2.5 Flash pricing, as of 2026-03)
 
-| | Rate | Standard 20 | Extension 25 |
+| | Rate | Standard 30 | Extension 33 |
 |--|------|-------------|--------------|
-| Input | $0.15 / 1M tokens | $0.0045 | $0.0059 |
-| Output | $0.60 / 1M tokens | $0.0017 | $0.0021 |
-| **Total** | | **~$0.006** | **~$0.008** |
+| Input | $0.15 / 1M tokens | $0.0072 | $0.0081 |
+| Output | $0.60 / 1M tokens | $0.0024 | $0.0026 |
+| **Total** | | **~$0.010** | **~$0.011** |
 
 ### Scale projections
 
 | Users | Standard cost | With 20% extension | With 10% retest |
 |-------|-------------|---------------------|-----------------|
-| 1,000 | $6.0 | $6.8 | $7.4 |
-| 10,000 | $60 | $68 | $74 |
-| 100,000 | $600 | $680 | $740 |
+| 1,000 | $10 | $10.2 | $11.0 |
+| 10,000 | $100 | $102 | $110 |
+| 100,000 | $1,000 | $1,020 | $1,100 |
 
 ### Optimization notes
-- Phase 1 (rounds 1-5) is fully rule-based — zero API cost
+- Phase 1 (rounds 1-7) is fully rule-based — zero API cost
 - User context grows linearly per round; capping `picks[-10:]` keeps input bounded
 - `response_mime_type: "application/json"` reduces wasted output tokens
 - Curated candidate pool (~40 movies/call) adds ~800 input tokens but significantly improves diversity and reduces retry rate

@@ -21,11 +21,11 @@
 
 | Item | Why now | Scope | Status |
 |------|---------|-------|--------|
-| Movie pool tag mapping 修正 | 現有新片 tag 有斷層，部分片實際上不參與計分 | `backend/app/data/movie_pool.json` + 驗證腳本 | TODO |
-| Phase 1 核心 pair 重做 | 核心三軸有明顯 confound，會直接污染 quadrant | `phase1_pairs.json` 核心維度 | TODO |
-| Phase 1 pair 擴充到 60-80 組 | 目前題組太少，跨用戶重複度太高 | `phase1_pairs.json` | TODO |
-| Western vs Eastern 降權或移除 | 目前太容易變成文化距離，不像品味訊號 | `phase1_pairs.json` + scoring 權重 | TODO |
-| Pair review metadata | 讓後續題組調整有明確審核欄位 | docs 或 pair metadata 欄位 | TODO |
+| Movie pool tag mapping 修正 | 現有新片 tag 有斷層，部分片實際上不參與計分 | `backend/app/data/movie_pool.json` + 驗證腳本 | DONE |
+| Phase 1 核心 pair 重做 | 核心三軸有明顯 confound，會直接污染 quadrant | `phase1_pairs.json` 核心維度 | DONE |
+| Phase 1 pair 擴充到 60-80 組 | 目前題組太少，跨用戶重複度太高 | `phase1_pairs.json` | DONE |
+| Western vs Eastern 降權或移除 | 目前太容易變成文化距離，不像品味訊號 | `phase1_pairs.json` + scoring 權重 | DONE |
+| Pair review metadata | 讓後續題組調整有明確審核欄位 | docs 或 pair metadata 欄位 | DONE |
 
 完成定義：
 
@@ -39,9 +39,9 @@
 
 | Item | Why now | Scope | Status |
 |------|---------|-------|--------|
-| DNA consistency weighting | retest instability 已是明確問題 | `backend/app/services/dna_builder.py` | TODO |
-| Phase 2-3 candidate randomness | 新使用者 candidate pool 過度一致 | `_select_candidates` | TODO |
-| Archetype 方案 A 微調 | 現有 12 型有重疊，但還不值得大改體系 | `archetypes.json` + builder tests | TODO |
+| DNA consistency weighting | retest instability 已是明確問題 | `backend/app/services/dna_builder.py` | DONE |
+| Phase 2-3 candidate randomness | 新使用者 candidate pool 過度一致 | `_select_candidates` | DONE |
+| Archetype 方案 A 微調 | 現有 12 型有重疊，但還不值得大改體系 | `archetypes.json` + builder tests | DONE |
 
 不納入這階段的：
 
@@ -92,14 +92,13 @@
 ### 變現待辦
 
 - Payment integration
+- Sequencing entitlement rollout
 - Sponsor unlock 拆分策略
 
 ### 架構性待辦
 
 - Archetype 擴充到 16 型
 - Quadrant 從 3 軸升到 5 軸
-- DNA system design 文件完整化
-- Movie pool changelog 文件整理
 
 ## 暫不執行
 
@@ -108,7 +107,7 @@
 1. Archetype 方案 B（16 型）
 2. Archetype 方案 C（5 軸）
 3. Festival 系列功能
-4. Payment integration
+4. Payment integration / sponsor unlock
 
 理由：
 

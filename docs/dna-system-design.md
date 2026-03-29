@@ -54,9 +54,9 @@ Sequencing is session-based, not user-global.
 - A session tracks `base_rounds`, `total_rounds`, `version`, extension state, and pending pair payload.
 - Phase boundaries scale from `base_rounds` through `_get_phase(...)` in `sequencing.py`.
 - Default behavior is effectively:
-  - Phase 1: rounds 1-5 for a 20-round session
-  - Phase 2: rounds 6-12
-  - Phase 3: rounds 13+
+  - Phase 1: rounds 1-7 for a 30-round session
+  - Phase 2: rounds 8-18
+  - Phase 3: rounds 19+
 
 ### Phase 1: Rule-Based Core Profiling
 

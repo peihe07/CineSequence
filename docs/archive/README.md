@@ -10,6 +10,9 @@
 目前應優先查看的文件仍是：
 
 - `docs/roadmap.md`
-- `docs/cinephile-upgrade-plan.md`
+- `docs/progress.md`
+- `docs/dna-system-design.md`
+- `docs/movie-pool-changelog.md`
+- `docs/manual-review-metadata-process.md`
 - `docs/architecture-decisions.md`
 - `docs/theaters-issues.md`

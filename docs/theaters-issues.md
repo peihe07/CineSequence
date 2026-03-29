@@ -1,9 +1,9 @@
 # Theaters (放映廳) Issues & Improvements
 
-## Status Audit — 2026-03-27
+## Status Audit — 2026-03-29
 
 - Fixed: `POST /groups/{group_id}/lists` 已接受 `items` 並建立初始片單項目，見 `groups.py:473-519`
-- Partial: list item API 已補上新增/刪除，但仍缺 reorder，見 `groups.py:522-588`
+- Fixed: list item API 已包含新增/刪除/reorder，見 `groups.py`
 - Partial: frontend 已能快速建立片單並追加純文字 title 項目；list item 現在已支援 `title_zh/poster_url/genres/runtime_minutes` metadata 與 detail 顯示，但仍沒有電影搜尋與自動 metadata 補全
 - Partial: detail 頁面現在會在 `groupId` 缺失時直接進入 error state，不再於初始載入階段發出 `/groups//...` 請求；但 mutation callback 本身仍未對空 `groupId` 做 guard，見 `useTheaterDetail.ts:32-39`
 
@@ -40,12 +40,12 @@
 
 ---
 
-## Phase C Blockers (Feature Gaps)
+## Phase C Follow-ups (Feature Gaps)
 
-- [ ] **List items 無 API** — 已部分改善：新增/刪除 endpoints 已存在，但仍無 reorder endpoint
+- [x] **List items API 已齊** — 建立、追加、刪除、reorder、note 更新都已有對應 endpoints
 - [x] **POST /lists 接受 items** — 建立片單時已可直接建立初始 items，不再永遠為空
 - [ ] **Frontend：建立片單無法搜尋/加電影** — 已部分改善：可快速輸入 title 建立 items，也可後續 append title；list item metadata 結構已補齊，但仍沒有電影搜尋、TMDB 選擇與自動 metadata 補全
-- [ ] **Frontend：片單無詳情頁顯示電影卡片**
+- [x] **Frontend：片單已有詳情頁顯示電影卡片**
 - [x] **List items metadata 已補基礎欄位** — `title_zh`、`poster_url`、`genres`、`runtime_minutes` 已進 model / API / frontend types，dynamic theater detail 也會顯示這些欄位。
 
 ---
@@ -62,6 +62,6 @@
 
 ## Suggested Fix Priority
 
-1. Fix bugs: type consolidation
-2. Architecture: route migration, activation threshold, real-time updates
-3. Product follow-up: movie search / metadata enrichment for list items
+1. Product follow-up: movie search / metadata enrichment for list items
+2. Architecture: real-time updates and query/load cleanup
+3. UX follow-up: clarify the role split between list-scoped replies and the broader theater discussion flow
