@@ -22,15 +22,15 @@
 }
 
 .eyebrow {
-  font-size: 0.7rem;
+  font-size: var(--text-xs);
   letter-spacing: 0.18em;
   color: rgba(229, 126, 49, 0.82);
 }
 
 .metaLine {
-  font-size: 0.64rem;
+  font-size: var(--text-xs);
   letter-spacing: 0.16em;
-  color: rgba(255, 255, 255, 0.48);
+  color: rgba(255, 255, 255, 0.56);
 }
 
 .title {
@@ -44,9 +44,9 @@
 }
 
 .subtitle {
-  color: rgba(255, 255, 255, 0.72);
-  font-size: 0.92rem;
-  line-height: 1.8;
+  color: var(--archive-text-muted);
+  font-size: var(--text-base);
+  line-height: var(--leading-relaxed);
 }
 
 .link {

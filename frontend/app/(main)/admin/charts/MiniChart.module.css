@@ -14,7 +14,7 @@
 }
 
 .yLabel {
-  font-size: 0.6rem;
+  font-size: var(--text-xs);
   color: rgba(82, 97, 90, 0.6);
   font-variant-numeric: tabular-nums;
   line-height: 1;
@@ -91,7 +91,7 @@
 .xLabel {
   position: absolute;
   transform: translateX(-50%);
-  font-size: 0.6rem;
+  font-size: var(--text-xs);
   color: rgba(82, 97, 90, 0.6);
   white-space: nowrap;
 }

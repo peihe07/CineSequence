@@ -40,11 +40,12 @@
   grid-template-columns: minmax(0, 1.05fr) minmax(20rem, 0.95fr);
   width: min(100%, 62rem);
   min-height: min(42rem, 78vh);
-  background: rgba(14, 15, 17, 0.82);
+  background: var(--surface-raised);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   box-shadow:
     0 28px 80px rgba(0, 0, 0, 0.42),
+    0 0 40px rgba(255, 255, 255, 0.04),
     inset 0 0 0 1px rgba(255, 255, 255, 0.08);
   overflow: hidden;
   animation: scanReveal 0.55s cubic-bezier(0.22, 0.68, 0.36, 1) forwards;
@@ -91,7 +92,7 @@
   gap: 2rem;
   padding: 2.2rem 2.2rem 2rem;
   background:
-    linear-gradient(180deg, rgba(18, 19, 22, 0.6), rgba(12, 13, 15, 0.3));
+    linear-gradient(180deg, rgba(26, 28, 33, 0.76), rgba(20, 22, 26, 0.42));
 }
 
 /* Dashed vertical divider */
@@ -128,7 +129,7 @@
   background: transparent;
   color: rgba(255, 255, 255, 0.46);
   font-family: var(--font-mono);
-  font-size: 0.68rem;
+  font-size: var(--text-xs);
   letter-spacing: 0.16em;
   text-transform: uppercase;
   cursor: pointer;
@@ -152,9 +153,9 @@
 
 /* Kicker — neutral grey, not warm */
 .kicker {
-  font-size: 0.68rem;
+  font-size: var(--text-xs);
   letter-spacing: 0.18em;
-  color: rgba(255, 255, 255, 0.52);
+  color: var(--archive-text-muted);
 }
 
 .headline {
@@ -170,9 +171,9 @@
 .copy {
   max-width: 34ch;
   margin: 0;
-  font-size: 0.92rem;
-  line-height: 1.75;
-  color: rgba(255, 255, 255, 0.62);
+  font-size: var(--text-base);
+  line-height: var(--leading-relaxed);
+  color: var(--archive-text-muted);
 }
 
 .introMeta {
@@ -185,7 +186,7 @@
   display: inline-flex;
   width: fit-content;
   padding: 0.32rem 0.5rem;
-  font-size: 0.64rem;
+  font-size: var(--text-xs);
   letter-spacing: 0.16em;
   color: rgba(255, 255, 255, 0.76);
   background: rgba(255, 255, 255, 0.06);
@@ -194,9 +195,9 @@
 
 .path,
 .timecode {
-  font-size: 0.64rem;
+  font-size: var(--text-xs);
   letter-spacing: 0.16em;
-  color: rgba(255, 255, 255, 0.36);
+  color: rgba(255, 255, 255, 0.5);
 }
 
 .notes {
@@ -212,16 +213,16 @@
 /* Note labels — neutral grey monospace */
 .noteLabel {
   font-family: var(--font-mono);
-  font-size: 0.62rem;
+  font-size: var(--text-xs);
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.46);
+  color: var(--archive-text-muted);
 }
 
 .noteText {
-  font-size: 0.82rem;
-  line-height: 1.65;
-  color: rgba(255, 255, 255, 0.56);
+  font-size: var(--text-sm);
+  line-height: var(--leading-base);
+  color: var(--archive-text-muted);
 }
 
 .noteText a {

@@ -35,10 +35,10 @@
 }
 
 .signatureKicker {
-  font-size: 0.62rem;
+  font-size: var(--text-xs);
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.34);
+  color: rgba(255, 255, 255, 0.48);
 }
 
 .signatureText {
@@ -64,17 +64,17 @@
 }
 
 .signatureTitleSub {
-  font-size: 0.7rem;
+  font-size: var(--text-xs);
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--archive-text-muted);
 }
 
 .signatureMeta {
   max-width: 30rem;
-  font-size: 0.8rem;
-  line-height: 1.6;
-  color: rgba(255, 255, 255, 0.46);
+  font-size: var(--text-sm);
+  line-height: var(--leading-base);
+  color: var(--archive-text-muted);
 }
 
 .utilityRow {
@@ -91,7 +91,7 @@
   gap: 0.42rem;
   color: rgba(255, 255, 255, 0.52);
   text-decoration: none;
-  font-size: 0.72rem;
+  font-size: var(--text-xs);
   letter-spacing: 0.06em;
   transition: color 0.2s ease;
 }
@@ -105,7 +105,7 @@
   border-radius: 999px;
   color: rgba(255, 244, 232, 0.88);
   text-decoration: none;
-  font-size: 0.72rem;
+  font-size: var(--text-xs);
   letter-spacing: 0.08em;
   text-transform: uppercase;
   background:
@@ -162,17 +162,17 @@
   padding: 0;
   background: transparent;
   color: rgba(255, 255, 255, 0.44);
-  font-size: 0.72rem;
+  font-size: var(--text-xs);
   letter-spacing: 0.05em;
   cursor: pointer;
   transition: color 0.2s ease;
 }
 
 .footerYear {
-  font-size: 0.7rem;
+  font-size: var(--text-xs);
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.28);
+  color: rgba(255, 255, 255, 0.4);
 }
 
 .footerCopy,
@@ -195,7 +195,7 @@
   max-height: min(80vh, 920px);
   display: flex;
   flex-direction: column;
-  background: rgba(16, 14, 13, 0.96);
+  background: rgba(24, 26, 31, 0.96);
   border: 1px solid rgba(255, 255, 255, 0.08);
   color: rgba(255, 255, 255, 0.84);
   box-shadow: 0 24px 64px rgba(0, 0, 0, 0.38);
@@ -218,8 +218,8 @@
 
 .dialogUpdated {
   margin: 0.35rem 0 0;
-  font-size: 0.74rem;
-  color: rgba(255, 255, 255, 0.44);
+  font-size: var(--text-xs);
+  color: rgba(255, 255, 255, 0.56);
 }
 
 .closeBtn {
@@ -241,15 +241,15 @@
 
 .section h3 {
   margin: 0 0 0.45rem;
-  font-size: 0.86rem;
+  font-size: var(--text-sm);
   font-weight: 600;
 }
 
 .section p,
 .section li {
   margin: 0;
-  font-size: 0.84rem;
-  line-height: 1.7;
+  font-size: var(--text-sm);
+  line-height: var(--leading-base);
   color: rgba(255, 255, 255, 0.66);
 }
 
