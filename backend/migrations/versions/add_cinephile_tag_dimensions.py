@@ -14,7 +14,7 @@ depends_on = None
 
 
 def upgrade() -> None:
-    op.drop_index("ix_dna_profiles_tag_vector", table_name="dna_profiles")
+    op.execute("DROP INDEX IF EXISTS ix_dna_profiles_tag_vector")
     op.execute(
         """
         ALTER TABLE dna_profiles
@@ -34,7 +34,7 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
-    op.drop_index("ix_dna_profiles_tag_vector", table_name="dna_profiles")
+    op.execute("DROP INDEX IF EXISTS ix_dna_profiles_tag_vector")
     op.execute(
         r"""
         ALTER TABLE dna_profiles
