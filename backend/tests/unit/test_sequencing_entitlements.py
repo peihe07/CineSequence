@@ -1,5 +1,8 @@
 """Unit tests for sequencing entitlement gating and consumption."""
 
+import uuid
+from unittest.mock import AsyncMock, patch
+
 import pytest
 
 from app.models.sequencing_entitlement import (
@@ -17,8 +20,10 @@ from app.services.sequencing_entitlements import (
 
 
 @pytest.mark.asyncio
-async def test_can_start_retest_with_free_credit(db_session):
+async def test_can_start_retest_with_free_credit():
+    db_session = AsyncMock()
     user = User(
+        id=uuid.uuid4(),
         email="entitlement-free@example.com",
         name="Free User",
         gender=Gender.other,
@@ -26,8 +31,6 @@ async def test_can_start_retest_with_free_credit(db_session):
         free_retest_credits=1,
         paid_sequencing_credits=0,
     )
-    db_session.add(user)
-    await db_session.commit()
 
     gate = await can_start_retest(db_session, user)
 
@@ -36,8 +39,10 @@ async def test_can_start_retest_with_free_credit(db_session):
 
 
 @pytest.mark.asyncio
-async def test_can_start_extension_requires_paid_credit(db_session):
+async def test_can_start_extension_requires_paid_credit():
+    db_session = AsyncMock()
     user = User(
+        id=uuid.uuid4(),
         email="entitlement-extend@example.com",
         name="Extend User",
         gender=Gender.other,
@@ -45,8 +50,6 @@ async def test_can_start_extension_requires_paid_credit(db_session):
         free_retest_credits=1,
         paid_sequencing_credits=0,
     )
-    db_session.add(user)
-    await db_session.commit()
 
     gate = await can_start_extension(db_session, user)
 
@@ -55,8 +58,10 @@ async def test_can_start_extension_requires_paid_credit(db_session):
 
 
 @pytest.mark.asyncio
-async def test_consume_extension_credit_decrements_paid_credit_and_marks_ledger(db_session):
+async def test_consume_extension_credit_decrements_paid_credit_and_marks_ledger():
+    db_session = AsyncMock()
     user = User(
+        id=uuid.uuid4(),
         email="entitlement-paid@example.com",
         name="Paid User",
         gender=Gender.other,
@@ -64,8 +69,6 @@ async def test_consume_extension_credit_decrements_paid_credit_and_marks_ledger(
         free_retest_credits=1,
         paid_sequencing_credits=1,
     )
-    db_session.add(user)
-    await db_session.flush()
 
     entitlement = SequencingEntitlement(
         user_id=user.id,
@@ -75,22 +78,26 @@ async def test_consume_extension_credit_decrements_paid_credit_and_marks_ledger(
         source=EntitlementSource.admin,
         notes="test grant",
     )
-    db_session.add(entitlement)
-    await db_session.commit()
 
-    result = await consume_extension_credit(db_session, user)
+    with patch(
+        "app.services.sequencing_entitlements._find_available_entitlement",
+        AsyncMock(return_value=entitlement),
+    ) as mock_find:
+        result = await consume_extension_credit(db_session, user)
 
     assert result.kind_used == "paid_credit"
     assert result.credits_remaining == 0
-    await db_session.refresh(user)
-    await db_session.refresh(entitlement)
+    mock_find.assert_awaited_once_with(db_session, user.id, EntitlementKind.paid_credit)
     assert user.paid_sequencing_credits == 0
     assert entitlement.used_quantity == 1
+    db_session.flush.assert_awaited_once()
 
 
 @pytest.mark.asyncio
-async def test_consume_retest_credit_uses_free_credit_before_paid_credit(db_session):
+async def test_consume_retest_credit_uses_free_credit_before_paid_credit():
+    db_session = AsyncMock()
     user = User(
+        id=uuid.uuid4(),
         email="entitlement-retest@example.com",
         name="Retest User",
         gender=Gender.other,
@@ -98,8 +105,6 @@ async def test_consume_retest_credit_uses_free_credit_before_paid_credit(db_sess
         free_retest_credits=1,
         paid_sequencing_credits=2,
     )
-    db_session.add(user)
-    await db_session.flush()
 
     free_entitlement = SequencingEntitlement(
         user_id=user.id,
@@ -117,18 +122,19 @@ async def test_consume_retest_credit_uses_free_credit_before_paid_credit(db_sess
         source=EntitlementSource.admin,
         notes="test grant",
     )
-    db_session.add_all([free_entitlement, paid_entitlement])
-    await db_session.commit()
 
-    result = await consume_retest_credit(db_session, user)
+    with patch(
+        "app.services.sequencing_entitlements._find_available_entitlement",
+        AsyncMock(return_value=free_entitlement),
+    ) as mock_find:
+        result = await consume_retest_credit(db_session, user)
 
     assert result.kind_used == "free_retest"
     assert result.free_retests_remaining == 0
     assert result.credits_remaining == 2
-    await db_session.refresh(user)
-    await db_session.refresh(free_entitlement)
-    await db_session.refresh(paid_entitlement)
+    mock_find.assert_awaited_once_with(db_session, user.id, EntitlementKind.free_retest)
     assert user.free_retest_credits == 0
     assert user.paid_sequencing_credits == 2
     assert free_entitlement.used_quantity == 1
     assert paid_entitlement.used_quantity == 0
+    db_session.flush.assert_awaited_once()
