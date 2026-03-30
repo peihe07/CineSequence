@@ -1,13 +1,13 @@
 # DNA System Design
 
-> Last updated: 2026-03-29
+> Last updated: 2026-03-30
 > Describes the current production DNA flow after the cinephile pool, Phase 1, and stability upgrades.
 
 ## Purpose
 
 The DNA system turns sequencing picks into four user-facing outputs:
 
-- a 30-dimension tag vector
+- a 35-dimension tag vector
 - a 3-axis quadrant profile
 - a single archetype
 - an AI-written personality reading
@@ -115,11 +115,21 @@ Important runtime constraints:
 
 The DNA system only scores tags present in `tag_taxonomy.json`.
 
-- `TAG_KEYS` defines the fixed 30-dimension order.
+- `TAG_KEYS` defines the fixed taxonomy order currently used by the persisted vector.
 - `TAG_INDEX` maps each supported tag to a vector index.
 - Taxonomy-external tags do not count unless first normalized into supported tags.
 
 This is why movie-pool curation must normalize legacy tags before they are useful for scoring.
+
+Current cinephile-specific additions on top of the legacy tag set:
+
+- `artHouseBridge`
+- `urbanLoneliness`
+- `driftCinema`
+- `blackComedy`
+- `moralAnxiety`
+
+These were added after the bridge-auteur Phase 1 rebalance so the system could distinguish more specific cinephile signals from broad legacy buckets like `slowburn`, `darkTone`, `satirical`, and `philosophical`.
 
 ### Tag Vector Construction
 

@@ -1,7 +1,37 @@
 # Movie Pool Changelog
 
-> Last updated: 2026-03-29
+> Last updated: 2026-03-30
 > Tracks major curation, scoring, and sequencing changes that affect the cinephile-facing movie pool.
+
+## 2026-03-30
+
+### Scope
+
+- Bridge-auteur pool follow-up after the first Phase 1 rebalance pass
+- First cinephile taxonomy signal expansion
+
+### Pool Curation
+
+- Added `Paris, Texas`, `Wings of Desire`, `Inside Llewyn Davis`, and `Phantom Thread` to `backend/app/data/movie_pool.json`.
+- Added `A Serious Man`, `Fargo`, and `There Will Be Blood` as the second bridge-auteur follow-up batch.
+- Used these additions to connect the new Phase 1 bridge-auteur pairs back into the downstream Phase 2-3 candidate pool.
+- Strengthened coverage for Wim Wenders, Paul Thomas Anderson, and the Coen brothers without requiring a broader taxonomy redesign first.
+
+### Reviewability
+
+- Added matching entries in `backend/app/data/movie_pool_reviews.json` for all four new titles.
+- Marked all four as `phase1_anchor` so future reviews can distinguish them from generic tag-coverage additions.
+
+### Taxonomy Expansion
+
+- Added `artHouseBridge`, `urbanLoneliness`, `driftCinema`, `blackComedy`, and `moralAnxiety` to `backend/app/data/tag_taxonomy.json`.
+- Mapped the first batch of bridge-auteur, drift, black-comedy, and moral-anxiety titles onto those new tags inside `backend/app/data/movie_pool.json`.
+- Updated the DNA vector schema and prompt surface so the new taxonomy can be scored end-to-end instead of living as dead metadata.
+
+### Verification
+
+- `node scripts/validate_movie_pool.js`
+- `cd backend && ./.venv/bin/python -m pytest tests/unit/test_movie_pool.py`
 
 ## 2026-03-29
 
