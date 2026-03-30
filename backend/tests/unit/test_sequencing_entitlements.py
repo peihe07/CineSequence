@@ -2,7 +2,11 @@
 
 import pytest
 
-from app.models.sequencing_entitlement import EntitlementKind, EntitlementSource, SequencingEntitlement
+from app.models.sequencing_entitlement import (
+    EntitlementKind,
+    EntitlementSource,
+    SequencingEntitlement,
+)
 from app.models.user import Gender, User
 from app.services.sequencing_entitlements import (
     can_start_extension,

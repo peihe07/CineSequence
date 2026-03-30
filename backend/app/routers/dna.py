@@ -15,8 +15,8 @@ from app.schemas.dna import (
     ComparisonEvidence,
     DnaBuildResponse,
     DnaHistorySummary,
-    InteractionDiagnostics,
     DnaResultResponse,
+    InteractionDiagnostics,
     QuadrantScores,
     SignalDetail,
 )

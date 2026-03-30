@@ -129,7 +129,9 @@ def _compute_signal_counts(picks: list[dict]) -> tuple[dict[str, int], dict[str,
     return picks_for, picks_against
 
 
-def _consistency_multiplier(tag: str, picks_for: dict[str, int], picks_against: dict[str, int]) -> float:
+def _consistency_multiplier(
+    tag: str, picks_for: dict[str, int], picks_against: dict[str, int]
+) -> float:
     """Reduce impact for tags with contradictory evidence, keep low-sample tags neutral."""
     positive = picks_for.get(tag, 0)
     negative = picks_against.get(tag, 0)
@@ -277,7 +279,9 @@ def compute_consistency(picks: list[dict]) -> dict[str, float]:
     return result
 
 
-def build_comparison_evidence(picks: list[dict], focus_tags: list[str], limit: int = 3) -> list[dict]:
+def build_comparison_evidence(
+    picks: list[dict], focus_tags: list[str], limit: int = 3
+) -> list[dict]:
     """Extract representative chosen-vs-rejected comparisons for the strongest signals."""
     evidence: list[dict] = []
 
@@ -299,8 +303,14 @@ def build_comparison_evidence(picks: list[dict], focus_tags: list[str], limit: i
             continue
 
         chosen_tags = [tag for tag in _POOL_TAGS.get(chosen_id, []) if tag in TAG_INDEX]
-        rejected_tags = [tag for tag in _POOL_TAGS.get(rejected_id, []) if tag in TAG_INDEX]
-        shared_focus = [tag for tag in focus_tags if tag in chosen_tags and tag not in rejected_tags]
+        rejected_tags = [
+            tag for tag in _POOL_TAGS.get(rejected_id, []) if tag in TAG_INDEX
+        ]
+        shared_focus = [
+            tag
+            for tag in focus_tags
+            if tag in chosen_tags and tag not in rejected_tags
+        ]
         dimension = pick.get("test_dimension")
 
         relevance = len(shared_focus)

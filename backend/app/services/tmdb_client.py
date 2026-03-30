@@ -138,7 +138,10 @@ def _score_search_match(query: str, movie: MovieInfo) -> tuple[int, int, int, in
     normalized_zh = _normalize_title(movie.title_zh)
     normalized_en = _normalize_title(movie.title_en)
     query_tokens = _tokenize_search_text(query)
-    title_tokens = set(_tokenize_search_text(movie.title_zh) + _tokenize_search_text(movie.title_en))
+    title_tokens = set(
+        _tokenize_search_text(movie.title_zh)
+        + _tokenize_search_text(movie.title_en)
+    )
 
     if not normalized_query:
         return (0, 0, 0, 0, 0)

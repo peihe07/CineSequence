@@ -157,20 +157,29 @@ def _build_context(
         else:
             skipped.append(entry)
 
-    return json.dumps({
-        "picks": chosen,
-        "skips": skipped,
-        "tag_vector": tag_labels,
-        "top_tags": top_tags[:3],
-        "top_tag_details": _build_tag_details(top_tags, tag_labels, tag_confidence, tag_consistency),
-        "low_affinity_tags": _build_low_affinity_tags(excluded_tags, tag_confidence, tag_consistency),
-        "contradiction_tags": _build_contradiction_tags(tag_confidence, tag_consistency),
-        "excluded_tags": excluded_tags[:10],
-        "genre_vector": genre_vector,
-        "quadrant_vector": quadrant_scores,
-        "archetype_id": archetype_id,
-        "comparison_evidence": comparison_evidence or [],
-    }, ensure_ascii=False)
+    return json.dumps(
+        {
+            "picks": chosen,
+            "skips": skipped,
+            "tag_vector": tag_labels,
+            "top_tags": top_tags[:3],
+            "top_tag_details": _build_tag_details(
+                top_tags, tag_labels, tag_confidence, tag_consistency
+            ),
+            "low_affinity_tags": _build_low_affinity_tags(
+                excluded_tags, tag_confidence, tag_consistency
+            ),
+            "contradiction_tags": _build_contradiction_tags(
+                tag_confidence, tag_consistency
+            ),
+            "excluded_tags": excluded_tags[:10],
+            "genre_vector": genre_vector,
+            "quadrant_vector": quadrant_scores,
+            "archetype_id": archetype_id,
+            "comparison_evidence": comparison_evidence or [],
+        },
+        ensure_ascii=False,
+    )
 
 
 def _make_personality_cache_key(context: str) -> str:

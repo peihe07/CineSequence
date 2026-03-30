@@ -7,7 +7,11 @@ import pytest_asyncio
 from sqlalchemy import select
 
 from app.models.pick import Pick
-from app.models.sequencing_entitlement import EntitlementKind, EntitlementSource, SequencingEntitlement
+from app.models.sequencing_entitlement import (
+    EntitlementKind,
+    EntitlementSource,
+    SequencingEntitlement,
+)
 from app.models.sequencing_session import SequencingSession
 from app.models.user import SequencingStatus, User
 from app.services.auth_utils import create_access_token
@@ -185,7 +189,9 @@ class TestEntitlementGates:
         assert user.paid_sequencing_credits == 0
 
     @pytest.mark.asyncio
-    async def test_retest_uses_free_credit_before_paid_credit(self, client, auth_user, db_session):
+    async def test_retest_uses_free_credit_before_paid_credit(
+        self, client, auth_user, db_session
+    ):
         user, headers = auth_user
         user.free_retest_credits = 1
         user.paid_sequencing_credits = 2
@@ -222,7 +228,9 @@ class TestEntitlementGates:
         assert user.paid_sequencing_credits == 2
 
     @pytest.mark.asyncio
-    async def test_retest_requires_credit_after_free_one_is_used(self, client, auth_user, db_session):
+    async def test_retest_requires_credit_after_free_one_is_used(
+        self, client, auth_user, db_session
+    ):
         user, headers = auth_user
         user.free_retest_credits = 0
         user.paid_sequencing_credits = 0

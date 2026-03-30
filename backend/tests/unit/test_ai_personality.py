@@ -162,7 +162,10 @@ def test_normalize_personality_result_trims_and_limits_fields():
         "personality_reading": "  這是一段很長的文字 " * 30,
         "hidden_traits": ["敏銳觀察者", "敏銳觀察者", "冷面幽默派", "節奏潔癖型"],
         "conversation_style": "  先冷靜觀察，再精準補一句有意思的話。這句之後不該留下。  ",
-        "ideal_movie_date": "  《午餐盒》《愛在黎明破曉時》《花束般的戀愛》適合你們，因為都能自然打開對話，後面這段也應該被裁掉。  ",
+        "ideal_movie_date": (
+            "  《午餐盒》《愛在黎明破曉時》《花束般的戀愛》適合你們，"
+            "因為都能自然打開對話，後面這段也應該被裁掉。  "
+        ),
     })
 
     assert len(result["personality_reading"]) <= 221

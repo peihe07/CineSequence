@@ -32,7 +32,11 @@ from app.services.pair_engine import (
 )
 from app.services.sequencing_entitlements import (
     can_start_extension as can_start_extension_by_credit,
+)
+from app.services.sequencing_entitlements import (
     can_start_retest as can_start_retest_by_credit,
+)
+from app.services.sequencing_entitlements import (
     consume_extension_credit,
     consume_retest_credit,
 )
