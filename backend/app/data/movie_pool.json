@@ -185,7 +185,9 @@
         "slowburn",
         "existential",
         "dialogue",
-        "nostalgic"
+        "nostalgic",
+        "urbanLoneliness",
+        "driftCinema"
       ],
       "region": "us"
     },
@@ -533,7 +535,8 @@
       "tags": [
         "cult",
         "absurdist",
-        "dialogue"
+        "dialogue",
+        "blackComedy"
       ],
       "region": "us"
     },
@@ -810,7 +813,8 @@
         "twist",
         "darkTone",
         "satirical",
-        "nonEnglish"
+        "nonEnglish",
+        "blackComedy"
       ],
       "region": "kr"
     },
@@ -833,7 +837,8 @@
         "slowburn",
         "existential",
         "psychoThriller",
-        "nonEnglish"
+        "nonEnglish",
+        "moralAnxiety"
       ],
       "region": "kr"
     },
@@ -888,7 +893,8 @@
         "psychoThriller",
         "romanticCore",
         "nonEnglish",
-        "slowburn"
+        "slowburn",
+        "moralAnxiety"
       ],
       "region": "kr"
     },
@@ -978,7 +984,8 @@
         "slowburn",
         "visualFeast",
         "nonEnglish",
-        "nostalgic"
+        "nostalgic",
+        "urbanLoneliness"
       ],
       "region": "hk"
     },
@@ -1053,7 +1060,8 @@
         "dialogue",
         "socialCritique",
         "nonEnglish",
-        "ensemble"
+        "ensemble",
+        "moralAnxiety"
       ],
       "region": "ir"
     },
@@ -1329,7 +1337,9 @@
         "slowburn",
         "nonEnglish",
         "existential",
-        "nostalgic"
+        "nostalgic",
+        "artHouseBridge",
+        "urbanLoneliness"
       ],
       "region": "kr"
     },
@@ -1532,7 +1542,8 @@
         "satirical",
         "darkTone",
         "cult",
-        "psychoThriller"
+        "psychoThriller",
+        "blackComedy"
       ],
       "region": "us"
     },
@@ -2116,7 +2127,8 @@
         "socialCritique",
         "ensemble",
         "nonEnglish",
-        "tearjerker"
+        "tearjerker",
+        "moralAnxiety"
       ],
       "region": "jp"
     },
@@ -2127,7 +2139,10 @@
         "existential",
         "slowburn",
         "nonEnglish",
-        "dialogue"
+        "dialogue",
+        "artHouseBridge",
+        "urbanLoneliness",
+        "driftCinema"
       ],
       "region": "jp"
     },
@@ -2138,7 +2153,10 @@
         "slowburn",
         "existential",
         "solo",
-        "nonEnglish"
+        "nonEnglish",
+        "artHouseBridge",
+        "urbanLoneliness",
+        "driftCinema"
       ],
       "region": "jp"
     },
@@ -2363,7 +2381,8 @@
         "satirical",
         "absurdist",
         "socialCritique",
-        "nonEnglish"
+        "nonEnglish",
+        "blackComedy"
       ],
       "region": "se"
     },
@@ -2374,7 +2393,8 @@
         "darkTone",
         "antiHero",
         "slowburn",
-        "philosophical"
+        "philosophical",
+        "moralAnxiety"
       ],
       "region": "us"
     },
@@ -2418,7 +2438,8 @@
       "tags": [
         "absurdist",
         "dystopia",
-        "satirical"
+        "satirical",
+        "blackComedy"
       ],
       "region": "uk"
     },
@@ -2511,7 +2532,10 @@
         "slowburn",
         "tearjerker",
         "nostalgic",
-        "solo"
+        "solo",
+        "artHouseBridge",
+        "urbanLoneliness",
+        "driftCinema"
       ],
       "region": "uk"
     },
@@ -3435,7 +3459,9 @@
         "slowburn",
         "solo",
         "darkTone",
-        "existential"
+        "existential",
+        "urbanLoneliness",
+        "driftCinema"
       ],
       "region": "tw"
     },
@@ -3513,7 +3539,8 @@
         "experimental",
         "slowburn",
         "socialCritique",
-        "existential"
+        "existential",
+        "driftCinema"
       ],
       "region": "cn"
     },
@@ -3794,7 +3821,8 @@
         "darkTone",
         "experimental",
         "slowburn",
-        "nostalgic"
+        "nostalgic",
+        "moralAnxiety"
       ],
       "region": "de"
     },
@@ -3841,6 +3869,95 @@
         "existential"
       ],
       "region": "co"
+    },
+    {
+      "tmdb_id": 655,
+      "title_en": "Paris, Texas",
+      "tags": [
+        "slowburn",
+        "existential",
+        "solo",
+        "nostalgic",
+        "artHouseBridge",
+        "urbanLoneliness",
+        "driftCinema"
+      ],
+      "region": "de"
+    },
+    {
+      "tmdb_id": 12508,
+      "title_en": "Wings of Desire",
+      "tags": [
+        "philosophical",
+        "slowburn",
+        "experimental",
+        "nonEnglish",
+        "artHouseBridge",
+        "driftCinema"
+      ],
+      "region": "de"
+    },
+    {
+      "tmdb_id": 86829,
+      "title_en": "Inside Llewyn Davis",
+      "tags": [
+        "dialogue",
+        "existential",
+        "darkTone",
+        "nostalgic",
+        "artHouseBridge",
+        "blackComedy"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 400617,
+      "title_en": "Phantom Thread",
+      "tags": [
+        "slowburn",
+        "dialogue",
+        "romanticCore",
+        "darkTone",
+        "artHouseBridge"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 12573,
+      "title_en": "A Serious Man",
+      "tags": [
+        "satirical",
+        "absurdist",
+        "philosophical",
+        "darkTone",
+        "blackComedy",
+        "moralAnxiety"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 275,
+      "title_en": "Fargo",
+      "tags": [
+        "darkTone",
+        "satirical",
+        "antiHero",
+        "psychoThriller",
+        "blackComedy"
+      ],
+      "region": "us"
+    },
+    {
+      "tmdb_id": 7345,
+      "title_en": "There Will Be Blood",
+      "tags": [
+        "antiHero",
+        "philosophical",
+        "darkTone",
+        "slowburn",
+        "moralAnxiety"
+      ],
+      "region": "us"
     }
   ]
 }

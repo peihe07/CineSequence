@@ -59,6 +59,16 @@ class TestComputeTagVector:
         vector = compute_tag_vector(picks)
         assert all(v == 0.0 for v in vector)
 
+    def test_dislike_both_events_ignored_in_first_phase_rollout(self):
+        picks = [{
+            "test_dimension": "mindfuck",
+            "chosen_tmdb_id": None,
+            "pick_mode": None,
+            "decision_type": "dislike_both",
+        }]
+        vector = compute_tag_vector(picks)
+        assert all(v == 0.0 for v in vector)
+
     def test_unknown_dimension_ignored(self):
         picks = [{
             "test_dimension": "unknown_dimension",
@@ -70,7 +80,7 @@ class TestComputeTagVector:
 
     def test_vector_length_matches_taxonomy(self):
         vector = compute_tag_vector([])
-        assert len(vector) == 30
+        assert len(vector) == len(TAG_KEYS)
 
 
 class TestComputeGenreVector:
@@ -108,7 +118,7 @@ class TestGetTagLabels:
     """Test top N tag extraction."""
 
     def test_returns_top_n(self):
-        vector = [0.0] * 30
+        vector = [0.0] * len(TAG_KEYS)
         vector[0] = 1.0
         vector[1] = 0.8
         vector[2] = 0.5
@@ -116,13 +126,13 @@ class TestGetTagLabels:
         assert len(labels) == 2
 
     def test_excludes_zero_scores(self):
-        vector = [0.0] * 30
+        vector = [0.0] * len(TAG_KEYS)
         vector[0] = 0.5
         labels = get_tag_labels(vector, top_n=10)
         assert len(labels) == 1
 
     def test_sorted_by_score(self):
-        vector = [0.0] * 30
+        vector = [0.0] * len(TAG_KEYS)
         vector[0] = 0.3
         vector[1] = 0.9
         vector[2] = 0.6
@@ -135,7 +145,7 @@ class TestGetTopTags:
     """Test top tag name extraction."""
 
     def test_returns_ranked_tag_names(self):
-        vector = [0.0] * 30
+        vector = [0.0] * len(TAG_KEYS)
         vector[0] = 0.4
         vector[1] = 0.9
         vector[2] = 0.6
@@ -148,16 +158,16 @@ class TestGetExcludedTags:
     """Test excluded tag detection."""
 
     def test_all_zero(self):
-        vector = [0.0] * 30
+        vector = [0.0] * len(TAG_KEYS)
         excluded = get_excluded_tags(vector)
-        assert len(excluded) == 30
+        assert len(excluded) == len(TAG_KEYS)
 
     def test_some_nonzero(self):
-        vector = [0.0] * 30
+        vector = [0.0] * len(TAG_KEYS)
         vector[0] = 0.5
         vector[5] = 0.3
         excluded = get_excluded_tags(vector)
-        assert len(excluded) == 28
+        assert len(excluded) == len(TAG_KEYS) - 2
         assert TAG_KEYS[0] not in excluded
         assert TAG_KEYS[5] not in excluded
 
@@ -166,14 +176,14 @@ class TestAssignArchetype:
     """Test archetype assignment."""
 
     def test_returns_dict(self):
-        vector = [0.0] * 30
+        vector = [0.0] * len(TAG_KEYS)
         result = assign_archetype(vector, {})
         assert "id" in result
         assert "name" in result
 
     def test_dark_poet_from_dark_tags(self):
         """Cult + violent + psycho signals should lean toward dark_poet."""
-        vector = [0.0] * 30
+        vector = [0.0] * len(TAG_KEYS)
         vector[TAG_INDEX["cult"]] = 1.0
         vector[TAG_INDEX["violentAesthetic"]] = 0.9
         vector[TAG_INDEX["psychoThriller"]] = 0.8
@@ -182,7 +192,7 @@ class TestAssignArchetype:
         assert result["id"] == "dark_poet"
 
     def test_dark_poet_distinguishes_from_lone_wolf(self):
-        vector = [0.0] * 30
+        vector = [0.0] * len(TAG_KEYS)
         vector[TAG_INDEX["solo"]] = 0.6
         vector[TAG_INDEX["antiHero"]] = 0.6
         vector[TAG_INDEX["cult"]] = 1.0
@@ -193,7 +203,7 @@ class TestAssignArchetype:
 
     def test_emotional_sponge_from_tearjerker(self):
         """High tearjerker + uplifting + romanticCore should lean emotional_sponge."""
-        vector = [0.0] * 30
+        vector = [0.0] * len(TAG_KEYS)
         vector[TAG_INDEX["tearjerker"]] = 1.0
         vector[TAG_INDEX["uplifting"]] = 0.9
         vector[TAG_INDEX["romanticCore"]] = 0.8
@@ -203,12 +213,12 @@ class TestAssignArchetype:
 
     def test_negative_raw_signal_penalizes_matching_archetype(self):
         """Skip/rejection signals should still affect archetype scoring."""
-        vector = [0.0] * 30
+        vector = [0.0] * len(TAG_KEYS)
         vector[TAG_INDEX["tearjerker"]] = 1.0
         vector[TAG_INDEX["uplifting"]] = 0.9
         vector[TAG_INDEX["romanticCore"]] = 0.8
         vector[TAG_INDEX["comingOfAge"]] = 0.7
-        raw_scores = [0.0] * 30
+        raw_scores = [0.0] * len(TAG_KEYS)
         raw_scores[TAG_INDEX["tearjerker"]] = -0.3
         raw_scores[TAG_INDEX["uplifting"]] = -0.3
         raw_scores[TAG_INDEX["romanticCore"]] = -0.3
@@ -287,7 +297,7 @@ class TestGenreOverlapFix:
 
     def test_matching_genre_boosts_score(self):
         """Crime genre should boost dark_poet (match_genres includes 80=Crime)."""
-        vector = [0.0] * 30
+        vector = [0.0] * len(TAG_KEYS)
         vector[TAG_INDEX["darkTone"]] = 0.5
         vector[TAG_INDEX["antiHero"]] = 0.5
 
@@ -302,7 +312,7 @@ class TestGenreOverlapFix:
 
     def test_irrelevant_genre_no_boost(self):
         """Animation genre should not boost dark_poet."""
-        vector = [0.0] * 30
+        vector = [0.0] * len(TAG_KEYS)
         vector[TAG_INDEX["darkTone"]] = 0.5
 
         score_none = _score_archetype("dark_poet", vector, {})
@@ -325,7 +335,7 @@ class TestNewArchetypes:
             assert not missing, f"{arch['id']} missing fields: {missing}"
 
     def test_reality_hunter_from_true_story(self):
-        vector = [0.0] * 30
+        vector = [0.0] * len(TAG_KEYS)
         vector[TAG_INDEX["trueStory"]] = 1.0
         vector[TAG_INDEX["socialCritique"]] = 0.8
         vector[TAG_INDEX["dialogue"]] = 0.7
@@ -334,7 +344,7 @@ class TestNewArchetypes:
         assert result["id"] == "reality_hunter"
 
     def test_master_planner_from_heist(self):
-        vector = [0.0] * 30
+        vector = [0.0] * len(TAG_KEYS)
         vector[TAG_INDEX["heist"]] = 1.0
         vector[TAG_INDEX["twist"]] = 0.9
         vector[TAG_INDEX["ensemble"]] = 0.8
@@ -343,7 +353,7 @@ class TestNewArchetypes:
         assert result["id"] == "master_planner"
 
     def test_dystopia_architect_from_dystopia(self):
-        vector = [0.0] * 30
+        vector = [0.0] * len(TAG_KEYS)
         vector[TAG_INDEX["dystopia"]] = 1.0
         vector[TAG_INDEX["survival"]] = 0.8
         vector[TAG_INDEX["philosophical"]] = 0.7
@@ -352,7 +362,7 @@ class TestNewArchetypes:
         assert result["id"] == "dystopia_architect"
 
     def test_world_wanderer_from_non_english(self):
-        vector = [0.0] * 30
+        vector = [0.0] * len(TAG_KEYS)
         vector[TAG_INDEX["nonEnglish"]] = 1.0
         vector[TAG_INDEX["slowburn"]] = 0.8
         vector[TAG_INDEX["existential"]] = 0.7
@@ -361,7 +371,7 @@ class TestNewArchetypes:
         assert result["id"] == "world_wanderer"
 
     def test_lone_wolf_from_solo_antihero(self):
-        vector = [0.0] * 30
+        vector = [0.0] * len(TAG_KEYS)
         vector[TAG_INDEX["solo"]] = 1.0
         vector[TAG_INDEX["antiHero"]] = 0.9
         vector[TAG_INDEX["darkTone"]] = 0.7
@@ -370,7 +380,7 @@ class TestNewArchetypes:
         assert result["id"] == "lone_wolf"
 
     def test_dream_weaver_from_visual_nostalgic_signals(self):
-        vector = [0.0] * 30
+        vector = [0.0] * len(TAG_KEYS)
         vector[TAG_INDEX["visualFeast"]] = 1.0
         vector[TAG_INDEX["nostalgic"]] = 0.9
         vector[TAG_INDEX["comingOfAge"]] = 0.8
@@ -403,7 +413,7 @@ class TestIdfWeighting:
     def test_shared_tags_produce_different_scores(self):
         """Two archetypes sharing tags should still get different scores
         when user has asymmetric tag distribution."""
-        vector = [0.0] * 30
+        vector = [0.0] * len(TAG_KEYS)
         # solo + antiHero shared by reality_hunter and lone_wolf,
         # but revenge is unique to lone_wolf side
         vector[TAG_INDEX["solo"]] = 0.5
@@ -440,7 +450,7 @@ class TestBuildDna:
         assert "quadrant_scores" in result
         assert "ticket_style" in result
         assert "archetype" in result
-        assert len(result["tag_vector"]) == 30
+        assert len(result["tag_vector"]) == len(TAG_KEYS)
         assert len(result["top_tags"]) <= 3
 
 

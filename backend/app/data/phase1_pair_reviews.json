@@ -127,8 +127,8 @@
   },
   "p1_22": {
     "confidence": "high",
-    "confounds": ["form_vs_theme"],
-    "why_valid": "The contrast isolates pacing and viewer patience more than worldview or region.",
+    "confounds": ["canon_familiarity"],
+    "why_valid": "The pair tests tolerance for drift, observation, and contemplative pacing more directly than the prior nostalgia-heavy counterpart.",
     "replacement_needed": false
   },
   "p1_23": {
@@ -182,13 +182,13 @@
   "p1_31": {
     "confidence": "high",
     "confounds": ["budget_signal"],
-    "why_valid": "The pair separates scale-driven attraction from intimate character focus without relying on culture-war framing.",
+    "why_valid": "The pair cleanly contrasts ensemble spectacle against intimate control, performance pressure, and close-range relational detail.",
     "replacement_needed": false
   },
   "p1_32": {
-    "confidence": "high",
+    "confidence": "medium",
     "confounds": ["budget_signal"],
-    "why_valid": "The pair separates scale-driven attraction from intimate character focus without relying on culture-war framing.",
+    "why_valid": "The pair keeps the large-scale romantic spectacle side while making the intimate side genuinely character-close and low-scale rather than another high-pressure crime machine.",
     "replacement_needed": false
   },
   "p1_33": {
@@ -229,8 +229,8 @@
   },
   "p1_39": {
     "confidence": "medium",
-    "confounds": ["humor_variation"],
-    "why_valid": "The pair distinguishes ironic distance from earnest emotional openness.",
+    "confounds": ["tone_shift"],
+    "why_valid": "The pair distinguishes ironic, deadpan detachment from tender humanistic openness without relying on overt family-film sentiment.",
     "replacement_needed": false
   },
   "p1_40": {

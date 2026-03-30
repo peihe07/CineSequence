@@ -316,7 +316,7 @@
   },
   {
     "id": "p1_22",
-    "label": "飛車追逐 vs 鄉間漫步",
+    "label": "飛車追逐 vs 柏林天使漫遊",
     "dimension": "fast_vs_slow",
     "movie_a": {
       "tmdb_id": 137113,
@@ -324,9 +324,9 @@
       "title_zh": "明日邊界"
     },
     "movie_b": {
-      "tmdb_id": 11216,
-      "title_en": "Cinema Paradiso",
-      "title_zh": "新天堂樂園"
+      "tmdb_id": 12508,
+      "title_en": "Wings of Desire",
+      "title_zh": "柏林蒼穹下"
     }
   },
   {
@@ -451,7 +451,7 @@
   },
   {
     "id": "p1_31",
-    "label": "奇觀大片 vs 親密小品",
+    "label": "宇宙狂歡 vs 控制系親密關係",
     "dimension": "spectacle_vs_intimate",
     "movie_a": {
       "tmdb_id": 118340,
@@ -459,14 +459,14 @@
       "title_zh": "星際異攻隊"
     },
     "movie_b": {
-      "tmdb_id": 77338,
-      "title_en": "The Intouchables",
-      "title_zh": "逆轉人生"
+      "tmdb_id": 400617,
+      "title_en": "Phantom Thread",
+      "title_zh": "霓裳魅影"
     }
   },
   {
     "id": "p1_32",
-    "label": "災難場面 vs 兩人世界",
+    "label": "災難奇觀 vs 失意音樂人的近身凝視",
     "dimension": "spectacle_vs_intimate",
     "movie_a": {
       "tmdb_id": 597,
@@ -474,9 +474,9 @@
       "title_zh": "鐵達尼號"
     },
     "movie_b": {
-      "tmdb_id": 1422,
-      "title_en": "The Departed",
-      "title_zh": "神鬼無間"
+      "tmdb_id": 86829,
+      "title_en": "Inside Llewyn Davis",
+      "title_zh": "醉鄉民謠"
     }
   },
   {
@@ -571,7 +571,7 @@
   },
   {
     "id": "p1_39",
-    "label": "黑色幽默 vs 純粹感動",
+    "label": "黑色荒謬 vs 公路餘溫",
     "dimension": "cynical_vs_sincere",
     "movie_a": {
       "tmdb_id": 115,
@@ -579,9 +579,9 @@
       "title_zh": "謀殺綠腳趾"
     },
     "movie_b": {
-      "tmdb_id": 207703,
-      "title_en": "WALL·E",
-      "title_zh": "瓦力"
+      "tmdb_id": 655,
+      "title_en": "Paris, Texas",
+      "title_zh": "巴黎，德州"
     }
   },
   {

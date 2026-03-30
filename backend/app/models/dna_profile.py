@@ -1,5 +1,7 @@
+import json
 import uuid
 from datetime import datetime
+from pathlib import Path
 
 from pgvector.sqlalchemy import Vector
 from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, String, Text, func
@@ -8,8 +10,10 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models import Base
 
-# 30 tags in tag_taxonomy.json
-TAG_VECTOR_DIMENSIONS = 30
+_DATA_DIR = Path(__file__).resolve().parent.parent / "data"
+TAG_VECTOR_DIMENSIONS = len(
+    json.loads((_DATA_DIR / "tag_taxonomy.json").read_text())["tags"]
+)
 
 
 class DnaProfile(Base):

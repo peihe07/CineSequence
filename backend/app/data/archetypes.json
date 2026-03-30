@@ -15,7 +15,7 @@
     "name_en": "Dark Poet",
     "icon": "ri-quill-pen-line",
     "description": "你享受在灰色地帶游走，對人性的複雜性著迷。別人眼中的反派，在你看來可能只是說了真話的人。",
-    "match_tags": ["antiHero", "psychoThriller", "cult", "violentAesthetic"],
+    "match_tags": ["antiHero", "psychoThriller", "cult", "violentAesthetic", "moralAnxiety"],
     "match_genres": [80, 53, 27],
     "ticket_style": "noir"
   },
@@ -35,7 +35,7 @@
     "name_en": "Chaos Theorist",
     "icon": "ri-dice-line",
     "description": "你被那些打破敘事規則的作品吸引。越不按牌理出牌，你越興奮。藝術的意義在於挑戰。",
-    "match_tags": ["experimental", "absurdist", "cult", "mindfuck", "satirical", "psychoThriller"],
+    "match_tags": ["experimental", "absurdist", "cult", "mindfuck", "satirical", "psychoThriller", "blackComedy"],
     "match_genres": [878, 14, 16],
     "ticket_style": "indie"
   },
@@ -45,7 +45,7 @@
     "name_en": "Quiet Observer",
     "icon": "ri-search-line",
     "description": "你偏好用對白和細節堆疊的故事。爆炸和追逐沒辦法打動你，但一句精準的台詞可以讓你反覆咀嚼三天。",
-    "match_tags": ["dialogue", "slowburn", "socialCritique", "existential", "satirical", "nostalgic"],
+    "match_tags": ["dialogue", "slowburn", "socialCritique", "existential", "satirical", "nostalgic", "urbanLoneliness", "driftCinema"],
     "match_genres": [18, 99, 36],
     "ticket_style": "indie"
   },
@@ -75,7 +75,7 @@
     "name_en": "World Wanderer",
     "icon": "ri-earth-line",
     "description": "你的片單沒有國界。語言是表層，你真正追蹤的是文化差異裡那些微妙的人性共通點。",
-    "match_tags": ["nonEnglish", "slowburn", "existential", "nostalgic", "socialCritique"],
+    "match_tags": ["nonEnglish", "slowburn", "existential", "nostalgic", "socialCritique", "artHouseBridge"],
     "match_genres": [18, 36, 10749],
     "ticket_style": "indie"
   },

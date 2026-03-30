@@ -302,11 +302,21 @@ class TestGetAiPairDuplicateRejection:
 class TestValidTags:
     """Verify tag taxonomy is loaded correctly."""
 
-    def test_has_30_tags(self):
-        assert len(_VALID_TAGS) == 30
+    def test_has_expected_taxonomy_size(self):
+        assert len(_VALID_TAGS) == 35
 
     def test_known_tags_present(self):
-        expected = {"twist", "mindfuck", "slowburn", "existential", "antiHero", "romanticCore"}
+        expected = {
+            "twist",
+            "mindfuck",
+            "slowburn",
+            "existential",
+            "antiHero",
+            "romanticCore",
+            "artHouseBridge",
+            "blackComedy",
+            "moralAnxiety",
+        }
         assert expected.issubset(_VALID_TAGS)
 
     def test_non_english_is_not_a_taste_tag(self):

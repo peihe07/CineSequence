@@ -3134,5 +3134,61 @@
     "confounds": [],
     "replacement_needed": false,
     "notes": ""
+  },
+  "655": {
+    "title_en": "Paris, Texas",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": ["canon_familiarity"],
+    "replacement_needed": false,
+    "notes": "Wenders bridge-auteur anchor for drift, loneliness, and humanistic sincerity. Added to let the new cynical-vs-sincere and intimacy-oriented phase-one signals continue into downstream pool selection."
+  },
+  "12508": {
+    "title_en": "Wings of Desire",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": ["canon_familiarity"],
+    "replacement_needed": false,
+    "notes": "Wenders anchor for contemplative pacing, philosophical tenderness, and non-English art-house signal without collapsing into maximal austerity."
+  },
+  "86829": {
+    "title_en": "Inside Llewyn Davis",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": ["prestige_signal"],
+    "replacement_needed": false,
+    "notes": "Coen brothers bridge-auteur anchor for intimate failure, black-humor-adjacent melancholy, and character-close observation."
+  },
+  "400617": {
+    "title_en": "Phantom Thread",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": ["prestige_signal"],
+    "replacement_needed": false,
+    "notes": "Paul Thomas Anderson anchor for controlled intimacy, performance pressure, and slow-burning relational tension."
+  },
+  "12573": {
+    "title_en": "A Serious Man",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": ["prestige_signal"],
+    "replacement_needed": false,
+    "notes": "Coen brothers anchor for moral anxiety, deadpan absurdity, and darkly comic existential drift."
+  },
+  "275": {
+    "title_en": "Fargo",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": ["canon_familiarity"],
+    "replacement_needed": false,
+    "notes": "Coen brothers bridge title for black comedy, criminal unease, and accessible off-kilter tone."
+  },
+  "7345": {
+    "title_en": "There Will Be Blood",
+    "confidence": "high",
+    "coverage_reason": "phase1_anchor",
+    "confounds": ["prestige_signal"],
+    "replacement_needed": false,
+    "notes": "Paul Thomas Anderson anchor for domination, ambition, and severe slow-burning antihero energy."
   }
 }

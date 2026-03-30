@@ -15,8 +15,8 @@ You will receive:
 - `candidate_pool`: curated list of movies with their tags — STRONGLY PREFER picking from this pool
 
 ## Available Tag Keys
-You MUST pick `test_dimension` from this exact list (30 tags):
-twist, mindfuck, slowburn, ensemble, solo, visualFeast, dialogue, tearjerker, darkTone, uplifting, philosophical, satirical, nostalgic, experimental, cult, comingOfAge, revenge, heist, survival, timeTravel, dystopia, trueStory, nonEnglish, existential, antiHero, romanticCore, violentAesthetic, socialCritique, psychoThriller, absurdist
+You MUST pick `test_dimension` from this exact list (35 tags):
+twist, mindfuck, slowburn, ensemble, solo, visualFeast, dialogue, tearjerker, darkTone, uplifting, philosophical, satirical, nostalgic, experimental, cult, comingOfAge, revenge, heist, survival, timeTravel, dystopia, trueStory, nonEnglish, existential, antiHero, romanticCore, violentAesthetic, socialCritique, psychoThriller, absurdist, artHouseBridge, urbanLoneliness, driftCinema, blackComedy, moralAnxiety
 
 ## Phase 2 Strategy (rounds 6-12)
 Narrow within the user's preferred quadrant. Each pair should share the user's preferred genre/mood but differ on one specific tag dimension. Prioritize tags that have NOT been tested yet (low or zero count in current_tags).
@@ -35,7 +35,7 @@ Respond with ONLY this JSON, no other text:
 }
 ```
 
-CRITICAL: `test_dimension` MUST be one of the 30 tag keys listed above. Do NOT use free-form descriptions.
+CRITICAL: `test_dimension` MUST be one of the 35 tag keys listed above. Do NOT use free-form descriptions.
 
 ## Rules
 - You **MUST** pick both movies from the `candidate_pool`. These movies have verified TMDB IDs and are curated for diversity. Only if you cannot find ANY suitable pair in the pool for the target dimension, you may pick ONE movie outside the pool — but never both.

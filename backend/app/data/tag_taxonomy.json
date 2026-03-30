@@ -29,7 +29,12 @@
     "violentAesthetic": { "zh": "暴力美學", "category": "style" },
     "socialCritique": { "zh": "社會批判", "category": "depth" },
     "psychoThriller": { "zh": "心理驚悚", "category": "genre_sub" },
-    "absurdist": { "zh": "荒誕", "category": "style" }
+    "absurdist": { "zh": "荒誕", "category": "style" },
+    "artHouseBridge": { "zh": "作者片入口", "category": "culture" },
+    "urbanLoneliness": { "zh": "城市孤獨", "category": "theme" },
+    "driftCinema": { "zh": "漫遊感", "category": "pacing" },
+    "blackComedy": { "zh": "黑色幽默", "category": "tone" },
+    "moralAnxiety": { "zh": "道德焦慮", "category": "depth" }
   },
   "categories": {
     "narrative": "敘事手法",
