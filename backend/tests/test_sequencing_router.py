@@ -696,3 +696,30 @@ class TestSkip:
         await db_session.refresh(user)
         assert user.sequencing_status == SequencingStatus.completed
         mock_enqueue_dna_build.assert_awaited_once_with(user.id)
+
+
+class TestDislikeBoth:
+    """POST /sequencing/dislike-both"""
+
+    @pytest.mark.asyncio
+    async def test_dislike_both_persists_as_distinct_decision(self, client, auth_user, db_session):
+        user, headers = auth_user
+
+        response = await client.post(
+            "/sequencing/dislike-both",
+            json={
+                "movie_a_tmdb_id": 3101,
+                "movie_b_tmdb_id": 3102,
+                "response_time_ms": 850,
+                "test_dimension": "slowburn",
+            },
+            headers=headers,
+        )
+        assert response.status_code == 200
+
+        result = await db_session.execute(select(Pick).where(Pick.user_id == user.id))
+        picks = result.scalars().all()
+        assert len(picks) == 1
+        assert picks[0].chosen_tmdb_id is None
+        assert picks[0].decision_type == "dislike_both"
+        assert picks[0].test_dimension == "slowburn"

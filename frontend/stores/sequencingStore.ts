@@ -54,6 +54,7 @@ interface SequencingState {
   fetchProgress: () => Promise<Progress>
   submitPick: (tmdbId: number, pickMode?: 'watched' | 'attracted', responseTimeMs?: number) => Promise<void>
   skip: (responseTimeMs?: number) => Promise<void>
+  dislikeBoth: (responseTimeMs?: number) => Promise<void>
   setSeedMovie: (tmdbId: number) => Promise<void>
   extendSequencing: () => Promise<void>
   startRetest: () => Promise<void>
@@ -165,6 +166,34 @@ export const useSequencingStore = create<SequencingState>((set, get) => ({
     set({ currentPair: null, rerollExcludedTmdbIds: [], isLoading: true })
     try {
       const progress = await api<Progress>('/sequencing/skip', {
+        method: 'POST',
+        body: JSON.stringify({
+          movie_a_tmdb_id: currentPair?.movie_a.tmdb_id ?? null,
+          movie_b_tmdb_id: currentPair?.movie_b.tmdb_id ?? null,
+          response_time_ms: responseTimeMs,
+          test_dimension: currentPair?.test_dimension ?? null,
+        }),
+      })
+      set({ progress, isLoading: false, ambientColor: null })
+
+      if (!progress.completed) {
+        get().fetchPair()
+      }
+    } catch (err) {
+      set({
+        currentPair,
+        rerollExcludedTmdbIds,
+        isLoading: false,
+        error: err instanceof Error ? err.message : translateStatic('common.error'),
+      })
+    }
+  },
+
+  dislikeBoth: async (responseTimeMs) => {
+    const { currentPair, rerollExcludedTmdbIds } = get()
+    set({ currentPair: null, rerollExcludedTmdbIds: [], isLoading: true })
+    try {
+      const progress = await api<Progress>('/sequencing/dislike-both', {
         method: 'POST',
         body: JSON.stringify({
           movie_a_tmdb_id: currentPair?.movie_a.tmdb_id ?? null,

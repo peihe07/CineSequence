@@ -49,6 +49,7 @@ async def build_dna_for_user(user_id: str):
                 "movie_b_tmdb_id": p.movie_b_tmdb_id,
                 "chosen_tmdb_id": p.chosen_tmdb_id,
                 "pick_mode": p.pick_mode.value if p.pick_mode else None,
+                "decision_type": p.decision_type.value,
                 "test_dimension": p.test_dimension,
             }
             for p in picks_orm

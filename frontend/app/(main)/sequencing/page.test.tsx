@@ -107,12 +107,20 @@ vi.mock('@/components/sequencing/OnboardingOverlay', () => ({
 
 vi.mock('@/lib/i18n', () => ({
   useI18n: () => ({
-    t: (key: string) => {
+    t: (key: string, vars?: Record<string, string | number>) => {
       const dict: Record<string, string> = {
         'common.error': 'Something went wrong',
         'error.retry': 'Retry',
+        'seq.resumeEyebrow': 'Resume session',
+        'seq.resumeTitle': 'Continue from round {{round}}',
+        'seq.resumeBody': 'You already completed part of this sequence.',
+        'seq.resumeCta': 'Continue sequencing',
       }
-      return dict[key] ?? key
+      let value = dict[key] ?? key
+      Object.entries(vars ?? {}).forEach(([name, replacement]) => {
+        value = value.replace(`{{${name}}}`, String(replacement))
+      })
+      return value
     },
   }),
 }))
@@ -231,5 +239,30 @@ describe('SequencingPage', () => {
 
     expect(skipMock).toHaveBeenCalledTimes(1)
     expect(skipMock).toHaveBeenCalledWith(expect.any(Number))
+  })
+
+  it('shows a resume checkpoint before loading the next pair for in-progress sessions', async () => {
+    fetchProgressMock.mockImplementation(async () => {
+      sequencingState.progress = {
+        completed: false,
+        round_number: 5,
+        phase: 2,
+        total_rounds: 20,
+        seed_movie_tmdb_id: 10,
+      }
+      return sequencingState.progress
+    })
+
+    render(<SequencingPage />)
+
+    expect(await screen.findByText('Resume session')).toBeTruthy()
+    expect(screen.getByText('Continue from round 5')).toBeTruthy()
+    expect(fetchPairMock).not.toHaveBeenCalled()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Continue sequencing' }))
+
+    await waitFor(() => {
+      expect(fetchPairMock).toHaveBeenCalledTimes(1)
+    })
   })
 })

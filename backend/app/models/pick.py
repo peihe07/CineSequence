@@ -14,6 +14,12 @@ class PickMode(enum.StrEnum):
     attracted = "attracted"
 
 
+class PickDecisionType(enum.StrEnum):
+    pick = "pick"
+    skip = "skip"
+    dislike_both = "dislike_both"
+
+
 class Pick(Base):
     __tablename__ = "picks"
 
@@ -35,6 +41,9 @@ class Pick(Base):
     movie_b_tmdb_id: Mapped[int] = mapped_column(Integer, nullable=False)
     chosen_tmdb_id: Mapped[int | None] = mapped_column(Integer)
     pick_mode: Mapped[PickMode | None] = mapped_column(Enum(PickMode))
+    decision_type: Mapped[PickDecisionType] = mapped_column(
+        Enum(PickDecisionType), nullable=False, default=PickDecisionType.pick
+    )
 
     # AI context (Phase 2-3)
     test_dimension: Mapped[str | None] = mapped_column(String(100))

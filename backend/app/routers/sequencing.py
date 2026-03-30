@@ -8,7 +8,7 @@ from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.deps import get_current_user, get_db
-from app.models.pick import Pick
+from app.models.pick import Pick, PickDecisionType
 from app.models.sequencing_session import SessionStatus
 from app.models.user import SequencingStatus, User
 from app.schemas.sequencing import (
@@ -112,6 +112,7 @@ async def _get_session_picks(db: AsyncSession, session_id) -> list[dict]:
             "movie_b_tmdb_id": p.movie_b_tmdb_id,
             "chosen_tmdb_id": p.chosen_tmdb_id,
             "pick_mode": p.pick_mode.value if p.pick_mode else None,
+            "decision_type": p.decision_type.value,
             "test_dimension": p.test_dimension,
         }
         for p in picks
@@ -482,6 +483,7 @@ async def submit_pick(
         movie_b_tmdb_id=movie_b_tmdb_id,
         chosen_tmdb_id=body.chosen_tmdb_id,
         pick_mode=body.pick_mode,
+        decision_type=PickDecisionType.pick,
         test_dimension=test_dimension,
         response_time_ms=body.response_time_ms,
     )
@@ -504,13 +506,13 @@ async def submit_pick(
     return _build_progress(session, len(picks) + 1, user)
 
 
-@router.post("/skip", response_model=ProgressResponse)
-async def skip_pair(
+async def _record_empty_decision(
     body: SkipRequest,
+    *,
+    decision_type: PickDecisionType,
     user: Annotated[User, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
 ):
-    """Skip the current pair (neither movie chosen)."""
     session = await get_or_create_session(db, user.id)
     picks = await _get_session_picks(db, session.id)
     round_number = len(picks) + 1
@@ -555,6 +557,7 @@ async def skip_pair(
         movie_b_tmdb_id=movie_b_tmdb_id,
         chosen_tmdb_id=None,
         pick_mode=None,
+        decision_type=decision_type,
         test_dimension=skip_dimension,
         response_time_ms=body.response_time_ms,
     )
@@ -572,6 +575,36 @@ async def skip_pair(
     if round_number >= session.total_rounds:
         await _enqueue_dna_build(user.id)
     return _build_progress(session, len(picks) + 1, user)
+
+
+@router.post("/skip", response_model=ProgressResponse)
+async def skip_pair(
+    body: SkipRequest,
+    user: Annotated[User, Depends(get_current_user)],
+    db: Annotated[AsyncSession, Depends(get_db)],
+):
+    """Skip the current pair (neither movie chosen)."""
+    return await _record_empty_decision(
+        body,
+        decision_type=PickDecisionType.skip,
+        user=user,
+        db=db,
+    )
+
+
+@router.post("/dislike-both", response_model=ProgressResponse)
+async def dislike_both_pair(
+    body: SkipRequest,
+    user: Annotated[User, Depends(get_current_user)],
+    db: Annotated[AsyncSession, Depends(get_db)],
+):
+    """Record an explicit rejection of both movies without reusing skip semantics."""
+    return await _record_empty_decision(
+        body,
+        decision_type=PickDecisionType.dislike_both,
+        user=user,
+        db=db,
+    )
 
 
 @router.get("/progress", response_model=ProgressResponse)

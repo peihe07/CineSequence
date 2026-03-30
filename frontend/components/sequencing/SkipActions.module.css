@@ -1,4 +1,31 @@
 .container {
   display: flex;
   gap: 0.8rem;
+  width: 100%;
+}
+
+.actionCard {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.hint {
+  font-size: 0.72rem;
+  line-height: 1.45;
+  color: var(--muted);
+}
+
+.extendedActions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  padding-top: 0.1rem;
+}
+
+@media (max-width: 640px) {
+  .container {
+    flex-direction: column;
+  }
 }

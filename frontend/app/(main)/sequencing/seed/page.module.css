@@ -163,9 +163,31 @@
   color: var(--muted);
 }
 
+.emptyState {
+  margin-top: 0.85rem;
+  padding: 0.95rem 1rem;
+  border: 1px dashed var(--border);
+  border-radius: var(--card-radius);
+  background: color-mix(in srgb, var(--card-bg) 86%, transparent);
+}
+
+.emptyTitle {
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+.emptyHint {
+  margin-top: 0.25rem;
+  font-size: 0.78rem;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
 /* Selected card */
 .selectedCard {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 1rem;
   padding: 1rem;
@@ -173,6 +195,14 @@
   border-radius: var(--card-radius);
   box-shadow: var(--card-shadow);
   background: var(--card-bg);
+}
+
+.selectedLabel {
+  width: 100%;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
 }
 
 .selectedPoster {

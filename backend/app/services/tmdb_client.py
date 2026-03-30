@@ -3,6 +3,7 @@
 import json
 import logging
 import re
+import unicodedata
 from dataclasses import dataclass, field
 
 import httpx
@@ -39,8 +40,24 @@ def _poster_url(path: str | None, size: str = "w500") -> str | None:
 def _normalize_title(title: str | None) -> str:
     if not title:
         return ""
-    lowered = title.casefold()
+    lowered = unicodedata.normalize("NFKD", unicodedata.normalize("NFKC", title))
+    lowered = "".join(ch for ch in lowered if not unicodedata.combining(ch)).casefold()
     return re.sub(r"[^a-z0-9\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff]+", "", lowered)
+
+
+def _tokenize_search_text(title: str | None) -> list[str]:
+    if not title:
+        return []
+    normalized = unicodedata.normalize("NFKD", unicodedata.normalize("NFKC", title))
+    normalized = "".join(ch for ch in normalized if not unicodedata.combining(ch)).casefold()
+    spaced = re.sub(r"[^a-z0-9\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff]+", " ", normalized)
+    return [token for token in spaced.split() if token]
+
+
+def _score_release_year(query: str, year: int | None) -> int:
+    if year is None:
+        return 0
+    return int(str(year) in unicodedata.normalize("NFKC", query))
 
 
 def _parse_movie(data: dict) -> MovieInfo:
@@ -120,9 +137,11 @@ def _score_search_match(query: str, movie: MovieInfo) -> tuple[int, int, int, in
     normalized_query = _normalize_title(query)
     normalized_zh = _normalize_title(movie.title_zh)
     normalized_en = _normalize_title(movie.title_en)
+    query_tokens = _tokenize_search_text(query)
+    title_tokens = set(_tokenize_search_text(movie.title_zh) + _tokenize_search_text(movie.title_en))
 
     if not normalized_query:
-        return (0, 0, 0, 0)
+        return (0, 0, 0, 0, 0)
 
     exact_match = int(
         normalized_query == normalized_zh or normalized_query == normalized_en
@@ -134,8 +153,9 @@ def _score_search_match(query: str, movie: MovieInfo) -> tuple[int, int, int, in
     contains_match = int(
         normalized_query in normalized_zh or normalized_query in normalized_en
     )
+    token_overlap = sum(1 for token in query_tokens if token in title_tokens)
     localized_title = int(bool(movie.title_zh))
-    return (exact_match, prefix_match, contains_match, localized_title)
+    return (exact_match, prefix_match, contains_match, token_overlap, localized_title)
 
 
 async def _search_movies_for_language(
@@ -176,7 +196,7 @@ async def _search_movies_for_language(
 
 async def search_movies(query: str, limit: int = 8) -> list[MovieInfo]:
     """Search TMDB for movies by title. Used for seed movie autocomplete."""
-    normalized_query = _normalize_title(query)
+    normalized_query = _normalize_title(query.strip())
     if not normalized_query:
         return []
 
@@ -199,6 +219,7 @@ async def search_movies(query: str, limit: int = 8) -> list[MovieInfo]:
     movies.sort(
         key=lambda movie: (
             _score_search_match(query, movie),
+            _score_release_year(query, movie.year),
             movie.year or 0,
         ),
         reverse=True,

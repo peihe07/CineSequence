@@ -178,36 +178,78 @@ function DnaResultContent() {
         </motion.section>
 
         <motion.section
+          className={`${styles.section} ${styles.diagnosticsSection}`}
+          initial={{ opacity: 0, y: 28 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ ...sectionTransition, delay: 0.24 }}
+        >
+          <p className={styles.diagnosticsEyebrow}>{t('dna.diagnosticsLabel')}</p>
+          <div className={styles.diagnosticsGrid}>
+            <div className={styles.diagnosticsCard}>
+              <span className={styles.diagnosticsValue}>{result.interaction_diagnostics.explicit_pick_count}</span>
+              <span className={styles.diagnosticsText}>{t('dna.diagnosticsPicks')}</span>
+            </div>
+            <div className={styles.diagnosticsCard}>
+              <span className={styles.diagnosticsValue}>{result.interaction_diagnostics.skip_count}</span>
+              <span className={styles.diagnosticsText}>{t('dna.diagnosticsSkips')}</span>
+            </div>
+            <div className={styles.diagnosticsCard}>
+              <span className={styles.diagnosticsValue}>{result.interaction_diagnostics.dislike_both_count}</span>
+              <span className={styles.diagnosticsText}>{t('dna.diagnosticsDislikes')}</span>
+            </div>
+          </div>
+        </motion.section>
+
+        <motion.section
           className={`${styles.section} ${styles.actions}`}
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ ...sectionTransition, delay: 0.28 }}
         >
-          <>
-            <Button
-              variant="primary"
-              size="lg"
-              onClick={() => void handleEnterTheaters()}
-            >
-              <i className="ri-movie-line" /> {t('dna.enterTheaters')}
-            </Button>
-            <Button
-              variant="secondary"
-              size="lg"
-              onClick={() => router.push('/matches')}
-            >
-              <i className="ri-group-line" /> {t('dna.findMatches')}
-            </Button>
-            {canExtend && (
+          <div className={styles.actionsHeader}>
+            <p className={styles.actionEyebrow}>{t('dna.nextStepLabel')}</p>
+            <h2 className={styles.actionTitle}>{t('dna.nextStepTitle')}</h2>
+            <p className={styles.actionIntro}>{t('dna.nextStepBody')}</p>
+          </div>
+          <div className={styles.actionGrid}>
+            <div className={styles.primaryActionCard}>
+              <p className={styles.actionCardLabel}>{t('dna.enterTheaters')}</p>
+              <p className={styles.actionCardBody}>{t('dna.enterTheatersHint')}</p>
               <Button
-                variant="secondary"
+                variant="primary"
                 size="lg"
-                onClick={() => void handleExtend()}
+                onClick={() => void handleEnterTheaters()}
               >
-                <i className="ri-add-line" /> {t('complete.extend')}
+                <i className="ri-movie-line" /> {t('dna.enterTheaters')}
               </Button>
-            )}
-          </>
+            </div>
+            <div className={styles.secondaryActionStack}>
+              <div className={styles.secondaryActionCard}>
+                <p className={styles.actionCardLabel}>{t('dna.findMatches')}</p>
+                <p className={styles.actionCardBody}>{t('dna.findMatchesHint')}</p>
+                <Button
+                  variant="secondary"
+                  size="lg"
+                  onClick={() => router.push('/matches')}
+                >
+                  <i className="ri-group-line" /> {t('dna.findMatches')}
+                </Button>
+              </div>
+              {canExtend && (
+                <div className={styles.secondaryActionCard}>
+                  <p className={styles.actionCardLabel}>{t('complete.extend')}</p>
+                  <p className={styles.actionCardBody}>{t('dna.extendHint')}</p>
+                  <Button
+                    variant="secondary"
+                    size="lg"
+                    onClick={() => void handleExtend()}
+                  >
+                    <i className="ri-add-line" /> {t('complete.extend')}
+                  </Button>
+                </div>
+              )}
+            </div>
+          </div>
         </motion.section>
 
         <motion.section

@@ -7,7 +7,7 @@
   background:
     radial-gradient(circle at top left, rgba(255, 255, 255, 0.04), transparent 22%),
     radial-gradient(circle at bottom right, rgba(255, 255, 255, 0.03), transparent 26%),
-    linear-gradient(180deg, #0d0e10 0%, #0a0b0c 100%);
+    linear-gradient(180deg, #121418 0%, #181a20 100%);
   color: rgba(255, 255, 255, 0.92);
 }
 
@@ -24,36 +24,13 @@
   width: 100%;
   padding: var(--section-space) clamp(1.1rem, 4vw, 2.25rem);
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.04);
   background:
-    linear-gradient(180deg, rgba(19, 18, 20, 0.72), rgba(12, 12, 14, 0.56)),
-    rgba(20, 20, 20, 0.52);
+    linear-gradient(180deg, rgba(32, 35, 40, 0.68), rgba(24, 27, 32, 0.52)),
+    var(--surface-base);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-}
-
-.section::before,
-.section::after {
-  content: '';
-  position: absolute;
-  width: 44px;
-  height: 44px;
-  pointer-events: none;
-  opacity: 0.72;
-}
-
-.section::before {
-  top: 1rem;
-  left: 1rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.18);
-  border-left: 1px solid rgba(255, 255, 255, 0.18);
-}
-
-.section::after {
-  right: 1rem;
-  bottom: 1rem;
-  border-right: 1px solid rgba(255, 255, 255, 0.18);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 0 0 24px 24px;
 }
 
 .heroSection {
@@ -70,7 +47,7 @@
 
 .heroSection::before,
 .heroSection::after {
-  border-color: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.06);
 }
 
 .sideLabel {
@@ -80,7 +57,7 @@
   writing-mode: vertical-rl;
   text-orientation: mixed;
   font-family: var(--font-sans), sans-serif;
-  font-size: 0.78rem;
+  font-size: var(--text-xs);
   font-weight: 600;
   letter-spacing: 0.18em;
   color: rgba(255, 255, 255, 0.42);
@@ -89,7 +66,7 @@
 .eyebrow {
   position: relative;
   font-family: var(--font-mono);
-  font-size: 0.72rem;
+  font-size: var(--text-xs);
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: rgba(229, 126, 49, 0.82);
@@ -117,7 +94,7 @@
   position: relative;
   margin-top: auto;
   font-family: var(--font-mono);
-  font-size: 0.68rem;
+  font-size: var(--text-xs);
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.46);
@@ -128,24 +105,152 @@
   grid-template-columns: 1fr 1fr;
   gap: clamp(1.5rem, 3vw, 2.75rem);
   align-items: start;
-  background: rgba(9, 9, 11, 0.34);
+  background: rgba(28, 31, 36, 0.34);
 }
 
 .grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: clamp(1.5rem, 3vw, 2.75rem);
-  background: rgba(9, 9, 11, 0.32);
+  background: rgba(28, 31, 36, 0.32);
 }
 
 .readingSection {
-  background: rgba(9, 9, 11, 0.36);
+  background: rgba(28, 31, 36, 0.36);
+}
+
+.diagnosticsSection {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  background: rgba(28, 31, 36, 0.34);
+}
+
+.diagnosticsEyebrow {
+  margin: 0;
+  font-size: var(--text-xs);
+  font-family: var(--font-mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.46);
+}
+
+.diagnosticsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.8rem;
+}
+
+.diagnosticsCard {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding: 0.95rem 1rem;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.018)),
+    rgba(255, 255, 255, 0.018);
+}
+
+.diagnosticsValue {
+  font-size: 1.4rem;
+  font-weight: 600;
+  line-height: 1;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.diagnosticsText {
+  font-size: 0.76rem;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.6);
 }
 
 .actions {
   display: flex;
-  justify-content: center;
-  background: rgba(9, 9, 11, 0.3);
+  flex-direction: column;
+  gap: 1rem;
+  background: rgba(28, 31, 36, 0.3);
+}
+
+.actionsHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  max-width: 42rem;
+}
+
+.actionEyebrow {
+  margin: 0;
+  font-size: var(--text-xs);
+  font-family: var(--font-mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.46);
+}
+
+.actionTitle {
+  margin: 0;
+  font-size: clamp(1.1rem, 2.6vw, 1.6rem);
+  line-height: 1.1;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.actionIntro {
+  margin: 0;
+  font-size: 0.86rem;
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.66);
+}
+
+.actionGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  gap: 0.9rem;
+}
+
+.primaryActionCard,
+.secondaryActionCard {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  padding: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 20px;
+}
+
+.primaryActionCard {
+  background:
+    linear-gradient(180deg, rgba(229, 126, 49, 0.11), rgba(255, 255, 255, 0.02)),
+    rgba(255, 255, 255, 0.02);
+}
+
+.secondaryActionCard {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.018)),
+    rgba(255, 255, 255, 0.018);
+}
+
+.secondaryActionStack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.actionCardLabel {
+  margin: 0;
+  font-size: var(--text-xs);
+  font-family: var(--font-mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.52);
+}
+
+.actionCardBody {
+  margin: 0;
+  font-size: 0.84rem;
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.74);
 }
 
 .topRow,
@@ -176,6 +281,14 @@
     grid-template-columns: 1fr;
   }
 
+  .actionGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .diagnosticsGrid {
+    grid-template-columns: 1fr;
+  }
+
   .heroSection {
     min-height: clamp(18rem, calc(100dvh - 11rem), 24rem);
     padding-top: 3rem;
@@ -192,12 +305,18 @@
   .heroMeta {
     margin-top: 1.5rem;
   }
+
+  .actionsHeader,
+  .primaryActionCard,
+  .secondaryActionCard {
+    gap: 0.6rem;
+  }
 }
 
 /* Disclaimer */
 .disclaimer {
-  font-size: 0.72rem;
-  color: rgba(255, 255, 255, 0.52);
+  font-size: var(--text-xs);
+  color: var(--archive-text-muted);
   line-height: 1.7;
   max-width: 42rem;
   opacity: 0.75;

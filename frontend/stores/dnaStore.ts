@@ -33,6 +33,12 @@ interface ComparisonEvidence {
   rejected_tags: string[]
 }
 
+interface InteractionDiagnostics {
+  skip_count: number
+  dislike_both_count: number
+  explicit_pick_count: number
+}
+
 interface DnaResult {
   archetype: ArchetypeInfo
   tag_vector: number[]
@@ -42,6 +48,7 @@ interface DnaResult {
   avoided_signals: SignalDetail[]
   mixed_signals: SignalDetail[]
   comparison_evidence: ComparisonEvidence[]
+  interaction_diagnostics: InteractionDiagnostics
   genre_vector: Record<string, number>
   quadrant_scores: QuadrantScores
   personality_reading: string | null

@@ -41,6 +41,11 @@ const {
         supporting_signals: Array<Record<string, unknown>>
         avoided_signals: Array<Record<string, unknown>>
         mixed_signals: Array<Record<string, unknown>>
+        interaction_diagnostics: {
+          explicit_pick_count: number
+          skip_count: number
+          dislike_both_count: number
+        }
         personality_reading: string | null
         hidden_traits: string[]
         conversation_style: string | null
@@ -98,9 +103,13 @@ vi.mock('@/lib/i18n', () => ({
         'dna.retry': 'Retry',
         'dna.title': 'Your Cine DNA',
         'dna.deck': 'DNA deck copy',
+        'dna.diagnosticsLabel': 'Interaction summary',
+        'dna.diagnosticsPicks': 'Explicit picks made',
+        'dna.diagnosticsSkips': 'Rounds skipped',
+        'dna.diagnosticsDislikes': 'Double rejections',
         'dna.findMatches': 'Find matches',
-        'dna.enterTheaters': 'Enter theaters',
-        'complete.extend': 'Extend analysis (+5 rounds)',
+        'dna.enterTheaters': 'Open theaters',
+        'complete.extend': 'Extend analysis (+3 rounds)',
       }
       return dict[key] ?? key
     },
@@ -191,6 +200,7 @@ describe('DnaResultPage', () => {
       supporting_signals: [],
       avoided_signals: [],
       mixed_signals: [],
+      interaction_diagnostics: { explicit_pick_count: 24, skip_count: 2, dislike_both_count: 1 },
       personality_reading: null,
       hidden_traits: [],
       conversation_style: null,
@@ -200,7 +210,7 @@ describe('DnaResultPage', () => {
 
     render(<DnaResultPage />)
 
-    expect(await screen.findByRole('button', { name: 'Extend analysis (+5 rounds)' })).toBeTruthy()
+    expect(await screen.findByRole('button', { name: 'Extend analysis (+3 rounds)' })).toBeTruthy()
     expect(fetchProgressMock).toHaveBeenCalledTimes(1)
   })
 
@@ -214,6 +224,7 @@ describe('DnaResultPage', () => {
       supporting_signals: [],
       avoided_signals: [],
       mixed_signals: [],
+      interaction_diagnostics: { explicit_pick_count: 24, skip_count: 2, dislike_both_count: 1 },
       personality_reading: null,
       hidden_traits: [],
       conversation_style: null,
@@ -224,7 +235,7 @@ describe('DnaResultPage', () => {
 
     render(<DnaResultPage />)
 
-    fireEvent.click(screen.getByRole('button', { name: 'Extend analysis (+5 rounds)' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Extend analysis (+3 rounds)' }))
 
     await waitFor(() => {
       expect(extendSequencingMock).toHaveBeenCalledTimes(1)
@@ -242,6 +253,7 @@ describe('DnaResultPage', () => {
       supporting_signals: [],
       avoided_signals: [],
       mixed_signals: [],
+      interaction_diagnostics: { explicit_pick_count: 24, skip_count: 2, dislike_both_count: 1 },
       personality_reading: null,
       hidden_traits: [],
       conversation_style: null,
@@ -251,11 +263,37 @@ describe('DnaResultPage', () => {
 
     render(<DnaResultPage />)
 
-    fireEvent.click(screen.getByRole('button', { name: 'Enter theaters' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Open theaters' }))
 
     await waitFor(() => {
       expect(autoAssignMock).toHaveBeenCalledTimes(1)
       expect(pushMock).toHaveBeenCalledWith('/theaters')
     })
+  })
+
+  it('shows interaction diagnostics on the dna result page', async () => {
+    dnaState.result = {
+      archetype: { id: 'archivist' },
+      genre_vector: {},
+      quadrant_scores: {},
+      tag_labels: {},
+      top_tags: [],
+      supporting_signals: [],
+      avoided_signals: [],
+      mixed_signals: [],
+      interaction_diagnostics: { explicit_pick_count: 24, skip_count: 3, dislike_both_count: 2 },
+      personality_reading: null,
+      hidden_traits: [],
+      conversation_style: null,
+      ideal_movie_date: null,
+      can_extend: false,
+    }
+
+    render(<DnaResultPage />)
+
+    expect(await screen.findByText('Interaction summary')).toBeTruthy()
+    expect(screen.getByText('Explicit picks made')).toBeTruthy()
+    expect(screen.getByText('Rounds skipped')).toBeTruthy()
+    expect(screen.getByText('Double rejections')).toBeTruthy()
   })
 })

@@ -29,16 +29,18 @@ export default function SeedMoviePage() {
   const [searchError, setSearchError] = useState<string | null>(null)
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const { setSeedMovie, error } = useSequencingStore()
+  const showEmptyState = query.trim().length >= 2 && !isSearching && results.length === 0 && !searchError
 
   const search = useCallback(async (q: string) => {
-    if (q.length < 2) {
+    const trimmed = q.trim()
+    if (trimmed.length < 2) {
       setResults([])
       setSearchError(null)
       return
     }
     setIsSearching(true)
     try {
-      const data = await api<SearchResult[]>(`/sequencing/search?q=${encodeURIComponent(q)}`)
+      const data = await api<SearchResult[]>(`/sequencing/search?q=${encodeURIComponent(trimmed)}`)
       setResults(data)
       setSearchError(null)
     } catch (err) {
@@ -148,6 +150,13 @@ export default function SeedMoviePage() {
               </motion.ul>
             )}
           </AnimatePresence>
+
+          {showEmptyState && (
+            <div className={styles.emptyState}>
+              <p className={styles.emptyTitle}>{t('seed.emptyTitle')}</p>
+              <p className={styles.emptyHint}>{t('seed.emptyHint')}</p>
+            </div>
+          )}
         </div>
 
         {selected && (
@@ -156,6 +165,7 @@ export default function SeedMoviePage() {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
           >
+            <div className={styles.selectedLabel}>{t('seed.selectedLabel')}</div>
             {selected.poster_url && (
               <Image
                 className={styles.selectedPoster}

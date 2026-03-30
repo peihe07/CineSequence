@@ -5,6 +5,7 @@ from app.services.tmdb_client import (
     _normalize_title,
     _parse_movie,
     _poster_url,
+    _score_release_year,
     _score_search_match,
 )
 
@@ -157,3 +158,53 @@ class TestSearchNormalization:
         )
 
         assert _score_search_match("橫道世之介", exact) > _score_search_match("橫道", prefix_only)
+
+    def test_search_match_prefers_original_title_exact_match(self):
+        exact_original = MovieInfo(
+            tmdb_id=1,
+            title_en="In the Mood for Love",
+            title_zh="花樣年華",
+            poster_url=None,
+            year=2000,
+            genres=[],
+        )
+        partial_match = MovieInfo(
+            tmdb_id=2,
+            title_en="Mood Indigo",
+            title_zh="戀戀銅鑼燒",
+            poster_url=None,
+            year=2013,
+            genres=[],
+        )
+
+        assert _score_search_match("In the Mood for Love", exact_original) > _score_search_match(
+            "In the Mood for Love", partial_match
+        )
+
+    def test_release_year_score_prefers_matching_year(self):
+        assert _score_release_year("2046 2004", 2004) > _score_release_year("2046 2004", 2024)
+
+    def test_token_overlap_prefers_title_covering_more_query_words(self):
+        fuller_match = MovieInfo(
+            tmdb_id=1,
+            title_en="Eternal Sunshine of the Spotless Mind",
+            title_zh="王牌冤家",
+            poster_url=None,
+            year=2004,
+            genres=[],
+        )
+        weaker_match = MovieInfo(
+            tmdb_id=2,
+            title_en="Sunshine",
+            title_zh="太陽浩劫",
+            poster_url=None,
+            year=2007,
+            genres=[],
+        )
+
+        assert _score_search_match("eternal sunshine spotless", fuller_match) > _score_search_match(
+            "eternal sunshine spotless", weaker_match
+        )
+
+    def test_normalize_title_handles_full_width_forms(self):
+        assert _normalize_title("Ａｍéｌｉｅ ２００１") == "amelie2001"

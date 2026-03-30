@@ -32,6 +32,12 @@ class ComparisonEvidence(BaseModel):
     rejected_tags: list[str] = []
 
 
+class InteractionDiagnostics(BaseModel):
+    skip_count: int = 0
+    dislike_both_count: int = 0
+    explicit_pick_count: int = 0
+
+
 class DnaResultResponse(BaseModel):
     archetype: ArchetypeInfo
     tag_vector: list[float]
@@ -41,6 +47,7 @@ class DnaResultResponse(BaseModel):
     avoided_signals: list[SignalDetail] = []
     mixed_signals: list[SignalDetail] = []
     comparison_evidence: list[ComparisonEvidence] = []
+    interaction_diagnostics: InteractionDiagnostics
     genre_vector: dict[str, float] = {}
     quadrant_scores: QuadrantScores
     personality_reading: str | None = None

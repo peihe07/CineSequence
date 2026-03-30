@@ -40,6 +40,9 @@ vi.mock('@/lib/i18n', () => ({
         'seed.placeholder': 'Search movie title...',
         'seed.confirm': 'Start sequencing',
         'seed.skip': 'Skip this step',
+        'seed.emptyTitle': 'No close matches yet',
+        'seed.emptyHint': 'Try the English title, release year, or a shorter name.',
+        'seed.selectedLabel': 'Selected movie',
       }
       return dict[key] ?? key
     },
@@ -91,5 +94,42 @@ describe('SeedMoviePage', () => {
     })
     expect(pushMock).not.toHaveBeenCalledWith('/sequencing')
     expect(await screen.findByText('Failed to set seed movie')).toBeTruthy()
+  })
+
+  it('shows a guided empty state when search returns no results', async () => {
+    apiMock.mockResolvedValue([])
+
+    render(<SeedMoviePage />)
+
+    fireEvent.change(screen.getByPlaceholderText('Search movie title...'), {
+      target: { value: 'Unknown movie' },
+    })
+
+    expect(await screen.findByText('No close matches yet')).toBeTruthy()
+    expect(screen.getByText('Try the English title, release year, or a shorter name.')).toBeTruthy()
+  })
+
+  it('shows a clear selected movie confirmation state', async () => {
+    apiMock.mockResolvedValue([
+      {
+        tmdb_id: 2046,
+        title_en: '2046',
+        title_zh: '2046',
+        poster_url: null,
+        year: 2004,
+      },
+    ])
+
+    render(<SeedMoviePage />)
+
+    fireEvent.change(screen.getByPlaceholderText('Search movie title...'), {
+      target: { value: '2046' },
+    })
+
+    fireEvent.click(await screen.findByRole('button', { name: /2046/i }))
+
+    expect(screen.getByText('Selected movie')).toBeTruthy()
+    expect(screen.getAllByText('2046').length).toBeGreaterThan(0)
+    expect(screen.getByRole('button', { name: 'Start sequencing' }).hasAttribute('disabled')).toBe(false)
   })
 })

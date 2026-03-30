@@ -31,7 +31,7 @@ _IMPLICIT_POSITIVE = 0.3    # Chosen movie's tags
 _IMPLICIT_NEGATIVE = -0.15  # Rejected movie's tags
 _SKIP_WEIGHT = -0.3         # Skip = weak negative on test_dimension
 
-# Ordered list of tag keys matching the 30-dim vector
+# Ordered list of taxonomy keys matching the persisted tag vector
 TAG_KEYS = list(TAXONOMY["tags"].keys())
 TAG_INDEX = {tag: i for i, tag in enumerate(TAG_KEYS)}
 
@@ -62,6 +62,8 @@ def _compute_raw_tag_scores(picks: list[dict]) -> list[float]:
     raw = [0.0] * len(TAG_KEYS)
 
     for pick in picks:
+        if pick.get("decision_type") == "dislike_both":
+            continue
         dim = pick.get("test_dimension")
         chosen_id = pick.get("chosen_tmdb_id")
         movie_a_id = pick.get("movie_a_tmdb_id")
@@ -101,6 +103,8 @@ def _compute_signal_counts(picks: list[dict]) -> tuple[dict[str, int], dict[str,
     picks_against: dict[str, int] = {}
 
     for pick in picks:
+        if pick.get("decision_type") == "dislike_both":
+            continue
         dim = pick.get("test_dimension")
         chosen_id = pick.get("chosen_tmdb_id")
         movie_a_id = pick.get("movie_a_tmdb_id")
@@ -139,7 +143,7 @@ def _consistency_multiplier(tag: str, picks_for: dict[str, int], picks_against: 
 
 
 def compute_tag_vector(picks: list[dict]) -> list[float]:
-    """Build a 30-dimensional display tag vector from three signal layers.
+    """Build a display tag vector from the current taxonomy using three signal layers.
 
     Layer 1 — Explicit signal (test_dimension):
       - watched: +1.0, attracted: +0.7

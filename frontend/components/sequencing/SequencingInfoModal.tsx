@@ -93,6 +93,20 @@ export default function SequencingInfoModal({ open, onClose }: SequencingInfoMod
               </section>
 
               <section className={styles.section}>
+                <h3 className={styles.sectionTitle}>{t('seqInfo.actionsTitle')}</h3>
+                <ul className={styles.signalList}>
+                  <li>
+                    <span className={styles.signalLabel}>{t('seq.reroll')}</span>
+                    <span className={styles.signalDesc}>{t('seq.rerollHint')}</span>
+                  </li>
+                  <li>
+                    <span className={styles.signalLabel}>{t('seq.skipPair')}</span>
+                    <span className={styles.signalDesc}>{t('seq.skipHint')}</span>
+                  </li>
+                </ul>
+              </section>
+
+              <section className={styles.section}>
                 <h3 className={styles.sectionTitle}>{t('seqInfo.resultTitle')}</h3>
                 <p className={styles.text}>{t('seqInfo.resultBody')}</p>
               </section>

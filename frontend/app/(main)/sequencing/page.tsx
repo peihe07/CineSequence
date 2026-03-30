@@ -20,6 +20,11 @@ export default function SequencingPage() {
   const roundStartTime = useRef<number>(Date.now())
   const [isBootstrapping, setIsBootstrapping] = useState(true)
   const [showInfo, setShowInfo] = useState(false)
+  const [resumeCheckpoint, setResumeCheckpoint] = useState<null | {
+    roundNumber: number
+    phase: number
+    totalRounds: number
+  }>(null)
   const {
     currentPair,
     progress,
@@ -32,6 +37,7 @@ export default function SequencingPage() {
     fetchProgress,
     submitPick,
     skip,
+    dislikeBoth,
   } = useSequencingStore()
 
   const bootstrapSequencing = useCallback(async () => {
@@ -40,6 +46,14 @@ export default function SequencingPage() {
       const progress = await fetchProgress()
       if (progress && !progress.seed_movie_tmdb_id && progress.round_number === 1) {
         router.replace('/sequencing/seed')
+        return
+      }
+      if (progress && !progress.completed && progress.round_number > 1) {
+        setResumeCheckpoint({
+          roundNumber: progress.round_number,
+          phase: progress.phase,
+          totalRounds: progress.total_rounds,
+        })
         return
       }
       await fetchPair()
@@ -79,6 +93,20 @@ export default function SequencingPage() {
 
   function handleReroll() {
     void rerollPair()
+  }
+
+  function handleDislikeBoth() {
+    void dislikeBoth(getResponseTime())
+  }
+
+  async function handleResume() {
+    setIsBootstrapping(true)
+    try {
+      await fetchPair()
+      setResumeCheckpoint(null)
+    } finally {
+      setIsBootstrapping(false)
+    }
   }
 
   const roundNumber = progress?.round_number ?? currentPair?.round_number ?? 1
@@ -140,7 +168,23 @@ export default function SequencingPage() {
           />
 
           <div className={styles.arena}>
-            {currentPair && !currentPair.completed && (
+            {resumeCheckpoint && !currentPair && !isBootstrapping ? (
+              <div className={styles.resumeCard}>
+                <p className={styles.resumeEyebrow}>{t('seq.resumeEyebrow')}</p>
+                <h2 className={styles.resumeTitle}>
+                  {t('seq.resumeTitle', { round: resumeCheckpoint.roundNumber })}
+                </h2>
+                <p className={styles.resumeBody}>
+                  {t('seq.resumeBody', {
+                    phase: resumeCheckpoint.phase,
+                    remaining: resumeCheckpoint.totalRounds - resumeCheckpoint.roundNumber + 1,
+                  })}
+                </p>
+                <Button variant="primary" onClick={() => void handleResume()}>
+                  {t('seq.resumeCta')}
+                </Button>
+              </div>
+            ) : currentPair && !currentPair.completed && (
               <SwipePair
                 key={roundNumber}
                 pair={currentPair}
@@ -152,7 +196,12 @@ export default function SequencingPage() {
 
           <div className={styles.actionsDock}>
             <p className={styles.actionsHint}>{t('seq.skipPair')} / {t('seq.reroll')}</p>
-            <SkipActions onSkip={handleSkip} onReroll={handleReroll} disabled={isLoading} />
+            <SkipActions
+              onSkip={handleSkip}
+              onReroll={handleReroll}
+              onDislikeBoth={handleDislikeBoth}
+              disabled={isLoading}
+            />
           </div>
         </section>
 

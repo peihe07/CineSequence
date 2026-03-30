@@ -72,6 +72,17 @@ describe('sequencingStore', () => {
     expect(useSequencingStore.getState().isLoading).toBe(false)
   })
 
+  it('restores the current pair when dislikeBoth fails', async () => {
+    apiMock.mockRejectedValue(new Error('Dislike both failed'))
+
+    await useSequencingStore.getState().dislikeBoth(700)
+
+    expect(useSequencingStore.getState().currentPair).toEqual(pairFixture)
+    expect(useSequencingStore.getState().rerollExcludedTmdbIds).toEqual([101, 202])
+    expect(useSequencingStore.getState().error).toBe('Dislike both failed')
+    expect(useSequencingStore.getState().isLoading).toBe(false)
+  })
+
   it('throws and preserves progress state when extend sequencing fails', async () => {
     apiMock.mockRejectedValue(new Error('Extend failed'))
     useSequencingStore.setState({

@@ -464,6 +464,7 @@ async def export_data(
             "movie_b_tmdb_id": p.movie_b_tmdb_id,
             "chosen_tmdb_id": p.chosen_tmdb_id,
             "pick_mode": p.pick_mode.value if p.pick_mode else None,
+            "decision_type": p.decision_type.value,
             "created_at": p.created_at.isoformat(),
         }
         for p in user.picks

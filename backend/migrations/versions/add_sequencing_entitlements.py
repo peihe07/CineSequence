@@ -9,6 +9,7 @@ import uuid
 
 import sqlalchemy as sa
 from alembic import op
+from sqlalchemy.dialects import postgresql
 
 revision = "add_sequencing_entitlements"
 down_revision = "add_waitlist_entries"
@@ -17,8 +18,8 @@ depends_on = None
 
 
 def upgrade() -> None:
-    entitlement_kind = sa.Enum("free_retest", "paid_credit", name="entitlementkind")
-    entitlement_source = sa.Enum(
+    entitlement_kind = postgresql.ENUM("free_retest", "paid_credit", name="entitlementkind")
+    entitlement_source = postgresql.ENUM(
         "launch_grant",
         "purchase",
         "admin",
@@ -27,6 +28,20 @@ def upgrade() -> None:
     )
     entitlement_kind.create(op.get_bind(), checkfirst=True)
     entitlement_source.create(op.get_bind(), checkfirst=True)
+    entitlement_kind = postgresql.ENUM(
+        "free_retest",
+        "paid_credit",
+        name="entitlementkind",
+        create_type=False,
+    )
+    entitlement_source = postgresql.ENUM(
+        "launch_grant",
+        "purchase",
+        "admin",
+        "migration",
+        name="entitlementsource",
+        create_type=False,
+    )
 
     op.add_column(
         "users",

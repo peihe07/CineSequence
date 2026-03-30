@@ -15,6 +15,7 @@ from app.schemas.dna import (
     ComparisonEvidence,
     DnaBuildResponse,
     DnaHistorySummary,
+    InteractionDiagnostics,
     DnaResultResponse,
     QuadrantScores,
     SignalDetail,
@@ -70,6 +71,7 @@ async def _get_session_picks_and_genres(
             "movie_b_tmdb_id": p.movie_b_tmdb_id,
             "chosen_tmdb_id": p.chosen_tmdb_id,
             "pick_mode": p.pick_mode.value if p.pick_mode else None,
+            "decision_type": p.decision_type.value,
             "test_dimension": p.test_dimension,
         })
         tmdb_ids.add(p.movie_a_tmdb_id)
@@ -150,6 +152,27 @@ def _build_signal_details(
     ]
 
     return supporting, avoided, mixed
+
+
+def _build_interaction_diagnostics(picks: list[dict]) -> InteractionDiagnostics:
+    skip_count = 0
+    dislike_both_count = 0
+    explicit_pick_count = 0
+
+    for pick in picks:
+        decision_type = pick.get("decision_type", "pick")
+        if decision_type == "skip":
+            skip_count += 1
+        elif decision_type == "dislike_both":
+            dislike_both_count += 1
+        elif pick.get("chosen_tmdb_id") is not None:
+            explicit_pick_count += 1
+
+    return InteractionDiagnostics(
+        skip_count=skip_count,
+        dislike_both_count=dislike_both_count,
+        explicit_pick_count=explicit_pick_count,
+    )
 
 
 @router.post("/build", response_model=DnaBuildResponse)
@@ -276,6 +299,7 @@ async def get_dna_result(
         ComparisonEvidence(**item)
         for item in build_comparison_evidence(picks, top_tags)
     ]
+    interaction_diagnostics = _build_interaction_diagnostics(picks)
 
     return DnaResultResponse(
         archetype=archetype_info,
@@ -286,6 +310,7 @@ async def get_dna_result(
         avoided_signals=avoided_signals,
         mixed_signals=mixed_signals,
         comparison_evidence=comparison_evidence,
+        interaction_diagnostics=interaction_diagnostics,
         genre_vector=profile.genre_vector or {},
         quadrant_scores=QuadrantScores(**(profile.quadrant_scores or {})),
         personality_reading=profile.personality_reading,
