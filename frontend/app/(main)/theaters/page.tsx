@@ -60,25 +60,25 @@ function FeaturedGroup({ group }: { group: TheaterGroup }) {
             <p className={styles.detailLabel}>{t('theaters.recommended')}</p>
             <p className={styles.blockHint}>{t('theaters.featuredHint')}</p>
           </div>
-          <div className={styles.movieList}>
-            {group.recommended_movies.map((movie) => (
-              <article key={movie.tmdb_id} className={styles.movieItem}>
-                <div className={styles.movieCard}>
+          {group.recommended_movies.length > 0 ? (
+            <div className={styles.horizontalRail}>
+              {group.recommended_movies.map((movie) => (
+                <article key={movie.tmdb_id} className={styles.movieRailCard}>
                   {movie.poster_url ? (
                     <Image
                       src={movie.poster_url}
                       alt={movie.title_en}
-                      className={styles.moviePoster}
-                      width={72}
-                      height={106}
+                      className={styles.movieRailPoster}
+                      width={240}
+                      height={360}
                       unoptimized
                     />
                   ) : (
-                    <div className={styles.moviePosterFallback}>
+                    <div className={styles.movieRailPosterFallback}>
                       <span>{movie.title_en.slice(0, 1)}</span>
                     </div>
                   )}
-                  <div className={styles.movieCopy}>
+                  <div className={styles.movieRailBody}>
                     <p className={styles.movieTitle}>{movie.title_en}</p>
                     <div className={styles.movieTags}>
                       {movie.match_tags.map((tag) => (
@@ -88,10 +88,15 @@ function FeaturedGroup({ group }: { group: TheaterGroup }) {
                       ))}
                     </div>
                   </div>
-                </div>
-              </article>
-            ))}
-          </div>
+                </article>
+              ))}
+            </div>
+          ) : (
+            <div className={styles.emptyCard}>
+              <div className={styles.emptyIcon}><i className="ri-clapperboard-line" /></div>
+              <p className={styles.detailText}>{t('theaters.featuredHint')}</p>
+            </div>
+          )}
         </section>
 
         <section className={styles.featuredBlock}>
@@ -99,25 +104,25 @@ function FeaturedGroup({ group }: { group: TheaterGroup }) {
             <p className={styles.detailLabel}>{t('theaters.watchlist')}</p>
             <p className={styles.blockHint}>{t('theaters.watchlistHint')}</p>
           </div>
-          <div className={styles.watchlistList}>
-            {group.shared_watchlist.map((movie) => (
-              <article key={movie.tmdb_id} className={styles.watchlistItem}>
-                <div className={styles.movieCard}>
+          {group.shared_watchlist.length > 0 ? (
+            <div className={styles.horizontalRail}>
+              {group.shared_watchlist.map((movie) => (
+                <article key={movie.tmdb_id} className={styles.movieRailCard}>
                   {movie.poster_url ? (
                     <Image
                       src={movie.poster_url}
                       alt={movie.title_en}
-                      className={styles.moviePoster}
-                      width={72}
-                      height={106}
+                      className={styles.movieRailPoster}
+                      width={240}
+                      height={360}
                       unoptimized
                     />
                   ) : (
-                    <div className={styles.moviePosterFallback}>
+                    <div className={styles.movieRailPosterFallback}>
                       <span>{movie.title_en.slice(0, 1)}</span>
                     </div>
                   )}
-                  <div className={styles.movieCopy}>
+                  <div className={styles.movieRailBody}>
                     <div className={styles.watchlistMeta}>
                       <p className={styles.movieTitle}>{movie.title_en}</p>
                       <span className={styles.supporterBadge}>
@@ -132,10 +137,15 @@ function FeaturedGroup({ group }: { group: TheaterGroup }) {
                       ))}
                     </div>
                   </div>
-                </div>
-              </article>
-            ))}
-          </div>
+                </article>
+              ))}
+            </div>
+          ) : (
+            <div className={styles.emptyCard}>
+              <div className={styles.emptyIcon}><i className="ri-group-line" /></div>
+              <p className={styles.detailText}>{t('theaters.messagesEmpty')}</p>
+            </div>
+          )}
         </section>
 
         <section className={`${styles.featuredBlock} ${styles.activityBlock}`}>
@@ -182,6 +192,7 @@ function GroupCard({ group, onJoin, onLeave }: {
   onLeave: () => void
 }) {
   const { t, locale } = useI18n()
+  const [activeDetailTab, setActiveDetailTab] = useState<'fit' | 'recommended' | 'watchlist' | 'members'>('fit')
 
   return (
     <motion.div
@@ -229,68 +240,73 @@ function GroupCard({ group, onJoin, onLeave }: {
         )}
       </div>
 
-      <div className={styles.detailGrid}>
-        <section className={styles.detailBlock}>
-          <p className={styles.detailLabel}>{t('theaters.fit')}</p>
-          {group.shared_tags.length > 0 ? (
-            <>
-              <p className={styles.detailText}>{t('theaters.fitHint')}</p>
-              <div className={styles.detailTags}>
-                {group.shared_tags.map((tag) => (
-                  <span key={tag} className={styles.detailTag}>
-                    {getTagLabel(tag, locale)}
-                  </span>
-                ))}
-              </div>
-            </>
-          ) : (
-            <p className={styles.detailText}>{t('theaters.noSharedTags')}</p>
-          )}
-        </section>
+      <div className={styles.detailTabs} role="tablist" aria-label={`${group.name} details`}>
+        <button
+          type="button"
+          role="tab"
+          aria-selected={activeDetailTab === 'fit'}
+          className={`${styles.detailTab} ${activeDetailTab === 'fit' ? styles.detailTabActive : ''}`}
+          onClick={() => setActiveDetailTab('fit')}
+        >
+          {t('theaters.fit')}
+        </button>
+        <button
+          type="button"
+          role="tab"
+          aria-selected={activeDetailTab === 'recommended'}
+          className={`${styles.detailTab} ${activeDetailTab === 'recommended' ? styles.detailTabActive : ''}`}
+          onClick={() => setActiveDetailTab('recommended')}
+        >
+          {t('theaters.recommended')}
+        </button>
+        <button
+          type="button"
+          role="tab"
+          aria-selected={activeDetailTab === 'watchlist'}
+          className={`${styles.detailTab} ${activeDetailTab === 'watchlist' ? styles.detailTabActive : ''}`}
+          onClick={() => setActiveDetailTab('watchlist')}
+        >
+          {t('theaters.watchlist')}
+        </button>
+        <button
+          type="button"
+          role="tab"
+          aria-selected={activeDetailTab === 'members'}
+          className={`${styles.detailTab} ${activeDetailTab === 'members' ? styles.detailTabActive : ''}`}
+          onClick={() => setActiveDetailTab('members')}
+        >
+          {t('theaters.members')}
+        </button>
+      </div>
 
-        <section className={styles.detailBlock}>
-          <p className={styles.detailLabel}>{t('theaters.recommended')}</p>
-          <div className={styles.movieList}>
-            {group.recommended_movies.map((movie) => (
-              <article key={movie.tmdb_id} className={styles.movieItem}>
-                <div className={styles.movieCard}>
-                  {movie.poster_url ? (
-                    <Image
-                      src={movie.poster_url}
-                      alt={movie.title_en}
-                      className={styles.moviePoster}
-                      width={72}
-                      height={106}
-                      unoptimized
-                    />
-                  ) : (
-                    <div className={styles.moviePosterFallback}>
-                      <span>{movie.title_en.slice(0, 1)}</span>
-                    </div>
-                  )}
-                  <div className={styles.movieCopy}>
-                    <p className={styles.movieTitle}>{movie.title_en}</p>
-                    <div className={styles.movieTags}>
-                      {movie.match_tags.map((tag) => (
-                        <span key={`${movie.tmdb_id}-${tag}`} className={styles.movieTag}>
-                          {getTagLabel(tag, locale)}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
+      <div className={styles.detailPanel}>
+        {activeDetailTab === 'fit' && (
+          <section className={styles.detailBlock}>
+            <p className={styles.detailLabel}>{t('theaters.fit')}</p>
+            {group.shared_tags.length > 0 ? (
+              <>
+                <p className={styles.detailText}>{t('theaters.fitHint')}</p>
+                <div className={styles.detailTags}>
+                  {group.shared_tags.map((tag) => (
+                    <span key={tag} className={styles.detailTag}>
+                      {getTagLabel(tag, locale)}
+                    </span>
+                  ))}
                 </div>
-              </article>
-            ))}
-          </div>
-        </section>
+              </>
+            ) : (
+              <p className={styles.detailText}>{t('theaters.noSharedTags')}</p>
+            )}
+          </section>
+        )}
 
-        <section className={styles.detailBlock}>
-          <p className={styles.detailLabel}>{t('theaters.watchlist')}</p>
-          {group.shared_watchlist.length > 0 ? (
-            <div className={styles.watchlistListCompact}>
-              {group.shared_watchlist.slice(0, 2).map((movie) => (
-                <article key={movie.tmdb_id} className={styles.watchlistItemCompact}>
-                  <div className={styles.movieCardCompact}>
+        {activeDetailTab === 'recommended' && (
+          <section className={styles.detailBlock}>
+            <p className={styles.detailLabel}>{t('theaters.recommended')}</p>
+            {group.recommended_movies.length > 0 ? (
+              <div className={styles.compactRail}>
+                {group.recommended_movies.map((movie) => (
+                  <article key={movie.tmdb_id} className={styles.compactMovieCard}>
                     {movie.poster_url ? (
                       <Image
                         src={movie.poster_url}
@@ -305,35 +321,79 @@ function GroupCard({ group, onJoin, onLeave }: {
                         <span>{movie.title_en.slice(0, 1)}</span>
                       </div>
                     )}
-                    <div className={styles.watchlistMeta}>
+                    <div className={styles.movieCopy}>
                       <p className={styles.movieTitle}>{movie.title_en}</p>
-                      <span className={styles.supporterBadge}>
-                        {t('theaters.supporters', { count: movie.supporter_count })}
-                      </span>
+                      <div className={styles.movieTags}>
+                        {movie.match_tags.map((tag) => (
+                          <span key={`${movie.tmdb_id}-${tag}`} className={styles.movieTag}>
+                            {getTagLabel(tag, locale)}
+                          </span>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                </article>
-              ))}
-            </div>
-          ) : (
-            <p className={styles.detailText}>{t('theaters.messagesEmpty')}</p>
-          )}
-        </section>
+                  </article>
+                ))}
+              </div>
+            ) : (
+              <p className={styles.detailText}>{t('theaters.featuredHint')}</p>
+            )}
+          </section>
+        )}
 
-        <section className={styles.detailBlock}>
-          <p className={styles.detailLabel}>{t('theaters.members')}</p>
-          {group.member_preview.length > 0 ? (
-            <div className={styles.memberList}>
-              {group.member_preview.map((member) => (
-                <span key={member.id} className={styles.memberChip}>
-                  {member.name}
-                </span>
-              ))}
-            </div>
-          ) : (
-            <p className={styles.detailText}>{t('theaters.membersEmpty')}</p>
-          )}
-        </section>
+        {activeDetailTab === 'watchlist' && (
+          <section className={styles.detailBlock}>
+            <p className={styles.detailLabel}>{t('theaters.watchlist')}</p>
+            {group.shared_watchlist.length > 0 ? (
+              <div className={styles.watchlistListCompact}>
+                {group.shared_watchlist.slice(0, 3).map((movie) => (
+                  <article key={movie.tmdb_id} className={styles.watchlistItemCompact}>
+                    <div className={styles.movieCardCompact}>
+                      {movie.poster_url ? (
+                        <Image
+                          src={movie.poster_url}
+                          alt={movie.title_en}
+                          className={styles.moviePosterCompact}
+                          width={44}
+                          height={64}
+                          unoptimized
+                        />
+                      ) : (
+                        <div className={styles.moviePosterCompactFallback}>
+                          <span>{movie.title_en.slice(0, 1)}</span>
+                        </div>
+                      )}
+                      <div className={styles.watchlistMeta}>
+                        <p className={styles.movieTitle}>{movie.title_en}</p>
+                        <span className={styles.supporterBadge}>
+                          {t('theaters.supporters', { count: movie.supporter_count })}
+                        </span>
+                      </div>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            ) : (
+              <p className={styles.detailText}>{t('theaters.messagesEmpty')}</p>
+            )}
+          </section>
+        )}
+
+        {activeDetailTab === 'members' && (
+          <section className={styles.detailBlock}>
+            <p className={styles.detailLabel}>{t('theaters.members')}</p>
+            {group.member_preview.length > 0 ? (
+              <div className={styles.memberList}>
+                {group.member_preview.map((member) => (
+                  <span key={member.id} className={styles.memberChip}>
+                    {member.name}
+                  </span>
+                ))}
+              </div>
+            ) : (
+              <p className={styles.detailText}>{t('theaters.membersEmpty')}</p>
+            )}
+          </section>
+        )}
       </div>
 
       <div className={styles.cardActions}>

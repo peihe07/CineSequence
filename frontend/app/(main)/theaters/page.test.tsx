@@ -67,11 +67,11 @@ vi.mock('@/lib/i18n', () => ({
     t: (key: string, vars?: Record<string, string | number>) => {
       const dict: Record<string, string> = {
         'theaters.title': 'Theaters',
-        'theaters.nextStep': 'Your DNA has opened the theater layer.',
-        'theaters.assignmentReady': 'These rooms are where your shared curation starts.',
-        'theaters.autoAssign': 'DNA Assign',
-        'theaters.empty': 'No theaters assigned yet',
-        'theaters.emptyHint': 'Run DNA Assign to map your current profile into matching rooms.',
+        'theaters.nextStep': 'Your DNA has finished mapping the room layer.',
+        'theaters.assignmentReady': 'Read the primary theater first, then decide which other rooms deserve your attention.',
+        'theaters.autoAssign': 'Remap Rooms',
+        'theaters.empty': 'No theaters are available yet',
+        'theaters.emptyHint': 'Run Remap Rooms to refresh your current room assignment from your latest DNA profile.',
         'theaters.join': 'Join',
         'theaters.leave': 'Leave',
         'theaters.hidden': 'Hidden',
@@ -80,9 +80,9 @@ vi.mock('@/lib/i18n', () => ({
         'theaters.fit': 'Why You Fit',
         'theaters.fitHint': 'These are the strongest tags connecting your taste to this room.',
         'theaters.featured': 'Primary Theater',
-        'theaters.featuredHint': 'Start with the titles that best represent this room.',
+        'theaters.featuredHint': 'Start with the titles that define the room most clearly.',
         'theaters.library': 'Other Rooms',
-        'theaters.libraryHint': 'You can still enter these rooms, but your primary theater should lead the read.',
+        'theaters.libraryHint': 'Keep the other rooms in view, but do not try to read everything at once.',
         'theaters.cardHintMember': 'You are already inside this room',
         'theaters.cardHintVisitor': 'Read the room first, then decide whether to join',
         'theaters.noSharedTags': 'No overlap yet',
@@ -151,10 +151,10 @@ describe('TheatersPage', () => {
 
     expect(fetchGroupsMock).toHaveBeenCalled()
     expect(screen.getByRole('heading', { name: 'Theaters' })).toBeTruthy()
-    expect(screen.getByText('Your DNA has opened the theater layer.')).toBeTruthy()
-    expect(screen.getByText('No theaters assigned yet')).toBeTruthy()
+    expect(screen.getByText('Your DNA has finished mapping the room layer.')).toBeTruthy()
+    expect(screen.getByText('No theaters are available yet')).toBeTruthy()
 
-    fireEvent.click(screen.getAllByRole('button', { name: /DNA Assign/i })[0])
+    fireEvent.click(screen.getAllByRole('button', { name: /Remap Rooms/i })[0])
 
     await waitFor(() => {
       expect(autoAssignMock).toHaveBeenCalled()
@@ -258,5 +258,64 @@ describe('TheatersPage', () => {
     expect(openLinks.length).toBe(2)
     expect(openLinks[0]?.getAttribute('href')).toBe('/theaters/mobius_loop')
     expect(openLinks[1]?.getAttribute('href')).toBe('/theaters/afterhours')
+  })
+
+  it('switches library card detail panels without rendering all sections at once', () => {
+    groupState.groups = [
+      {
+        id: 'mobius_loop',
+        name: 'Mobius Loop',
+        subtitle: 'Mind-benders only',
+        icon: 'ri-tornado-line',
+        primary_tags: ['mindfuck', 'twist'],
+        is_hidden: false,
+        member_count: 3,
+        is_active: true,
+        is_member: true,
+        shared_tags: ['mindfuck'],
+        member_preview: [],
+        recommended_movies: [],
+        shared_watchlist: [],
+        recent_messages: [],
+        recent_activity: [],
+      },
+      {
+        id: 'afterhours',
+        name: 'Afterhours',
+        subtitle: 'Nocturnal melancholia',
+        icon: 'ri-moon-clear-line',
+        primary_tags: ['slowburn'],
+        is_hidden: false,
+        member_count: 1,
+        is_active: false,
+        is_member: false,
+        shared_tags: ['slowburn'],
+        member_preview: [
+          { id: 'u3', name: 'Nora', avatar_url: null },
+        ],
+        recommended_movies: [
+          { tmdb_id: 3, title_en: 'Chungking Express', poster_url: 'https://image.test/chungking-express.jpg', match_tags: ['slowburn'] },
+        ],
+        shared_watchlist: [
+          { tmdb_id: 4, title_en: 'In the Mood for Love', poster_url: 'https://image.test/itmfl.jpg', match_tags: ['slowburn'], supporter_count: 1 },
+        ],
+        recent_messages: [],
+        recent_activity: [],
+      },
+    ]
+
+    render(<TheatersPage />)
+
+    expect(screen.queryByText('Chungking Express')).toBeNull()
+    fireEvent.click(screen.getByRole('tab', { name: 'Start With' }))
+    expect(screen.getByText('Chungking Express')).toBeTruthy()
+
+    fireEvent.click(screen.getByRole('tab', { name: 'Shared Watchlist' }))
+    expect(screen.getByText('In the Mood for Love')).toBeTruthy()
+    expect(screen.queryByText('Chungking Express')).toBeNull()
+
+    fireEvent.click(screen.getByRole('tab', { name: 'Members' }))
+    expect(screen.getByText('Nora')).toBeTruthy()
+    expect(screen.queryByText('In the Mood for Love')).toBeNull()
   })
 })

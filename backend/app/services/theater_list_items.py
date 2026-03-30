@@ -45,11 +45,36 @@ def item_fingerprint(
 
 def _pick_best_search_match(query: str, candidates):
     normalized_query = normalize_movie_title(query)
+    best_prefix_match = None
+    best_contains_match = None
+
     for candidate in candidates:
-        if normalize_movie_title(candidate.title_zh) == normalized_query:
+        normalized_zh = normalize_movie_title(candidate.title_zh)
+        normalized_en = normalize_movie_title(candidate.title_en)
+
+        if normalized_zh == normalized_query:
             return candidate
-        if normalize_movie_title(candidate.title_en) == normalized_query:
+        if normalized_en == normalized_query:
             return candidate
+
+        if best_prefix_match is None and (
+            normalized_zh.startswith(normalized_query)
+            or normalized_en.startswith(normalized_query)
+        ):
+            best_prefix_match = candidate
+
+        if best_contains_match is None and (
+            normalized_query in normalized_zh
+            or normalized_query in normalized_en
+        ):
+            best_contains_match = candidate
+
+    if best_prefix_match is not None:
+        return best_prefix_match
+
+    if best_contains_match is not None and len(normalized_query) >= 4:
+        return best_contains_match
+
     return candidates[0] if candidates else None
 
 

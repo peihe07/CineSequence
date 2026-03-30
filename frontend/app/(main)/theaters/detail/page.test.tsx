@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 const { apiMock, searchParamsState } = vi.hoisted(() => ({
@@ -30,6 +30,10 @@ vi.mock('@/lib/i18n', () => ({
         'theaters.recommended': 'Start With',
         'theaters.watchlist': 'Shared Watchlist',
         'theaters.userLists': 'User Lists',
+        'theaters.tabs': 'Theater sections',
+        'theaters.tabOverview': 'Overview',
+        'theaters.tabLists': 'Curated Lists',
+        'theaters.tabBoard': 'Board',
         'theaters.userListsEmpty': 'No lists yet.',
         'theaters.listTitlePlaceholder': 'List title',
         'theaters.listDescriptionPlaceholder': 'List description',
@@ -38,6 +42,8 @@ vi.mock('@/lib/i18n', () => ({
         'theaters.listEdit': 'Edit List',
         'theaters.listUpdate': 'Save List',
         'theaters.listDelete': 'Delete List',
+        'theaters.listExpand': 'Expand List',
+        'theaters.listCollapse': 'Collapse List',
         'theaters.listBy': 'By {{name}}',
         'theaters.listItems': '{{count}} items',
         'theaters.listItemPlaceholder': 'Add one more title to this room list',
@@ -47,6 +53,8 @@ vi.mock('@/lib/i18n', () => ({
         'theaters.listItemMoveDown': 'Move Down',
         'theaters.listItemNotePlaceholder': 'Add a short curator note',
         'theaters.listItemNoteSave': 'Save Note',
+        'theaters.listMovieSearchPlaceholder': 'Search TMDB title',
+        'theaters.listMovieSearch': 'Search Movie',
         'theaters.listReplies': 'Replies',
         'theaters.listRepliesEmpty': 'No one has responded to this list yet.',
         'theaters.listReplyPlaceholder': 'Respond to this list',
@@ -90,6 +98,35 @@ describe('TheaterDetailPage', () => {
     cleanup()
   })
 
+  async function openListsTab() {
+    await waitFor(() => {
+      expect(screen.getByRole('tab', { name: 'Curated Lists' })).toBeTruthy()
+    })
+
+    fireEvent.click(screen.getByRole('tab', { name: 'Curated Lists' }))
+  }
+
+  async function openBoardTab() {
+    await waitFor(() => {
+      expect(screen.getByRole('tab', { name: 'Board' })).toBeTruthy()
+    })
+
+    fireEvent.click(screen.getByRole('tab', { name: 'Board' }))
+  }
+
+  async function expandList(title = 'Late-Night Brain Melt') {
+    await waitFor(() => {
+      expect(screen.getByText(title)).toBeTruthy()
+    })
+
+    const listCard = screen.getByText(title).closest('article')
+    if (!listCard) {
+      throw new Error(`List card not found for ${title}`)
+    }
+
+    fireEvent.click(within(listCard).getByRole('button', { name: 'Expand List' }))
+  }
+
   it('loads and renders theater detail', async () => {
     apiMock
       .mockResolvedValueOnce({
@@ -118,7 +155,20 @@ describe('TheaterDetailPage', () => {
           created_at: '2026-03-27T12:00:00Z',
           updated_at: '2026-03-27T12:00:00Z',
           creator: { id: 'u1', name: 'Ari', avatar_url: null },
-          items: [],
+          items: [
+            {
+              id: 'i1',
+              tmdb_id: 11,
+              title_en: 'Arrival',
+              title_zh: null,
+              poster_url: 'https://image.tmdb.org/t/p/w500/arrival.jpg',
+              genres: [],
+              runtime_minutes: null,
+              match_tags: ['mindfuck'],
+              note: 'Starts quiet, then keeps unfolding.',
+              position: 0,
+            },
+          ],
           replies: [],
         },
       ])
@@ -131,15 +181,60 @@ describe('TheaterDetailPage', () => {
     expect(apiMock).toHaveBeenNthCalledWith(1, '/groups/mobius_loop')
     expect(apiMock).toHaveBeenNthCalledWith(2, '/groups/mobius_loop/lists')
     expect(screen.getByText('Pulp Fiction')).toBeTruthy()
+    expect(screen.getByRole('tab', { name: 'Overview' })).toBeTruthy()
+    expect(screen.getByRole('tab', { name: 'Curated Lists' })).toBeTruthy()
+    expect(screen.getByRole('tab', { name: 'Board' })).toBeTruthy()
+    expect(screen.getByRole('button', { name: 'Leave' })).toBeTruthy()
+
+    fireEvent.click(screen.getByRole('tab', { name: 'Shared Watchlist' }))
     expect(screen.getByText('Arrival')).toBeTruthy()
     expect(screen.getByText('2 supporters')).toBeTruthy()
+
+    await openListsTab()
+    await expandList()
     expect(screen.getByText('Late-Night Brain Melt')).toBeTruthy()
     expect(screen.getByText('By Ari')).toBeTruthy()
+    expect(screen.getByRole('img', { name: 'Arrival' }).getAttribute('src')).toBe('https://image.tmdb.org/t/p/w500/arrival.jpg')
+    expect(screen.getByText('Starts quiet, then keeps unfolding.')).toBeTruthy()
+
+    await openBoardTab()
     expect(screen.getByText('Start with Arrival.')).toBeTruthy()
-    expect(screen.getByText('Trade one short note about what this room should watch next.')).toBeTruthy()
-    expect(screen.getByRole('button', { name: 'Leave' })).toBeTruthy()
-    expect(screen.getByRole('button', { name: 'Post Message' })).toBeTruthy()
-    expect(screen.getByRole('button', { name: 'Create List' })).toBeTruthy()
+  })
+
+  it('switches overview between starter shelf and watchlist shelf', async () => {
+    apiMock
+      .mockResolvedValueOnce({
+        id: 'mobius_loop',
+        name: 'Mobius Loop',
+        subtitle: 'Mind-benders only',
+        icon: 'ri-tornado-line',
+        primary_tags: ['mindfuck'],
+        is_hidden: false,
+        member_count: 3,
+        is_active: true,
+        is_member: true,
+        shared_tags: ['mindfuck'],
+        member_preview: [],
+        recommended_movies: [{ tmdb_id: 1, title_en: 'Pulp Fiction', match_tags: ['mindfuck'] }],
+        shared_watchlist: [{ tmdb_id: 2, title_en: 'Arrival', match_tags: ['mindfuck'], supporter_count: 2 }],
+        recent_messages: [],
+      })
+      .mockResolvedValueOnce([])
+
+    render(<TheaterDetailPage />)
+
+    await waitFor(() => {
+      expect(screen.getByText('Pulp Fiction')).toBeTruthy()
+    })
+
+    expect(screen.queryByText('2 supporters')).toBeNull()
+    fireEvent.click(screen.getByRole('tab', { name: 'Shared Watchlist' }))
+    expect(screen.getByText('Arrival')).toBeTruthy()
+    expect(screen.getByText('2 supporters')).toBeTruthy()
+    expect(screen.queryByText('Pulp Fiction')).toBeNull()
+
+    fireEvent.click(screen.getByRole('tab', { name: 'Start With' }))
+    expect(screen.getByText('Pulp Fiction')).toBeTruthy()
   })
 
   it('creates a list with seeded item titles', async () => {
@@ -179,17 +274,13 @@ describe('TheaterDetailPage', () => {
 
     render(<TheaterDetailPage />)
 
-    await waitFor(() => {
-      expect(screen.getByPlaceholderText('List title')).toBeTruthy()
-    })
-    await waitFor(() => {
-      expect(screen.getByRole('button', { name: 'Create List' }).getAttribute('disabled')).toBeNull()
-    })
-
+    await openListsTab()
+    fireEvent.click(screen.getByRole('button', { name: 'Create List' }))
+    const dialog = screen.getByRole('dialog')
     fireEvent.change(screen.getByPlaceholderText('List title'), { target: { value: 'Midnight Rotation' } })
     fireEvent.change(screen.getByPlaceholderText('List description'), { target: { value: 'For after the room goes quiet.' } })
     fireEvent.change(screen.getByPlaceholderText('One movie per line'), { target: { value: 'Arrival\nBurning' } })
-    fireEvent.click(screen.getByRole('button', { name: 'Create List' }))
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Create List' }))
 
     await waitFor(() => {
       expect(apiMock).toHaveBeenNthCalledWith(3, '/groups/mobius_loop/lists', {
@@ -224,8 +315,110 @@ describe('TheaterDetailPage', () => {
     })
 
     expect(screen.getByText('Midnight Rotation')).toBeTruthy()
+    await expandList('Midnight Rotation')
     expect(screen.getByText('Arrival')).toBeTruthy()
     expect(screen.getByText('Burning')).toBeTruthy()
+  })
+
+  it('creates a list with selected TMDB movie metadata from search', async () => {
+    apiMock
+      .mockResolvedValueOnce({
+        id: 'mobius_loop',
+        name: 'Mobius Loop',
+        subtitle: 'Mind-benders only',
+        icon: 'ri-tornado-line',
+        primary_tags: ['mindfuck'],
+        is_hidden: false,
+        member_count: 3,
+        is_active: true,
+        is_member: true,
+        shared_tags: ['mindfuck'],
+        member_preview: [],
+        recommended_movies: [],
+        shared_watchlist: [],
+        recent_messages: [],
+      })
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([
+        {
+          tmdb_id: 11,
+          title_en: 'Arrival',
+          title_zh: '異星入境',
+          poster_url: 'https://image.tmdb.org/t/p/w500/arrival.jpg',
+          year: 2016,
+          genres: ['Science Fiction'],
+          runtime_minutes: 116,
+        },
+      ])
+      .mockResolvedValueOnce({
+        id: 'l3',
+        group_id: 'mobius_loop',
+        title: 'Signal Drift',
+        description: 'Matched directly from TMDB.',
+        visibility: 'group',
+        created_at: '2026-03-27T13:00:00Z',
+        updated_at: '2026-03-27T13:00:00Z',
+        creator: { id: 'u1', name: 'Ari', avatar_url: null },
+        items: [
+          {
+            id: 'i3',
+            tmdb_id: 11,
+            title_en: 'Arrival',
+            title_zh: '異星入境',
+            poster_url: 'https://image.tmdb.org/t/p/w500/arrival.jpg',
+            genres: ['Science Fiction'],
+            runtime_minutes: 116,
+            match_tags: [],
+            note: null,
+            position: 0,
+          },
+        ],
+        replies: [],
+      })
+
+    render(<TheaterDetailPage />)
+
+    await openListsTab()
+    fireEvent.click(screen.getByRole('button', { name: 'Create List' }))
+    const dialog = screen.getByRole('dialog')
+    fireEvent.change(screen.getByPlaceholderText('List title'), { target: { value: 'Signal Drift' } })
+    fireEvent.change(screen.getByPlaceholderText('List description'), { target: { value: 'Matched directly from TMDB.' } })
+    fireEvent.change(screen.getByPlaceholderText('Search TMDB title'), { target: { value: 'Arrival' } })
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Search Movie' }))
+
+    await waitFor(() => {
+      expect(apiMock).toHaveBeenNthCalledWith(3, '/sequencing/search?q=Arrival')
+    })
+
+    fireEvent.click(screen.getByRole('button', { name: /異星入境.*2016/ }))
+
+    await waitFor(() => {
+      expect(screen.getByText('異星入境')).toBeTruthy()
+    })
+
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Create List' }))
+
+    await waitFor(() => {
+      expect(apiMock).toHaveBeenNthCalledWith(4, '/groups/mobius_loop/lists', {
+        method: 'POST',
+        body: JSON.stringify({
+          title: 'Signal Drift',
+          description: 'Matched directly from TMDB.',
+          items: [
+            {
+              tmdb_id: 11,
+              title_en: 'Arrival',
+              title_zh: '異星入境',
+              poster_url: 'https://image.tmdb.org/t/p/w500/arrival.jpg',
+              genres: ['Science Fiction'],
+              runtime_minutes: 116,
+              match_tags: [],
+              note: null,
+            },
+          ],
+        }),
+      })
+    })
   })
 
   it('updates list title and description', async () => {
@@ -275,6 +468,7 @@ describe('TheaterDetailPage', () => {
 
     render(<TheaterDetailPage />)
 
+    await openListsTab()
     await waitFor(() => {
       expect(screen.getByText('Late-Night Brain Melt')).toBeTruthy()
     })
@@ -341,6 +535,7 @@ describe('TheaterDetailPage', () => {
 
     render(<TheaterDetailPage />)
 
+    await openListsTab()
     await waitFor(() => {
       expect(screen.getByText('Late-Night Brain Melt')).toBeTruthy()
     })
@@ -422,9 +617,11 @@ describe('TheaterDetailPage', () => {
 
     render(<TheaterDetailPage />)
 
+    await openListsTab()
     await waitFor(() => {
       expect(screen.getByText('Late-Night Brain Melt')).toBeTruthy()
     })
+    await expandList()
 
     fireEvent.change(screen.getByPlaceholderText('Add one more title to this room list'), {
       target: { value: 'Burning' },
@@ -458,7 +655,114 @@ describe('TheaterDetailPage', () => {
     })
 
     expect(screen.queryByText('Arrival')).toBeNull()
-    expect(screen.getByText('Burning')).toBeTruthy()
+    expect(screen.getAllByText('Burning').length).toBeGreaterThan(0)
+  })
+
+  it('appends a list item with TMDB metadata from search', async () => {
+    apiMock
+      .mockResolvedValueOnce({
+        id: 'mobius_loop',
+        name: 'Mobius Loop',
+        subtitle: 'Mind-benders only',
+        icon: 'ri-tornado-line',
+        primary_tags: ['mindfuck'],
+        is_hidden: false,
+        member_count: 3,
+        is_active: true,
+        is_member: true,
+        shared_tags: ['mindfuck'],
+        member_preview: [],
+        recommended_movies: [],
+        shared_watchlist: [],
+        recent_messages: [],
+      })
+      .mockResolvedValueOnce([
+        {
+          id: 'l1',
+          group_id: 'mobius_loop',
+          title: 'Late-Night Brain Melt',
+          description: 'Built for spiral conversations after midnight.',
+          visibility: 'group',
+          created_at: '2026-03-27T12:00:00Z',
+          updated_at: '2026-03-27T12:00:00Z',
+          creator: { id: 'u1', name: 'Ari', avatar_url: null },
+          items: [],
+          replies: [],
+        },
+      ])
+      .mockResolvedValueOnce([
+        {
+          tmdb_id: 11,
+          title_en: 'Arrival',
+          title_zh: '異星入境',
+          poster_url: 'https://image.tmdb.org/t/p/w500/arrival.jpg',
+          year: 2016,
+          genres: ['Science Fiction'],
+          runtime_minutes: 116,
+        },
+      ])
+      .mockResolvedValueOnce({
+        id: 'l1',
+        group_id: 'mobius_loop',
+        title: 'Late-Night Brain Melt',
+        description: 'Built for spiral conversations after midnight.',
+        visibility: 'group',
+        created_at: '2026-03-27T12:00:00Z',
+        updated_at: '2026-03-27T12:10:00Z',
+        creator: { id: 'u1', name: 'Ari', avatar_url: null },
+        items: [
+          {
+            id: 'i1',
+            tmdb_id: 11,
+            title_en: 'Arrival',
+            title_zh: '異星入境',
+            poster_url: 'https://image.tmdb.org/t/p/w500/arrival.jpg',
+            genres: ['Science Fiction'],
+            runtime_minutes: 116,
+            match_tags: [],
+            note: null,
+            position: 0,
+          },
+        ],
+        replies: [],
+      })
+
+    render(<TheaterDetailPage />)
+
+    await openListsTab()
+    await waitFor(() => {
+      expect(screen.getByText('Late-Night Brain Melt')).toBeTruthy()
+    })
+    await expandList()
+
+    fireEvent.change(screen.getByPlaceholderText('Search TMDB title'), {
+      target: { value: 'Arrival' },
+    })
+    fireEvent.click(screen.getByRole('button', { name: 'Search Movie' }))
+
+    await waitFor(() => {
+      expect(apiMock).toHaveBeenNthCalledWith(3, '/sequencing/search?q=Arrival')
+    })
+
+    fireEvent.click(screen.getByRole('button', { name: /異星入境.*2016/ }))
+
+    await waitFor(() => {
+      expect(apiMock).toHaveBeenNthCalledWith(4, '/groups/mobius_loop/lists/l1/items', {
+        method: 'POST',
+        body: JSON.stringify({
+          tmdb_id: 11,
+          title_en: 'Arrival',
+          title_zh: '異星入境',
+          poster_url: 'https://image.tmdb.org/t/p/w500/arrival.jpg',
+          genres: ['Science Fiction'],
+          runtime_minutes: 116,
+          match_tags: [],
+          note: null,
+        }),
+      })
+    })
+
+    expect(screen.getAllByText('異星入境').length).toBeGreaterThan(0)
   })
 
   it('reorders list items', async () => {
@@ -514,9 +818,11 @@ describe('TheaterDetailPage', () => {
 
     render(<TheaterDetailPage />)
 
+    await openListsTab()
     await waitFor(() => {
       expect(screen.getByText('Late-Night Brain Melt')).toBeTruthy()
     })
+    await expandList()
 
     fireEvent.click(screen.getAllByRole('button', { name: 'Move Up' })[1])
 
@@ -529,7 +835,9 @@ describe('TheaterDetailPage', () => {
       })
     })
 
-    expect(screen.getAllByText(/Arrival|Burning/)[0].textContent).toBe('Burning')
+    const reorderedTitles = screen.getAllByText(/Arrival|Burning/).map((node) => node.textContent)
+    expect(reorderedTitles[0]).toBe('Burning +1')
+    expect(reorderedTitles).toContain('Burning')
   })
 
   it('updates an item note', async () => {
@@ -583,9 +891,11 @@ describe('TheaterDetailPage', () => {
 
     render(<TheaterDetailPage />)
 
+    await openListsTab()
     await waitFor(() => {
       expect(screen.getByText('Late-Night Brain Melt')).toBeTruthy()
     })
+    await expandList()
 
     fireEvent.change(screen.getByPlaceholderText('Add a short curator note'), {
       target: { value: 'Use this as the entry point.' },
@@ -669,9 +979,11 @@ describe('TheaterDetailPage', () => {
 
     render(<TheaterDetailPage />)
 
+    await openListsTab()
     await waitFor(() => {
       expect(screen.getByText('Late-Night Brain Melt')).toBeTruthy()
     })
+    await expandList()
 
     fireEvent.change(screen.getByPlaceholderText('Respond to this list'), {
       target: { value: 'Burning should be the follow-up slot.' },
