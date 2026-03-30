@@ -10,9 +10,13 @@
 目前應優先查看的文件仍是：
 
 - `docs/roadmap.md`
-- `docs/progress.md`
-- `docs/dna-system-design.md`
-- `docs/movie-pool-changelog.md`
-- `docs/manual-review-metadata-process.md`
+- `docs/workstreams/dna.md`
+- `docs/workstreams/theaters.md`
+- `docs/workstreams/pricing.md`
 - `docs/architecture-decisions.md`
-- `docs/theaters-issues.md`
+
+已移入 archive 的舊根目錄文件：
+
+- `pricing-and-entitlement.md`
+- `pricing-implementation-spec.md`
+- `theaters-issues.md`

@@ -294,8 +294,8 @@ Targets likely include profile page components and i18n labels.
 
 Current copy still says:
 
-- `延伸分析（+5 輪）`
-- `追加 5 輪可提升分析精度`
+- `延伸分析（+3 輪）`
+- `追加 3 輪可提升分析精度`
 
 This no longer matches the current backend, where:
 
