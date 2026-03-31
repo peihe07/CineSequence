@@ -69,6 +69,17 @@ interface ApiUsage {
   resend: { invite_emails: number; invite_reminder_emails: number; accepted_emails: number; estimated_total: number }
 }
 
+interface WaitlistEntry {
+  email: string
+  source: string
+  created_at: string
+}
+
+interface WaitlistData {
+  total: number
+  entries: WaitlistEntry[]
+}
+
 function StatCard({ value, label, trend }: { value: number | string; label: string; trend?: number | null }) {
   return (
     <div className={styles.statCard}>
@@ -107,23 +118,26 @@ export default function AdminPage() {
   const [stats, setStats] = useState<Stats | null>(null)
   const [daily, setDaily] = useState<DailyStats | null>(null)
   const [apiUsage, setApiUsage] = useState<ApiUsage | null>(null)
+  const [waitlist, setWaitlist] = useState<WaitlistData | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const [days, setDays] = useState(30)
   const initialLoadDone = useRef(false)
 
-  // Initial load: all 3 endpoints
+  // Initial load: admin datasets
   useEffect(() => {
     async function load() {
       try {
-        const [s, d, a] = await Promise.all([
+        const [s, d, a, w] = await Promise.all([
           api<Stats>('/admin/stats'),
           api<DailyStats>(`/admin/stats/daily?days=${days}`),
           api<ApiUsage>('/admin/api-usage'),
+          api<WaitlistData>('/admin/waitlist'),
         ])
         setStats(s)
         setDaily(d)
         setApiUsage(a)
+        setWaitlist(w)
         initialLoadDone.current = true
       } catch (e: unknown) {
         const msg = e instanceof Error ? e.message : 'Failed to load'
@@ -172,7 +186,7 @@ export default function AdminPage() {
     )
   }
 
-  if (!stats || !daily || !apiUsage) return null
+  if (!stats || !daily || !apiUsage || !waitlist) return null
 
   const funnelMax = stats.funnel.registered || 1
   const { registered, completed_sequencing, has_dna, has_match } = stats.funnel
@@ -181,6 +195,13 @@ export default function AdminPage() {
     toDna: completed_sequencing > 0 ? has_dna / completed_sequencing : 0,
     toMatch: has_dna > 0 ? has_match / has_dna : 0,
   }
+  const waitlistDateFormatter = new Intl.DateTimeFormat(undefined, {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  })
 
   return (
     <div className={styles.container}>
@@ -251,6 +272,34 @@ export default function AdminPage() {
         <div className={styles.section}>
           <h2 className={styles.sectionTitle}>{t('admin.matchStatus')}</h2>
           <StackedBar data={stats.matches.status_breakdown} />
+        </div>
+
+        <div className={styles.section}>
+          <div className={styles.waitlistHeader}>
+            <h2 className={styles.sectionTitle}>{t('admin.waitlist')}</h2>
+            <div className={styles.waitlistTotal}>
+              <span>{t('admin.waitlistTotal')}</span>
+              <strong>{waitlist.total.toLocaleString()}</strong>
+            </div>
+          </div>
+          {waitlist.entries.length > 0 ? (
+            <div className={styles.waitlistTable} role="table" aria-label={t('admin.waitlist')}>
+              <div className={`${styles.waitlistRow} ${styles.waitlistHead}`} role="row">
+                <span role="columnheader">{t('admin.waitlistEmail')}</span>
+                <span role="columnheader">{t('admin.waitlistSource')}</span>
+                <span role="columnheader">{t('admin.waitlistCreatedAt')}</span>
+              </div>
+              {waitlist.entries.map((entry) => (
+                <div key={`${entry.email}-${entry.created_at}`} className={styles.waitlistRow} role="row">
+                  <span className={styles.waitlistEmail} role="cell">{entry.email}</span>
+                  <span role="cell">{entry.source}</span>
+                  <span role="cell">{waitlistDateFormatter.format(new Date(entry.created_at))}</span>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className={styles.funnelLabel}>{t('admin.waitlistEmpty')}</p>
+          )}
         </div>
 
         {/* API usage */}

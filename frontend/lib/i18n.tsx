@@ -582,6 +582,12 @@ const translations: Record<Locale, Record<string, string>> = {
     'admin.totalTokens': '總 tokens',
     'admin.daysSuffix': ' 天',
     'admin.dailyMatches': '每日配對',
+    'admin.waitlist': 'Waitlist 名單',
+    'admin.waitlistTotal': '總登記數',
+    'admin.waitlistEmail': 'Email',
+    'admin.waitlistSource': '來源',
+    'admin.waitlistCreatedAt': '加入時間',
+    'admin.waitlistEmpty': '目前還沒有 waitlist 登記',
 
     // Demo
     'demo.ticketTitle': '示範票券',
@@ -1290,6 +1296,12 @@ const translations: Record<Locale, Record<string, string>> = {
     'admin.totalTokens': 'Total tokens',
     'admin.daysSuffix': 'd',
     'admin.dailyMatches': 'Daily Matches',
+    'admin.waitlist': 'Waitlist',
+    'admin.waitlistTotal': 'Total signups',
+    'admin.waitlistEmail': 'Email',
+    'admin.waitlistSource': 'Source',
+    'admin.waitlistCreatedAt': 'Joined',
+    'admin.waitlistEmpty': 'No waitlist entries yet',
 
     // Demo
     'demo.ticketTitle': 'Your Cinema Ticket',

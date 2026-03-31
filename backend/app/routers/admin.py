@@ -15,6 +15,7 @@ from app.models.dna_profile import DnaProfile
 from app.models.match import Match, MatchStatus
 from app.models.notification import NotificationType
 from app.models.user import User
+from app.models.waitlist_entry import WaitlistEntry
 from app.services.ai_token_tracker import estimate_cost_for_model
 from app.services.notification_service import create_notification
 
@@ -225,6 +226,36 @@ async def get_daily_stats(
         "registrations": registrations,
         "dna_builds": dna_builds,
         "matches": matches,
+    }
+
+
+@router.get("/waitlist")
+async def get_waitlist(
+    _admin: Annotated[User, Depends(require_admin)],
+    db: Annotated[AsyncSession, Depends(get_db)],
+    limit: int = 100,
+):
+    """Return recent waitlist signups for admin review."""
+    limit = max(1, min(limit, 500))
+
+    total = await db.scalar(select(func.count(WaitlistEntry.id)))
+    result = await db.execute(
+        select(WaitlistEntry)
+        .order_by(WaitlistEntry.created_at.desc(), WaitlistEntry.email.desc())
+        .limit(limit)
+    )
+    entries = result.scalars().all()
+
+    return {
+        "total": total or 0,
+        "entries": [
+            {
+                "email": entry.email,
+                "source": entry.source,
+                "created_at": entry.created_at.isoformat(),
+            }
+            for entry in entries
+        ],
     }
 
 

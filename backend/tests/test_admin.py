@@ -1,11 +1,14 @@
 """Tests for admin dashboard API endpoints."""
 
 
+from datetime import UTC, datetime, timedelta
+
 import pytest
 from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.match import Match, MatchStatus
+from app.models.waitlist_entry import WaitlistEntry
 from app.models.user import Gender, SequencingStatus, User
 from app.services.auth_utils import create_access_token
 
@@ -196,3 +199,53 @@ class TestAdminApiUsage:
         assert "estimated_total" in data["gemini"]
         assert "estimated_queries" in data["tmdb"]
         assert "estimated_total" in data["resend"]
+
+
+@pytest.mark.asyncio
+class TestAdminWaitlist:
+    async def test_waitlist_returns_entries_sorted_newest_first(
+        self, client: AsyncClient, db_session: AsyncSession
+    ):
+        admin = await create_user(db_session, is_admin=True)
+        older = WaitlistEntry(
+            email="older@test.com",
+            source="landing",
+            created_at=datetime.now(UTC) - timedelta(days=1),
+        )
+        newer = WaitlistEntry(
+            email="newer@test.com",
+            source="popup",
+            created_at=datetime.now(UTC),
+        )
+        db_session.add_all([older, newer])
+        await db_session.commit()
+
+        response = await client.get("/admin/waitlist", headers=auth_headers(admin))
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["total"] == 2
+        assert [entry["email"] for entry in data["entries"]] == [
+            "newer@test.com",
+            "older@test.com",
+        ]
+        assert data["entries"][0]["source"] == "popup"
+        assert "created_at" in data["entries"][0]
+
+    async def test_waitlist_supports_limit(
+        self, client: AsyncClient, db_session: AsyncSession
+    ):
+        admin = await create_user(db_session, is_admin=True)
+        db_session.add_all([
+            WaitlistEntry(email="one@test.com"),
+            WaitlistEntry(email="two@test.com"),
+            WaitlistEntry(email="three@test.com"),
+        ])
+        await db_session.commit()
+
+        response = await client.get("/admin/waitlist?limit=2", headers=auth_headers(admin))
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["total"] == 3
+        assert len(data["entries"]) == 2
