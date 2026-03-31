@@ -119,6 +119,10 @@
   background: rgba(28, 31, 36, 0.36);
 }
 
+.mirrorSection {
+  background: rgba(22, 24, 28, 0.38);
+}
+
 .diagnosticsSection {
   display: flex;
   flex-direction: column;

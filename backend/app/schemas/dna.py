@@ -66,6 +66,18 @@ class DnaBuildResponse(BaseModel):
     message: str = "DNA analysis in progress"
 
 
+class CharacterMatchResponse(BaseModel):
+    id: str
+    name: str
+    movie: str
+    tmdb_id: int
+    score: float
+    psych_labels: list[str]
+    psych_framework: str
+    one_liner: str
+    mirror_reading: str | None = None
+
+
 class DnaHistorySummary(BaseModel):
     version: int
     archetype: ArchetypeInfo

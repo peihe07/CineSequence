@@ -1,0 +1,156 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.eyebrow {
+  font-size: var(--text-xs);
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.52);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.deck {
+  font-size: var(--text-sm);
+  color: rgba(239, 232, 223, 0.62);
+  margin: 0;
+  line-height: 1.7;
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.card {
+  position: relative;
+  isolation: isolate;
+  padding: clamp(1.1rem, 2.5vw, 1.6rem);
+  background:
+    linear-gradient(180deg, rgba(18, 18, 20, 0.88), rgba(12, 12, 14, 0.7)),
+    rgba(20, 20, 20, 0.6);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.cardTop {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.characterName {
+  font-size: var(--text-base);
+  font-weight: 600;
+  color: rgba(239, 232, 223, 0.92);
+  margin: 0;
+  letter-spacing: 0.02em;
+}
+
+.movieTitle {
+  font-size: var(--text-xs);
+  color: rgba(239, 232, 223, 0.48);
+  margin: 0;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.oneLiner {
+  font-size: var(--text-sm);
+  color: rgba(239, 232, 223, 0.62);
+  font-style: italic;
+  margin: 0;
+  line-height: 1.6;
+}
+
+.meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.metaRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.metaLabel {
+  font-size: var(--text-xs);
+  color: rgba(239, 232, 223, 0.38);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.metaValue {
+  font-size: var(--text-xs);
+  color: rgba(239, 232, 223, 0.72);
+  letter-spacing: 0.04em;
+  text-align: right;
+}
+
+.divider {
+  height: 1px;
+  background: rgba(239, 232, 223, 0.08);
+}
+
+.mirrorReading {
+  font-size: var(--text-sm);
+  color: rgba(239, 232, 223, 0.78);
+  line-height: 1.75;
+  margin: 0;
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1.5rem 0;
+  font-size: var(--text-sm);
+  color: rgba(239, 232, 223, 0.48);
+}
+
+.errorText {
+  font-size: var(--text-sm);
+  color: rgba(239, 232, 223, 0.38);
+  padding: 1rem 0;
+}
+
+.skeleton {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.skeletonCard {
+  height: 180px;
+  background: rgba(255, 255, 255, 0.04);
+  animation: pulse 1.8s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.7; }
+}
+
+@media (max-width: 768px) {
+  .cards,
+  .skeleton {
+    grid-template-columns: 1fr;
+  }
+}

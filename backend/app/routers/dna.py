@@ -12,6 +12,7 @@ from app.models.pick import Pick
 from app.models.user import SequencingStatus, User
 from app.schemas.dna import (
     ArchetypeInfo,
+    CharacterMatchResponse,
     ComparisonEvidence,
     DnaBuildResponse,
     DnaHistorySummary,
@@ -21,6 +22,7 @@ from app.schemas.dna import (
     SignalDetail,
 )
 from app.services.ai_personality import generate_personality
+from app.services.character_mirror import find_resonant_characters, generate_mirror_readings
 from app.services.dna_builder import (
     ARCHETYPES,
     build_comparison_evidence,
@@ -321,6 +323,44 @@ async def get_dna_result(
         version=profile.version,
         can_extend=can_extend(session),
     )
+
+
+@router.get("/mirror", response_model=list[CharacterMatchResponse])
+async def get_character_mirror(
+    user: Annotated[User, Depends(get_current_user)],
+    db: Annotated[AsyncSession, Depends(get_db)],
+):
+    """Return top 3 resonant characters for the user's active DNA profile."""
+    result = await db.execute(
+        select(DnaProfile).where(
+            DnaProfile.user_id == user.id,
+            DnaProfile.is_active == True,  # noqa: E712
+        )
+    )
+    profile = result.scalar_one_or_none()
+    if not profile:
+        raise HTTPException(status_code=404, detail="DNA profile not found.")
+
+    tag_vector = list(profile.tag_vector) if profile.tag_vector is not None else []
+    top_tags = get_top_tags(tag_vector)
+
+    characters = find_resonant_characters(profile)
+    characters = await generate_mirror_readings(profile, characters, top_tags)
+
+    return [
+        CharacterMatchResponse(
+            id=c.id,
+            name=c.name,
+            movie=c.movie,
+            tmdb_id=c.tmdb_id,
+            score=c.score,
+            psych_labels=c.psych_labels,
+            psych_framework=c.psych_framework,
+            one_liner=c.one_liner,
+            mirror_reading=c.mirror_reading,
+        )
+        for c in characters
+    ]
 
 
 @router.get("/history")

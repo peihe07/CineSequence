@@ -74,6 +74,10 @@ vi.mock('@/stores/dnaStore', () => ({
     ...dnaState,
     fetchResult: fetchResultMock,
     buildDna: buildDnaMock,
+    mirrorCharacters: null,
+    isMirrorLoading: false,
+    mirrorError: null,
+    fetchMirror: vi.fn(),
   }),
 }))
 

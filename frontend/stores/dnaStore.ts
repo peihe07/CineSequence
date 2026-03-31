@@ -59,14 +59,30 @@ interface DnaResult {
   can_extend: boolean
 }
 
+export interface CharacterMatch {
+  id: string
+  name: string
+  movie: string
+  tmdb_id: number
+  score: number
+  psych_labels: string[]
+  psych_framework: string
+  one_liner: string
+  mirror_reading: string | null
+}
+
 interface DnaState {
   result: DnaResult | null
   isBuilding: boolean
   isLoading: boolean
   error: string | null
+  mirrorCharacters: CharacterMatch[] | null
+  isMirrorLoading: boolean
+  mirrorError: string | null
 
   buildDna: () => Promise<DnaResult | null>
   fetchResult: () => Promise<DnaResult | null>
+  fetchMirror: () => Promise<void>
 }
 
 async function autoAssignTheaters(): Promise<void> {
@@ -82,6 +98,9 @@ export const useDnaStore = create<DnaState>((set, get) => ({
   isBuilding: false,
   isLoading: false,
   error: null,
+  mirrorCharacters: null,
+  isMirrorLoading: false,
+  mirrorError: null,
 
   buildDna: async () => {
     set({ isBuilding: true, error: null })
@@ -123,6 +142,20 @@ export const useDnaStore = create<DnaState>((set, get) => ({
         error: err instanceof Error ? err.message : translateStatic('common.error'),
       })
       throw err
+    }
+  },
+
+  fetchMirror: async () => {
+    if (get().isMirrorLoading) return
+    set({ isMirrorLoading: true, mirrorError: null })
+    try {
+      const characters = await api<CharacterMatch[]>('/dna/mirror')
+      set({ mirrorCharacters: characters, isMirrorLoading: false })
+    } catch (err) {
+      set({
+        isMirrorLoading: false,
+        mirrorError: err instanceof Error ? err.message : translateStatic('common.error'),
+      })
     }
   },
 }))

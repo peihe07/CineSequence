@@ -13,6 +13,7 @@ import StarNebula from '@/components/dna/StarNebula'
 import TagCloud from '@/components/dna/TagCloud'
 import RadarChart from '@/components/dna/RadarChart'
 import AIReading from '@/components/dna/AIReading'
+import CharacterMirror from '@/components/dna/CharacterMirror'
 import AtmosphereCanvas from '@/components/dna/AtmosphereCanvas'
 import Button from '@/components/ui/Button'
 import FlowGuard from '@/components/guards/FlowGuard'
@@ -178,10 +179,19 @@ function DnaResultContent() {
         </motion.section>
 
         <motion.section
+          className={`${styles.section} ${styles.mirrorSection}`}
+          initial={{ opacity: 0, y: 32 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ ...sectionTransition, delay: 0.24 }}
+        >
+          <CharacterMirror />
+        </motion.section>
+
+        <motion.section
           className={`${styles.section} ${styles.diagnosticsSection}`}
           initial={{ opacity: 0, y: 28 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ ...sectionTransition, delay: 0.24 }}
+          transition={{ ...sectionTransition, delay: 0.28 }}
         >
           <p className={styles.diagnosticsEyebrow}>{t('dna.diagnosticsLabel')}</p>
           <div className={styles.diagnosticsGrid}>
