@@ -71,6 +71,8 @@ describe('SeedMoviePage', () => {
         title_zh: null,
         poster_url: null,
         year: 2000,
+        genres: [],
+        popularity: 12.5,
       },
     ])
     sequencingState.error = 'Failed to set seed movie'
@@ -117,6 +119,8 @@ describe('SeedMoviePage', () => {
         title_zh: '2046',
         poster_url: null,
         year: 2004,
+        genres: [],
+        popularity: 8.1,
       },
     ])
 
