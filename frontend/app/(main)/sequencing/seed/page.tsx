@@ -16,6 +16,8 @@ interface SearchResult {
   title_zh: string | null
   poster_url: string | null
   year: number | null
+  genres: string[]
+  popularity: number
 }
 
 export default function SeedMoviePage() {
@@ -29,11 +31,11 @@ export default function SeedMoviePage() {
   const [searchError, setSearchError] = useState<string | null>(null)
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const { setSeedMovie, error } = useSequencingStore()
-  const showEmptyState = query.trim().length >= 2 && !isSearching && results.length === 0 && !searchError
+  const showEmptyState = query.trim().length >= 1 && !isSearching && results.length === 0 && !searchError
 
   const search = useCallback(async (q: string) => {
     const trimmed = q.trim()
-    if (trimmed.length < 2) {
+    if (trimmed.length < 1) {
       setResults([])
       setSearchError(null)
       return
@@ -142,6 +144,9 @@ export default function SeedMoviePage() {
                             <span>{movie.title_en}</span>
                           )}
                           {movie.year && <span>{movie.year}</span>}
+                          {movie.genres.length > 0 && movie.genres.slice(0, 2).map(g => (
+                            <span key={g} className={styles.genreTag}>{g}</span>
+                          ))}
                         </span>
                       </div>
                     </button>

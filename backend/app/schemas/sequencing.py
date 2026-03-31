@@ -70,6 +70,7 @@ class MovieSearchResult(BaseModel):
     year: int | None = None
     genres: list[str] = []
     runtime_minutes: int | None = None
+    popularity: float = 0.0
 
 
 class ExtendResponse(BaseModel):
