@@ -243,10 +243,11 @@ class TestStopWordStripping:
             year=2001,
             genres=[],
         )
-        # Not an exact match because normalised query != normalised title,
-        # but should at least get contains, prefix, or token hits
+        # Normalised query "lordoftherings" != normalised title "thelordoftherings",
+        # so exact_match (score[0]) and prefix_match (score[2]) are both 0.
+        # But exact_no_stop (score[1]) should fire because both strip to "lordrings".
         score = _score_search_match("Lord of the Rings", lotr)
-        assert score[0] > 0 or score[2] > 0, "Should still match without the leading 'The'"
+        assert score[1] > 0, "exact_no_stop should fire after stripping articles from both sides"
 
     def test_stopword_match_ranks_below_exact(self):
         """Exact match should still beat stopword-stripped match."""
@@ -279,7 +280,8 @@ class TestLevenshteinDistance:
         assert _levenshtein("staalker", "stalker") == 1
 
     def test_two_edits(self):
-        assert _levenshtein("stalkor", "stalker") == 2
+        assert _levenshtein("stalkxr", "stalker") == 1
+        assert _levenshtein("ztalkxr", "stalker") == 2
 
     def test_completely_different(self):
         assert _levenshtein("abc", "xyz") == 3
