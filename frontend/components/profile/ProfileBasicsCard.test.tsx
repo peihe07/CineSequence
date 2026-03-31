@@ -28,6 +28,7 @@ const profile: Profile = {
   match_age_min: 24,
   match_age_max: 36,
   pure_taste_match: true,
+  match_threshold: 0.85,
   is_visible: true,
   email_notifications_enabled: true,
   is_admin: false,

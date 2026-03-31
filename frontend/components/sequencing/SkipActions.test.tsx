@@ -36,7 +36,7 @@ describe('SkipActions', () => {
     const onReroll = vi.fn()
     const onSkip = vi.fn()
 
-    render(<SkipActions onSkip={onSkip} onReroll={onReroll} onDislikeBoth={vi.fn()} disabled={false} />)
+    render(<SkipActions onSkip={onSkip} onReroll={onReroll} onDislikeBoth={vi.fn()} onSeenOneSide={vi.fn()} disabled={false} />)
 
     fireEvent.click(screen.getByRole('button', { name: 'Swap this pair' }))
 
@@ -45,7 +45,7 @@ describe('SkipActions', () => {
   })
 
   it('renders guidance copy for reroll and skip', () => {
-    render(<SkipActions onSkip={vi.fn()} onReroll={vi.fn()} onDislikeBoth={vi.fn()} disabled={false} />)
+    render(<SkipActions onSkip={vi.fn()} onReroll={vi.fn()} onDislikeBoth={vi.fn()} onSeenOneSide={vi.fn()} disabled={false} />)
 
     expect(screen.getByText('Use this when you want a different comparison, not to signal dislike.')).toBeTruthy()
     expect(screen.getByText('Use this when you cannot judge either movie in this round.')).toBeTruthy()
@@ -60,6 +60,7 @@ describe('SkipActions', () => {
         onSkip={vi.fn()}
         onReroll={vi.fn()}
         onDislikeBoth={onDislikeBoth}
+        onSeenOneSide={vi.fn()}
         disabled={false}
       />,
     )
