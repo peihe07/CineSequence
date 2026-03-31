@@ -29,6 +29,10 @@ vi.mock('@/lib/i18n', () => ({
         'theaters.fit': 'Why You Fit',
         'theaters.recommended': 'Start With',
         'theaters.watchlist': 'Shared Watchlist',
+        'theaters.carouselControls': '{{shelf}} controls',
+        'theaters.carouselShelf': '{{shelf}} shelf',
+        'theaters.carouselPrevious': 'Previous {{shelf}} card',
+        'theaters.carouselNext': 'Next {{shelf}} card',
         'theaters.userLists': 'User Lists',
         'theaters.tabs': 'Theater sections',
         'theaters.tabOverview': 'Overview',
@@ -56,6 +60,9 @@ vi.mock('@/lib/i18n', () => ({
         'theaters.listMovieSearchPlaceholder': 'Search TMDB title',
         'theaters.listMovieSearch': 'Search Movie',
         'theaters.listReplies': 'Replies',
+        'theaters.listRepliesCount': '{{count}} replies',
+        'theaters.listRepliesExpand': 'Open replies',
+        'theaters.listRepliesCollapse': 'Hide replies',
         'theaters.listRepliesEmpty': 'No one has responded to this list yet.',
         'theaters.listReplyPlaceholder': 'Respond to this list',
         'theaters.listReplySend': 'Post Reply',
@@ -125,6 +132,27 @@ describe('TheaterDetailPage', () => {
     }
 
     fireEvent.click(within(listCard).getByRole('button', { name: 'Expand List' }))
+  }
+
+  async function expandReplies(title = 'Late-Night Brain Melt') {
+    await waitFor(() => {
+      expect(screen.getByText(title)).toBeTruthy()
+    })
+
+    const listCard = screen.getByText(title).closest('article')
+    if (!listCard) {
+      throw new Error(`List card not found for ${title}`)
+    }
+
+    fireEvent.click(within(listCard).getByRole('button', { name: 'Open replies' }))
+  }
+
+  function getListCard(title = 'Late-Night Brain Melt') {
+    const listCard = screen.getByText(title).closest('article')
+    if (!listCard) {
+      throw new Error(`List card not found for ${title}`)
+    }
+    return listCard
   }
 
   it('loads and renders theater detail', async () => {
@@ -235,6 +263,46 @@ describe('TheaterDetailPage', () => {
 
     fireEvent.click(screen.getByRole('tab', { name: 'Start With' }))
     expect(screen.getByText('Pulp Fiction')).toBeTruthy()
+  })
+
+  it('shows overview carousel controls when a shelf has multiple titles', async () => {
+    apiMock
+      .mockResolvedValueOnce({
+        id: 'mobius_loop',
+        name: 'Mobius Loop',
+        subtitle: 'Mind-benders only',
+        icon: 'ri-tornado-line',
+        primary_tags: ['mindfuck'],
+        is_hidden: false,
+        member_count: 3,
+        is_active: true,
+        is_member: true,
+        shared_tags: ['mindfuck'],
+        member_preview: [],
+        recommended_movies: [
+          { tmdb_id: 1, title_en: 'Pulp Fiction', match_tags: ['mindfuck'] },
+          { tmdb_id: 3, title_en: 'Perfect Blue', match_tags: ['identity'] },
+        ],
+        shared_watchlist: [
+          { tmdb_id: 2, title_en: 'Arrival', match_tags: ['mindfuck'], supporter_count: 2 },
+          { tmdb_id: 4, title_en: 'Burning', match_tags: ['ambiguity'], supporter_count: 1 },
+        ],
+        recent_messages: [],
+      })
+      .mockResolvedValueOnce([])
+
+    render(<TheaterDetailPage />)
+
+    await waitFor(() => {
+      expect(screen.getByText('Pulp Fiction')).toBeTruthy()
+    })
+
+    expect(screen.getByRole('button', { name: 'Previous Start With card' })).toBeTruthy()
+    expect(screen.getByRole('button', { name: 'Next Start With card' })).toBeTruthy()
+
+    fireEvent.click(screen.getByRole('tab', { name: 'Shared Watchlist' }))
+    expect(screen.getByRole('button', { name: 'Previous Shared Watchlist card' })).toBeTruthy()
+    expect(screen.getByRole('button', { name: 'Next Shared Watchlist card' })).toBeTruthy()
   })
 
   it('creates a list with seeded item titles', async () => {
@@ -984,6 +1052,7 @@ describe('TheaterDetailPage', () => {
       expect(screen.getByText('Late-Night Brain Melt')).toBeTruthy()
     })
     await expandList()
+    await expandReplies()
 
     fireEvent.change(screen.getByPlaceholderText('Respond to this list'), {
       target: { value: 'Burning should be the follow-up slot.' },
@@ -1007,6 +1076,140 @@ describe('TheaterDetailPage', () => {
       })
     })
 
+    expect(screen.queryByText('Burning should be the follow-up slot.')).toBeNull()
+  })
+
+  it('keeps replies collapsed until explicitly opened', async () => {
+    apiMock
+      .mockResolvedValueOnce({
+        id: 'mobius_loop',
+        name: 'Mobius Loop',
+        subtitle: 'Mind-benders only',
+        icon: 'ri-tornado-line',
+        primary_tags: ['mindfuck'],
+        is_hidden: false,
+        member_count: 3,
+        is_active: true,
+        is_member: true,
+        shared_tags: ['mindfuck'],
+        member_preview: [],
+        recommended_movies: [],
+        shared_watchlist: [],
+        recent_messages: [],
+      })
+      .mockResolvedValueOnce([
+        {
+          id: 'l1',
+          group_id: 'mobius_loop',
+          title: 'Late-Night Brain Melt',
+          description: 'Built for spiral conversations after midnight.',
+          visibility: 'group',
+          created_at: '2026-03-27T12:00:00Z',
+          updated_at: '2026-03-27T12:00:00Z',
+          creator: { id: 'u1', name: 'Ari', avatar_url: null },
+          items: [],
+          replies: [
+            {
+              id: 'r1',
+              body: 'Burning should be the follow-up slot.',
+              created_at: '2026-03-27T12:10:00Z',
+              can_delete: true,
+              user: { id: 'u1', name: 'Ari', avatar_url: null },
+            },
+          ],
+        },
+      ])
+
+    render(<TheaterDetailPage />)
+
+    await openListsTab()
+    await expandList()
+
+    const listCard = getListCard()
+    expect(screen.queryByText('Burning should be the follow-up slot.')).toBeNull()
+    expect(within(listCard).getAllByText('1 replies').length).toBeGreaterThan(0)
+
+    await expandReplies()
+    expect(screen.getByText('Burning should be the follow-up slot.')).toBeTruthy()
+  })
+
+  it('shows list summary chips before a card is expanded', async () => {
+    apiMock
+      .mockResolvedValueOnce({
+        id: 'mobius_loop',
+        name: 'Mobius Loop',
+        subtitle: 'Mind-benders only',
+        icon: 'ri-tornado-line',
+        primary_tags: ['mindfuck'],
+        is_hidden: false,
+        member_count: 3,
+        is_active: true,
+        is_member: true,
+        shared_tags: ['mindfuck'],
+        member_preview: [],
+        recommended_movies: [],
+        shared_watchlist: [],
+        recent_messages: [],
+      })
+      .mockResolvedValueOnce([
+        {
+          id: 'l1',
+          group_id: 'mobius_loop',
+          title: 'Late-Night Brain Melt',
+          description: 'Built for spiral conversations after midnight.',
+          visibility: 'group',
+          created_at: '2026-03-27T12:00:00Z',
+          updated_at: '2026-03-27T12:00:00Z',
+          creator: { id: 'u1', name: 'Ari', avatar_url: null },
+          items: [
+            {
+              id: 'i1',
+              tmdb_id: 11,
+              title_en: 'Arrival',
+              title_zh: null,
+              poster_url: null,
+              genres: [],
+              runtime_minutes: null,
+              match_tags: [],
+              note: null,
+              position: 0,
+            },
+            {
+              id: 'i2',
+              tmdb_id: 12,
+              title_en: 'Burning',
+              title_zh: null,
+              poster_url: null,
+              genres: [],
+              runtime_minutes: null,
+              match_tags: [],
+              note: null,
+              position: 1,
+            },
+          ],
+          replies: [
+            {
+              id: 'r1',
+              body: 'Burning should be the follow-up slot.',
+              created_at: '2026-03-27T12:10:00Z',
+              can_delete: true,
+              user: { id: 'u1', name: 'Ari', avatar_url: null },
+            },
+          ],
+        },
+      ])
+
+    render(<TheaterDetailPage />)
+
+    await openListsTab()
+    await waitFor(() => {
+      expect(screen.getByText('Late-Night Brain Melt')).toBeTruthy()
+    })
+
+    const listCard = getListCard()
+    expect(within(listCard).getAllByText('2 items').length).toBeGreaterThan(0)
+    expect(within(listCard).getByText('Arrival +1')).toBeTruthy()
+    expect(within(listCard).getAllByText('1 replies').length).toBeGreaterThan(0)
     expect(screen.queryByText('Burning should be the follow-up slot.')).toBeNull()
   })
 })

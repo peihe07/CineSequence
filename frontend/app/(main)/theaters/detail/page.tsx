@@ -2,7 +2,7 @@
 
 import { api } from '@/lib/api'
 import Link from 'next/link'
-import { useState, type CSSProperties } from 'react'
+import { useRef, useState, type CSSProperties } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { useI18n } from '@/lib/i18n'
 import { getTagLabel } from '@/lib/tagLabels'
@@ -15,9 +15,12 @@ function TheaterDetailContent() {
   const { t, locale } = useI18n()
   const searchParams = useSearchParams()
   const groupId = searchParams.get('id') || ''
+  const recommendedRailRef = useRef<HTMLDivElement | null>(null)
+  const watchlistRailRef = useRef<HTMLDivElement | null>(null)
   const [activeTab, setActiveTab] = useState<'overview' | 'lists' | 'board'>('overview')
   const [activeOverviewPanel, setActiveOverviewPanel] = useState<'recommended' | 'watchlist'>('recommended')
   const [expandedListId, setExpandedListId] = useState<string | null>(null)
+  const [expandedRepliesByList, setExpandedRepliesByList] = useState<Record<string, boolean>>({})
   const [isCreateListModalOpen, setIsCreateListModalOpen] = useState(false)
   const [draftMessage, setDraftMessage] = useState('')
   const [draftListTitle, setDraftListTitle] = useState('')
@@ -238,6 +241,17 @@ function TheaterDetailContent() {
     await reorderListItems(listId, nextOrder.map((item) => item.id))
   }
 
+  function scrollRail(panel: 'recommended' | 'watchlist', direction: 'prev' | 'next') {
+    const rail = panel === 'recommended' ? recommendedRailRef.current : watchlistRailRef.current
+    if (!rail) return
+
+    const offset = Math.max(rail.clientWidth * 0.82, 260)
+    rail.scrollBy({
+      left: direction === 'next' ? offset : -offset,
+      behavior: 'smooth',
+    })
+  }
+
   if (isLoading) {
     return <div className={styles.state}>{t('common.loading')}</div>
   }
@@ -358,30 +372,56 @@ function TheaterDetailContent() {
 
             {activeOverviewPanel === 'recommended' && (
               group.recommended_movies.length > 0 ? (
-                <div className={styles.horizontalRail}>
-                  {group.recommended_movies.map((movie) => (
-                    <article key={movie.tmdb_id} className={styles.movieRailCard}>
-                      {movie.poster_url ? (
-                        <img
-                          className={styles.movieRailPoster}
-                          src={movie.poster_url}
-                          alt={movie.title_en}
-                        />
-                      ) : (
-                        <div className={styles.movieRailPosterFallback} aria-hidden="true">
-                          <i className="ri-film-line" />
+                <div className={styles.carouselSection}>
+                  {group.recommended_movies.length > 1 && (
+                    <div className={styles.railControls} aria-label={t('theaters.carouselControls', { shelf: t('theaters.recommended') })}>
+                      <button
+                        type="button"
+                        className={styles.railButton}
+                        onClick={() => scrollRail('recommended', 'prev')}
+                        aria-label={t('theaters.carouselPrevious', { shelf: t('theaters.recommended') })}
+                      >
+                        <i className="ri-arrow-left-s-line" />
+                      </button>
+                      <button
+                        type="button"
+                        className={styles.railButton}
+                        onClick={() => scrollRail('recommended', 'next')}
+                        aria-label={t('theaters.carouselNext', { shelf: t('theaters.recommended') })}
+                      >
+                        <i className="ri-arrow-right-s-line" />
+                      </button>
+                    </div>
+                  )}
+                  <div
+                    ref={recommendedRailRef}
+                    className={styles.horizontalRail}
+                    aria-label={t('theaters.carouselShelf', { shelf: t('theaters.recommended') })}
+                  >
+                    {group.recommended_movies.map((movie) => (
+                      <article key={movie.tmdb_id} className={styles.movieRailCard}>
+                        {movie.poster_url ? (
+                          <img
+                            className={styles.movieRailPoster}
+                            src={movie.poster_url}
+                            alt={movie.title_en}
+                          />
+                        ) : (
+                          <div className={styles.movieRailPosterFallback} aria-hidden="true">
+                            <i className="ri-film-line" />
+                          </div>
+                        )}
+                        <div className={styles.movieRailBody}>
+                          <p className={styles.itemTitle}>{movie.title_en}</p>
+                          <div className={styles.tags}>
+                            {movie.match_tags.map((tag) => (
+                              <span key={`${movie.tmdb_id}-${tag}`} className={styles.tag}>{getTagLabel(tag, locale)}</span>
+                            ))}
+                          </div>
                         </div>
-                      )}
-                      <div className={styles.movieRailBody}>
-                        <p className={styles.itemTitle}>{movie.title_en}</p>
-                        <div className={styles.tags}>
-                          {movie.match_tags.map((tag) => (
-                            <span key={`${movie.tmdb_id}-${tag}`} className={styles.tag}>{getTagLabel(tag, locale)}</span>
-                          ))}
-                        </div>
-                      </div>
-                    </article>
-                  ))}
+                      </article>
+                    ))}
+                  </div>
                 </div>
               ) : (
                 <div className={styles.emptyStateCard}>
@@ -396,33 +436,59 @@ function TheaterDetailContent() {
 
             {activeOverviewPanel === 'watchlist' && (
               group.shared_watchlist.length > 0 ? (
-                <div className={styles.horizontalRail}>
-                  {group.shared_watchlist.map((movie) => (
-                    <article key={movie.tmdb_id} className={styles.movieRailCard}>
-                      {movie.poster_url ? (
-                        <img
-                          className={styles.movieRailPoster}
-                          src={movie.poster_url}
-                          alt={movie.title_en}
-                        />
-                      ) : (
-                        <div className={styles.movieRailPosterFallback} aria-hidden="true">
-                          <i className="ri-film-line" />
+                <div className={styles.carouselSection}>
+                  {group.shared_watchlist.length > 1 && (
+                    <div className={styles.railControls} aria-label={t('theaters.carouselControls', { shelf: t('theaters.watchlist') })}>
+                      <button
+                        type="button"
+                        className={styles.railButton}
+                        onClick={() => scrollRail('watchlist', 'prev')}
+                        aria-label={t('theaters.carouselPrevious', { shelf: t('theaters.watchlist') })}
+                      >
+                        <i className="ri-arrow-left-s-line" />
+                      </button>
+                      <button
+                        type="button"
+                        className={styles.railButton}
+                        onClick={() => scrollRail('watchlist', 'next')}
+                        aria-label={t('theaters.carouselNext', { shelf: t('theaters.watchlist') })}
+                      >
+                        <i className="ri-arrow-right-s-line" />
+                      </button>
+                    </div>
+                  )}
+                  <div
+                    ref={watchlistRailRef}
+                    className={styles.horizontalRail}
+                    aria-label={t('theaters.carouselShelf', { shelf: t('theaters.watchlist') })}
+                  >
+                    {group.shared_watchlist.map((movie) => (
+                      <article key={movie.tmdb_id} className={styles.movieRailCard}>
+                        {movie.poster_url ? (
+                          <img
+                            className={styles.movieRailPoster}
+                            src={movie.poster_url}
+                            alt={movie.title_en}
+                          />
+                        ) : (
+                          <div className={styles.movieRailPosterFallback} aria-hidden="true">
+                            <i className="ri-film-line" />
+                          </div>
+                        )}
+                        <div className={styles.movieRailBody}>
+                          <div className={styles.itemRow}>
+                            <p className={styles.itemTitle}>{movie.title_en}</p>
+                            <span className={styles.supporterBadge}>{t('theaters.supporters', { count: movie.supporter_count })}</span>
+                          </div>
+                          <div className={styles.tags}>
+                            {movie.match_tags.map((tag) => (
+                              <span key={`${movie.tmdb_id}-${tag}`} className={styles.tag}>{getTagLabel(tag, locale)}</span>
+                            ))}
+                          </div>
                         </div>
-                      )}
-                      <div className={styles.movieRailBody}>
-                        <div className={styles.itemRow}>
-                          <p className={styles.itemTitle}>{movie.title_en}</p>
-                          <span className={styles.supporterBadge}>{t('theaters.supporters', { count: movie.supporter_count })}</span>
-                        </div>
-                        <div className={styles.tags}>
-                          {movie.match_tags.map((tag) => (
-                            <span key={`${movie.tmdb_id}-${tag}`} className={styles.tag}>{getTagLabel(tag, locale)}</span>
-                          ))}
-                        </div>
-                      </div>
-                    </article>
-                  ))}
+                      </article>
+                    ))}
+                  </div>
                 </div>
               ) : (
                 <div className={styles.emptyStateCard}>
@@ -528,13 +594,20 @@ function TheaterDetailContent() {
                   ) : (
                     <p className={styles.detailText}>{t('theaters.listItems', { count: list.items.length })}</p>
                   )}
-                  <div className={styles.listMetaRow}>
-                    <span className={styles.meta}>{t('theaters.listItems', { count: list.items.length })}</span>
+                  <div className={styles.listSummaryRow}>
+                    <span className={styles.summaryChip}>{t('theaters.listItems', { count: list.items.length })}</span>
                     {list.items.length > 0 && (
-                      <span className={styles.meta}>
+                      <span className={styles.summaryChip}>
                         {(list.items[0].title_zh || list.items[0].title_en)}
                         {list.items.length > 1 ? ` +${list.items.length - 1}` : ''}
                       </span>
+                    )}
+                    <span className={styles.summaryChip}>{t('theaters.listRepliesCount', { count: list.replies.length })}</span>
+                  </div>
+                  <div className={styles.listMetaRow}>
+                    <span className={styles.meta}>{t('theaters.listItems', { count: list.items.length })}</span>
+                    {list.replies.length > 0 && (
+                      <span className={styles.meta}>{t('theaters.listRepliesCount', { count: list.replies.length })}</span>
                     )}
                   </div>
                 </div>
@@ -727,50 +800,69 @@ function TheaterDetailContent() {
                     </div>
                   )}
                   <div className={styles.replyBlock}>
-                    <p className={styles.label}>{t('theaters.listReplies')}</p>
-                    <div className={styles.list}>
-                      {list.replies.length > 0 ? list.replies.map((reply) => (
-                        <article key={reply.id} className={styles.replyItem}>
-                          <div className={styles.itemRow}>
-                            <p className={styles.itemTitle}>{reply.user.name}</p>
-                            <div className={styles.itemRow}>
-                              <span className={styles.meta}>{new Date(reply.created_at).toLocaleString(locale)}</span>
-                              {reply.can_delete && (
-                                <button
-                                  className={styles.inlineBtn}
-                                  disabled={isMutating}
-                                  onClick={() => void deleteListReply(list.id, reply.id)}
-                                >
-                                  {t('theaters.listReplyDelete')}
-                                </button>
-                              )}
-                            </div>
-                          </div>
-                          <p className={styles.message}>{reply.body}</p>
-                        </article>
-                      )) : (
-                        <div className={styles.inlineEmptyState}>
-                          <p className={styles.meta}>{t('theaters.listRepliesEmpty')}</p>
-                        </div>
-                      )}
-                    </div>
-                    {group.is_member && (
-                      <div className={styles.composer}>
-                        <textarea
-                          className={styles.textarea}
-                          value={draftReplyByList[list.id] ?? ''}
-                          onChange={(event) => setDraftReplyByList((current) => ({ ...current, [list.id]: event.target.value }))}
-                          placeholder={t('theaters.listReplyPlaceholder')}
-                          rows={2}
-                        />
-                        <button
-                          className={styles.secondaryBtn}
-                          disabled={isMutating}
-                          onClick={() => void handlePostListReply(list.id)}
-                        >
-                          {t('theaters.listReplySend')}
-                        </button>
+                    <div className={styles.replyHeader}>
+                      <div>
+                        <p className={styles.label}>{t('theaters.listReplies')}</p>
+                        <p className={styles.meta}>{t('theaters.listRepliesCount', { count: list.replies.length })}</p>
                       </div>
+                      <button
+                        className={styles.inlineBtn}
+                        disabled={isMutating}
+                        onClick={() => setExpandedRepliesByList((current) => ({
+                          ...current,
+                          [list.id]: !current[list.id],
+                        }))}
+                      >
+                        {expandedRepliesByList[list.id] ? t('theaters.listRepliesCollapse') : t('theaters.listRepliesExpand')}
+                      </button>
+                    </div>
+                    {expandedRepliesByList[list.id] && (
+                      <>
+                        <div className={styles.list}>
+                          {list.replies.length > 0 ? list.replies.map((reply) => (
+                            <article key={reply.id} className={styles.replyItem}>
+                              <div className={styles.itemRow}>
+                                <p className={styles.itemTitle}>{reply.user.name}</p>
+                                <div className={styles.itemRow}>
+                                  <span className={styles.meta}>{new Date(reply.created_at).toLocaleString(locale)}</span>
+                                  {reply.can_delete && (
+                                    <button
+                                      className={styles.inlineBtn}
+                                      disabled={isMutating}
+                                      onClick={() => void deleteListReply(list.id, reply.id)}
+                                    >
+                                      {t('theaters.listReplyDelete')}
+                                    </button>
+                                  )}
+                                </div>
+                              </div>
+                              <p className={styles.message}>{reply.body}</p>
+                            </article>
+                          )) : (
+                            <div className={styles.inlineEmptyState}>
+                              <p className={styles.meta}>{t('theaters.listRepliesEmpty')}</p>
+                            </div>
+                          )}
+                        </div>
+                        {group.is_member && (
+                          <div className={styles.composer}>
+                            <textarea
+                              className={styles.textarea}
+                              value={draftReplyByList[list.id] ?? ''}
+                              onChange={(event) => setDraftReplyByList((current) => ({ ...current, [list.id]: event.target.value }))}
+                              placeholder={t('theaters.listReplyPlaceholder')}
+                              rows={2}
+                            />
+                            <button
+                              className={styles.secondaryBtn}
+                              disabled={isMutating}
+                              onClick={() => void handlePostListReply(list.id)}
+                            >
+                              {t('theaters.listReplySend')}
+                            </button>
+                          </div>
+                        )}
+                      </>
                     )}
                   </div>
                 </>
