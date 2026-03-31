@@ -56,7 +56,7 @@ class Settings(BaseSettings):
     tmdb_cache_ttl: int = 86400  # 24 hours
 
     # Matching
-    match_threshold: float = 0.8  # 80% minimum similarity
+    match_threshold: float = 0.85  # 85% fallback (overridden per user)
 
     @field_validator("database_url")
     @classmethod

@@ -240,6 +240,8 @@ export default function ProfilePage() {
                   summaryIntro={t('profile.preferencesSummaryIntro')}
                   pureTasteOnCopy={t('profile.pureTasteOnCopy')}
                   pureTasteOffCopy={t('profile.pureTasteOffCopy')}
+                  matchThresholdLabel={t('profile.matchThreshold')}
+                  matchThresholdHint={t('profile.matchThresholdHint')}
                   isPreview={isPreviewMode}
                   getPrefLabel={getPrefLabel}
                   prefOptions={[

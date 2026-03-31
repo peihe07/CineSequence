@@ -24,6 +24,8 @@ interface ProfilePreferencesCardProps {
   summaryIntro: string
   pureTasteOnCopy: string
   pureTasteOffCopy: string
+  matchThresholdLabel: string
+  matchThresholdHint: string
   isPreview?: boolean
   getPrefLabel: (value: string) => string
   prefOptions: { value: string; label: string }[]
@@ -49,6 +51,8 @@ export default function ProfilePreferencesCard({
   summaryIntro,
   pureTasteOnCopy,
   pureTasteOffCopy,
+  matchThresholdLabel,
+  matchThresholdHint,
   isPreview = false,
   getPrefLabel,
   prefOptions,
@@ -56,11 +60,14 @@ export default function ProfilePreferencesCard({
 }: ProfilePreferencesCardProps) {
   const [isEditing, setIsEditing] = useState(false)
   const [saving, setSaving] = useState(false)
+  const THRESHOLD_OPTIONS = [0.75, 0.80, 0.85, 0.90, 0.95]
+
   const [form, setForm] = useState({
     match_gender_pref: profile.match_gender_pref ?? '',
     match_age_min: profile.match_age_min ?? '',
     match_age_max: profile.match_age_max ?? '',
     pure_taste_match: profile.pure_taste_match,
+    match_threshold: profile.match_threshold ?? 0.85,
     birth_year: profile.birth_year ?? '',
     is_visible: profile.is_visible,
     email_notifications_enabled: profile.email_notifications_enabled,
@@ -72,6 +79,7 @@ export default function ProfilePreferencesCard({
       match_age_min: profile.match_age_min ?? '',
       match_age_max: profile.match_age_max ?? '',
       pure_taste_match: profile.pure_taste_match,
+      match_threshold: profile.match_threshold ?? 0.85,
       birth_year: profile.birth_year ?? '',
       is_visible: profile.is_visible,
       email_notifications_enabled: profile.email_notifications_enabled,
@@ -84,6 +92,7 @@ export default function ProfilePreferencesCard({
     try {
       const body: Record<string, unknown> = {
         pure_taste_match: form.pure_taste_match,
+        match_threshold: form.match_threshold,
         is_visible: form.is_visible,
         email_notifications_enabled: form.email_notifications_enabled,
       }
@@ -186,6 +195,23 @@ export default function ProfilePreferencesCard({
               >
                 {noLabel}
               </button>
+            </div>
+          </div>
+
+          <div className={styles.field}>
+            <span className={styles.label}>{matchThresholdLabel}</span>
+            <p className={styles.fieldHint}>{matchThresholdHint}</p>
+            <div className={styles.prefGrid}>
+              {THRESHOLD_OPTIONS.map((val) => (
+                <button
+                  key={val}
+                  type="button"
+                  className={`${styles.prefOption} ${form.match_threshold === val ? styles.prefActive : ''}`}
+                  onClick={() => setForm({ ...form, match_threshold: val })}
+                >
+                  {Math.round(val * 100)}%
+                </button>
+              ))}
             </div>
           </div>
         </div>
@@ -299,6 +325,12 @@ export default function ProfilePreferencesCard({
       </div>
 
       <div className={styles.preferenceSummary}>
+        <div className={styles.factCard}>
+          <span className={styles.label}>{matchThresholdLabel}</span>
+          <span className={styles.factMetric}>
+            {Math.round((profile.match_threshold ?? 0.85) * 100)}%
+          </span>
+        </div>
         <div className={styles.factCard}>
           <span className={styles.label}>{visibleLabel}</span>
           <span className={styles.factMetric}>

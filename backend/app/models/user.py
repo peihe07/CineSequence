@@ -2,7 +2,7 @@ import enum
 import uuid
 from datetime import datetime
 
-from sqlalchemy import Boolean, DateTime, Enum, ForeignKey, Integer, String, Text, func
+from sqlalchemy import Boolean, DateTime, Enum, Float, ForeignKey, Integer, String, Text, func
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -48,6 +48,9 @@ class User(Base):
     match_age_min: Mapped[int | None] = mapped_column(Integer)
     match_age_max: Mapped[int | None] = mapped_column(Integer)
     pure_taste_match: Mapped[bool] = mapped_column(Boolean, default=False)
+    match_threshold: Mapped[float] = mapped_column(
+        Float, default=0.85, server_default="0.85", nullable=False
+    )
     is_visible: Mapped[bool] = mapped_column(Boolean, default=True, server_default="true")
     email_notifications_enabled: Mapped[bool] = mapped_column(
         Boolean, default=True, server_default="true"

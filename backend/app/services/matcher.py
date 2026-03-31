@@ -115,7 +115,8 @@ async def find_matches(
     # Create Match records
     matches = []
     for candidate_profile, similarity in ranked:
-        if similarity < settings.match_threshold:
+        threshold = getattr(user, "match_threshold", settings.match_threshold)
+        if similarity < threshold:
             continue
 
         existing_pair = await db.execute(

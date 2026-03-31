@@ -142,6 +142,7 @@ class ProfileOut(BaseModel):
     match_age_min: int | None = None
     match_age_max: int | None = None
     pure_taste_match: bool
+    match_threshold: float = 0.85
     is_visible: bool = True
     email_notifications_enabled: bool = True
     sequencing_status: str
@@ -168,6 +169,7 @@ class ProfileUpdate(BaseModel):
     match_age_min: int | None = None
     match_age_max: int | None = None
     pure_taste_match: bool | None = None
+    match_threshold: float | None = Field(None, ge=0.75, le=0.95)
     is_visible: bool | None = None
     email_notifications_enabled: bool | None = None
 
@@ -241,6 +243,7 @@ async def _profile_out(db: AsyncSession, user: User) -> ProfileOut:
         match_age_min=user.match_age_min,
         match_age_max=user.match_age_max,
         pure_taste_match=user.pure_taste_match,
+        match_threshold=user.match_threshold,
         is_visible=user.is_visible,
         email_notifications_enabled=user.email_notifications_enabled,
         sequencing_status=user.sequencing_status.value,
@@ -306,7 +309,7 @@ async def update_profile(
     allowed_fields = {
         "name", "bio", "gender", "birth_year", "region",
         "match_gender_pref", "match_age_min", "match_age_max",
-        "pure_taste_match", "is_visible", "email_notifications_enabled",
+        "pure_taste_match", "match_threshold", "is_visible", "email_notifications_enabled",
     }
     for field, value in update_data.items():
         if field not in allowed_fields:

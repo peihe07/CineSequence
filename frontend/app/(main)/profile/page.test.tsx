@@ -85,6 +85,8 @@ vi.mock('@/lib/i18n', () => ({
         'profile.preferencesSummaryIntro': 'Preferences summary intro',
         'profile.pureTasteOnCopy': 'Taste-first is on',
         'profile.pureTasteOffCopy': 'Taste-first is off',
+        'profile.matchThreshold': 'Match threshold',
+        'profile.matchThresholdHint': 'How closely profiles must align',
         'profile.favorites': 'Must-Watch Films',
         'profile.favoritesHint': 'Pick up to 3 films that define you for the public dossier.',
         'profile.favoritesEmpty': 'Curation pending / no must-watch films on file',
@@ -263,6 +265,101 @@ describe('ProfilePage', () => {
       expect(screen.queryByRole('button', { name: 'Delete account' })).toBeNull()
       expect(screen.queryByText('Completeness')).toBeNull()
       expect(screen.queryByLabelText('Edit name')).toBeNull()
+    })
+  })
+
+  it('displays match threshold percentage in the preferences summary', async () => {
+    apiMock.mockResolvedValue({
+      name: 'Aster',
+      email: 'aster@example.com',
+      bio: null,
+      gender: 'female',
+      region: 'TW',
+      birth_year: null,
+      avatar_url: null,
+      match_gender_pref: null,
+      match_age_min: null,
+      match_age_max: null,
+      pure_taste_match: false,
+      match_threshold: 0.9,
+      sequencing_status: 'completed',
+      archetype_id: null,
+      archetype_name: null,
+      is_visible: true,
+      email_notifications_enabled: true,
+      favorite_movies: [],
+    })
+
+    render(<ProfilePage />)
+
+    await waitFor(() => {
+      expect(screen.getByText('Match threshold')).toBeTruthy()
+      expect(screen.getByText('90%')).toBeTruthy()
+    })
+  })
+
+  it('allows updating match threshold via the preferences editor', async () => {
+    const profileResponse = {
+      name: 'Aster',
+      email: 'aster@example.com',
+      bio: null,
+      gender: 'female',
+      region: 'TW',
+      birth_year: null,
+      avatar_url: null,
+      match_gender_pref: null,
+      match_age_min: null,
+      match_age_max: null,
+      pure_taste_match: false,
+      match_threshold: 0.85,
+      sequencing_status: 'completed',
+      archetype_id: null,
+      archetype_name: null,
+      is_visible: true,
+      email_notifications_enabled: true,
+      favorite_movies: [],
+    }
+    apiMock.mockImplementation((path: string, options?: { method?: string; body?: string }) => {
+      if (path === '/profile' && options?.method === 'PATCH') {
+        const body = JSON.parse(options.body ?? '{}')
+        return Promise.resolve({ ...profileResponse, match_threshold: body.match_threshold })
+      }
+      if (path === '/profile') {
+        return Promise.resolve(profileResponse)
+      }
+      return Promise.reject(new Error(`Unexpected api call: ${path}`))
+    })
+
+    render(<ProfilePage />)
+
+    await waitFor(() => {
+      expect(screen.getByText('Match threshold')).toBeTruthy()
+    })
+
+    // open the preferences editor
+    const editBtn = screen.getAllByRole('button').find(
+      (b) => b.getAttribute('aria-label') === 'Edit preferences'
+    )
+    if (editBtn) fireEvent.click(editBtn)
+
+    await waitFor(() => {
+      expect(screen.getByText('How closely profiles must align')).toBeTruthy()
+    })
+
+    // select 75%
+    fireEvent.click(screen.getByRole('button', { name: '75%' }))
+
+    // save
+    fireEvent.click(screen.getByRole('button', { name: 'Save' }))
+
+    await waitFor(() => {
+      expect(apiMock).toHaveBeenCalledWith(
+        '/profile',
+        expect.objectContaining({
+          method: 'PATCH',
+          body: expect.stringContaining('"match_threshold":0.75'),
+        })
+      )
     })
   })
 })

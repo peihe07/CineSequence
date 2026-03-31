@@ -497,6 +497,13 @@
   color: rgba(239, 232, 223, 0.72);
 }
 
+.fieldHint {
+  margin: 0 0 0.5rem;
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: rgba(239, 232, 223, 0.52);
+}
+
 .avatarSection,
 .field,
 .valueRow,

@@ -20,6 +20,7 @@ export interface Profile {
   match_age_min: number | null
   match_age_max: number | null
   pure_taste_match: boolean
+  match_threshold: number
   is_visible: boolean
   email_notifications_enabled: boolean
   sequencing_status: string
