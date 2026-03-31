@@ -8,7 +8,7 @@
 
 .tag {
   padding: 0.3rem 0.65rem;
-  font-size: 0.68rem;
+  font-size: var(--text-xs);
   color: var(--accent-ink);
   background: rgba(255, 255, 255, 0.55);
   backdrop-filter: blur(8px);

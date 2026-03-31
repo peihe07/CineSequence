@@ -191,7 +191,7 @@
 .statSubtext {
   max-width: 28ch;
   text-align: center;
-  font-size: 0.82rem;
+  font-size: var(--text-sm);
   line-height: 1.55;
   color: rgba(255, 255, 255, 0.66);
 }
@@ -248,7 +248,7 @@
 }
 
 .breaker {
-  font-size: 0.86rem;
+  font-size: var(--text-sm);
   color: rgba(255, 255, 255, 0.76);
   padding-left: 1rem;
   position: relative;
@@ -280,7 +280,7 @@
 }
 
 .errorText {
-  font-size: 0.9rem;
+  font-size: var(--text-sm);
 }
 
 @media (max-width: 768px) {

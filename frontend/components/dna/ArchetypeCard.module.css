@@ -52,14 +52,14 @@
 
 .nameEn {
   font-family: var(--font-mono);
-  font-size: 0.72rem;
+  font-size: var(--text-xs);
   color: rgba(255, 255, 255, 0.5);
   text-transform: uppercase;
   letter-spacing: 0.18em;
 }
 
 .description {
-  font-size: 0.92rem;
+  font-size: var(--text-base);
   color: rgba(255, 255, 255, 0.76);
   line-height: 1.85;
   max-width: 340px;

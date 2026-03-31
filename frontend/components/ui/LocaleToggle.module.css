@@ -8,7 +8,7 @@
 
 .option {
   padding: 0.35rem 0.7rem;
-  font-size: 0.75rem;
+  font-size: var(--text-xs);
   font-weight: 600;
   font-family: var(--font-sans), sans-serif;
   letter-spacing: 0.04em;

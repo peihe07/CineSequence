@@ -19,7 +19,7 @@
 }
 
 .vs {
-  font-size: 0.8rem;
+  font-size: var(--text-sm);
   font-weight: 600;
   letter-spacing: 0.15em;
   color: var(--muted);

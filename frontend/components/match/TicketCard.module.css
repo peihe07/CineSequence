@@ -231,6 +231,7 @@
   color: var(--archive-text-muted);
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -270,7 +271,7 @@
   font-style: normal;
   margin-top: 0.15rem;
   flex-shrink: 0;
-  font-size: 0.9rem;
+  font-size: var(--text-sm);
 }
 
 /* Action area */
@@ -603,10 +604,10 @@
   }
 
   .partnerName {
-    font-size: 1.1rem;
+    font-size: var(--text-base);
   }
 
   .emailLink {
-    font-size: 0.73rem;
+    font-size: var(--text-xs);
   }
 }

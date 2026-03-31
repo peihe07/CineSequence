@@ -264,7 +264,7 @@
 }
 
 .statusNote {
-  font-size: 0.76rem;
+  font-size: var(--text-xs);
   color: rgba(255, 255, 255, 0.58);
   font-family: var(--font-mono);
   letter-spacing: 0.08em;
@@ -272,7 +272,7 @@
 }
 
 .statusHint {
-  font-size: 0.78rem;
+  font-size: var(--text-sm);
   line-height: 1.6;
   color: rgba(255, 255, 255, 0.66);
 }
@@ -303,7 +303,7 @@
   .policyBox {
     max-height: 92px;
     padding: 0.75rem;
-    font-size: 0.76rem;
+    font-size: var(--text-xs);
   }
 
   .submitSection {
@@ -313,10 +313,10 @@
 
   .consent {
     gap: 0.65rem;
-    font-size: 0.76rem;
+    font-size: var(--text-xs);
   }
 
   .disclaimer {
-    font-size: 0.74rem;
+    font-size: var(--text-xs);
   }
 }

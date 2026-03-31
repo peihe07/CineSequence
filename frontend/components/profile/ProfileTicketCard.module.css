@@ -17,7 +17,7 @@
 
 .frameLabel,
 .frameIssue {
-  font-size: 0.62rem;
+  font-size: var(--text-xs);
   color: rgba(232, 224, 214, 0.46);
 }
 
@@ -70,14 +70,14 @@
 
 .brand {
   font-family: var(--font-mono);
-  font-size: 0.74rem;
+  font-size: var(--text-xs);
   letter-spacing: 0.22em;
   color: rgba(229, 126, 49, 0.76);
 }
 
 .catalogNo {
   font-family: var(--font-mono);
-  font-size: 0.62rem;
+  font-size: var(--text-xs);
   letter-spacing: 0.16em;
   color: rgba(232, 224, 214, 0.42);
 }
@@ -148,7 +148,7 @@
 
 .archetype {
   font-family: var(--font-mono);
-  font-size: 0.74rem;
+  font-size: var(--text-xs);
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: rgba(232, 224, 214, 0.46);
@@ -157,13 +157,13 @@
 
 .email {
   font-family: var(--font-mono);
-  font-size: 0.78rem;
+  font-size: var(--text-sm);
   color: rgba(229, 126, 49, 0.72);
   margin: 0 0 0.5rem;
 }
 
 .bio {
-  font-size: 0.88rem;
+  font-size: var(--text-sm);
   line-height: 1.65;
   color: rgba(240, 233, 224, 0.68);
   margin: 0.7rem 0 0;
@@ -176,7 +176,7 @@
 .sectionLabel {
   display: block;
   font-family: var(--font-mono);
-  font-size: 0.65rem;
+  font-size: var(--text-xs);
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: rgba(232, 224, 214, 0.36);
@@ -192,7 +192,7 @@
 .tag {
   display: inline-block;
   padding: 0.24rem 0.65rem;
-  font-size: 0.78rem;
+  font-size: var(--text-sm);
   color: rgba(255, 238, 220, 0.88);
   background: rgba(229, 126, 49, 0.12);
   border: 1px solid rgba(229, 126, 49, 0.18);
@@ -206,7 +206,7 @@
 }
 
 .favorite {
-  font-size: 0.85rem;
+  font-size: var(--text-sm);
   line-height: 1.55;
   color: rgba(240, 233, 224, 0.76);
 }
@@ -217,7 +217,7 @@
   align-items: center;
   padding: 0.78rem 2rem 1.2rem 2.4rem;
   font-family: var(--font-mono);
-  font-size: 0.65rem;
+  font-size: var(--text-xs);
   letter-spacing: 0.14em;
   color: rgba(232, 224, 214, 0.3);
 }

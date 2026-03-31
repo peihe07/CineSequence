@@ -19,7 +19,7 @@
   padding: 0.7rem 1.2rem;
   background: var(--foreground);
   border-radius: 8px;
-  font-size: 0.8rem;
+  font-size: var(--text-sm);
   color: #ffffff;
   cursor: pointer;
   pointer-events: auto;

@@ -120,7 +120,7 @@
   background: var(--archive-label-bg);
   color: var(--archive-label-text);
   font-family: var(--font-mono);
-  font-size: 0.72rem;
+  font-size: var(--text-xs);
   letter-spacing: 0.26em;
   text-transform: uppercase;
   box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.06);
@@ -173,7 +173,7 @@
   margin-bottom: 1.5rem;
   color: var(--archive-text-muted);
   font-family: var(--font-mono);
-  font-size: 0.72rem;
+  font-size: var(--text-xs);
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
@@ -191,7 +191,7 @@
   writing-mode: vertical-rl;
   text-orientation: mixed;
   font-family: var(--font-mono);
-  font-size: 0.68rem;
+  font-size: var(--text-xs);
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--archive-text-muted);
@@ -283,6 +283,6 @@
   }
 
   .hudRow {
-    font-size: 0.64rem;
+    font-size: var(--text-xs);
   }
 }

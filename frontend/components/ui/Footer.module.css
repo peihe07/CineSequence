@@ -212,7 +212,7 @@
 
 .dialogTitle {
   margin: 0;
-  font-size: 1.05rem;
+  font-size: var(--text-lg);
   font-weight: 600;
 }
 

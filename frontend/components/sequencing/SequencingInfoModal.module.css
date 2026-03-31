@@ -35,7 +35,7 @@
 }
 
 .title {
-  font-size: 0.95rem;
+  font-size: var(--text-base);
   font-weight: 600;
   color: rgba(255, 255, 255, 0.92);
   letter-spacing: 0.02em;
@@ -76,7 +76,7 @@
 }
 
 .sectionTitle {
-  font-size: 0.78rem;
+  font-size: var(--text-sm);
   font-weight: 600;
   color: rgba(229, 126, 49, 0.82);
   text-transform: uppercase;
@@ -84,7 +84,7 @@
 }
 
 .text {
-  font-size: 0.82rem;
+  font-size: var(--text-sm);
   color: rgba(255, 255, 255, 0.72);
   line-height: 1.65;
 }
@@ -109,7 +109,7 @@
   justify-content: center;
   width: 32px;
   height: 22px;
-  font-size: 0.65rem;
+  font-size: var(--text-xs);
   font-weight: 700;
   letter-spacing: 0.04em;
   color: rgba(229, 126, 49, 0.82);
@@ -119,14 +119,14 @@
 }
 
 .phaseName {
-  font-size: 0.82rem;
+  font-size: var(--text-sm);
   font-weight: 600;
   color: rgba(255, 255, 255, 0.88);
   line-height: 1.4;
 }
 
 .phaseDesc {
-  font-size: 0.76rem;
+  font-size: var(--text-xs);
   color: rgba(255, 255, 255, 0.5);
   line-height: 1.55;
   margin-top: 1px;
@@ -149,13 +149,13 @@
 }
 
 .signalLabel {
-  font-size: 0.78rem;
+  font-size: var(--text-sm);
   font-weight: 600;
   color: rgba(255, 255, 255, 0.88);
 }
 
 .signalDesc {
-  font-size: 0.76rem;
+  font-size: var(--text-xs);
   color: rgba(255, 255, 255, 0.5);
   line-height: 1.5;
 }
