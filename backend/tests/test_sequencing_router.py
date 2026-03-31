@@ -731,3 +731,25 @@ class TestDislikeBoth:
         assert picks[0].chosen_tmdb_id is None
         assert picks[0].decision_type == "dislike_both"
         assert picks[0].test_dimension == "slowburn"
+
+    @pytest.mark.asyncio
+    async def test_seen_one_side_persists_as_distinct_decision(self, client, auth_user, db_session):
+        user, headers = auth_user
+
+        response = await client.post(
+            "/sequencing/seen-one-side",
+            json={
+                "movie_a_tmdb_id": 3101,
+                "movie_b_tmdb_id": 3102,
+                "response_time_ms": 600,
+                "test_dimension": None,
+            },
+            headers=headers,
+        )
+        assert response.status_code == 200
+
+        result = await db_session.execute(select(Pick).where(Pick.user_id == user.id))
+        picks = result.scalars().all()
+        assert len(picks) == 1
+        assert picks[0].chosen_tmdb_id is None
+        assert picks[0].decision_type == "seen_one_side"

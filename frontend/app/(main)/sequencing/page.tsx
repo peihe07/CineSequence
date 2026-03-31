@@ -38,6 +38,7 @@ export default function SequencingPage() {
     submitPick,
     skip,
     dislikeBoth,
+    seenOneSide,
   } = useSequencingStore()
 
   const bootstrapSequencing = useCallback(async () => {
@@ -97,6 +98,10 @@ export default function SequencingPage() {
 
   function handleDislikeBoth() {
     void dislikeBoth(getResponseTime())
+  }
+
+  function handleSeenOneSide() {
+    void seenOneSide(getResponseTime())
   }
 
   async function handleResume() {
@@ -200,6 +205,7 @@ export default function SequencingPage() {
               onSkip={handleSkip}
               onReroll={handleReroll}
               onDislikeBoth={handleDislikeBoth}
+              onSeenOneSide={handleSeenOneSide}
               disabled={isLoading}
             />
           </div>

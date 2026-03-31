@@ -18,6 +18,7 @@ class PickDecisionType(enum.StrEnum):
     pick = "pick"
     skip = "skip"
     dislike_both = "dislike_both"
+    seen_one_side = "seen_one_side"
 
 
 class Pick(Base):

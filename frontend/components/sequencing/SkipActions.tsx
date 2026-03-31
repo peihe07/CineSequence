@@ -10,10 +10,11 @@ interface SkipActionsProps {
   onSkip: () => void
   onReroll: () => void
   onDislikeBoth: () => void
+  onSeenOneSide: () => void
   disabled: boolean
 }
 
-export default function SkipActions({ onSkip, onReroll, onDislikeBoth, disabled }: SkipActionsProps) {
+export default function SkipActions({ onSkip, onReroll, onDislikeBoth, onSeenOneSide, disabled }: SkipActionsProps) {
   const { t } = useI18n()
   const [showExtendedActions, setShowExtendedActions] = useState(false)
 
@@ -43,6 +44,10 @@ export default function SkipActions({ onSkip, onReroll, onDislikeBoth, disabled 
         <p className={styles.hint}>{t('seq.moreOptionsHint')}</p>
         {showExtendedActions && (
           <div className={styles.extendedActions}>
+            <Button variant="ghost" size="sm" onClick={onSeenOneSide} disabled={disabled}>
+              <i className="ri-eye-off-line" /> {t('seq.seenOneSide')}
+            </Button>
+            <p className={styles.hint}>{t('seq.seenOneSideHint')}</p>
             <Button variant="ghost" size="sm" onClick={onDislikeBoth} disabled={disabled}>
               <i className="ri-close-circle-line" /> {t('seq.dislikeBoth')}
             </Button>

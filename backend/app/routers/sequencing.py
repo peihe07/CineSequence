@@ -243,6 +243,7 @@ async def set_seed_movie(
 
 @router.get("/search")
 async def search_tmdb_movies(
+    # min_length=1 allows single-CJK-character titles (e.g. "刀", "蟬")
     q: Annotated[str, Query(min_length=1, max_length=100)],
     _user: Annotated[User, Depends(get_current_user)],
 ):
@@ -262,6 +263,7 @@ async def search_tmdb_movies(
                 if m.tmdb_id in detailed_movies
                 else m.runtime_minutes
             ),
+            popularity=m.popularity,
         )
         for m in results
     ]
@@ -606,6 +608,24 @@ async def dislike_both_pair(
     return await _record_empty_decision(
         body,
         decision_type=PickDecisionType.dislike_both,
+        user=user,
+        db=db,
+    )
+
+
+@router.post("/seen-one-side", response_model=ProgressResponse)
+async def seen_one_side_pair(
+    body: SkipRequest,
+    user: Annotated[User, Depends(get_current_user)],
+    db: Annotated[AsyncSession, Depends(get_db)],
+):
+    """Record that the user has only seen one of the two movies and cannot compare fairly.
+
+    Does not affect DNA scoring in Phase A; recorded separately from skip.
+    """
+    return await _record_empty_decision(
+        body,
+        decision_type=PickDecisionType.seen_one_side,
         user=user,
         db=db,
     )
