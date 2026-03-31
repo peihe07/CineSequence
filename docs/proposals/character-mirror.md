@@ -1,13 +1,14 @@
 # Character Mirror — Psychology x Movie Character Analysis
 
-> Status: Design phase
+> Status: design phase
 > Last updated: 2026-03-29
+> Owner: DNA / product
 
 ## Concept
 
 Sequencing result is not just an archetype label — it becomes a **character mirror**: the system tells users which movie characters resonate with their taste DNA, and why, through a psychological lens.
 
-Core idea: use the existing 30-dim tag vector + quadrant scores to find character-level resonance, not just genre-level preference.
+Core idea: use the existing 35-dim tag vector + quadrant scores to find character-level resonance, not just genre-level preference.
 
 ---
 
@@ -49,7 +50,7 @@ A new dataset `character_profiles.json` with 60-100 entries:
 ```
 
 Field notes:
-- `tag_vector`: 30-dim vector, same taxonomy as user DNA — enables direct cosine similarity
+- `tag_vector`: 35-dim vector, same taxonomy as user DNA — enables direct cosine similarity
 - `psych_labels`: 2-3 psychological traits, drawn from a controlled vocabulary (see below)
 - `psych_framework`: which psychological lens this character best illustrates
 - `one_liner`: iconic quote for visual display

@@ -17,7 +17,7 @@ TypeScript and Python don't share code directly.
 **Decision**: Use FastAPI (Python) for the backend API.
 
 **Rationale**:
-- Native async support — critical for Claude API + TMDB API calls (I/O bound)
+- Native async support — critical for Gemini API + TMDB API calls (I/O bound)
 - Pydantic integration for request/response validation
 - Developer familiarity with Python ecosystem
 - Auto-generated OpenAPI docs for frontend integration
@@ -94,7 +94,7 @@ LIMIT 50;
 **Decision**: Use Celery + Redis for background task processing.
 
 **Tasks that run async**:
-1. DNA analysis (Claude personality reading) — 3-5s latency
+1. DNA analysis (Gemini personality reading) — 3-5s latency
 2. Email sending (ticket invite generation + Resend API) — 1-2s
 3. Batch re-matching (when new users complete sequencing) — periodic
 4. Group auto-generation (tag clustering) — periodic
@@ -259,6 +259,24 @@ Note: candidate pool context (~800 tokens/call) increases input substantially. R
 
 **Decision**: Treat match discovery as initiator-private until invite, restrict invite/respond authority by role, and enforce unordered pair uniqueness.
 
+**Rules**:
+- `discovered` matches are visible only to the initiator (`user_a`).
+- Only `user_a` may send an invite for a discovered match.
+- Only `user_b` may accept or decline an invited match.
+- Match candidates must satisfy both the initiator's filters and the candidate's reciprocal preferences, unless the candidate opted into taste-only matching.
+- Match pairs are unique regardless of ordering (`A-B` and `B-A` cannot coexist).
+
+**Rationale**:
+- Prevents accidental exposure of one-sided discovery results.
+- Keeps the state model coherent: `discover → invite → respond`.
+- Reduces invalid match suggestions where the other party would never accept the demographic filter.
+- Protects against race conditions in async matching tasks and batch rematch runs.
+
+**Implementation notes**:
+- Application layer checks skip existing forward and reverse pairs before insert.
+- Database layer enforces an unordered unique index on `LEAST(user_a_id, user_b_id)` and `GREATEST(user_a_id, user_b_id)`.
+- Accepted email deep links use `/ticket?inviteId=<match_id>`, matching the current frontend route shape.
+
 ---
 
 ## ADR-016: Cloudflare Workers frontend with same-origin API proxy
@@ -281,20 +299,4 @@ Note: candidate pool context (~800 tokens/call) increases input substantially. R
 - `api.cinesequence.xyz` is currently not part of the working production request path.
 - The deployment setup is more opinionated than a basic static frontend deploy.
 
-**Rules**:
-- `discovered` matches are visible only to the initiator.
-- Only `user_a` may send an invite for a discovered match.
-- Only `user_b` may accept or decline an invited match.
-- Match candidates must satisfy both the initiator's filters and the candidate's reciprocal preferences unless the candidate opted into taste-only matching.
-- Match pairs are unique regardless of ordering (`A-B` and `B-A` cannot coexist).
-
-**Rationale**:
-- Prevents accidental exposure of one-sided discovery results.
-- Keeps the state model coherent: `discover -> invite -> respond`.
-- Reduces invalid match suggestions where the other party would never accept the demographic filter.
-- Protects against race conditions in async matching tasks and batch rematch runs.
-
-**Implementation notes**:
-- Application layer checks skip existing forward and reverse pairs before insert.
-- Database layer enforces an unordered unique index on `LEAST(user_a_id, user_b_id)` and `GREATEST(user_a_id, user_b_id)`.
-- Accepted email deep links use `/ticket?inviteId=<match_id>`, matching the current frontend route shape.
+_(Rules, rationale, and implementation notes moved to ADR-015 above.)_

@@ -1,6 +1,6 @@
 # Theaters Improvement Plan
 
-> Last updated: 2026-03-29
+> Last updated: 2026-03-30
 > Scope: keep all active theaters follow-up work in one place, grouped by backend, frontend, and product experience.
 
 ## Purpose
@@ -108,6 +108,7 @@ Still open:
 - [x] Trim before posting messages
 - [x] Use auto-assign response directly instead of immediate refetch
 - [x] Render richer list item metadata in theater detail
+- [x] Phase 3 scan-cost reduction pass (2026-03-30): tabbed library detail panels, overview shelf tabs + carousel controls, collapsible list detail, collapsible replies, summary chips
 
 ## Product And UX Follow-Ups
 

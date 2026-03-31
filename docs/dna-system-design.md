@@ -113,7 +113,7 @@ Important runtime constraints:
 
 ### Tag Taxonomy
 
-The DNA system only scores tags present in `tag_taxonomy.json`.
+The DNA system only scores tags present in `backend/app/data/tag_taxonomy.json`.
 
 - `TAG_KEYS` defines the fixed taxonomy order currently used by the persisted vector.
 - `TAG_INDEX` maps each supported tag to a vector index.
@@ -121,15 +121,47 @@ The DNA system only scores tags present in `tag_taxonomy.json`.
 
 This is why movie-pool curation must normalize legacy tags before they are useful for scoring.
 
-Current cinephile-specific additions on top of the legacy tag set:
+#### Complete Tag List (35 tags as of 2026-03-30)
 
-- `artHouseBridge`
-- `urbanLoneliness`
-- `driftCinema`
-- `blackComedy`
-- `moralAnxiety`
+| Tag | 中文 | Category |
+|-----|------|----------|
+| `twist` | 反轉結局 | narrative |
+| `mindfuck` | 燒腦 | narrative |
+| `slowburn` | 慢熱 | pacing |
+| `driftCinema` | 漫遊感 | pacing |
+| `ensemble` | 群戲 | structure |
+| `solo` | 獨角戲 | structure |
+| `visualFeast` | 視覺饗宴 | style |
+| `dialogue` | 對白精彩 | style |
+| `experimental` | 實驗性 | style |
+| `violentAesthetic` | 暴力美學 | style |
+| `absurdist` | 荒誕 | style |
+| `tearjerker` | 催淚 | emotion |
+| `nostalgic` | 懷舊 | emotion |
+| `romanticCore` | 浪漫內核 | emotion |
+| `darkTone` | 黑暗 | tone |
+| `uplifting` | 正能量 | tone |
+| `blackComedy` | 黑色幽默 | tone |
+| `philosophical` | 哲學思辨 | depth |
+| `satirical` | 社會諷刺 | depth |
+| `existential` | 存在主義 | depth |
+| `socialCritique` | 社會批判 | depth |
+| `moralAnxiety` | 道德焦慮 | depth |
+| `cult` | 邪典 | culture |
+| `artHouseBridge` | 作者片入口 | culture |
+| `comingOfAge` | 成長故事 | theme |
+| `revenge` | 復仇 | theme |
+| `heist` | 精密計畫 | theme |
+| `survival` | 生存掙扎 | theme |
+| `urbanLoneliness` | 城市孤獨 | theme |
+| `timeTravel` | 時空穿越 | concept |
+| `dystopia` | 反烏托邦 | concept |
+| `trueStory` | 真實事件 | source |
+| `nonEnglish` | 非英語 | language |
+| `antiHero` | 反英雄 | character |
+| `psychoThriller` | 心理驚悚 | genre_sub |
 
-These were added after the bridge-auteur Phase 1 rebalance so the system could distinguish more specific cinephile signals from broad legacy buckets like `slowburn`, `darkTone`, `satirical`, and `philosophical`.
+The five cinephile-specific tags added on 2026-03-30 (`artHouseBridge`, `urbanLoneliness`, `driftCinema`, `blackComedy`, `moralAnxiety`) distinguish more specific cinephile signals from broad legacy buckets like `slowburn`, `darkTone`, `satirical`, and `philosophical`.
 
 ### Tag Vector Construction
 
@@ -315,7 +347,7 @@ The current system relies on three layers of protection.
 
 ## Current Design Tradeoffs
 
-- The 30-tag taxonomy is stable and explainable, but limits nuance unless pool curation keeps mapping rich films back into those tags carefully.
+- The 35-tag taxonomy (expanded from 30 on 2026-03-30 with cinephile-specific signals) is stable and explainable, but limits nuance unless pool curation keeps mapping rich films back into those tags carefully.
 - Phase 1 is highly interpretable, but still bounded by curated pair quality rather than learned user embeddings.
 - Phase 2-3 use AI for adaptivity, but AI is intentionally constrained by a curated pool and validation checks.
 - Archetype scoring is more stable after consistency weighting and overlap tuning, but still sits on a relatively compact 12-type system.

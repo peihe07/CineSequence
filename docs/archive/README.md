@@ -15,8 +15,17 @@
 - `docs/workstreams/pricing.md`
 - `docs/architecture-decisions.md`
 
-已移入 archive 的舊根目錄文件：
+## 歸檔文件清單
 
-- `pricing-and-entitlement.md`
-- `pricing-implementation-spec.md`
-- `theaters-issues.md`
+原本存在根目錄或 workstreams，現已移入 archive：
+
+- `pricing-and-entitlement.md` — 定價與權益設計早期草稿
+- `pricing-implementation-spec.md` — 定價實作規格，已被 `workstreams/pricing.md` 取代
+- `theaters-issues.md` — 早期 theaters 問題清單，已被 `workstreams/theaters.md` 取代
+- `theater-ui-improvement-plan.md` — theaters UI 改善早期計畫
+- `admin-dashboard-plan.md` — 管理後台早期計畫
+- `cinephile-upgrade-plan.md` — cinephile 升級全計畫，已完成執行，保留作決策脈絡
+- `movie-pool-audit.md` — 電影池早期審查記錄
+- `phase1-pair-audit.md` — Phase 1 題組早期審查記錄
+- `progress.md` — 舊版週次追蹤文件，已被根目錄 `docs/progress.md` 取代
+

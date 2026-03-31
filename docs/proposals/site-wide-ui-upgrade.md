@@ -1,7 +1,8 @@
 # 全站 UI/UX 設計與體驗優化方案 (Site-wide Design Upgrade)
 
-> Status: Phase 1-2 complete, Phase 3 in progress
-> Last updated: 2026-03-30
+> Status: Phase 1-3 complete (all modules done)
+> Last updated: 2026-03-31
+> 執行追蹤已移至 `docs/workstreams/ui.md`，這份文件保留完整規格與診斷說明。
 
 在檢視了包含放映廳 (Theater)、配對 (Match)、基因解析 (DNA)、使用者驗證 (Auth) 以及管理員後台 (Admin) 在內的全局實作後，發現「字體偏小」與「配色太黑」是系統性問題。
 
@@ -100,9 +101,10 @@
 - 已完成高流量頁面的 `0.6*rem`, `0.7*rem` meta/label cleanup，並將深色背景逐步替換為全局 surface tokens。
 - 已涵蓋 auth、header/footer、ticket、matches、theaters、dna、profile、notifications、sequencing 與 admin chart 的主要閱讀面。
 
-**Phase 3: 模組佈局升級 (Layout Upgrade) - IN PROGRESS**
-- 依照先前的 Theater 改善計畫，實作橫向轉盤與分頁切換。
-- 檢視 Ticket 與 Admin 圖表的 RWD (響應式) 狀態，確保字體放大後不會跑版。
+**Phase 3: 模組佈局升級 (Layout Upgrade) - DONE**
+- Theaters：tabbed library detail panels、overview shelf tabs + carousel controls、collapsible list detail + replies + summary chips。
+- Ticket：spacing + RWD 微調，hardcoded 字級全部替換為 token。
+- Admin：chart label、tooltip、card density 字級全部替換為 token。
 
 ### Phase 1-2 完成摘要
 
@@ -110,7 +112,10 @@
 - 主要深色頁面已從接近純黑的背景改為深炭灰階層。
 - 主流程頁面中的 mono label、meta、badge、hint 已不再低於 `--text-xs`。
 
-### Phase 3 當前切入點
+### Phase 3 完成摘要
 
-- `Theaters` 先行：把 library card 由縱向資訊堆疊改成分頁式 detail panel，降低掃讀成本。
-- `Ticket` 後續：針對 enlarged type 後的 spacing 與 RWD 做第二輪佈局微調。
+- `Theaters`：library card 改成分頁式 detail panel，overview 改為 shelf tabs + carousel controls，list card 改成預設摘要、明細展開、replies 二層收合與 summary chips。
+- `Ticket`：spacing + RWD 微調完成，hardcoded 字級全部替換。
+- `Admin`：chart label、tooltip、card density 全部對齊 token。
+
+Phase 3 全部完成，無遺留項目。

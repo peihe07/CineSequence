@@ -1,8 +1,9 @@
 # Tag Taxonomy Cinephile Signals
 
-> Status: proposal
+> Status: first batch shipped — `artHouseBridge`, `urbanLoneliness`, `driftCinema`, `blackComedy`, `moralAnxiety` 已落地；`americanAuteur` deferred
 > Drafted: 2026-03-30
 > Scope: next-pass taxonomy expansion after the bridge-auteur pool update
+> Owner: DNA / sequencing
 
 ## Goal
 
