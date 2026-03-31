@@ -22,17 +22,9 @@
 - `docs/proposals/tag-taxonomy-cinephile-signals.md` — 第一批已落地，`americanAuteur` 仍 deferred
 - `docs/proposals/dislike-both-mechanic.md` — Phase A 已落地，Phase B scoring 待資料後決策
 - `docs/proposals/site-wide-ui-upgrade.md` — Phase 1-3 全部完成（含 ticket + admin）
-
-已刪除（完整落地，無 deferred 項目）：
-
-- `phase1-bridge-auteur-rebalance.md` — 完整落地，決策歷史見 `docs/progress.md`
-
-## 排進主線執行的提案
-
-- `docs/proposals/seen-one-side-mechanic.md` — 排入 roadmap Phase 3，Phase A 待執行
-- `docs/proposals/character-mirror.md` — dataset 已排入 Phase 4，resonance engine 待 DNA 穩定後接手
+- `docs/proposals/seen-one-side-mechanic.md` — Phase A 已落地
+- `docs/proposals/character-mirror.md` — dataset / resonance engine / result UI 已落地，dilemma rounds 仍待評估
 
 ## 未排進主線的提案
 
 （目前無）
-

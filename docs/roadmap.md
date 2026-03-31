@@ -1,6 +1,6 @@
 # Cine Sequence — Execution Plan
 
-> Last updated: 2026-03-30
+> Last updated: 2026-03-31
 
 目前活躍主線細節請搭配：
 
@@ -20,84 +20,14 @@
 2. 再修會明顯勸退新使用者的 UX
 3. 最後才做擴張功能、節慶企劃、變現
 
-> **狀態追蹤說明**：下方表格的 Status 欄只提供概覽。Item-level 執行歷史、驗證記錄、決策記錄請看 `docs/progress.md`，那裡才是唯一狀態源。
+> **狀態追蹤說明**：Item-level 執行歷史、驗證記錄、決策記錄請看 `docs/progress.md`。
 
 ## 實行計畫
 
-### Phase 1 — 修正 DNA 輸入品質
+### Phase 1-3（已清除完成項）
 
-這一階段的目標是先讓使用者做的題、系統吃的 tag、DNA 算分三者對得上。
-
-| Item | Why now | Scope | Status |
-|------|---------|-------|--------|
-| Movie pool tag mapping 修正 | 現有新片 tag 有斷層，部分片實際上不參與計分 | `backend/app/data/movie_pool.json` + 驗證腳本 | DONE |
-| Phase 1 核心 pair 重做 | 核心三軸有明顯 confound，會直接污染 quadrant | `phase1_pairs.json` 核心維度 | DONE |
-| Phase 1 pair 擴充到 60-80 組 | 目前題組太少，跨用戶重複度太高 | `phase1_pairs.json` | DONE |
-| Western vs Eastern 降權或移除 | 目前太容易變成文化距離，不像品味訊號 | `phase1_pairs.json` + scoring 權重 | DONE |
-| Pair review metadata | 讓後續題組調整有明確審核欄位 | docs 或 pair metadata 欄位 | DONE |
-| Phase 1 bridge-auteur rebalance | 讓基礎輪更早測到非主流傾向，但不要直接跳到太硬的影展片 | `phase1_pairs.json` 核心與補充 pair | DONE |
-| Movie pool cinephile signal expansion | 補上 bridge-auteur 與非主流導向 tag，讓後續輪次能接住前面訊號 | `movie_pool.json` + `tag_taxonomy.json` | DONE |
-
-完成定義：
-
-1. 所有 `movie_pool` tag 都落在現有 taxonomy 內
-2. `phase1_pairs` 的三個核心維度完成第一輪替換
-3. 題組數量足以降低重複出題
-4. 第一批 bridge-auteur 片可在 Phase 1 與 Phase 2-3 都被承接
-5. cinephile signal 已從通用 tag 中拆出第一批獨立 taxonomy
-
-這一階段已完成的擴充順序：
-
-1. 先調 `phase1_pairs`，把 bridge-auteur 導向放進基礎輪
-2. 再補 `movie_pool` 與 `tag_taxonomy`
-3. 最後再看要不要擴大到更純影展路線片
-
-bridge-auteur 方向先以這幾組為 anchor：
-
-- Wim Wenders
-- Paul Thomas Anderson
-- Coen Brothers
-
-目標不是直接把 Phase 1 變成重影展問卷，而是增加「作者片入口」與「特殊氣質分流點」，例如孤獨、漫遊、城市疏離、黑色幽默、類型偏移、人物壓力、微荒誕。
-
-這一輪已經先落地的 cinephile signal：
-
-- `artHouseBridge`
-- `urbanLoneliness`
-- `driftCinema`
-- `blackComedy`
-- `moralAnxiety`
-
-### Phase 2 — 提高 DNA 穩定度
-
-這一階段的目標是讓重測結果不要飄太大，也避免新使用者都吃到同一種探索路徑。
-
-| Item | Why now | Scope | Status |
-|------|---------|-------|--------|
-| DNA consistency weighting | retest instability 已是明確問題 | `backend/app/services/dna_builder.py` | DONE |
-| Phase 2-3 candidate randomness | 新使用者 candidate pool 過度一致 | `_select_candidates` | DONE |
-| Archetype 方案 A 微調 | 現有 12 型有重疊，但還不值得大改體系 | `archetypes.json` + builder tests | DONE |
-
-不納入這階段的：
-
-- Archetype 16 型擴充
-- 5 軸 quadrant 改造
-
-理由：這兩者都會擴大 QA 與 backfill 成本，應等前兩階段完成後再評估。
-
-### Phase 3 — 降低新用戶流失
-
-當 DNA 輸入與計分可信度提升後，再處理最直接的 UX 流失點。
-
-| Item | Why now | Scope | Status |
-|------|---------|-------|--------|
-| Match empty state | 0 候選時不能讓使用者看到空畫面 | matches page | DONE |
-| Sequencing resume UX | 中斷回來沒有承接，容易流失 | sequencing entry / progress UI | DONE |
-| "Dislike both" mechanic | 使用者現在常在兩片都不喜歡時被迫選邊 | sequencing interaction + backend skip semantics | DONE |
-| Skip/Reroll UX hint | 使用者不理解 skip / reroll 的訊號意義 | onboarding / tooltip | DONE |
-| Seed movie search UX | 影迷片名搜尋容錯要持續優化 | seed search | DONE |
-| Match threshold user setting | 使用者可自行調整配對相似度門檻（預設 85%，可調 75–95%） | `User` model + profile API + matches settings UI | DONE |
-| Seen one side mechanic (Phase A) | 提供「只看過一邊」獨立事件路徑，避免污染 skip 語義 | sequencing interaction + backend decision_type | DONE |
+- 既有 Phase 1-3 項目已完成並自本文件清除。
+- 若需查看完成歷史，請參考 `docs/progress.md` 與 `docs/archive/`。
 
 ### Phase 4 — 成長與分享
 
@@ -106,9 +36,6 @@ bridge-auteur 方向先以這幾組為 anchor：
 | Item | Why now | Scope | Status |
 |------|---------|-------|--------|
 | DNA Share Card | 這是成長槓桿，但前提是 DNA 結果已較穩 | DNA result / image generation | TODO |
-| Character Mirror — dataset | character_profiles.json（83 個角色）可先行準備，不依賴 backend 變更 | `backend/app/data/character_profiles.json` | DONE |
-| Character Mirror — resonance engine | 角色共鳴演算法 + AI mirror reading | `character_mirror.py` + Gemini prompt | DONE |
-| Character Mirror — result UI | DNA 結果頁 character mirror 卡片 | frontend DNA result page | DONE |
 | User feedback survey | 等核心體驗較穩後再收 feedback 比較有價值 | DNA result page | TODO |
 
 ## 待辦區

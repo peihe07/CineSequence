@@ -1,24 +1,7 @@
 # Pricing Workstream
 
-> Last updated: 2026-03-29
+> Last updated: 2026-03-31
 > Scope: sequencing retest and extension monetization, without payment-provider execution until platform approval is in place.
-
-## Current State
-
-Launch rule that has already been chosen:
-
-- first sequencing session stays free
-- each user gets `1` free retest
-- every later retest consumes `1` credit
-- every extension batch consumes `1` credit
-- one extension batch currently means `+3 rounds`
-
-Current code state:
-
-- backend entitlement scaffolding exists
-- router-level gating for retest/extend exists
-- migration and ledger model scaffolding exist
-- payment-provider integration is intentionally paused
 
 ## Product Rule
 
@@ -40,24 +23,12 @@ Consumption:
 - `1 retest` = `1 credit`
 - `1 extension batch (+3 rounds)` = `1 credit`
 
-This keeps pricing flexible without hard-coding storefront logic into sequencing.
-
 ## Backend Improvements
-
-### Already In Place
-
-- `users.free_retest_credits`
-- `users.paid_sequencing_credits`
-- `users.beta_entitlement_override`
-- `sequencing_entitlements` ledger model
-- entitlement service functions for gate + consumption
-- `/sequencing/progress` entitlement snapshot
-- `/sequencing/retest` and `/sequencing/extend` business gating
 
 ### Next Backend Steps
 
 - [ ] Run the pricing/entitlement test path against a working local test database.
-  Reason: scaffolding is in place, but full backend verification is still blocked by missing local test DB setup.
+  Reason: full backend verification is still blocked by missing local test DB setup.
 
 - [ ] Decide whether to keep a dedicated entitlement snapshot endpoint.
   Candidate:

@@ -1,6 +1,6 @@
 # Theaters Improvement Plan
 
-> Last updated: 2026-03-30
+> Last updated: 2026-03-31
 > Scope: keep all active theaters follow-up work in one place, grouped by backend, frontend, and product experience.
 
 ## Purpose
@@ -14,25 +14,6 @@ Use it for:
 - product or UX questions that still need decisions
 
 Do not use this file for site-wide styling work. Keep that in the broader UI/design documents.
-
-## Current State
-
-Already completed:
-
-- auto-assign no longer wipes existing memberships
-- `/groups` payload assembly is batched instead of per-group fan-out
-- `get_group` no longer loads all groups
-- theater detail uses a dynamic route
-- list CRUD, item CRUD, reorder, notes, replies, and activity feed are in place
-- list item metadata now includes `title_zh`, `poster_url`, `genres`, and `runtime_minutes`
-- theater detail already renders movie-card style list items instead of plain text only
-
-Still open:
-
-- movie search / TMDB-assisted list building is missing
-- real-time updates are missing
-- a few backend query/loading details still need cleanup
-- the theater writing surface still needs a clearer product shape
 
 ## Backend Improvements
 
@@ -54,16 +35,6 @@ Still open:
 
 - [ ] Recheck all theater detail mutation paths for missing early guard behavior when `groupId` is absent.
   Reason: initial malformed fetches were fixed, but this should remain a hard invariant across all callbacks.
-
-### Completed Backend Work
-
-- [x] Additive auto-assign behavior
-- [x] Batched `/groups` payload assembly
-- [x] Single-group visibility lookup for detail
-- [x] Ownership validation for list item deletion
-- [x] Request schema length limits
-- [x] Item reorder endpoint
-- [x] Lower activation threshold
 
 ## Frontend Improvements
 
@@ -99,16 +70,6 @@ Still open:
 
 - [ ] Reassess how much metadata is always visible on list cards versus revealed on interaction.
   Reason: current detail cards are functional, but still dense.
-
-### Completed Frontend Work
-
-- [x] Dynamic theater detail route
-- [x] Counter-based mutation tracking
-- [x] Shared theater type definitions
-- [x] Trim before posting messages
-- [x] Use auto-assign response directly instead of immediate refetch
-- [x] Render richer list item metadata in theater detail
-- [x] Phase 3 scan-cost reduction pass (2026-03-30): tabbed library detail panels, overview shelf tabs + carousel controls, collapsible list detail, collapsible replies, summary chips
 
 ## Product And UX Follow-Ups
 
