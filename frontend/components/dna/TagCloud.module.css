@@ -35,6 +35,7 @@
   gap: 0.4rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+  font-family: var(--font-tech);
 }
 
 .cloud {
@@ -49,7 +50,7 @@
   padding: 0.42rem 0.82rem;
   font-size: calc(0.66rem * var(--tag-scale, 1));
   font-weight: 500;
-  font-family: var(--font-mono);
+  font-family: var(--font-tech);
   color: rgba(255, 255, 255, 0.88);
   background: rgba(255, 255, 255, 0.06);
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);

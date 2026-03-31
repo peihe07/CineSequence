@@ -31,7 +31,7 @@
 }
 
 .centerValue {
-  font-family: var(--font-sans);
+  font-family: var(--font-tech);
   font-size: 1.4rem;
   font-weight: 700;
   color: #26332e;
@@ -71,7 +71,7 @@
 }
 
 .legendCount {
-  font-family: var(--font-sans);
+  font-family: var(--font-tech);
   font-weight: 600;
   color: #26332e;
 }

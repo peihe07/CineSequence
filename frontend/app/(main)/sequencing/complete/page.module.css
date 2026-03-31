@@ -88,7 +88,7 @@
   right: 1rem;
   writing-mode: vertical-rl;
   text-orientation: mixed;
-  font-family: var(--font-mono);
+  font-family: var(--font-tech);
   font-size: var(--text-xs);
   letter-spacing: 0.2em;
   color: rgba(255, 255, 255, 0.42);
@@ -101,6 +101,7 @@
 
 .title {
   position: relative;
+  font-family: var(--font-cinematic);
   font-size: clamp(2.2rem, 7vw, 4.6rem);
   font-weight: 600;
   letter-spacing: -0.04em;
@@ -111,7 +112,7 @@
 .eyebrow,
 .heroMeta {
   position: relative;
-  font-family: var(--font-mono);
+  font-family: var(--font-tech);
   text-transform: uppercase;
 }
 
@@ -130,6 +131,7 @@
 .subtitle {
   position: relative;
   max-width: 30rem;
+  font-family: var(--font-story);
   font-size: 0.95rem;
   color: rgba(255, 255, 255, 0.76);
   line-height: 1.9;
@@ -162,6 +164,7 @@
 }
 
 .statValue {
+  font-family: var(--font-tech);
   font-size: clamp(1.9rem, 5vw, 3rem);
   font-weight: 600;
   color: rgba(255, 255, 255, 0.96);
@@ -173,7 +176,7 @@
   color: var(--archive-text-muted);
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  font-family: var(--font-mono);
+  font-family: var(--font-tech);
 }
 
 .actions {
@@ -195,7 +198,7 @@
   border: none;
   border-radius: var(--radius-button);
   font-size: 0.75rem;
-  font-family: var(--font-mono);
+  font-family: var(--font-tech);
   letter-spacing: 0.15em;
   text-transform: uppercase;
   cursor: pointer;
@@ -226,7 +229,7 @@
   border: none;
   border-radius: var(--radius-component);
   font-size: 0.75rem;
-  font-family: var(--font-mono);
+  font-family: var(--font-tech);
   letter-spacing: 0.14em;
   text-transform: uppercase;
   cursor: pointer;

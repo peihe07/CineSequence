@@ -43,6 +43,7 @@
 }
 
 .name {
+  font-family: var(--font-cinematic);
   font-size: clamp(1.6rem, 3vw, 2.3rem);
   font-weight: 600;
   letter-spacing: -0.03em;
@@ -51,7 +52,7 @@
 }
 
 .nameEn {
-  font-family: var(--font-mono);
+  font-family: var(--font-tech);
   font-size: var(--text-xs);
   color: rgba(255, 255, 255, 0.5);
   text-transform: uppercase;
@@ -59,6 +60,7 @@
 }
 
 .description {
+  font-family: var(--font-story);
   font-size: var(--text-base);
   color: rgba(255, 255, 255, 0.76);
   line-height: 1.85;

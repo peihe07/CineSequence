@@ -128,7 +128,7 @@
   border: none;
   background: transparent;
   color: rgba(255, 255, 255, 0.46);
-  font-family: var(--font-mono);
+  font-family: var(--font-tech);
   font-size: var(--text-xs);
   letter-spacing: 0.16em;
   text-transform: uppercase;
@@ -147,7 +147,7 @@
 .timecode,
 .status,
 .path {
-  font-family: var(--font-mono);
+  font-family: var(--font-tech);
   text-transform: uppercase;
 }
 
@@ -161,6 +161,7 @@
 .headline {
   margin: 0;
   max-width: 10ch;
+  font-family: var(--font-cinematic);
   font-size: clamp(2rem, 4vw, 3.2rem);
   line-height: 0.92;
   letter-spacing: -0.05em;
@@ -171,6 +172,7 @@
 .copy {
   max-width: 34ch;
   margin: 0;
+  font-family: var(--font-story);
   font-size: var(--text-base);
   line-height: var(--leading-relaxed);
   color: var(--archive-text-muted);
@@ -212,7 +214,7 @@
 
 /* Note labels — neutral grey monospace */
 .noteLabel {
-  font-family: var(--font-mono);
+  font-family: var(--font-tech);
   font-size: var(--text-xs);
   letter-spacing: 0.16em;
   text-transform: uppercase;
@@ -220,6 +222,7 @@
 }
 
 .noteText {
+  font-family: var(--font-story);
   font-size: var(--text-sm);
   line-height: var(--leading-base);
   color: var(--archive-text-muted);

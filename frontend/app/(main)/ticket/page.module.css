@@ -93,7 +93,7 @@
   right: 1rem;
   writing-mode: vertical-rl;
   text-orientation: mixed;
-  font-family: var(--font-mono);
+  font-family: var(--font-tech);
   font-size: var(--text-xs);
   letter-spacing: 0.2em;
   color: rgba(255, 255, 255, 0.42);
@@ -101,7 +101,7 @@
 
 .title {
   position: relative;
-  font-family: inherit;
+  font-family: var(--font-cinematic);
   font-size: clamp(2rem, 7vw, 4rem);
   font-weight: 600;
   letter-spacing: -0.04em;
@@ -113,7 +113,7 @@
 .eyebrow,
 .heroMeta {
   position: relative;
-  font-family: var(--font-mono);
+  font-family: var(--font-tech);
   text-transform: uppercase;
 }
 
@@ -127,6 +127,7 @@
   font-size: var(--text-xs);
   letter-spacing: 0.14em;
   color: rgba(255, 255, 255, 0.46);
+  font-family: var(--font-tech);
 }
 
 .details {
@@ -169,19 +170,20 @@
 .statLabel {
   font-size: var(--text-xs);
   color: var(--archive-text-muted);
-  font-family: var(--font-mono);
+  font-family: var(--font-tech);
   letter-spacing: 0.16em;
   text-transform: uppercase;
 }
 
 .statValue {
+  font-family: var(--font-tech);
   font-size: clamp(2rem, 6vw, 3rem);
   font-weight: 600;
   letter-spacing: -0.04em;
 }
 
 .statBadge {
-  font-family: var(--font-mono);
+  font-family: var(--font-tech);
   font-size: var(--text-xs);
   letter-spacing: 0.18em;
   text-transform: uppercase;
@@ -208,7 +210,7 @@
   color: var(--archive-text-muted);
   text-transform: uppercase;
   letter-spacing: 0.16em;
-  font-family: var(--font-mono);
+  font-family: var(--font-tech);
 }
 
 .contactLink {
@@ -235,7 +237,7 @@
   box-shadow: none;
   border: none;
   border-radius: var(--radius-component);
-  font-family: var(--font-mono);
+  font-family: var(--font-tech);
 }
 
 .breakers {

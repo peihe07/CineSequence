@@ -36,6 +36,7 @@
   gap: 0.4rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+  font-family: var(--font-tech);
 }
 
 .svg {
@@ -59,7 +60,7 @@
 
 .labelA,
 .labelB {
-  font-family: var(--font-mono);
+  font-family: var(--font-tech);
   font-size: var(--text-xs);
   color: rgba(255, 255, 255, 0.48);
   width: 40px;

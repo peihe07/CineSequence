@@ -35,6 +35,7 @@
 }
 
 .signatureKicker {
+  font-family: var(--font-tech);
   font-size: var(--text-xs);
   letter-spacing: 0.18em;
   text-transform: uppercase;
@@ -64,6 +65,7 @@
 }
 
 .signatureTitleSub {
+  font-family: var(--font-tech);
   font-size: var(--text-xs);
   letter-spacing: 0.22em;
   text-transform: uppercase;
@@ -71,6 +73,7 @@
 }
 
 .signatureMeta {
+  font-family: var(--font-story);
   max-width: 30rem;
   font-size: var(--text-sm);
   line-height: var(--leading-base);
@@ -86,6 +89,7 @@
 }
 
 .footerMail {
+  font-family: var(--font-tech);
   display: inline-flex;
   align-items: center;
   gap: 0.42rem;
@@ -97,6 +101,7 @@
 }
 
 .footerSupport {
+  font-family: var(--font-tech);
   display: inline-flex;
   align-items: center;
   gap: 0.48rem;
@@ -158,6 +163,7 @@
 }
 
 .footerLink {
+  font-family: var(--font-tech);
   border: none;
   padding: 0;
   background: transparent;
@@ -169,6 +175,7 @@
 }
 
 .footerYear {
+  font-family: var(--font-tech);
   font-size: var(--text-xs);
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -211,12 +218,14 @@
 }
 
 .dialogTitle {
+  font-family: var(--font-cinematic);
   margin: 0;
   font-size: var(--text-lg);
   font-weight: 600;
 }
 
 .dialogUpdated {
+  font-family: var(--font-tech);
   margin: 0.35rem 0 0;
   font-size: var(--text-xs);
   color: rgba(255, 255, 255, 0.56);
@@ -240,6 +249,7 @@
 }
 
 .section h3 {
+  font-family: var(--font-cinematic);
   margin: 0 0 0.45rem;
   font-size: var(--text-sm);
   font-weight: 600;
@@ -247,6 +257,7 @@
 
 .section p,
 .section li {
+  font-family: var(--font-story);
   margin: 0;
   font-size: var(--text-sm);
   line-height: var(--leading-base);

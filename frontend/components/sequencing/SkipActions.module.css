@@ -12,6 +12,7 @@
 }
 
 .hint {
+  font-family: var(--font-tech);
   font-size: var(--text-xs);
   line-height: 1.45;
   color: var(--muted);

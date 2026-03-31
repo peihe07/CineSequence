@@ -42,7 +42,7 @@
 }
 
 .eyebrow {
-  font-family: var(--font-mono);
+  font-family: var(--font-tech);
   font-size: var(--text-xs);
   letter-spacing: 0.18em;
   text-transform: uppercase;
@@ -51,6 +51,7 @@
 
 .title {
   margin-top: 0.35rem;
+  font-family: var(--font-cinematic);
   font-size: clamp(1.1rem, 2vw, 1.45rem);
   line-height: 1;
   color: rgba(255, 255, 255, 0.94);
@@ -60,7 +61,7 @@
   display: inline-flex;
   align-items: center;
   padding: 0.3rem 0.65rem;
-  font-family: var(--font-mono);
+  font-family: var(--font-tech);
   font-size: var(--text-xs);
   letter-spacing: 0.18em;
   text-transform: uppercase;
@@ -88,7 +89,7 @@
 
 .scanLabel,
 .metricLabel {
-  font-family: var(--font-mono);
+  font-family: var(--font-tech);
   font-size: var(--text-xs);
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -97,7 +98,7 @@
 
 .scanState,
 .metricValue {
-  font-family: var(--font-mono);
+  font-family: var(--font-tech);
   font-size: var(--text-xs);
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -121,6 +122,7 @@
 .scanValue {
   position: relative;
   padding: 0.9rem 1rem;
+  font-family: var(--font-story);
   font-size: var(--text-base);
   color: rgba(255, 255, 255, 0.92);
   min-height: 3rem;
@@ -155,6 +157,7 @@
 }
 
 .note {
+  font-family: var(--font-story);
   font-size: var(--text-sm);
   line-height: 1.7;
   color: rgba(255, 255, 255, 0.72);

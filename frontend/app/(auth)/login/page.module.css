@@ -13,7 +13,7 @@
 
 .eyebrow,
 .metaLine {
-  font-family: var(--font-mono);
+  font-family: var(--font-tech);
   text-transform: uppercase;
 }
 
@@ -30,6 +30,7 @@
 }
 
 .title {
+  font-family: var(--font-cinematic);
   font-size: clamp(1.6rem, 4vw, 2.2rem);
   font-weight: 700;
   letter-spacing: -0.04em;
@@ -39,6 +40,7 @@
 }
 
 .subtitle {
+  font-family: var(--font-story);
   color: var(--archive-text-muted);
   font-size: var(--text-sm);
   line-height: var(--leading-base);
@@ -47,7 +49,7 @@
 .error {
   font-size: 0.76rem;
   color: var(--error);
-  font-family: var(--font-mono);
+  font-family: var(--font-tech);
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -84,11 +86,12 @@
   font-weight: 700;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  font-family: var(--font-mono);
+  font-family: var(--font-tech);
   color: rgba(229, 126, 49, 0.82);
 }
 
 .devText {
+  font-family: var(--font-story);
   font-size: 0.85rem;
   color: rgba(255, 255, 255, 0.68);
   line-height: 1.7;
