@@ -39,7 +39,29 @@ def _poster_url(path: str | None, size: str = "w500") -> str | None:
 
 
 # English articles & short prepositions to ignore when comparing titles.
-_STOP_WORDS = frozenset({"the", "a", "an", "of", "and", "in", "on", "at", "to", "for", "is", "le", "la", "les", "der", "die", "das", "el", "il"})
+_STOP_WORDS = frozenset(
+    {
+        "the",
+        "a",
+        "an",
+        "of",
+        "and",
+        "in",
+        "on",
+        "at",
+        "to",
+        "for",
+        "is",
+        "le",
+        "la",
+        "les",
+        "der",
+        "die",
+        "das",
+        "el",
+        "il",
+    }
+)
 
 
 def _normalize_title(title: str | None) -> str:

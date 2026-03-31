@@ -3,7 +3,6 @@
 import json
 import logging
 import math
-import time
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -115,7 +114,11 @@ def find_resonant_characters(profile: DnaProfile) -> list[CharacterMatch]:
         tag_sim = _cosine_similarity(user_vector, char["tag_vector"])
         quad_sim = _quadrant_proximity(user_quadrant, char["quadrant_profile"])
         arch_aff = _archetype_affinity(archetype_id, char["psych_framework"])
-        combined = _TAG_WEIGHT * tag_sim + _QUADRANT_WEIGHT * quad_sim + _ARCHETYPE_WEIGHT * arch_aff
+        combined = (
+            _TAG_WEIGHT * tag_sim
+            + _QUADRANT_WEIGHT * quad_sim
+            + _ARCHETYPE_WEIGHT * arch_aff
+        )
         scored.append((combined, char))
 
     scored.sort(key=lambda x: x[0], reverse=True)
@@ -131,7 +134,11 @@ def find_resonant_characters(profile: DnaProfile) -> list[CharacterMatch]:
             continue
         framework = char["psych_framework"]
         # Ensure at least 2 different frameworks across top 3
-        if len(selected) == 2 and len(set(seen_frameworks)) == 1 and framework == seen_frameworks[0]:
+        if (
+            len(selected) == 2
+            and len(set(seen_frameworks)) == 1
+            and framework == seen_frameworks[0]
+        ):
             continue
         selected.append(
             CharacterMatch(

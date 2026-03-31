@@ -56,7 +56,7 @@ export default function CharacterMirror() {
                 <p className={styles.movieTitle}>{char.movie}</p>
               </div>
 
-              <p className={styles.oneLiner}>"{char.one_liner}"</p>
+              <p className={styles.oneLiner}>&ldquo;{char.one_liner}&rdquo;</p>
 
               <div className={styles.meta}>
                 <div className={styles.metaRow}>

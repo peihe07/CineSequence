@@ -1,6 +1,6 @@
 """Tests for character mirror service: resonance scoring and diversity constraints."""
 
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
 import pytest
 
@@ -28,8 +28,10 @@ _DARK_EXISTENTIAL_VECTOR = [
     0.5, 0.0, 0.0, 0.3, 0.4,  # philosophical, satirical, nostalgic, experimental, cult
     0.0, 0.0, 0.0, 0.0, 0.0,  # comingOfAge, revenge, heist, survival, timeTravel
     0.0, 0.0, 0.0, 0.8, 0.4,  # dystopia, trueStory, nonEnglish, existential, antiHero
-    0.0, 0.0, 0.3, 0.0, 0.0,  # romanticCore, violentAesthetic, socialCritique, psychoThriller, absurdist
-    0.7, 0.6, 0.5, 0.0, 0.6,  # artHouseBridge, urbanLoneliness, driftCinema, blackComedy, moralAnxiety
+    # romanticCore, violentAesthetic, socialCritique, psychoThriller, absurdist
+    0.0, 0.0, 0.3, 0.0, 0.0,
+    # artHouseBridge, urbanLoneliness, driftCinema, blackComedy, moralAnxiety
+    0.7, 0.6, 0.5, 0.0, 0.6,
 ]
 
 

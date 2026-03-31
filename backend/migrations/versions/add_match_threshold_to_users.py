@@ -8,7 +8,6 @@ Create Date: 2026-03-31
 """
 
 from alembic import op
-import sqlalchemy as sa
 
 revision = "add_match_threshold_users"
 down_revision = "add_cinephile_tag_dimensions"
