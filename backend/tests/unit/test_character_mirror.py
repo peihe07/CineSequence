@@ -1,9 +1,13 @@
 """Tests for character mirror service: resonance scoring and diversity constraints."""
 
-from unittest.mock import MagicMock
+from types import SimpleNamespace
+from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
+from google.genai.errors import ClientError
+
+from app.services import character_mirror
 from app.services.character_mirror import (
     CharacterMatch,
     _archetype_affinity,
@@ -144,3 +148,121 @@ class TestFindResonantCharacters:
             assert r.psych_framework
             assert r.one_liner
             assert r.mirror_reading is None  # not yet generated
+
+
+class TestGenerateMirrorReadings:
+    @pytest.mark.asyncio
+    async def test_falls_back_to_next_configured_model(self, monkeypatch):
+        profile = _make_profile(
+            _DARK_EXISTENTIAL_VECTOR,
+            {"mainstream_independent": 4.0, "rational_emotional": 2.0, "light_dark": 4.5},
+            "dark_poet",
+        )
+        character = CharacterMatch(
+            id="the_dude",
+            name="The Dude",
+            movie="The Big Lebowski",
+            tmdb_id=115,
+            score=0.9,
+            psych_labels=["avoidant", "drifter"],
+            psych_framework="attachment_style",
+            one_liner="A laid-back wanderer who resists structure.",
+        )
+
+        generate_content = AsyncMock(
+            side_effect=[
+                ClientError(
+                    404,
+                    {
+                        "error": {
+                            "code": 404,
+                            "message": "model unavailable",
+                            "status": "NOT_FOUND",
+                        }
+                    },
+                    None,
+                ),
+                SimpleNamespace(
+                    text='{"mirror_reading":"你像他一樣用鬆弛感抵抗世界。"}',
+                    usage_metadata=SimpleNamespace(
+                        prompt_token_count=10,
+                        candidates_token_count=12,
+                        total_token_count=22,
+                    ),
+                ),
+            ]
+        )
+        client = SimpleNamespace(
+            aio=SimpleNamespace(
+                models=SimpleNamespace(generate_content=generate_content),
+            )
+        )
+        log_usage = AsyncMock()
+
+        monkeypatch.setattr(character_mirror.genai, "Client", lambda api_key: client)
+        monkeypatch.setattr(character_mirror, "log_token_usage", log_usage)
+        monkeypatch.setattr(character_mirror.settings, "gemini_model", "gemini-2.0-flash")
+        monkeypatch.setattr(
+            character_mirror.settings,
+            "gemini_fallback_models",
+            "gemini-2.5-flash-lite",
+        )
+
+        results = await character_mirror.generate_mirror_readings(
+            profile=profile,
+            characters=[character],
+            top_tags=["existential", "arthouse", "darkTone"],
+        )
+
+        assert results[0].mirror_reading == "你像他一樣用鬆弛感抵抗世界。"
+        assert generate_content.await_count == 2
+        log_usage.assert_awaited_once()
+        assert log_usage.await_args.kwargs["call_type"] == "character_mirror"
+        assert log_usage.await_args.kwargs["model"] == "gemini-2.5-flash-lite"
+
+    @pytest.mark.asyncio
+    async def test_leaves_mirror_reading_empty_when_all_models_fail(self, monkeypatch):
+        profile = _make_profile(_DARK_EXISTENTIAL_VECTOR, {}, "dark_poet")
+        character = CharacterMatch(
+            id="the_dude",
+            name="The Dude",
+            movie="The Big Lebowski",
+            tmdb_id=115,
+            score=0.9,
+            psych_labels=["avoidant", "drifter"],
+            psych_framework="attachment_style",
+            one_liner="A laid-back wanderer who resists structure.",
+        )
+
+        generate_content = AsyncMock(
+            side_effect=RuntimeError("network down")
+        )
+        client = SimpleNamespace(
+            aio=SimpleNamespace(
+                models=SimpleNamespace(generate_content=generate_content),
+            )
+        )
+        log_usage = AsyncMock()
+
+        monkeypatch.setattr(character_mirror.genai, "Client", lambda api_key: client)
+        monkeypatch.setattr(character_mirror, "log_token_usage", log_usage)
+        monkeypatch.setattr(
+            character_mirror.settings,
+            "gemini_model",
+            "gemini-2.5-flash-lite",
+        )
+        monkeypatch.setattr(
+            character_mirror.settings,
+            "gemini_fallback_models",
+            "gemini-2.5-flash",
+        )
+
+        results = await character_mirror.generate_mirror_readings(
+            profile=profile,
+            characters=[character],
+            top_tags=["existential"],
+        )
+
+        assert results[0].mirror_reading is None
+        assert generate_content.await_count == 2
+        log_usage.assert_not_awaited()

@@ -8,6 +8,11 @@ __pycache__/
 .env
 .env.local
 .env.production
+.env.*.local
+backend/.env
+backend/.env.*
+frontend/.env
+frontend/.env.*
 
 # Build
 .next/

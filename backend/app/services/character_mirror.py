@@ -7,6 +7,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from google import genai
+from google.genai.errors import ClientError
 
 from app.config import settings
 from app.models.dna_profile import DnaProfile
@@ -196,27 +197,70 @@ async def generate_mirror_readings(
             archetype_id=profile.archetype_id or "",
             character=character,
         )
+        response = None
+        model_used = ""
+
+        for model_name in settings.gemini_model_candidates:
+            try:
+                response = await client.aio.models.generate_content(
+                    model=model_name,
+                    contents=user_prompt,
+                    config={
+                        "system_instruction": _SYSTEM_PROMPT,
+                        "response_mime_type": "application/json",
+                        "temperature": 0.6,
+                        "max_output_tokens": 200,
+                        "thinking_config": {"thinking_budget": 0},
+                    },
+                )
+                model_used = model_name
+                break
+            except ClientError as exc:
+                # Skip unavailable/deprecated models and try the next configured candidate.
+                logger.warning(
+                    "Gemini model unavailable for character %s: model=%s code=%s message=%s",
+                    character.id,
+                    model_name,
+                    exc.code,
+                    exc.message,
+                )
+            except Exception:
+                logger.exception(
+                    "Failed to generate mirror reading for character %s with model %s",
+                    character.id,
+                    model_name,
+                )
+
+        if response is None:
+            logger.error(
+                "Failed to generate mirror reading for character %s after trying models: %s",
+                character.id,
+                ", ".join(settings.gemini_model_candidates),
+            )
+            continue
+
+        await log_token_usage(
+            response,
+            call_type="character_mirror",
+            model=model_used,
+        )
+
+        response_text = response.text.strip()
+        if "```" in response_text:
+            start = response_text.find("{")
+            end = response_text.rfind("}") + 1
+            response_text = response_text[start:end]
+
         try:
-            response = client.models.generate_content(
-                model="gemini-2.0-flash",
-                contents=user_prompt,
-                config={
-                    "system_instruction": _SYSTEM_PROMPT,
-                    "response_mime_type": "application/json",
-                    "temperature": 0.6,
-                    "max_output_tokens": 200,
-                },
+            result = json.loads(response_text)
+        except json.JSONDecodeError:
+            logger.error(
+                "Failed to parse mirror reading response for character %s: %s",
+                character.id,
+                response_text[:200],
             )
-            log_token_usage(
-                "character_mirror",
-                response.usage_metadata.prompt_token_count,
-                response.usage_metadata.candidates_token_count,
-            )
-            result = json.loads(response.text)
-            character.mirror_reading = result.get("mirror_reading", "")
-        except Exception:
-            logger.exception(
-                "Failed to generate mirror reading for character %s", character.id
-            )
+            continue
+
+        character.mirror_reading = result.get("mirror_reading", "")
 
     return characters
