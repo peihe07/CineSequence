@@ -416,10 +416,24 @@ async def _build_group_payloads_for_groups(
     for group_id, member in members_result.all():
         members_by_group[group_id].append(member)
 
+    messages_ranked = (
+        select(
+            GroupMessage.id.label("message_id"),
+            func.row_number()
+            .over(
+                partition_by=GroupMessage.group_id,
+                order_by=GroupMessage.created_at.desc(),
+            )
+            .label("rn"),
+        )
+        .where(GroupMessage.group_id.in_(group_ids))
+        .subquery()
+    )
     messages_result = await db.execute(
         select(GroupMessage, User)
+        .join(messages_ranked, GroupMessage.id == messages_ranked.c.message_id)
         .join(User, User.id == GroupMessage.user_id)
-        .where(GroupMessage.group_id.in_(group_ids))
+        .where(messages_ranked.c.rn <= 8)
         .order_by(GroupMessage.group_id.asc(), GroupMessage.created_at.desc())
     )
     messages_by_group: dict[str, list[dict]] = defaultdict(list)
@@ -469,14 +483,29 @@ async def _build_group_payloads_for_groups(
             }
         )
 
-    reply_result = await db.execute(
-        select(TheaterListReply, User, TheaterList)
-        .join(User, User.id == TheaterListReply.user_id)
+    replies_ranked = (
+        select(
+            TheaterListReply.id.label("reply_id"),
+            func.row_number()
+            .over(
+                partition_by=TheaterList.group_id,
+                order_by=TheaterListReply.created_at.desc(),
+            )
+            .label("rn"),
+        )
         .join(TheaterList, TheaterList.id == TheaterListReply.list_id)
         .where(
             TheaterList.group_id.in_(group_ids),
             TheaterList.visibility == "group",
         )
+        .subquery()
+    )
+    reply_result = await db.execute(
+        select(TheaterListReply, User, TheaterList)
+        .join(replies_ranked, TheaterListReply.id == replies_ranked.c.reply_id)
+        .join(User, User.id == TheaterListReply.user_id)
+        .join(TheaterList, TheaterList.id == TheaterListReply.list_id)
+        .where(replies_ranked.c.rn <= 6)
         .order_by(TheaterList.group_id.asc(), TheaterListReply.created_at.desc())
     )
     for reply, author, theater_list in reply_result.all():
@@ -608,13 +637,14 @@ async def auto_assign_groups(
             )
             existing_group_ids.add(group.id)
 
-    # Update member counts for all groups
+    # Update member counts in a single batched query instead of N separate COUNTs.
+    counts_result = await db.execute(
+        select(group_members.c.group_id, func.count().label("cnt"))
+        .group_by(group_members.c.group_id)
+    )
+    counts_by_group_id = {row.group_id: row.cnt for row in counts_result}
     for group in all_groups:
-        count_q = select(func.count()).select_from(group_members).where(
-            group_members.c.group_id == group.id
-        )
-        count_result = await db.execute(count_q)
-        new_count = count_result.scalar() or 0
+        new_count = counts_by_group_id.get(group.id, 0)
         group.member_count = new_count
         group.is_active = should_activate_group(new_count, group.min_members_to_activate)
 
