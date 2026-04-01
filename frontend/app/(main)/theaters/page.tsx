@@ -4,8 +4,11 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
+import { PreviewBanner, usePreviewAccess } from '@/components/preview/PreviewGate'
 import { useGroupStore } from '@/stores/groupStore'
 import { useI18n } from '@/lib/i18n'
+import { PREVIEW_THEATER_GROUPS } from '@/lib/previewContent'
+import { useAuthStore } from '@/stores/authStore'
 import { getTagLabel } from '@/lib/tagLabels'
 import type { TheaterGroup } from '@/lib/theater-types'
 import FlowGuard from '@/components/guards/FlowGuard'
@@ -429,16 +432,23 @@ export default function TheatersPage() {
 
 function TheatersContent() {
   const { t } = useI18n()
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated)
+  const { isPreview, guardPreviewAction, previewModal } = usePreviewAccess('/theaters')
   const { groups, isLoading, fetchGroups, autoAssign, joinGroup, leaveGroup } = useGroupStore()
   const [leaveTarget, setLeaveTarget] = useState<string | null>(null)
-  const featuredGroup = groups.find((group) => group.is_member) ?? groups[0] ?? null
+  const displayGroups = isPreview ? PREVIEW_THEATER_GROUPS : groups
+  const featuredGroup = displayGroups.find((group) => group.is_member) ?? displayGroups[0] ?? null
   const remainingGroups = featuredGroup
-    ? groups.filter((group) => group.id !== featuredGroup.id)
+    ? displayGroups.filter((group) => group.id !== featuredGroup.id)
     : []
 
   useEffect(() => {
+    if (!isAuthenticated) {
+      return
+    }
+
     fetchGroups()
-  }, [fetchGroups])
+  }, [fetchGroups, isAuthenticated])
 
   return (
     <div className={styles.container}>
@@ -451,7 +461,7 @@ function TheatersContent() {
             <h1 className={styles.title}>{t('theaters.title')}</h1>
             <button
               className={styles.assignBtn}
-              onClick={autoAssign}
+              onClick={() => guardPreviewAction(() => void autoAssign())}
               disabled={isLoading}
             >
               <i className="ri-magic-line" />
@@ -463,6 +473,7 @@ function TheatersContent() {
           </p>
           <p className={styles.assignmentNote}>{t('theaters.assignmentReady')}</p>
           <p className={styles.heroMeta}>GROUP_SCAN: LIVE // ASSIGNMENT: READY</p>
+          <PreviewBanner nextPath="/theaters" compact />
         </section>
 
         <section className={`${styles.section} ${styles.resultsSection}`}>
@@ -472,14 +483,14 @@ function TheatersContent() {
             </div>
           )}
 
-          {!isLoading && groups.length === 0 && (
+          {!isLoading && displayGroups.length === 0 && (
             <div className={styles.empty}>
               <i className="ri-film-line ri-3x" />
               <p>{t('theaters.empty')}</p>
               <p className={styles.emptyHint}>{t('theaters.emptyHint')}</p>
               <button
                 className={styles.assignBtn}
-                onClick={autoAssign}
+                onClick={() => guardPreviewAction(() => void autoAssign())}
                 disabled={isLoading}
                 style={{ marginTop: '0.5rem' }}
               >
@@ -504,8 +515,14 @@ function TheatersContent() {
                       <GroupCard
                         key={group.id}
                         group={group}
-                        onJoin={() => joinGroup(group.id)}
-                        onLeave={() => setLeaveTarget(group.id)}
+                        onJoin={() => guardPreviewAction(() => void joinGroup(group.id))}
+                        onLeave={() => {
+                          if (isPreview) {
+                            guardPreviewAction()
+                            return
+                          }
+                          setLeaveTarget(group.id)
+                        }}
                       />
                     ))}
                   </div>
@@ -517,14 +534,15 @@ function TheatersContent() {
       </div>
 
       <ConfirmDialog
-        open={leaveTarget !== null}
+        open={!isPreview && leaveTarget !== null}
         message={t('confirm.leaveGroup')}
         onConfirm={() => {
-          if (leaveTarget) leaveGroup(leaveTarget)
+          if (leaveTarget) void leaveGroup(leaveTarget)
           setLeaveTarget(null)
         }}
         onCancel={() => setLeaveTarget(null)}
       />
+      {previewModal}
     </div>
   )
 }

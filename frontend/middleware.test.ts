@@ -27,4 +27,15 @@ describe('middleware', () => {
 
     expect(response.headers.get('location')).toBeNull()
   })
+
+  it('allows previewable requests without a session cookie', () => {
+    const response = middleware({
+      nextUrl: new URL('https://cinesequence.xyz/dna'),
+      cookies: {
+        get: () => undefined,
+      },
+    } as never)
+
+    expect(response.headers.get('location')).toBeNull()
+  })
 })

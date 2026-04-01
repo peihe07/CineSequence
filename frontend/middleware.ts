@@ -23,12 +23,9 @@ export function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     '/admin/:path*',
-    '/dna/:path*',
-    '/matches/:path*',
     '/notifications/:path*',
     '/profile/:path*',
-    '/sequencing/:path*',
-    '/theaters/:path*',
-    '/ticket/:path*',
+    '/sequencing/complete/:path*',
+    '/sequencing/seed/:path*',
   ],
 }

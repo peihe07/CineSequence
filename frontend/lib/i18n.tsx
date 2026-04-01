@@ -182,6 +182,10 @@ const translations: Record<Locale, Record<string, string>> = {
     'header.openMenu': '開啟選單',
     'header.closeMenu': '關閉選單',
     'header.mobileMenu': '手機選單',
+    'preview.badge': '[ PREVIEW MODE ]',
+    'preview.title': '目前為預覽瀏覽模式',
+    'preview.body': '你可以先查看內頁內容與流程展示；送出選擇、加入放映廳、發送邀請等功能需先註冊。',
+    'preview.cta': '註冊後解鎖',
 
     // Sound
     'sound.mute': '靜音音效',
@@ -896,6 +900,10 @@ const translations: Record<Locale, Record<string, string>> = {
     'header.openMenu': 'Open menu',
     'header.closeMenu': 'Close menu',
     'header.mobileMenu': 'Mobile menu',
+    'preview.badge': '[ PREVIEW MODE ]',
+    'preview.title': 'You are browsing in preview mode',
+    'preview.body': 'Inner pages stay visible before sign-up, but sequencing choices, theater actions, and match interactions stay locked until registration.',
+    'preview.cta': 'Unlock with Sign-Up',
 
     // Sound
     'sound.mute': 'Mute sound effects',

@@ -3,6 +3,8 @@
 import { useCallback, useEffect, useState } from 'react'
 import { api } from '@/lib/api'
 import { translateStatic } from '@/lib/i18n'
+import { PREVIEW_THEATER_GROUPS, PREVIEW_THEATER_LISTS } from '@/lib/previewContent'
+import { useAuthStore } from '@/stores/authStore'
 import type { TheaterGroupDetail, TheaterList, TheaterMessage } from './types'
 
 type TheaterListItemInput = {
@@ -17,6 +19,7 @@ type TheaterListItemInput = {
 }
 
 export function useTheaterDetail(groupId: string) {
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated)
   const [group, setGroup] = useState<TheaterGroupDetail | null>(null)
   const [lists, setLists] = useState<TheaterList[]>([])
   const [error, setError] = useState<string | null>(null)
@@ -42,6 +45,15 @@ export function useTheaterDetail(groupId: string) {
   }, [groupId])
 
   const loadGroup = useCallback(async () => {
+    if (!isAuthenticated) {
+      const previewGroup = PREVIEW_THEATER_GROUPS.find((entry) => entry.id === groupId) ?? PREVIEW_THEATER_GROUPS[0] ?? null
+      setGroup(previewGroup)
+      setLists(previewGroup ? PREVIEW_THEATER_LISTS.filter((list) => list.group_id === previewGroup.id) : [])
+      setError(null)
+      setIsLoading(false)
+      return
+    }
+
     setIsLoading(true)
     setError(null)
     try {
@@ -56,7 +68,7 @@ export function useTheaterDetail(groupId: string) {
     } finally {
       setIsLoading(false)
     }
-  }, [groupId])
+  }, [groupId, isAuthenticated])
 
   useEffect(() => {
     if (!groupId) {
@@ -71,6 +83,10 @@ export function useTheaterDetail(groupId: string) {
   }, [groupId, loadGroup])
 
   const mutateMembership = useCallback(async (action: 'join' | 'leave') => {
+    if (!isAuthenticated) {
+      return
+    }
+
     if (!ensureGroupId()) {
       return
     }
@@ -85,9 +101,11 @@ export function useTheaterDetail(groupId: string) {
     } finally {
       endMutation()
     }
-  }, [beginMutation, endMutation, ensureGroupId, groupId])
+  }, [beginMutation, endMutation, ensureGroupId, groupId, isAuthenticated])
 
   const postMessage = useCallback(async (body: string) => {
+    if (!isAuthenticated) return false
+
     const text = body.trim()
     if (!text) return false
     if (!ensureGroupId()) return false
@@ -110,9 +128,13 @@ export function useTheaterDetail(groupId: string) {
     } finally {
       endMutation()
     }
-  }, [beginMutation, endMutation, ensureGroupId, groupId])
+  }, [beginMutation, endMutation, ensureGroupId, groupId, isAuthenticated])
 
   const deleteMessage = useCallback(async (messageId: string) => {
+    if (!isAuthenticated) {
+      return
+    }
+
     if (!ensureGroupId()) {
       return
     }
@@ -130,7 +152,7 @@ export function useTheaterDetail(groupId: string) {
     } finally {
       endMutation()
     }
-  }, [beginMutation, endMutation, ensureGroupId, groupId])
+  }, [beginMutation, endMutation, ensureGroupId, groupId, isAuthenticated])
 
   const createList = useCallback(async (input: {
     title: string
@@ -138,6 +160,8 @@ export function useTheaterDetail(groupId: string) {
     itemTitles?: string[]
     items?: TheaterListItemInput[]
   }) => {
+    if (!isAuthenticated) return false
+
     const title = input.title.trim()
     const description = input.description.trim()
     const manualItems = (input.itemTitles ?? [])
@@ -186,9 +210,11 @@ export function useTheaterDetail(groupId: string) {
     } finally {
       endMutation()
     }
-  }, [beginMutation, endMutation, ensureGroupId, groupId])
+  }, [beginMutation, endMutation, ensureGroupId, groupId, isAuthenticated])
 
   const updateList = useCallback(async (listId: string, input: { title: string; description: string }) => {
+    if (!isAuthenticated) return false
+
     const title = input.title.trim()
     const description = input.description.trim()
 
@@ -213,9 +239,13 @@ export function useTheaterDetail(groupId: string) {
     } finally {
       endMutation()
     }
-  }, [beginMutation, endMutation, ensureGroupId, groupId])
+  }, [beginMutation, endMutation, ensureGroupId, groupId, isAuthenticated])
 
   const deleteList = useCallback(async (listId: string) => {
+    if (!isAuthenticated) {
+      return
+    }
+
     if (!ensureGroupId()) {
       return
     }
@@ -232,9 +262,11 @@ export function useTheaterDetail(groupId: string) {
     } finally {
       endMutation()
     }
-  }, [beginMutation, endMutation, ensureGroupId, groupId])
+  }, [beginMutation, endMutation, ensureGroupId, groupId, isAuthenticated])
 
   const appendListItem = useCallback(async (listId: string, item: string | TheaterListItemInput) => {
+    if (!isAuthenticated) return false
+
     const payload = typeof item === 'string'
       ? {
           tmdb_id: 0,
@@ -275,9 +307,13 @@ export function useTheaterDetail(groupId: string) {
     } finally {
       endMutation()
     }
-  }, [beginMutation, endMutation, ensureGroupId, groupId])
+  }, [beginMutation, endMutation, ensureGroupId, groupId, isAuthenticated])
 
   const deleteListItem = useCallback(async (listId: string, itemId: string) => {
+    if (!isAuthenticated) {
+      return
+    }
+
     if (!ensureGroupId()) {
       return
     }
@@ -294,9 +330,11 @@ export function useTheaterDetail(groupId: string) {
     } finally {
       endMutation()
     }
-  }, [beginMutation, endMutation, ensureGroupId, groupId])
+  }, [beginMutation, endMutation, ensureGroupId, groupId, isAuthenticated])
 
   const updateListItemNote = useCallback(async (listId: string, itemId: string, note: string) => {
+    if (!isAuthenticated) return false
+
     if (!ensureGroupId()) return false
 
     beginMutation()
@@ -314,9 +352,11 @@ export function useTheaterDetail(groupId: string) {
     } finally {
       endMutation()
     }
-  }, [beginMutation, endMutation, ensureGroupId, groupId])
+  }, [beginMutation, endMutation, ensureGroupId, groupId, isAuthenticated])
 
   const reorderListItems = useCallback(async (listId: string, itemIds: string[]) => {
+    if (!isAuthenticated) return false
+
     if (!ensureGroupId()) return false
 
     beginMutation()
@@ -334,9 +374,11 @@ export function useTheaterDetail(groupId: string) {
     } finally {
       endMutation()
     }
-  }, [beginMutation, endMutation, ensureGroupId, groupId])
+  }, [beginMutation, endMutation, ensureGroupId, groupId, isAuthenticated])
 
   const postListReply = useCallback(async (listId: string, body: string) => {
+    if (!isAuthenticated) return false
+
     const text = body.trim()
     if (!text) return false
     if (!ensureGroupId()) return false
@@ -356,9 +398,13 @@ export function useTheaterDetail(groupId: string) {
     } finally {
       endMutation()
     }
-  }, [beginMutation, endMutation, ensureGroupId, groupId])
+  }, [beginMutation, endMutation, ensureGroupId, groupId, isAuthenticated])
 
   const deleteListReply = useCallback(async (listId: string, replyId: string) => {
+    if (!isAuthenticated) {
+      return
+    }
+
     if (!ensureGroupId()) {
       return
     }
@@ -375,7 +421,7 @@ export function useTheaterDetail(groupId: string) {
     } finally {
       endMutation()
     }
-  }, [beginMutation, endMutation, ensureGroupId, groupId])
+  }, [beginMutation, endMutation, ensureGroupId, groupId, isAuthenticated])
 
   return {
     group,

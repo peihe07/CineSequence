@@ -1,12 +1,9 @@
 const PROTECTED_PREFIXES = [
   '/admin',
-  '/dna',
-  '/matches',
   '/notifications',
   '/profile',
-  '/sequencing',
-  '/theaters',
-  '/ticket',
+  '/sequencing/complete',
+  '/sequencing/seed',
 ]
 
 export function requiresAuth(pathname: string): boolean {

@@ -39,7 +39,7 @@ interface InteractionDiagnostics {
   explicit_pick_count: number
 }
 
-interface DnaResult {
+export interface DnaResult {
   archetype: ArchetypeInfo
   tag_vector: number[]
   tag_labels: Record<string, number>

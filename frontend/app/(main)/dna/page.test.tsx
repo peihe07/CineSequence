@@ -81,6 +81,12 @@ vi.mock('@/stores/dnaStore', () => ({
   }),
 }))
 
+vi.mock('@/stores/authStore', () => ({
+  useAuthStore: () => ({
+    isAuthenticated: true,
+  }),
+}))
+
 vi.mock('@/stores/groupStore', () => ({
   useGroupStore: () => ({
     autoAssign: autoAssignMock,

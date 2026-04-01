@@ -12,7 +12,7 @@ interface MovieInfo {
   overview: string | null
 }
 
-interface Pair {
+export interface Pair {
   round_number: number
   phase: number
   movie_a: MovieInfo
@@ -21,7 +21,7 @@ interface Pair {
   completed: boolean
 }
 
-interface Progress {
+export interface Progress {
   round_number: number
   phase: number
   total_rounds: number

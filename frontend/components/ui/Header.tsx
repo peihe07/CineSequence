@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 import Link from 'next/link'
+import LoginModal from '@/components/auth/LoginModal'
 import { useI18n } from '@/lib/i18n'
 import { soundManager } from '@/lib/sound'
 import { useAuthStore } from '@/stores/authStore'
@@ -17,7 +18,7 @@ const NAV_ITEMS = [
   { href: '/dna', labelKey: 'nav.dna', index: '01' },
   { href: '/matches', labelKey: 'nav.matches', index: '02' },
   { href: '/theaters', labelKey: 'nav.theaters', index: '03' },
-  { href: '/profile', labelKey: 'nav.profile', index: '04' },
+  { href: '/profile', labelKey: 'nav.profile', index: '04', authOnly: true },
 ]
 
 export default function Header() {
@@ -25,10 +26,12 @@ export default function Header() {
   const router = useRouter()
   const { t } = useI18n()
   const user = useAuthStore((state) => state.user)
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated)
   const logout = useAuthStore((state) => state.logout)
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isLoggingOut, setIsLoggingOut] = useState(false)
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false)
 
   useEffect(() => {
     const syncScroll = () => {
@@ -63,7 +66,9 @@ export default function Header() {
     : NAV_ITEMS
 
   function renderNavLinks(linkClassName = styles.navLink, activeClassName = styles.navLinkActive) {
-    return navItems.map(({ href, labelKey, index }) => {
+    return navItems
+      .filter((item) => !item.authOnly || isAuthenticated)
+      .map(({ href, labelKey, index }) => {
       const isActive = pathname.startsWith(href)
       return (
         <Link
@@ -77,7 +82,7 @@ export default function Header() {
           <span>{t(labelKey)}</span>
         </Link>
       )
-    })
+      })
   }
 
   return (
@@ -95,16 +100,28 @@ export default function Header() {
         <NotificationBell />
         <MuteToggle />
         <LocaleToggle />
-        <Button
-          type="button"
-          variant="ghost"
-          size="sm"
-          className={styles.desktopLogout}
-          onClick={() => void handleLogout()}
-          loading={isLoggingOut}
-        >
-          {t('profile.logout')}
-        </Button>
+        {isAuthenticated ? (
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            className={styles.desktopLogout}
+            onClick={() => void handleLogout()}
+            loading={isLoggingOut}
+          >
+            {t('profile.logout')}
+          </Button>
+        ) : (
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            className={styles.desktopLogout}
+            onClick={() => setIsLoginModalOpen(true)}
+          >
+            {t('auth.signIn')}
+          </Button>
+        )}
         <button
           type="button"
           className={styles.menuToggle}
@@ -130,18 +147,40 @@ export default function Header() {
           <nav className={styles.mobileNavList} aria-label={t('header.mobileMenu')}>
             {renderNavLinks(styles.mobileNavLink, styles.mobileNavLinkActive)}
           </nav>
-          <Button
-            type="button"
-            variant="secondary"
-            size="sm"
-            className={styles.mobileLogout}
-            onClick={() => void handleLogout()}
-            loading={isLoggingOut}
-          >
-            {t('profile.logout')}
-          </Button>
+          {isAuthenticated ? (
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              className={styles.mobileLogout}
+              onClick={() => void handleLogout()}
+              loading={isLoggingOut}
+            >
+              {t('profile.logout')}
+            </Button>
+          ) : (
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              className={styles.mobileLogout}
+              onClick={() => {
+                setIsMobileMenuOpen(false)
+                setIsLoginModalOpen(true)
+              }}
+            >
+              {t('auth.signIn')}
+            </Button>
+          )}
         </div>
       )}
+
+      <LoginModal
+        open={isLoginModalOpen}
+        mode="register"
+        nextPath={pathname}
+        onClose={() => setIsLoginModalOpen(false)}
+      />
     </header>
   )
 }

@@ -6,6 +6,7 @@ import { useDnaStore } from '@/stores/dnaStore'
 import { useSequencingStore } from '@/stores/sequencingStore'
 import { useToastStore } from '@/stores/toastStore'
 import { useI18n } from '@/lib/i18n'
+import { useAuthStore } from '@/stores/authStore'
 
 interface FlowGuardProps {
   require: 'sequencing' | 'dna'
@@ -15,6 +16,7 @@ interface FlowGuardProps {
 export default function FlowGuard({ require, children }: FlowGuardProps) {
   const router = useRouter()
   const { t } = useI18n()
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated)
   const redirected = useRef(false)
   const [checked, setChecked] = useState(false)
 
@@ -23,6 +25,11 @@ export default function FlowGuard({ require, children }: FlowGuardProps) {
   const addToast = useToastStore((s) => s.addToast)
 
   useEffect(() => {
+    if (!isAuthenticated) {
+      setChecked(true)
+      return
+    }
+
     let cancelled = false
 
     async function check() {
@@ -71,7 +78,7 @@ export default function FlowGuard({ require, children }: FlowGuardProps) {
 
     check()
     return () => { cancelled = true }
-  }, [require, fetchProgress, fetchDnaResult, router, t, addToast])
+  }, [require, fetchProgress, fetchDnaResult, isAuthenticated, router, t, addToast])
 
   if (!checked) return null
 

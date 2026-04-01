@@ -19,6 +19,12 @@ vi.mock('@/stores/matchStore', () => ({
   }),
 }))
 
+vi.mock('@/stores/authStore', () => ({
+  useAuthStore: () => ({
+    isAuthenticated: true,
+  }),
+}))
+
 vi.mock('@/lib/i18n', () => ({
   useI18n: () => ({
     locale: 'en',

@@ -5,9 +5,12 @@
 import { Suspense, useCallback, useEffect, useRef, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { AnimatePresence, motion } from 'framer-motion'
+import { PreviewBanner, usePreviewAccess } from '@/components/preview/PreviewGate'
 import { useMatchStore, MatchItem } from '@/stores/matchStore'
 import { api } from '@/lib/api'
 import { useI18n } from '@/lib/i18n'
+import { PREVIEW_MATCHES } from '@/lib/previewContent'
+import { useAuthStore } from '@/stores/authStore'
 import { getTagLabel } from '@/lib/tagLabels'
 import TicketCard from '@/components/match/TicketCard'
 import FlowGuard from '@/components/guards/FlowGuard'
@@ -281,6 +284,8 @@ function TicketModal({ match, onClose }: { match: MatchItem; onClose: () => void
 function MatchesContent() {
   const searchParams = useSearchParams()
   const { t } = useI18n()
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated)
+  const { isPreview, guardPreviewAction, previewModal } = usePreviewAccess('/matches')
   const {
     matches, isLoading, isDiscovering, error,
     fetchMatches, discoverMatches, sendInvite, respondToInvite,
@@ -296,10 +301,23 @@ function MatchesContent() {
   const [prefsReady, setPrefsReady] = useState(false)
   const [activeIndex, setActiveIndex] = useState(0)
   const [ticketModalMatch, setTicketModalMatch] = useState<MatchItem | null>(null)
+  const displayMatches = isPreview ? PREVIEW_MATCHES : matches
 
   const carouselRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
+    if (!isAuthenticated) {
+      setPrefsReady(true)
+      setPrefs({
+        match_gender_pref: null,
+        match_age_min: 24,
+        match_age_max: 37,
+        pure_taste_match: true,
+      })
+      setPrefsError(null)
+      return
+    }
+
     void fetchMatches()
 
     async function loadPrefs() {
@@ -320,9 +338,14 @@ function MatchesContent() {
     }
 
     void loadPrefs()
-  }, [fetchMatches, t])
+  }, [fetchMatches, isAuthenticated, t])
 
   const savePrefs = useCallback((updated: Partial<MatchPrefs>) => {
+    if (isPreview) {
+      guardPreviewAction()
+      return
+    }
+
     if (!prefsReady) {
       return
     }
@@ -342,7 +365,7 @@ function MatchesContent() {
         setPrefsError(err instanceof Error ? err.message : t('matches.prefSaveError'))
       }
     })()
-  }, [prefs, prefsReady, t])
+  }, [guardPreviewAction, isPreview, prefs, prefsReady, t])
 
   const respondId = searchParams.get('respond')
   const matchId = searchParams.get('match')
@@ -351,25 +374,25 @@ function MatchesContent() {
   // Auto-scroll to highlighted ticket
   useEffect(() => {
     if (!highlightId || isLoading || !carouselRef.current) return
-    const idx = matches.findIndex((m) => m.id === highlightId)
+    const idx = displayMatches.findIndex((m) => m.id === highlightId)
     if (idx === -1) return
 
     const el = document.getElementById(`match-${highlightId}`)
     el?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' })
     setActiveIndex(idx)
-  }, [highlightId, isLoading, matches])
+  }, [displayMatches, highlightId, isLoading])
 
   // Track active index from scroll position
   const handleCarouselScroll = useCallback(() => {
     const carousel = carouselRef.current
-    if (!carousel || matches.length === 0) return
+    if (!carousel || displayMatches.length === 0) return
 
     const scrollLeft = carousel.scrollLeft
     // Estimate which ticket is centered
-    const ticketWidth = carousel.scrollWidth / matches.length
+    const ticketWidth = carousel.scrollWidth / displayMatches.length
     const idx = Math.round(scrollLeft / ticketWidth)
-    setActiveIndex(Math.min(idx, matches.length - 1))
-  }, [matches.length])
+    setActiveIndex(Math.min(idx, displayMatches.length - 1))
+  }, [displayMatches.length])
 
   return (
     <div className={styles.container}>
@@ -382,7 +405,7 @@ function MatchesContent() {
             <h1 className={styles.title}>{t('matches.title')}</h1>
             <button
               className={styles.discoverBtn}
-              onClick={discoverMatches}
+              onClick={() => guardPreviewAction(() => void discoverMatches())}
               disabled={isDiscovering}
               aria-busy={isDiscovering}
             >
@@ -401,7 +424,8 @@ function MatchesContent() {
           {(prefsError || error) && (
             <p className={styles.errorText} role="alert">{prefsError || error}</p>
           )}
-          <MatchFilter prefs={prefs} onChange={savePrefs} disabled={!prefsReady} />
+          <MatchFilter prefs={prefs} onChange={savePrefs} disabled={isPreview || !prefsReady} />
+          <PreviewBanner nextPath="/matches" compact />
         </section>
 
         {/* ── DISCLAIMER SECTION ──────────────────────── */}
@@ -417,14 +441,14 @@ function MatchesContent() {
             </div>
           )}
 
-          {!isLoading && matches.length === 0 && (
+          {!isLoading && displayMatches.length === 0 && (
             <div className={styles.empty}>
               <i className="ri-group-line ri-3x" aria-hidden="true" />
               <p>{t('matches.empty')}</p>
               <p className={styles.emptyHint}>{t('matches.emptyHint')}</p>
               <button
                 className={styles.discoverBtn}
-                onClick={discoverMatches}
+                onClick={() => guardPreviewAction(() => void discoverMatches())}
                 disabled={isDiscovering}
                 aria-busy={isDiscovering}
                 style={{ marginTop: '0.5rem' }}
@@ -435,7 +459,7 @@ function MatchesContent() {
             </div>
           )}
 
-          {!isLoading && matches.length > 0 && (
+          {!isLoading && displayMatches.length > 0 && (
             <>
               {/* Horizontal ticket carousel */}
               <div
@@ -445,7 +469,7 @@ function MatchesContent() {
                 role="region"
                 aria-label={t('matches.carouselLabel')}
               >
-                {matches.map((match, i) => (
+                {displayMatches.map((match, i) => (
                   <div
                     key={match.id}
                     className={`${styles.carouselItem} ${i === activeIndex ? styles.carouselItemActive : ''}`}
@@ -460,8 +484,8 @@ function MatchesContent() {
                     <TicketCard
                       match={match}
                       ticketNumber={i + 1}
-                      onInvite={() => sendInvite(match.id)}
-                      onRespond={(accept) => respondToInvite(match.id, accept)}
+                      onInvite={() => guardPreviewAction(() => void sendInvite(match.id))}
+                      onRespond={(accept) => guardPreviewAction(() => void respondToInvite(match.id, accept))}
                       onShowFullTicket={() => setTicketModalMatch(match)}
                       highlighted={match.id === highlightId}
                     />
@@ -471,10 +495,10 @@ function MatchesContent() {
 
               {/* Scroll indicator dots — clickable to navigate */}
               <CarouselDots
-                count={matches.length}
+                count={displayMatches.length}
                 activeIndex={activeIndex}
                 onSelect={(idx) => {
-                  const el = document.getElementById(`match-${matches[idx].id}`)
+                  const el = document.getElementById(`match-${displayMatches[idx].id}`)
                   el?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' })
                   setActiveIndex(idx)
                 }}
@@ -483,6 +507,7 @@ function MatchesContent() {
           )}
         </section>
       </div>
+      {previewModal}
 
       <AnimatePresence>
         {ticketModalMatch && (

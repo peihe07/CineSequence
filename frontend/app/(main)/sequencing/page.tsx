@@ -2,8 +2,11 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { PreviewBanner, usePreviewAccess } from '@/components/preview/PreviewGate'
 import Button from '@/components/ui/Button'
 import { useI18n } from '@/lib/i18n'
+import { PREVIEW_SEQUENCING_PAIR, PREVIEW_SEQUENCING_PROGRESS } from '@/lib/previewContent'
+import { useAuthStore } from '@/stores/authStore'
 import { useSequencingStore } from '@/stores/sequencingStore'
 import SwipePair from '@/components/sequencing/SwipePair'
 import LiquidTube from '@/components/sequencing/LiquidTube'
@@ -17,6 +20,8 @@ import styles from './page.module.css'
 export default function SequencingPage() {
   const router = useRouter()
   const { t } = useI18n()
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated)
+  const { isPreview, guardPreviewAction, previewModal } = usePreviewAccess('/sequencing')
   const roundStartTime = useRef<number>(Date.now())
   const [isBootstrapping, setIsBootstrapping] = useState(true)
   const [showInfo, setShowInfo] = useState(false)
@@ -42,6 +47,11 @@ export default function SequencingPage() {
   } = useSequencingStore()
 
   const bootstrapSequencing = useCallback(async () => {
+    if (!isAuthenticated) {
+      setIsBootstrapping(false)
+      return
+    }
+
     setIsBootstrapping(true)
     try {
       const progress = await fetchProgress()
@@ -63,7 +73,7 @@ export default function SequencingPage() {
     } finally {
       setIsBootstrapping(false)
     }
-  }, [fetchPair, fetchProgress, router])
+  }, [fetchPair, fetchProgress, isAuthenticated, router])
 
   useEffect(() => {
     void bootstrapSequencing()
@@ -75,33 +85,43 @@ export default function SequencingPage() {
 
   // Redirect to complete page when done
   useEffect(() => {
-    if (progress?.completed || currentPair?.completed) {
+    if (isAuthenticated && (progress?.completed || currentPair?.completed)) {
       router.replace('/sequencing/complete')
     }
-  }, [progress?.completed, currentPair?.completed, router])
+  }, [currentPair?.completed, isAuthenticated, progress?.completed, router])
 
   function getResponseTime(): number {
     return Date.now() - roundStartTime.current
   }
 
   function handlePick(tmdbId: number) {
-    submitPick(tmdbId, 'watched', getResponseTime())
+    guardPreviewAction(() => {
+      submitPick(tmdbId, 'watched', getResponseTime())
+    })
   }
 
   function handleSkip() {
-    skip(getResponseTime())
+    guardPreviewAction(() => {
+      skip(getResponseTime())
+    })
   }
 
   function handleReroll() {
-    void rerollPair()
+    guardPreviewAction(() => {
+      void rerollPair()
+    })
   }
 
   function handleDislikeBoth() {
-    void dislikeBoth(getResponseTime())
+    guardPreviewAction(() => {
+      void dislikeBoth(getResponseTime())
+    })
   }
 
   function handleSeenOneSide() {
-    void seenOneSide(getResponseTime())
+    guardPreviewAction(() => {
+      void seenOneSide(getResponseTime())
+    })
   }
 
   async function handleResume() {
@@ -116,8 +136,12 @@ export default function SequencingPage() {
 
   const roundNumber = progress?.round_number ?? currentPair?.round_number ?? 1
   const phase = progress?.phase ?? currentPair?.phase ?? 1
+  const displayProgress = isPreview ? PREVIEW_SEQUENCING_PROGRESS : progress
+  const displayPair = isPreview ? PREVIEW_SEQUENCING_PAIR : currentPair
+  const displayRoundNumber = displayProgress?.round_number ?? displayPair?.round_number ?? 1
+  const displayPhase = displayProgress?.phase ?? displayPair?.phase ?? 1
 
-  if (error && !currentPair && !isBootstrapping) {
+  if (error && !displayPair && !isBootstrapping) {
     return (
       <div className={styles.container}>
         <div className={styles.errorState}>
@@ -137,7 +161,7 @@ export default function SequencingPage() {
         '--ambient-color': ambientColor || 'transparent',
       } as React.CSSProperties}
     >
-      <OnboardingOverlay />
+      {!isPreview && <OnboardingOverlay />}
       <SequencingInfoModal open={showInfo} onClose={() => setShowInfo(false)} />
 
       <div className={styles.ambientGlow} />
@@ -148,9 +172,9 @@ export default function SequencingPage() {
           <div className={styles.heroCopy}>
             <p className={styles.eyebrow}>{t('archive.sequencingCue')}</p>
             <p className={styles.heroMeta}>
-              {t('seq.round', { round: String(roundNumber).padStart(2, '0'), total: progress?.total_rounds ?? 30 })}
+              {t('seq.round', { round: String(displayRoundNumber).padStart(2, '0'), total: displayProgress?.total_rounds ?? 30 })}
               {' // '}
-              {t('seq.phase', { phase })}
+              {t('seq.phase', { phase: displayPhase })}
               <button
                 className={styles.infoBtn}
                 onClick={() => setShowInfo(true)}
@@ -161,19 +185,20 @@ export default function SequencingPage() {
             </p>
           </div>
           <div className={styles.header}>
-            <PhaseIndicator phase={phase} round={roundNumber} totalRounds={progress?.total_rounds ?? 30} />
+            <PhaseIndicator phase={displayPhase} round={displayRoundNumber} totalRounds={displayProgress?.total_rounds ?? 30} />
           </div>
+          <PreviewBanner nextPath="/sequencing" compact />
         </section>
 
         <section className={`${styles.section} ${styles.stageSection}`}>
           <LiquidTube
-            currentRound={roundNumber}
-            totalRounds={progress?.total_rounds ?? 30}
+            currentRound={displayRoundNumber}
+            totalRounds={displayProgress?.total_rounds ?? 30}
             liquidColor={ambientColor || undefined}
           />
 
           <div className={styles.arena}>
-            {resumeCheckpoint && !currentPair && !isBootstrapping ? (
+            {resumeCheckpoint && !displayPair && !isBootstrapping ? (
               <div className={styles.resumeCard}>
                 <p className={styles.resumeEyebrow}>{t('seq.resumeEyebrow')}</p>
                 <h2 className={styles.resumeTitle}>
@@ -189,10 +214,10 @@ export default function SequencingPage() {
                   {t('seq.resumeCta')}
                 </Button>
               </div>
-            ) : currentPair && !currentPair.completed && (
+            ) : displayPair && !displayPair.completed && (
               <SwipePair
-                key={roundNumber}
-                pair={currentPair}
+                key={displayRoundNumber}
+                pair={displayPair}
                 onPick={handlePick}
                 isLoading={isLoading}
               />
@@ -215,6 +240,7 @@ export default function SequencingPage() {
           <LiveTagCloud tags={liveTags} />
         </section>
       </div>
+      {previewModal}
     </div>
   )
 }

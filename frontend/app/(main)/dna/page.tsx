@@ -3,9 +3,12 @@
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
+import { PreviewBanner, usePreviewAccess } from '@/components/preview/PreviewGate'
 import { ApiError } from '@/lib/api'
+import { PREVIEW_DNA_RESULT, PREVIEW_SEQUENCING_PROGRESS } from '@/lib/previewContent'
 import { useDnaStore } from '@/stores/dnaStore'
 import { useGroupStore } from '@/stores/groupStore'
+import { useAuthStore } from '@/stores/authStore'
 import { useSequencingStore } from '@/stores/sequencingStore'
 import { useI18n } from '@/lib/i18n'
 import ArchetypeCard from '@/components/dna/ArchetypeCard'
@@ -30,27 +33,39 @@ export default function DnaResultPage() {
 function DnaResultContent() {
   const router = useRouter()
   const { t } = useI18n()
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated)
+  const { isPreview, guardPreviewAction, previewModal } = usePreviewAccess('/dna')
   const { result, isBuilding, isLoading, error, buildDna, fetchResult } = useDnaStore()
   const { autoAssign } = useGroupStore()
   const { progress, fetchProgress, extendSequencing } = useSequencingStore()
   const sectionTransition = { duration: 0.65, ease: 'easeOut' as const }
+  const displayResult = isPreview ? PREVIEW_DNA_RESULT : result
+  const displayProgress = isPreview ? PREVIEW_SEQUENCING_PROGRESS : progress
 
   useEffect(() => {
+    if (!isAuthenticated) {
+      return
+    }
+
     void fetchResult().catch((err) => {
       if (err instanceof ApiError && err.status === 404) {
         void buildDna()
       }
     })
-  }, [fetchResult, buildDna])
+  }, [buildDna, fetchResult, isAuthenticated])
 
   useEffect(() => {
+    if (!isAuthenticated) {
+      return
+    }
+
     void fetchProgress().catch(() => {
       // Keep the DNA result visible even if progress refresh fails.
     })
-  }, [fetchProgress])
+  }, [fetchProgress, isAuthenticated])
 
   // Building state — loading animation
-  if (isBuilding || (isLoading && !result)) {
+  if (!isPreview && (isBuilding || (isLoading && !displayResult))) {
     return (
       <div className={styles.container}>
         <div className={styles.loading}>
@@ -73,7 +88,7 @@ function DnaResultContent() {
     )
   }
 
-  if (error && !result) {
+  if (!isPreview && error && !displayResult) {
     return (
       <div className={styles.container}>
         <div className={styles.error}>
@@ -87,27 +102,35 @@ function DnaResultContent() {
     )
   }
 
-  if (!result) return null
+  if (!displayResult) return null
 
-  const canExtend = progress?.can_extend ?? result.can_extend
+  const canExtend = displayProgress?.can_extend ?? displayResult.can_extend
 
   async function handleExtend() {
-    try {
-      await extendSequencing()
-      router.push('/sequencing')
-    } catch {
-      // Store error state keeps the user on the DNA page.
-    }
+    guardPreviewAction(() => {
+      void (async () => {
+        try {
+          await extendSequencing()
+          router.push('/sequencing')
+        } catch {
+          // Store error state keeps the user on the DNA page.
+        }
+      })()
+    })
   }
 
   async function handleEnterTheaters() {
-    await autoAssign()
-    router.push('/theaters')
+    guardPreviewAction(() => {
+      void (async () => {
+        await autoAssign()
+        router.push('/theaters')
+      })()
+    })
   }
 
   return (
     <div className={styles.container}>
-      <AtmosphereCanvas archetypeId={result.archetype.id} />
+      <AtmosphereCanvas archetypeId={displayResult.archetype.id} />
       <motion.div
         className={styles.content}
         initial={{ opacity: 0 }}
@@ -134,6 +157,7 @@ function DnaResultContent() {
             {t('dna.deck')}
           </p>
           <p className={styles.heroMeta}>{t('dna.heroMeta')}</p>
+          <PreviewBanner nextPath="/dna" compact />
         </motion.section>
 
         <motion.section
@@ -143,10 +167,10 @@ function DnaResultContent() {
           transition={{ ...sectionTransition, delay: 0.08 }}
         >
           <StarNebula
-            genreVector={result.genre_vector}
-            archetypeId={result.archetype.id}
+            genreVector={displayResult.genre_vector}
+            archetypeId={displayResult.archetype.id}
           />
-          <ArchetypeCard archetype={result.archetype} />
+          <ArchetypeCard archetype={displayResult.archetype} />
         </motion.section>
 
         <motion.section
@@ -155,8 +179,8 @@ function DnaResultContent() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ ...sectionTransition, delay: 0.14 }}
         >
-          <RadarChart scores={result.quadrant_scores} />
-          <TagCloud tagLabels={result.tag_labels} />
+          <RadarChart scores={displayResult.quadrant_scores} />
+          <TagCloud tagLabels={displayResult.tag_labels} />
         </motion.section>
 
         <motion.section
@@ -166,26 +190,28 @@ function DnaResultContent() {
           transition={{ ...sectionTransition, delay: 0.2 }}
         >
           <AIReading
-            topTags={result.top_tags}
-            supportingSignals={result.supporting_signals}
-            avoidedSignals={result.avoided_signals}
-            mixedSignals={result.mixed_signals}
-            comparisonEvidence={result.comparison_evidence}
-            personalityReading={result.personality_reading}
-            hiddenTraits={result.hidden_traits}
-            conversationStyle={result.conversation_style}
-            idealMovieDate={result.ideal_movie_date}
+            topTags={displayResult.top_tags}
+            supportingSignals={displayResult.supporting_signals}
+            avoidedSignals={displayResult.avoided_signals}
+            mixedSignals={displayResult.mixed_signals}
+            comparisonEvidence={displayResult.comparison_evidence}
+            personalityReading={displayResult.personality_reading}
+            hiddenTraits={displayResult.hidden_traits}
+            conversationStyle={displayResult.conversation_style}
+            idealMovieDate={displayResult.ideal_movie_date}
           />
         </motion.section>
 
-        <motion.section
-          className={`${styles.section} ${styles.mirrorSection}`}
-          initial={{ opacity: 0, y: 32 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ ...sectionTransition, delay: 0.24 }}
-        >
-          <CharacterMirror />
-        </motion.section>
+        {!isPreview && (
+          <motion.section
+            className={`${styles.section} ${styles.mirrorSection}`}
+            initial={{ opacity: 0, y: 32 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ ...sectionTransition, delay: 0.24 }}
+          >
+            <CharacterMirror />
+          </motion.section>
+        )}
 
         <motion.section
           className={`${styles.section} ${styles.diagnosticsSection}`}
@@ -196,15 +222,15 @@ function DnaResultContent() {
           <p className={styles.diagnosticsEyebrow}>{t('dna.diagnosticsLabel')}</p>
           <div className={styles.diagnosticsGrid}>
             <div className={styles.diagnosticsCard}>
-              <span className={styles.diagnosticsValue}>{result.interaction_diagnostics.explicit_pick_count}</span>
+              <span className={styles.diagnosticsValue}>{displayResult.interaction_diagnostics.explicit_pick_count}</span>
               <span className={styles.diagnosticsText}>{t('dna.diagnosticsPicks')}</span>
             </div>
             <div className={styles.diagnosticsCard}>
-              <span className={styles.diagnosticsValue}>{result.interaction_diagnostics.skip_count}</span>
+              <span className={styles.diagnosticsValue}>{displayResult.interaction_diagnostics.skip_count}</span>
               <span className={styles.diagnosticsText}>{t('dna.diagnosticsSkips')}</span>
             </div>
             <div className={styles.diagnosticsCard}>
-              <span className={styles.diagnosticsValue}>{result.interaction_diagnostics.dislike_both_count}</span>
+              <span className={styles.diagnosticsValue}>{displayResult.interaction_diagnostics.dislike_both_count}</span>
               <span className={styles.diagnosticsText}>{t('dna.diagnosticsDislikes')}</span>
             </div>
           </div>
@@ -240,7 +266,7 @@ function DnaResultContent() {
                 <Button
                   variant="secondary"
                   size="lg"
-                  onClick={() => router.push('/matches')}
+                  onClick={() => guardPreviewAction(() => router.push('/matches'))}
                 >
                   <i className="ri-group-line" /> {t('dna.findMatches')}
                 </Button>
@@ -271,6 +297,7 @@ function DnaResultContent() {
           <p className={styles.disclaimer}>{t('dna.disclaimer')}</p>
         </motion.section>
       </motion.div>
+      {previewModal}
     </div>
   )
 }

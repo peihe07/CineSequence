@@ -3,6 +3,9 @@
 import { useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { motion } from 'framer-motion'
+import { PreviewBanner, usePreviewAccess } from '@/components/preview/PreviewGate'
+import { PREVIEW_TICKET_MATCH } from '@/lib/previewContent'
+import { useAuthStore } from '@/stores/authStore'
 import { useMatchStore, MatchItem } from '@/stores/matchStore'
 import { useI18n } from '@/lib/i18n'
 import TicketCard from '@/components/match/TicketCard'
@@ -16,12 +19,21 @@ export default function TicketPage() {
   const inviteId = searchParams.get('inviteId')
   const router = useRouter()
   const { t, locale } = useI18n()
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated)
+  const { isPreview, previewModal } = usePreviewAccess('/ticket')
   const { fetchMatch } = useMatchStore()
   const [match, setMatch] = useState<MatchItem | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
+    if (!isAuthenticated) {
+      setMatch(PREVIEW_TICKET_MATCH)
+      setError(null)
+      setIsLoading(false)
+      return
+    }
+
     if (!inviteId) {
       setError('notFound')
       setIsLoading(false)
@@ -40,7 +52,7 @@ export default function TicketPage() {
       }
       setIsLoading(false)
     })
-  }, [inviteId, fetchMatch])
+  }, [fetchMatch, inviteId, isAuthenticated])
 
   if (isLoading) {
     return (
@@ -88,6 +100,7 @@ export default function TicketPage() {
           <p className={styles.eyebrow}>{t('ticket.eyebrow')}</p>
           <h1 className={styles.title}>{t('ticket.title')}</h1>
           <p className={styles.heroMeta}>{t('ticket.heroMeta')}</p>
+          <PreviewBanner nextPath="/ticket" compact />
         </section>
 
         <section className={`${styles.section} ${styles.ticketSection}`}>
@@ -150,6 +163,7 @@ export default function TicketPage() {
           </Button>
         </section>
       </motion.div>
+      {previewModal}
     </div>
   )
 }
