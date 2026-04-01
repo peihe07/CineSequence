@@ -141,6 +141,8 @@ const translations: Record<Locale, Record<string, string>> = {
     'landing.waitlistSubmit': '通知我',
     'landing.waitlistSubmitting': '送出中...',
     'landing.waitlistSuccess': '已收到 {{email}} 的登記；系統重新開放後，我們會再次發信通知。',
+    'landing.preview': '立即預覽',
+    'landing.previewNote': '未登入也可先瀏覽核心內頁；互動操作與管理後台仍需註冊登入。',
     'waitlist.closedEyebrow': '[ WAITLIST ]',
     'waitlist.closedTitle': '註冊暫時關閉',
     'waitlist.closedBody': '我們正在進行新功能開發與系統維修，目前不開放直接建立帳號。',
@@ -864,6 +866,8 @@ const translations: Record<Locale, Record<string, string>> = {
     'landing.step4Desc': 'Find people whose cinematic DNA aligns with yours through vector similarity.',
     'landing.step5Title': 'Reveal',
     'landing.step5Desc': 'Once matched, tear the ticket to reveal your partner and conversation starters.',
+    'landing.preview': 'Preview Now',
+    'landing.previewNote': 'Browse the core inner pages before signing up; interactive actions and the admin area remain locked.',
 
     // Error boundary
     'error.title': 'Something went wrong',

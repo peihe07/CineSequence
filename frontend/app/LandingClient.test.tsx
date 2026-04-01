@@ -53,6 +53,8 @@ vi.mock('@/lib/i18n', () => ({
         'landing.step5Desc': 'Desc 5',
         'landing.fileLabel': 'FILE',
         'landing.login': 'Login',
+        'landing.preview': 'Preview Now',
+        'landing.previewNote': 'Preview note',
       }
       return dict[key] ?? key
     },
@@ -126,5 +128,12 @@ describe('LandingClient', () => {
       })
     })
     expect(screen.getByText('We have saved user@example.com. We will email you again when access reopens.')).toBeTruthy()
+  })
+
+  it('renders a direct preview entry to the sequencing page', () => {
+    render(<LandingClient />)
+
+    expect(screen.getByRole('link', { name: 'Preview Now' }).getAttribute('href')).toBe('/sequencing')
+    expect(screen.getByText('Preview note')).toBeTruthy()
   })
 })

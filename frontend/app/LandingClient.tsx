@@ -236,6 +236,16 @@ export default function LandingClient() {
             </div>
             <div className={`${styles.heroCta} ${done ? styles.heroCtaVisible : ''}`}>
               <WaitlistForm onSecondaryClick={() => void openAuthFlow('login')} />
+              <div className={styles.previewActions}>
+                <Link
+                  href="/sequencing"
+                  prefetch={false}
+                  className={styles.previewButton}
+                >
+                  {t('landing.preview')}
+                </Link>
+                <p className={styles.previewNote}>{t('landing.previewNote')}</p>
+              </div>
             </div>
           </div>
         </div>
