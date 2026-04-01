@@ -125,7 +125,7 @@ def send_announcement_task(
 
 @celery_app.task
 def send_pending_invite_reminders_task():
-    """Periodic task: send invite reminders for pending invites after 3 and 7 days."""
+    """Periodic task: send one invite reminder for pending invites after 7 days."""
     from app.tasks.async_utils import task_session
 
     async def _run():

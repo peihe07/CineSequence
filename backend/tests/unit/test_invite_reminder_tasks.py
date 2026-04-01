@@ -38,7 +38,7 @@ async def test_send_pending_invite_reminders_sends_and_marks_due_matches():
         ) as send_invite_email,
         patch("app.services.matcher.get_archetype_name", return_value="電影愛好者"),
     ):
-        await _send_pending_invite_reminders(mock_db, now=datetime.now(UTC) - timedelta(days=3))
+        await _send_pending_invite_reminders(mock_db, now=datetime.now(UTC) - timedelta(days=7))
 
     send_invite_email.assert_awaited_once()
     assert send_invite_email.await_args.kwargs["reminder_number"] == 1

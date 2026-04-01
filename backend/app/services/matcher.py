@@ -268,10 +268,9 @@ async def get_pending_invite_reminders(
     *,
     now: datetime | None = None,
 ) -> list[Match]:
-    """Return invited matches due for a reminder after 3 and 7 days."""
+    """Return invited matches due for a single reminder after 7 days."""
     current_time = now or datetime.now(tz=UTC)
-    first_cutoff = current_time - timedelta(days=3)
-    second_cutoff = current_time - timedelta(days=7)
+    reminder_cutoff = current_time - timedelta(days=7)
 
     result = await db.execute(
         select(Match)
@@ -282,18 +281,9 @@ async def get_pending_invite_reminders(
         .where(Match.status == MatchStatus.invited)
         .where(Match.responded_at.is_(None))
         .where(
-            or_(
-                and_(
-                    Match.invite_reminder_count == 0,
-                    Match.invited_at.is_not(None),
-                    Match.invited_at <= first_cutoff,
-                ),
-                and_(
-                    Match.invite_reminder_count == 1,
-                    Match.invited_at.is_not(None),
-                    Match.invited_at <= second_cutoff,
-                ),
-            )
+            Match.invite_reminder_count == 0,
+            Match.invited_at.is_not(None),
+            Match.invited_at <= reminder_cutoff,
         )
         .order_by(Match.invited_at.asc())
     )

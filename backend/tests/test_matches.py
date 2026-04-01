@@ -382,23 +382,16 @@ class TestInviteReminders:
         )
 
         now = datetime.now(UTC)
-        due_first = await create_match(
+        due_once = await create_match(
             db_session, user_a=inviter, user_b=recipient, status=MatchStatus.invited
         )
-        due_first.invited_at = now - timedelta(days=3, hours=1)
-        due_first.invite_reminder_count = 0
-
-        due_second = await create_match(
-            db_session, user_a=inviter, user_b=other, status=MatchStatus.invited
-        )
-        due_second.invited_at = now - timedelta(days=7, hours=1)
-        due_second.invite_reminder_count = 1
-        due_second.last_invite_reminder_at = now - timedelta(days=4)
+        due_once.invited_at = now - timedelta(days=7, hours=1)
+        due_once.invite_reminder_count = 0
 
         too_early = await create_match(
-            db_session, user_a=recipient, user_b=other, status=MatchStatus.invited
+            db_session, user_a=inviter, user_b=other, status=MatchStatus.invited
         )
-        too_early.invited_at = now - timedelta(days=2, hours=20)
+        too_early.invited_at = now - timedelta(days=3, hours=1)
         too_early.invite_reminder_count = 0
 
         maxed_out = await create_match(
@@ -420,7 +413,7 @@ class TestInviteReminders:
         due_matches = await get_pending_invite_reminders(db_session, now=now)
         due_ids = {match.id for match in due_matches}
 
-        assert due_ids == {due_first.id, due_second.id}
+        assert due_ids == {due_once.id}
 
     async def test_mark_invite_reminder_sent_updates_tracking(
         self, db_session: AsyncSession
