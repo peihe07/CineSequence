@@ -20,7 +20,7 @@ vi.mock('@/lib/i18n', () => ({
         'dna.signal': 'Primary signals',
         'dna.traits': 'Profile keywords',
         'dna.style': 'Interaction note',
-        'dna.idealDate': 'Three-film date list',
+        'dna.idealDate': 'Ideal movie date',
         'dna.showMore': 'Read more',
         'dna.showLess': 'Show less',
       }
@@ -71,7 +71,7 @@ describe('AIReading', () => {
     expect(screen.getByText('Primary signals')).toBeTruthy()
     expect(screen.getByText('Profile keywords')).toBeTruthy()
     expect(screen.getByText('Interaction note')).toBeTruthy()
-    expect(screen.getByText('Three-film date list')).toBeTruthy()
+    expect(screen.getByText('Ideal movie date')).toBeTruthy()
   })
 
   it('reveals extras after the typewriter animation completes on desktop', async () => {

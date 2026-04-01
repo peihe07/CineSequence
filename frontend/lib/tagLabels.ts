@@ -14,7 +14,13 @@ const TAG_ZH: Record<string, string> = {
   dystopia: '反烏托邦', trueStory: '真實事件', nonEnglish: '非英語',
   existential: '存在主義', antiHero: '反英雄', romanticCore: '浪漫內核',
   violentAesthetic: '暴力美學', socialCritique: '社會批判', psychoThriller: '心理驚悚',
-  absurdist: '荒誕',
+  absurdist: '荒誕', dreamlike: '夢境感', melancholic: '憂鬱氣質',
+  sensual: '感官流動', atmospheric: '氛圍濃厚', intimate: '親密感',
+  'broad-comedy': '通俗喜劇', restrained: '克制內斂', whimsical: '奇想感',
+  ornate: '繁複華麗', suspense: '懸念', ambiguous: '曖昧未明',
+  summer: '夏日氣息', restless: '躁動感', precision: '精密結構',
+  fractured: '破碎敘事', memory: '記憶迷宮', identity: '身份裂縫',
+  ambiguity: '模糊性',
 }
 
 const TAG_EN: Record<string, string> = {
@@ -26,7 +32,13 @@ const TAG_EN: Record<string, string> = {
   dystopia: 'Dystopia', trueStory: 'True story', nonEnglish: 'Non-English',
   existential: 'Existential', antiHero: 'Anti-hero', romanticCore: 'Romantic',
   violentAesthetic: 'Violent aesthetic', socialCritique: 'Social critique', psychoThriller: 'Psychological',
-  absurdist: 'Absurdist',
+  absurdist: 'Absurdist', dreamlike: 'Dreamlike', melancholic: 'Melancholic',
+  sensual: 'Sensual', atmospheric: 'Atmospheric', intimate: 'Intimate',
+  'broad-comedy': 'Broad comedy', restrained: 'Restrained', whimsical: 'Whimsical',
+  ornate: 'Ornate', suspense: 'Suspense', ambiguous: 'Ambiguous',
+  summer: 'Summer', restless: 'Restless', precision: 'Precision',
+  fractured: 'Fractured', memory: 'Memory', identity: 'Identity',
+  ambiguity: 'Ambiguity',
 }
 
 export function getTagLabel(tag: string, locale: Locale): string {

@@ -12,6 +12,7 @@ import styles from './WaitlistForm.module.css'
 interface WaitlistFormProps {
   variant?: 'hero' | 'page'
   onSecondaryClick?: () => void
+  previewHref?: string
 }
 
 const COPY: Record<Locale, {
@@ -61,6 +62,7 @@ const COPY: Record<Locale, {
 export default function WaitlistForm({
   variant = 'hero',
   onSecondaryClick,
+  previewHref,
 }: WaitlistFormProps) {
   const { t, locale } = useI18n()
   const copy = COPY[locale]
@@ -123,6 +125,15 @@ export default function WaitlistForm({
           <Button type="submit" size="lg" loading={isSubmitting}>
             {isSubmitting ? copy.submitting : copy.submit}
           </Button>
+          {variant === 'hero' && previewHref ? (
+            <Link
+              href={previewHref}
+              prefetch={false}
+              className={`${styles.secondaryLink} ${styles.previewLink}`}
+            >
+              {t('landing.preview')}
+            </Link>
+          ) : null}
           {variant === 'page' ? (
             <Link href="/" prefetch={false} className={styles.secondaryLink}>
               {copy.backHome}

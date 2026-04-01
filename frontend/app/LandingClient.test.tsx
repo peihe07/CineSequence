@@ -134,6 +134,6 @@ describe('LandingClient', () => {
     render(<LandingClient />)
 
     expect(screen.getByRole('link', { name: 'Preview Now' }).getAttribute('href')).toBe('/sequencing')
-    expect(screen.getByText('Preview note')).toBeTruthy()
+    expect(screen.getByRole('button', { name: 'Login' })).toBeTruthy()
   })
 })

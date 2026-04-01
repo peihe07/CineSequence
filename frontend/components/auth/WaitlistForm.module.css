@@ -88,6 +88,15 @@
   cursor: pointer;
 }
 
+.previewLink {
+  min-height: 2.5rem;
+  padding: 0.62rem 1rem;
+  margin-right: 0.35rem;
+  font-size: var(--text-xs);
+  letter-spacing: 0.12em;
+  opacity: 0.92;
+}
+
 .success {
   color: #f1b37f;
 }
@@ -105,5 +114,9 @@
   .secondaryLink,
   .secondaryButton {
     width: 100%;
+  }
+
+  .previewLink {
+    margin-right: 0;
   }
 }
