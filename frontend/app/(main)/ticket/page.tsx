@@ -20,7 +20,7 @@ export default function TicketPage() {
   const router = useRouter()
   const { t, locale } = useI18n()
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated)
-  const { isPreview, previewModal } = usePreviewAccess('/ticket')
+  const { previewModal } = usePreviewAccess('/ticket')
   const { fetchMatch } = useMatchStore()
   const [match, setMatch] = useState<MatchItem | null>(null)
   const [isLoading, setIsLoading] = useState(true)

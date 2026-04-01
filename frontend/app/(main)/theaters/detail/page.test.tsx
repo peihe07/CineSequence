@@ -94,6 +94,11 @@ vi.mock('@/components/guards/FlowGuard', () => ({
   default: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }))
 
+vi.mock('@/stores/authStore', () => ({
+  useAuthStore: (selector: (state: { isAuthenticated: boolean }) => unknown) =>
+    selector({ isAuthenticated: true }),
+}))
+
 import TheaterDetailPage from './page'
 
 describe('TheaterDetailPage', () => {

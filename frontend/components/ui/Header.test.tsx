@@ -9,6 +9,7 @@ const { replaceMock, logoutMock, pathnameState, authState } = vi.hoisted(() => (
   },
   authState: {
     user: null as null | { is_admin: boolean },
+    isAuthenticated: true,
   },
 }))
 
@@ -58,8 +59,11 @@ vi.mock('@/lib/i18n', () => ({
 
 vi.mock('@/stores/authStore', () => ({
   useAuthStore: (
-    selector: (state: { logout: typeof logoutMock; user: typeof authState.user }) => unknown,
-  ) => selector({ logout: logoutMock, user: authState.user }),
+    selector?: (state: { logout: typeof logoutMock; user: typeof authState.user; isAuthenticated: boolean }) => unknown,
+  ) => {
+    const state = { logout: logoutMock, user: authState.user, isAuthenticated: authState.isAuthenticated }
+    return selector ? selector(state) : state
+  },
 }))
 
 vi.mock('@/lib/sound', () => ({
@@ -88,6 +92,7 @@ describe('Header', () => {
     logoutMock.mockReset()
     pathnameState.value = '/dna'
     authState.user = null
+    authState.isAuthenticated = true
   })
 
   afterEach(() => {

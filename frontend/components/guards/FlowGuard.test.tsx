@@ -14,6 +14,7 @@ const {
   // getState() and the hook selector return.
   dnaState,
   sequencingState,
+  authState,
 } = vi.hoisted(() => {
   const dnaState = { result: null as null | { archetype: { id: string } } }
   const sequencingState = {
@@ -23,6 +24,7 @@ const {
       round_number: number
     },
   }
+  const authState = { isAuthenticated: true }
 
   return {
     routerReplaceMock: vi.fn(),
@@ -31,6 +33,7 @@ const {
     fetchProgressMock: vi.fn(async () => {}),
     dnaState,
     sequencingState,
+    authState,
   }
 })
 
@@ -68,6 +71,11 @@ vi.mock('@/stores/toastStore', () => ({
     selector({ addToast: addToastMock }),
 }))
 
+vi.mock('@/stores/authStore', () => ({
+  useAuthStore: (selector: (s: { isAuthenticated: boolean }) => unknown) =>
+    selector(authState),
+}))
+
 vi.mock('@/lib/i18n', () => ({
   useI18n: () => ({
     t: (key: string) => key,
@@ -86,6 +94,7 @@ describe('FlowGuard', () => {
     // Reset state containers to safe defaults
     dnaState.result = null
     sequencingState.progress = null
+    authState.isAuthenticated = true
   })
 
   afterEach(() => {

@@ -6,8 +6,10 @@ describe('auth protection helpers', () => {
   it('marks protected routes correctly', () => {
     expect(requiresAuth('/profile')).toBe(true)
     expect(requiresAuth('/notifications')).toBe(true)
-    expect(requiresAuth('/theaters/123')).toBe(true)
     expect(requiresAuth('/sequencing/seed')).toBe(true)
+    expect(requiresAuth('/sequencing/complete')).toBe(true)
+    expect(requiresAuth('/theaters/123')).toBe(false)
+    expect(requiresAuth('/dna')).toBe(false)
     expect(requiresAuth('/login')).toBe(false)
     expect(requiresAuth('/')).toBe(false)
   })

@@ -10,6 +10,7 @@ const {
   rerollPairMock,
   submitPickMock,
   skipMock,
+  authState,
 } = vi.hoisted(() => ({
   pushMock: vi.fn(),
   replaceMock: vi.fn(),
@@ -38,6 +39,9 @@ const {
   rerollPairMock: vi.fn(),
   submitPickMock: vi.fn(),
   skipMock: vi.fn(),
+  authState: {
+    isAuthenticated: true,
+  },
 }))
 
 vi.mock('next/navigation', () => ({
@@ -58,6 +62,11 @@ vi.mock('@/stores/sequencingStore', () => ({
       getState: () => sequencingState,
     },
   ),
+}))
+
+vi.mock('@/stores/authStore', () => ({
+  useAuthStore: (selector: (state: { isAuthenticated: boolean }) => unknown) =>
+    selector(authState),
 }))
 
 vi.mock('@/components/sequencing/SwipePair', () => ({
@@ -142,6 +151,7 @@ describe('SequencingPage', () => {
     sequencingState.isLoading = false
     sequencingState.ambientColor = null
     sequencingState.error = null
+    authState.isAuthenticated = true
   })
 
   afterEach(() => {

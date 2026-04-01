@@ -1,6 +1,5 @@
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { AUTH_UNAUTHORIZED_EVENT } from '@/lib/api'
 
 const {
   replaceMock,
@@ -135,7 +134,7 @@ describe('MainLayout', () => {
     expect(fetchProfileMock.mock.calls.length).toBeGreaterThanOrEqual(2)
   })
 
-  it('redirects to login when a global unauthorized event is emitted', async () => {
+  it('keeps the layout rendered when a global unauthorized event is emitted', async () => {
     authState.isAuthenticated = true
     fetchProfileMock.mockImplementation(async () => {})
 
@@ -148,11 +147,6 @@ describe('MainLayout', () => {
     await waitFor(() => {
       expect(screen.getByText('Protected content')).toBeTruthy()
     })
-
-    window.dispatchEvent(new CustomEvent(AUTH_UNAUTHORIZED_EVENT))
-
-    await waitFor(() => {
-      expect(replaceMock).toHaveBeenCalledWith('/login')
-    })
+    expect(replaceMock).not.toHaveBeenCalled()
   })
 })

@@ -134,8 +134,6 @@ export default function SequencingPage() {
     }
   }
 
-  const roundNumber = progress?.round_number ?? currentPair?.round_number ?? 1
-  const phase = progress?.phase ?? currentPair?.phase ?? 1
   const displayProgress = isPreview ? PREVIEW_SEQUENCING_PROGRESS : progress
   const displayPair = isPreview ? PREVIEW_SEQUENCING_PAIR : currentPair
   const displayRoundNumber = displayProgress?.round_number ?? displayPair?.round_number ?? 1
