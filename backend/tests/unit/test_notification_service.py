@@ -90,7 +90,12 @@ class TestNotificationCopy:
         monkeypatch.setattr("app.services.notification_service.create_notification", create_mock)
         db = AsyncMock(spec=AsyncSession)
 
-        await notify_theater_assigned(db, uuid.uuid4(), theater_name="Mobius Loop", theater_id="mobius_loop")
+        await notify_theater_assigned(
+            db,
+            uuid.uuid4(),
+            theater_name="Mobius Loop",
+            theater_id="mobius_loop",
+        )
         await notify_theater_activity(
             db,
             uuid.uuid4(),

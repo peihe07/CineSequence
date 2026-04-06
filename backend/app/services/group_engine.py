@@ -311,7 +311,11 @@ async def _recent_activity(
     )
     return [
         {
-            "id": f"reply-{row.entity_id}" if row.type == "list_replied" else f"list-{row.entity_id}",
+            "id": (
+                f"reply-{row.entity_id}"
+                if row.type == "list_replied"
+                else f"list-{row.entity_id}"
+            ),
             "type": row.type,
             "created_at": row.created_at.isoformat(),
             "actor": {

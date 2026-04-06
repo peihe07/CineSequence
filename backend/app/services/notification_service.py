@@ -217,7 +217,10 @@ async def notify_theater_assigned(
         title_zh="收到新的放映廳指派",
         title_en="ASSIGNMENT ORDER ISSUED",
         body_zh=f"你的 DNA 路徑已將你導向「{theater_name}」。立即進入並查看本廳片單。",
-        body_en=f'Your DNA route now points to "{theater_name}". Enter the room and inspect the slate.',
+        body_en=(
+            f'Your DNA route now points to "{theater_name}". '
+            "Enter the room and inspect the slate."
+        ),
         link=f"/theaters/detail?id={theater_id}",
         ref_id=f"assigned:{theater_id}",
     )

@@ -1,6 +1,5 @@
 'use client'
 
-import { api } from '@/lib/api'
 import Link from 'next/link'
 import { useRef, useState, type CSSProperties } from 'react'
 import { useSearchParams } from 'next/navigation'
@@ -8,17 +7,9 @@ import { useI18n } from '@/lib/i18n'
 import { getTagLabel } from '@/lib/tagLabels'
 import type { TheaterMovieSearchResult } from '@/lib/theater-types'
 import FlowGuard from '@/components/guards/FlowGuard'
+import { searchTheaterMovies } from './movieSearchCache'
 import { useTheaterDetail } from './useTheaterDetail'
 import styles from './page.module.css'
-
-const movieSearchCache = new Map<string, { fetchedAt: number; results: TheaterMovieSearchResult[] }>()
-const movieSearchInflight = new Map<string, Promise<TheaterMovieSearchResult[]>>()
-const MOVIE_SEARCH_CACHE_TTL_MS = 30_000
-
-export function __resetTheaterDetailSearchCacheForTests(): void {
-  movieSearchCache.clear()
-  movieSearchInflight.clear()
-}
 
 function TheaterDetailContent() {
   const { t, locale } = useI18n()
@@ -106,41 +97,6 @@ function TheaterDetailContent() {
     }
   }
 
-  async function searchMovies(query: string) {
-    const normalizedQuery = query.trim()
-    if (normalizedQuery.length < 2) {
-      return []
-    }
-
-    const cacheKey = normalizedQuery.toLowerCase()
-    const cached = movieSearchCache.get(cacheKey)
-    if (cached && Date.now() - cached.fetchedAt < MOVIE_SEARCH_CACHE_TTL_MS) {
-      return cached.results
-    }
-
-    const inflight = movieSearchInflight.get(cacheKey)
-    if (inflight) {
-      return inflight
-    }
-
-    const request = api<TheaterMovieSearchResult[]>(
-      `/sequencing/search?q=${encodeURIComponent(normalizedQuery)}`
-    )
-      .then((results) => {
-        movieSearchCache.set(cacheKey, {
-          fetchedAt: Date.now(),
-          results,
-        })
-        return results
-      })
-      .finally(() => {
-        movieSearchInflight.delete(cacheKey)
-      })
-
-    movieSearchInflight.set(cacheKey, request)
-    return request
-  }
-
   async function handleSearchDraftMovies() {
     if (draftSearchQuery.trim().length < 2) {
       setDraftSearchResults([])
@@ -150,7 +106,7 @@ function TheaterDetailContent() {
 
     setIsDraftSearching(true)
     try {
-      const results = await searchMovies(draftSearchQuery)
+      const results = await searchTheaterMovies(draftSearchQuery)
       setDraftSearchResults(results)
       setDraftSearchError(null)
     } catch (err) {
@@ -211,7 +167,7 @@ function TheaterDetailContent() {
 
     setAppendSearchingByList((current) => ({ ...current, [listId]: true }))
     try {
-      const results = await searchMovies(query)
+      const results = await searchTheaterMovies(query)
       setAppendSearchResultsByList((current) => ({ ...current, [listId]: results }))
       setAppendSearchErrorByList((current) => ({ ...current, [listId]: null }))
     } catch (err) {

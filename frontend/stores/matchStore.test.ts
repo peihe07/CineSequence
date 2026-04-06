@@ -89,9 +89,9 @@ describe('matchStore', () => {
   })
 
   it('dedupes concurrent fetchMatches calls into one request', async () => {
-    let resolveMatches: ((value: MatchItem[]) => void) | null = null
-    apiMock.mockImplementationOnce(() => new Promise((resolve) => {
-      resolveMatches = resolve as (value: MatchItem[]) => void
+    let resolveMatches!: (value: MatchItem[]) => void
+    apiMock.mockImplementationOnce(() => new Promise<MatchItem[]>((resolve) => {
+      resolveMatches = resolve
     }))
 
     const first = useMatchStore.getState().fetchMatches()
@@ -99,7 +99,7 @@ describe('matchStore', () => {
 
     expect(apiMock).toHaveBeenCalledTimes(1)
 
-    resolveMatches?.([matchFixture])
+    resolveMatches([matchFixture])
     await Promise.all([first, second])
 
     expect(useMatchStore.getState().matches).toEqual([matchFixture])

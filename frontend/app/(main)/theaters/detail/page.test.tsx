@@ -99,7 +99,8 @@ vi.mock('@/stores/authStore', () => ({
     selector({ isAuthenticated: true }),
 }))
 
-import TheaterDetailPage, { __resetTheaterDetailSearchCacheForTests } from './page'
+import TheaterDetailPage from './page'
+import { __resetTheaterDetailSearchCacheForTests } from './movieSearchCache'
 import { __resetTheaterDetailCacheForTests } from './useTheaterDetail'
 
 describe('TheaterDetailPage', () => {
