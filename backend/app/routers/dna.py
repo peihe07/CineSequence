@@ -23,6 +23,7 @@ from app.schemas.dna import (
 )
 from app.services.ai_personality import generate_personality
 from app.services.character_mirror import find_resonant_characters, generate_mirror_readings
+from app.services.tmdb_client import get_movies
 from app.services.dna_builder import (
     ARCHETYPES,
     build_comparison_evidence,
@@ -346,12 +347,14 @@ async def get_character_mirror(
 
     characters = find_resonant_characters(profile)
     characters = await generate_mirror_readings(profile, characters, top_tags)
+    movies_by_id = await get_movies([c.tmdb_id for c in characters if c.tmdb_id])
 
     return [
         CharacterMatchResponse(
             id=c.id,
             name=c.name,
             movie=c.movie,
+            movie_zh=movies_by_id.get(c.tmdb_id).title_zh if movies_by_id.get(c.tmdb_id) else None,
             tmdb_id=c.tmdb_id,
             score=c.score,
             psych_labels=c.psych_labels,

@@ -2,21 +2,12 @@
 
 import { useEffect } from 'react'
 import { useI18n } from '@/lib/i18n'
+import { getMirrorFrameworkLabel } from '@/lib/characterMirrorLabels'
 import { useDnaStore } from '@/stores/dnaStore'
 import styles from './CharacterMirror.module.css'
 
-const FRAMEWORK_LABEL: Record<string, string> = {
-  shadow_self: 'Shadow Self',
-  persona_mask: 'Persona / Mask',
-  attachment_style: 'Attachment Style',
-  individuation: 'Individuation',
-  defense_mechanism: 'Defense Mechanism',
-  existential_crisis: 'Existential Crisis',
-  cognitive_style: 'Cognitive Style',
-}
-
 export default function CharacterMirror() {
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
   const { mirrorCharacters, isMirrorLoading, mirrorError, fetchMirror } = useDnaStore()
 
   useEffect(() => {
@@ -53,16 +44,20 @@ export default function CharacterMirror() {
             <div key={char.id} className={styles.card}>
               <div className={styles.cardTop}>
                 <h3 className={styles.characterName}>{char.name}</h3>
-                <p className={styles.movieTitle}>{char.movie}</p>
+                <p className={styles.movieTitle}>
+                  {locale === 'zh' && char.movie_zh ? char.movie_zh : char.movie}
+                </p>
               </div>
 
-              <p className={styles.oneLiner}>&ldquo;{char.one_liner}&rdquo;</p>
+              {locale === 'en' && (
+                <p className={styles.oneLiner}>&ldquo;{char.one_liner}&rdquo;</p>
+              )}
 
               <div className={styles.meta}>
                 <div className={styles.metaRow}>
                   <span className={styles.metaLabel}>{t('dna.mirrorFramework')}</span>
                   <span className={styles.metaValue}>
-                    {FRAMEWORK_LABEL[char.psych_framework] ?? char.psych_framework}
+                    {getMirrorFrameworkLabel(char.psych_framework, locale)}
                   </span>
                 </div>
                 <div className={styles.metaRow}>

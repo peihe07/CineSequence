@@ -63,6 +63,7 @@ export interface CharacterMatch {
   id: string
   name: string
   movie: string
+  movie_zh?: string | null
   tmdb_id: number
   score: number
   psych_labels: string[]

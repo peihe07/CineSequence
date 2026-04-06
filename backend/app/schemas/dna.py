@@ -70,6 +70,7 @@ class CharacterMatchResponse(BaseModel):
     id: str
     name: str
     movie: str
+    movie_zh: str | None = None
     tmdb_id: int
     score: float
     psych_labels: list[str]
