@@ -48,10 +48,12 @@ interface SequencingState {
   isLoading: boolean
   error: string | null
   ambientColor: string | null
+  hasHydratedProgress: boolean
+  progressFetchedAt: number | null
 
   fetchPair: () => Promise<Pair>
   rerollPair: () => Promise<void>
-  fetchProgress: () => Promise<Progress>
+  fetchProgress: (options?: { force?: boolean }) => Promise<Progress>
   submitPick: (tmdbId: number, pickMode?: 'watched' | 'attracted', responseTimeMs?: number) => Promise<void>
   skip: (responseTimeMs?: number) => Promise<void>
   dislikeBoth: (responseTimeMs?: number) => Promise<void>
@@ -63,6 +65,9 @@ interface SequencingState {
   addLiveTag: (tag: string) => void
 }
 
+const PROGRESS_CACHE_TTL_MS = 30_000
+let inflightProgressRequest: Promise<Progress> | null = null
+
 export const useSequencingStore = create<SequencingState>((set, get) => ({
   currentPair: null,
   progress: null,
@@ -71,6 +76,8 @@ export const useSequencingStore = create<SequencingState>((set, get) => ({
   isLoading: false,
   error: null,
   ambientColor: null,
+  hasHydratedProgress: false,
+  progressFetchedAt: null,
 
   fetchPair: async () => {
     set({ currentPair: null, rerollExcludedTmdbIds: [], isLoading: true, error: null })
@@ -111,17 +118,39 @@ export const useSequencingStore = create<SequencingState>((set, get) => ({
     }
   },
 
-  fetchProgress: async () => {
-    try {
-      const progress = await api<Progress>('/sequencing/progress')
-      set({ progress, error: null })
-      return progress
-    } catch (err) {
-      set({
-        error: err instanceof Error ? err.message : translateStatic('common.error'),
-      })
-      throw err
-    }
+  fetchProgress: async (options) => {
+    const { progress, hasHydratedProgress, progressFetchedAt } = get()
+    const shouldUseCache = !options?.force
+      && hasHydratedProgress
+      && progress !== null
+      && progressFetchedAt !== null
+      && Date.now() - progressFetchedAt < PROGRESS_CACHE_TTL_MS
+
+    if (shouldUseCache) return progress
+    if (inflightProgressRequest) return inflightProgressRequest
+
+    inflightProgressRequest = (async () => {
+      try {
+        const nextProgress = await api<Progress>('/sequencing/progress')
+        set({
+          progress: nextProgress,
+          error: null,
+          hasHydratedProgress: true,
+          progressFetchedAt: Date.now(),
+        })
+        return nextProgress
+      } catch (err) {
+        set({
+          error: err instanceof Error ? err.message : translateStatic('common.error'),
+          hasHydratedProgress: true,
+        })
+        throw err
+      } finally {
+        inflightProgressRequest = null
+      }
+    })()
+
+    return inflightProgressRequest
   },
 
   submitPick: async (tmdbId, pickMode = 'watched', responseTimeMs) => {
@@ -146,7 +175,13 @@ export const useSequencingStore = create<SequencingState>((set, get) => ({
           test_dimension: currentPair?.test_dimension ?? null,
         }),
       })
-      set({ progress, isLoading: false, ambientColor: null })
+      set({
+        progress,
+        isLoading: false,
+        ambientColor: null,
+        hasHydratedProgress: true,
+        progressFetchedAt: Date.now(),
+      })
 
       if (!progress.completed) {
         get().fetchPair()
@@ -175,7 +210,13 @@ export const useSequencingStore = create<SequencingState>((set, get) => ({
           test_dimension: currentPair?.test_dimension ?? null,
         }),
       })
-      set({ progress, isLoading: false, ambientColor: null })
+      set({
+        progress,
+        isLoading: false,
+        ambientColor: null,
+        hasHydratedProgress: true,
+        progressFetchedAt: Date.now(),
+      })
 
       if (!progress.completed) {
         get().fetchPair()
@@ -203,7 +244,13 @@ export const useSequencingStore = create<SequencingState>((set, get) => ({
           test_dimension: currentPair?.test_dimension ?? null,
         }),
       })
-      set({ progress, isLoading: false, ambientColor: null })
+      set({
+        progress,
+        isLoading: false,
+        ambientColor: null,
+        hasHydratedProgress: true,
+        progressFetchedAt: Date.now(),
+      })
 
       if (!progress.completed) {
         get().fetchPair()
@@ -231,7 +278,13 @@ export const useSequencingStore = create<SequencingState>((set, get) => ({
           test_dimension: currentPair?.test_dimension ?? null,
         }),
       })
-      set({ progress, isLoading: false, ambientColor: null })
+      set({
+        progress,
+        isLoading: false,
+        ambientColor: null,
+        hasHydratedProgress: true,
+        progressFetchedAt: Date.now(),
+      })
 
       if (!progress.completed) {
         get().fetchPair()
@@ -278,6 +331,8 @@ export const useSequencingStore = create<SequencingState>((set, get) => ({
               is_extending: true,
             }
           : null,
+        hasHydratedProgress: true,
+        progressFetchedAt: Date.now(),
       }))
       return
     } catch (err) {

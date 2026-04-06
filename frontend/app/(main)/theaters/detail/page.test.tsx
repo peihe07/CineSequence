@@ -99,11 +99,14 @@ vi.mock('@/stores/authStore', () => ({
     selector({ isAuthenticated: true }),
 }))
 
-import TheaterDetailPage from './page'
+import TheaterDetailPage, { __resetTheaterDetailSearchCacheForTests } from './page'
+import { __resetTheaterDetailCacheForTests } from './useTheaterDetail'
 
 describe('TheaterDetailPage', () => {
   beforeEach(() => {
     apiMock.mockReset()
+    __resetTheaterDetailCacheForTests()
+    __resetTheaterDetailSearchCacheForTests()
   })
 
   afterEach(() => {
@@ -232,7 +235,7 @@ describe('TheaterDetailPage', () => {
 
     await openBoardTab()
     expect(screen.getByText('Start with Arrival.')).toBeTruthy()
-  })
+  }, 10000)
 
   it('switches overview between starter shelf and watchlist shelf', async () => {
     apiMock

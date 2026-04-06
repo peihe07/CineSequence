@@ -4,6 +4,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
+import { useRouter } from 'next/navigation'
 import { PreviewBanner, usePreviewAccess } from '@/components/preview/PreviewGate'
 import { useGroupStore } from '@/stores/groupStore'
 import { useI18n } from '@/lib/i18n'
@@ -13,10 +14,12 @@ import { getTagLabel } from '@/lib/tagLabels'
 import type { TheaterGroup } from '@/lib/theater-types'
 import FlowGuard from '@/components/guards/FlowGuard'
 import ConfirmDialog from '@/components/ui/ConfirmDialog'
+import { prefetchTheaterDetail } from '../theaters/detail/useTheaterDetail'
 import styles from './page.module.css'
 
 function FeaturedGroup({ group }: { group: TheaterGroup }) {
   const { t, locale } = useI18n()
+  const router = useRouter()
 
   return (
     <motion.section
@@ -34,7 +37,18 @@ function FeaturedGroup({ group }: { group: TheaterGroup }) {
             <p className={styles.groupSubtitle}>{group.subtitle}</p>
           </div>
         </div>
-        <Link href={`/theaters/${group.id}`} prefetch={false} className={styles.detailLink}>
+        <Link
+          href={`/theaters/${group.id}`}
+          className={styles.detailLink}
+          onMouseEnter={() => {
+            void router.prefetch(`/theaters/${group.id}`)
+            void prefetchTheaterDetail(group.id)
+          }}
+          onFocus={() => {
+            void router.prefetch(`/theaters/${group.id}`)
+            void prefetchTheaterDetail(group.id)
+          }}
+        >
           <i className="ri-arrow-right-up-line" /> {t('theaters.open')}
         </Link>
       </div>
@@ -195,6 +209,7 @@ function GroupCard({ group, onJoin, onLeave }: {
   onLeave: () => void
 }) {
   const { t, locale } = useI18n()
+  const router = useRouter()
   const [activeDetailTab, setActiveDetailTab] = useState<'fit' | 'recommended' | 'watchlist' | 'members'>('fit')
 
   return (
@@ -400,7 +415,18 @@ function GroupCard({ group, onJoin, onLeave }: {
       </div>
 
       <div className={styles.cardActions}>
-        <Link href={`/theaters/${group.id}`} prefetch={false} className={styles.detailLink}>
+        <Link
+          href={`/theaters/${group.id}`}
+          className={styles.detailLink}
+          onMouseEnter={() => {
+            void router.prefetch(`/theaters/${group.id}`)
+            void prefetchTheaterDetail(group.id)
+          }}
+          onFocus={() => {
+            void router.prefetch(`/theaters/${group.id}`)
+            void prefetchTheaterDetail(group.id)
+          }}
+        >
           <i className="ri-arrow-right-up-line" /> {t('theaters.open')}
         </Link>
         <div className={styles.cardActionMeta}>
@@ -434,7 +460,7 @@ function TheatersContent() {
   const { t } = useI18n()
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated)
   const { isPreview, guardPreviewAction, previewModal } = usePreviewAccess('/theaters')
-  const { groups, isLoading, fetchGroups, autoAssign, joinGroup, leaveGroup } = useGroupStore()
+  const { groups, isLoading, hasHydrated, fetchGroups, autoAssign, joinGroup, leaveGroup } = useGroupStore()
   const [leaveTarget, setLeaveTarget] = useState<string | null>(null)
   const displayGroups = isPreview ? PREVIEW_THEATER_GROUPS : groups
   const featuredGroup = displayGroups.find((group) => group.is_member) ?? displayGroups[0] ?? null
@@ -447,8 +473,8 @@ function TheatersContent() {
       return
     }
 
-    fetchGroups()
-  }, [fetchGroups, isAuthenticated])
+    void fetchGroups({ background: hasHydrated && groups.length > 0 })
+  }, [fetchGroups, groups.length, hasHydrated, isAuthenticated])
 
   return (
     <div className={styles.container}>
@@ -477,7 +503,7 @@ function TheatersContent() {
         </section>
 
         <section className={`${styles.section} ${styles.resultsSection}`}>
-          {isLoading && (
+          {isLoading && displayGroups.length === 0 && (
             <div className={styles.loading}>
               <i className="ri-loader-4-line ri-spin ri-2x" />
             </div>

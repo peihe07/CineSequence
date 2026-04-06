@@ -35,6 +35,7 @@ describe('groupStore', () => {
       groups: [group],
       isLoading: false,
       error: null,
+      hasHydrated: false,
     })
   })
 
@@ -48,6 +49,19 @@ describe('groupStore', () => {
     expect(apiMock).toHaveBeenCalledWith('/groups/auto-assign', { method: 'POST' })
     expect(useGroupStore.getState().groups).toEqual(assignedGroups)
     expect(useGroupStore.getState().isLoading).toBe(false)
+  })
+
+  it('keeps existing groups visible during a background refresh', async () => {
+    apiMock.mockResolvedValueOnce([{ ...group, name: 'Refreshed Hall' }])
+
+    const pending = useGroupStore.getState().fetchGroups({ background: true })
+
+    expect(useGroupStore.getState().isLoading).toBe(false)
+    expect(useGroupStore.getState().groups[0]?.name).toBe('Night Owls')
+
+    await pending
+
+    expect(useGroupStore.getState().groups[0]?.name).toBe('Refreshed Hall')
   })
 
   it('trims group messages before posting', async () => {

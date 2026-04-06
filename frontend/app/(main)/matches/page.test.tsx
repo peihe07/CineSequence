@@ -1,5 +1,21 @@
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { __resetMatchPageCacheForTests } from '@/lib/match-page-cache'
+
+vi.mock('framer-motion', async () => {
+  const React = await import('react')
+  const MotionDiv = React.forwardRef<HTMLElement, React.HTMLAttributes<HTMLElement>>(
+    ({ children, ...props }, ref) => React.createElement('div', { ...props, ref }, children),
+  )
+  MotionDiv.displayName = 'MotionDiv'
+
+  return {
+    AnimatePresence: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+    motion: { div: MotionDiv },
+    useMotionValue: () => ({ get: () => 0, set: () => {} }),
+    useTransform: () => '0deg',
+  }
+})
 
 const {
   apiMock,
@@ -8,6 +24,7 @@ const {
   discoverMatchesMock,
   sendInviteMock,
   respondToInviteMock,
+  tMock,
   matchState,
 } = vi.hoisted(() => ({
   apiMock: vi.fn(),
@@ -19,27 +36,60 @@ const {
   discoverMatchesMock: vi.fn(),
   sendInviteMock: vi.fn(),
   respondToInviteMock: vi.fn(),
-      matchState: {
-        matches: [] as Array<{
-          id: string
-          partner_id: string
-          partner_name: string
-          partner_email: string | null
-          partner_bio: string | null
-          partner_avatar_url: string | null
-          partner_archetype: string | null
-          similarity_score: number
-          candidate_percentile: number | null
-          candidate_pool_size: number | null
-          shared_tags: string[]
-          ice_breakers: string[]
-          status: 'discovered' | 'invited' | 'accepted' | 'declined'
-          ticket_image_url: string | null
-          is_recipient: boolean
-        }>,
+  tMock: (key: string) => {
+    const dict: Record<string, string> = {
+      'matches.title': 'Your Matches',
+      'matches.discover': 'Discover',
+      'matches.discovering': 'Discovering...',
+      'matches.empty': 'No matches yet',
+      'matches.emptyHint': 'Try discovering matches',
+      'matches.filterLabel': 'Match Preferences',
+      'matches.prefGender': 'Gender',
+      'matches.prefAny': 'Any',
+      'matches.prefFemale': 'Female',
+      'matches.prefMale': 'Male',
+      'matches.prefOther': 'Other',
+      'matches.prefAge': 'Age range',
+      'matches.minAge': 'Minimum age',
+      'matches.maxAge': 'Maximum age',
+      'matches.pureTaste': 'Pure taste',
+      'matches.pureTasteHint': 'Ignore gender and age',
+      'matches.prefLoadError': 'Failed to load match preferences',
+      'matches.prefSaveError': 'Failed to save match preferences',
+      'matches.results': 'Match results',
+      'matches.loading': 'Loading matches',
+      'matches.matched': 'Matched',
+      'matches.tearHint': 'Drag to tear open',
+      'matches.viewTicket': 'Open ticket',
+      'matches.closeTicket': 'Close ticket',
+      'matches.ticketGenerating': 'Generating ticket',
+      'matches.emailPartner': 'Email partner',
+    }
+    return dict[key] ?? key
+  },
+  matchState: {
+    matches: [] as Array<{
+      id: string
+      partner_id: string
+      partner_name: string
+      partner_email: string | null
+      partner_bio: string | null
+      partner_avatar_url: string | null
+      partner_archetype: string | null
+      similarity_score: number
+      candidate_percentile: number | null
+      candidate_pool_size: number | null
+      shared_tags: string[]
+      ice_breakers: string[]
+      status: 'discovered' | 'invited' | 'accepted' | 'declined'
+      ticket_image_url: string | null
+      is_recipient: boolean
+    }>,
     isLoading: false,
     isDiscovering: false,
     error: null as string | null,
+    hasHydrated: false,
+    lastFetchedAt: null as number | null,
   },
 }))
 
@@ -60,9 +110,10 @@ vi.mock('@/stores/matchStore', () => ({
 }))
 
 vi.mock('@/stores/authStore', () => ({
-  useAuthStore: () => ({
-    isAuthenticated: true,
-  }),
+  useAuthStore: (selector?: (state: { isAuthenticated: boolean }) => unknown) => {
+    const state = { isAuthenticated: true }
+    return selector ? selector(state) : state
+  },
 }))
 
 vi.mock('@/lib/api', () => ({
@@ -72,37 +123,7 @@ vi.mock('@/lib/api', () => ({
 vi.mock('@/lib/i18n', () => ({
   useI18n: () => ({
     locale: 'en',
-    t: (key: string) => {
-      const dict: Record<string, string> = {
-        'matches.title': 'Your Matches',
-        'matches.discover': 'Discover',
-        'matches.discovering': 'Discovering...',
-        'matches.empty': 'No matches yet',
-        'matches.emptyHint': 'Try discovering matches',
-        'matches.filterLabel': 'Match Preferences',
-        'matches.prefGender': 'Gender',
-        'matches.prefAny': 'Any',
-        'matches.prefFemale': 'Female',
-        'matches.prefMale': 'Male',
-        'matches.prefOther': 'Other',
-        'matches.prefAge': 'Age range',
-        'matches.minAge': 'Minimum age',
-        'matches.maxAge': 'Maximum age',
-        'matches.pureTaste': 'Pure taste',
-        'matches.pureTasteHint': 'Ignore gender and age',
-        'matches.prefLoadError': 'Failed to load match preferences',
-        'matches.prefSaveError': 'Failed to save match preferences',
-        'matches.results': 'Match results',
-        'matches.loading': 'Loading matches',
-        'matches.matched': 'Matched',
-        'matches.tearHint': 'Drag to tear open',
-        'matches.viewTicket': 'Open ticket',
-        'matches.closeTicket': 'Close ticket',
-        'matches.ticketGenerating': 'Generating ticket',
-        'matches.emailPartner': 'Email partner',
-      }
-      return dict[key] ?? key
-    },
+    t: tMock,
   }),
 }))
 
@@ -118,6 +139,39 @@ vi.mock('@/components/match/TearRitual', () => ({
   ),
 }))
 
+vi.mock('@/components/match/TicketCard', () => ({
+  default: ({ match, onShowFullTicket }: {
+    match: {
+      status: 'discovered' | 'invited' | 'accepted' | 'declined'
+      partner_name: string
+      partner_email: string | null
+    }
+    onShowFullTicket?: () => void
+  }) => (
+    <div>
+      <div>{match.partner_name}</div>
+      {match.status === 'accepted' && (
+        <>
+          {match.partner_email && (
+            <a href={`mailto:${match.partner_email}`} aria-label={`Email partner ${match.partner_name}`}>
+              {match.partner_email}
+            </a>
+          )}
+          <button type="button" onClick={onShowFullTicket}>TearRitual</button>
+        </>
+      )}
+    </div>
+  ),
+}))
+
+vi.mock('@/components/match/MessageBoard', () => ({
+  default: () => <div>MessageBoard</div>,
+}))
+
+vi.mock('@/components/ui/PaymentModal', () => ({
+  default: () => null,
+}))
+
 vi.mock('@/components/guards/FlowGuard', () => ({
   default: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }))
@@ -127,6 +181,7 @@ import MatchesPage from './page'
 describe('MatchesPage', () => {
   beforeEach(() => {
     vi.stubGlobal('scrollTo', vi.fn())
+    __resetMatchPageCacheForTests()
     apiMock.mockReset()
     fetchMatchesMock.mockReset()
     discoverMatchesMock.mockReset()
@@ -138,6 +193,8 @@ describe('MatchesPage', () => {
     matchState.isLoading = false
     matchState.isDiscovering = false
     matchState.error = null
+    matchState.hasHydrated = false
+    matchState.lastFetchedAt = null
   })
 
   afterEach(() => {

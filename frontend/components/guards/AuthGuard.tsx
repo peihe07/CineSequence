@@ -7,12 +7,16 @@ import { useAuthStore } from '@/stores/authStore'
 import styles from './AuthGuard.module.css'
 
 export default function AuthGuard({ children }: { children: React.ReactNode }) {
-  const { isLoading, fetchProfile } = useAuthStore()
+  const { isLoading, fetchProfile, hasHydrated } = useAuthStore()
   const { t } = useI18n()
-  const [hasCheckedAuth, setHasCheckedAuth] = useState(false)
+  const [hasCheckedAuth, setHasCheckedAuth] = useState(hasHydrated)
   const [authCheckError, setAuthCheckError] = useState<string | null>(null)
 
   const runAuthCheck = useCallback(async () => {
+    if (hasHydrated) {
+      setHasCheckedAuth(true)
+      return
+    }
     setHasCheckedAuth(false)
     setAuthCheckError(null)
     try {
@@ -22,7 +26,7 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
     } finally {
       setHasCheckedAuth(true)
     }
-  }, [fetchProfile, t])
+  }, [fetchProfile, hasHydrated, t])
 
   useEffect(() => {
     void runAuthCheck()
@@ -41,7 +45,7 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
     )
   }
 
-  if (!hasCheckedAuth || isLoading) {
+  if (!hasCheckedAuth || (!hasHydrated && isLoading)) {
     return (
       <main className={styles.state}>
         <div className={styles.panel}>

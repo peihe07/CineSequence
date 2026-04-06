@@ -1,4 +1,5 @@
 import { buildApiUrl, resolveApiUrl } from './api-origin'
+import { logPerf } from './perf'
 
 const TOKEN_STORAGE_KEY = 'cine_sequence_access_token'
 export const AUTH_UNAUTHORIZED_EVENT = 'cine-sequence:auth-unauthorized'
@@ -74,6 +75,7 @@ export async function api<T>(
   path: string,
   options: RequestInit = {},
 ): Promise<T> {
+  const startedAt = typeof performance !== 'undefined' ? performance.now() : Date.now()
   const headers: Record<string, string> = {
     ...((options.headers as Record<string, string>) || {}),
   }
@@ -88,6 +90,8 @@ export async function api<T>(
     headers,
     credentials: 'include',
   })
+  const durationMs = (typeof performance !== 'undefined' ? performance.now() : Date.now()) - startedAt
+  logPerf(`api ${options.method ?? 'GET'} ${path}`, durationMs, { status: response.status })
 
   if (!response.ok) {
     const body = await response.json().catch(() => ({ detail: 'Request failed' }))
@@ -108,6 +112,7 @@ export async function apiUpload<T>(
   file: File,
   fieldName = 'file',
 ): Promise<T> {
+  const startedAt = typeof performance !== 'undefined' ? performance.now() : Date.now()
   const formData = new FormData()
   formData.append(fieldName, file)
 
@@ -116,6 +121,8 @@ export async function apiUpload<T>(
     body: formData,
     credentials: 'include',
   })
+  const durationMs = (typeof performance !== 'undefined' ? performance.now() : Date.now()) - startedAt
+  logPerf(`apiUpload POST ${path}`, durationMs, { status: response.status })
 
   if (!response.ok) {
     const body = await response.json().catch(() => ({ detail: 'Upload failed' }))

@@ -7,8 +7,9 @@ interface GroupState {
   groups: TheaterGroup[]
   isLoading: boolean
   error: string | null
+  hasHydrated: boolean
 
-  fetchGroups: () => Promise<void>
+  fetchGroups: (options?: { background?: boolean }) => Promise<void>
   autoAssign: () => Promise<void>
   joinGroup: (groupId: string) => Promise<void>
   leaveGroup: (groupId: string) => Promise<void>
@@ -20,15 +21,17 @@ export const useGroupStore = create<GroupState>((set, get) => ({
   groups: [],
   isLoading: false,
   error: null,
+  hasHydrated: false,
 
-  fetchGroups: async () => {
-    set({ isLoading: true, error: null })
+  fetchGroups: async (options) => {
+    const background = options?.background ?? false
+    set({ isLoading: background ? get().isLoading : true, error: null })
     try {
       const groups = await api<TheaterGroup[]>('/groups')
-      set({ groups, isLoading: false })
+      set({ groups, isLoading: false, hasHydrated: true })
     } catch (err) {
       const message = err instanceof Error ? err.message : translateStatic('common.error')
-      set({ isLoading: false, error: message })
+      set({ isLoading: false, error: message, hasHydrated: true })
     }
   },
 
@@ -36,10 +39,10 @@ export const useGroupStore = create<GroupState>((set, get) => ({
     set({ isLoading: true, error: null })
     try {
       const groups = await api<TheaterGroup[]>('/groups/auto-assign', { method: 'POST' })
-      set({ groups, isLoading: false })
+      set({ groups, isLoading: false, hasHydrated: true })
     } catch (err) {
       const message = err instanceof Error ? err.message : translateStatic('common.error')
-      set({ isLoading: false, error: message })
+      set({ isLoading: false, error: message, hasHydrated: true })
     }
   },
 

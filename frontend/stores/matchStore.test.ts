@@ -36,6 +36,8 @@ describe('matchStore', () => {
       isLoading: false,
       isDiscovering: false,
       error: null,
+      hasHydrated: false,
+      lastFetchedAt: null,
     })
   })
 
@@ -57,6 +59,51 @@ describe('matchStore', () => {
     expect(useMatchStore.getState().matches).toEqual([])
     expect(useMatchStore.getState().error).toBe('Network error')
     expect(useMatchStore.getState().isLoading).toBe(false)
+  })
+
+  it('keeps existing matches visible during a background refresh', async () => {
+    useMatchStore.setState({ matches: [matchFixture], hasHydrated: true, lastFetchedAt: null })
+    apiMock.mockResolvedValueOnce([{ ...matchFixture, partner_name: 'Luna' }])
+
+    const pending = useMatchStore.getState().fetchMatches({ background: true })
+
+    expect(useMatchStore.getState().isLoading).toBe(false)
+    expect(useMatchStore.getState().matches[0]?.partner_name).toBe('Aster')
+
+    await pending
+
+    expect(useMatchStore.getState().matches[0]?.partner_name).toBe('Luna')
+  })
+
+  it('reuses a fresh matches cache without calling the API again', async () => {
+    useMatchStore.setState({
+      matches: [matchFixture],
+      hasHydrated: true,
+      lastFetchedAt: Date.now(),
+    })
+
+    await useMatchStore.getState().fetchMatches()
+
+    expect(apiMock).not.toHaveBeenCalled()
+    expect(useMatchStore.getState().matches).toEqual([matchFixture])
+  })
+
+  it('dedupes concurrent fetchMatches calls into one request', async () => {
+    let resolveMatches: ((value: MatchItem[]) => void) | null = null
+    apiMock.mockImplementationOnce(() => new Promise((resolve) => {
+      resolveMatches = resolve as (value: MatchItem[]) => void
+    }))
+
+    const first = useMatchStore.getState().fetchMatches()
+    const second = useMatchStore.getState().fetchMatches()
+
+    expect(apiMock).toHaveBeenCalledTimes(1)
+
+    resolveMatches?.([matchFixture])
+    await Promise.all([first, second])
+
+    expect(useMatchStore.getState().matches).toEqual([matchFixture])
+    expect(useMatchStore.getState().hasHydrated).toBe(true)
   })
 
   it('returns a single match by id', async () => {

@@ -34,6 +34,8 @@ describe('dnaStore', () => {
       isBuilding: false,
       isLoading: false,
       error: null,
+      hasHydrated: false,
+      lastFetchedAt: null,
     })
   })
 

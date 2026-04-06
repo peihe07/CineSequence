@@ -18,12 +18,68 @@ type TheaterListItemInput = {
   note?: string | null
 }
 
+type TheaterDetailPayload = {
+  group: TheaterGroupDetail
+  lists: TheaterList[]
+}
+
+const THEATER_DETAIL_CACHE_TTL_MS = 30_000
+const theaterDetailCache = new Map<string, TheaterDetailPayload & { fetchedAt: number }>()
+const theaterDetailInflight = new Map<string, Promise<TheaterDetailPayload>>()
+
+async function fetchTheaterDetailPayload(groupId: string): Promise<TheaterDetailPayload> {
+  const inflight = theaterDetailInflight.get(groupId)
+  if (inflight) {
+    return inflight
+  }
+
+  const request = (async () => {
+    const [group, lists] = await Promise.all([
+      api<TheaterGroupDetail>(`/groups/${groupId}`),
+      api<TheaterList[]>(`/groups/${groupId}/lists`),
+    ])
+
+    const payload = { group, lists }
+    theaterDetailCache.set(groupId, { ...payload, fetchedAt: Date.now() })
+    return payload
+  })()
+
+  theaterDetailInflight.set(groupId, request)
+
+  try {
+    return await request
+  } finally {
+    theaterDetailInflight.delete(groupId)
+  }
+}
+
+export async function prefetchTheaterDetail(groupId: string): Promise<void> {
+  if (!groupId) return
+
+  const cached = theaterDetailCache.get(groupId)
+  if (cached && Date.now() - cached.fetchedAt < THEATER_DETAIL_CACHE_TTL_MS) {
+    return
+  }
+
+  try {
+    await fetchTheaterDetailPayload(groupId)
+  } catch {
+    // Prefetch failures should not block navigation.
+  }
+}
+
+export function __resetTheaterDetailCacheForTests(): void {
+  theaterDetailCache.clear()
+  theaterDetailInflight.clear()
+}
+
 export function useTheaterDetail(groupId: string) {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated)
-  const [group, setGroup] = useState<TheaterGroupDetail | null>(null)
-  const [lists, setLists] = useState<TheaterList[]>([])
+  const cachedDetail = groupId ? theaterDetailCache.get(groupId) : null
+  const [group, setGroup] = useState<TheaterGroupDetail | null>(cachedDetail?.group ?? null)
+  const [lists, setLists] = useState<TheaterList[]>(cachedDetail?.lists ?? [])
   const [error, setError] = useState<string | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(!cachedDetail)
   const [mutationCount, setMutationCount] = useState(0)
   const isMutating = mutationCount > 0
 
@@ -44,7 +100,17 @@ export function useTheaterDetail(groupId: string) {
     return false
   }, [groupId])
 
-  const loadGroup = useCallback(async () => {
+  useEffect(() => {
+    if (!cachedDetail) {
+      return
+    }
+
+    setGroup(cachedDetail.group)
+    setLists(cachedDetail.lists)
+    setIsLoading(false)
+  }, [cachedDetail])
+
+  const loadGroup = useCallback(async (options?: { background?: boolean }) => {
     if (!isAuthenticated) {
       const previewGroup = PREVIEW_THEATER_GROUPS.find((entry) => entry.id === groupId) ?? PREVIEW_THEATER_GROUPS[0] ?? null
       setGroup(previewGroup)
@@ -54,15 +120,13 @@ export function useTheaterDetail(groupId: string) {
       return
     }
 
-    setIsLoading(true)
+    const background = options?.background ?? false
+    setIsLoading(background ? false : true)
     setError(null)
     try {
-      const [groupResult, listResult] = await Promise.all([
-        api<TheaterGroupDetail>(`/groups/${groupId}`),
-        api<TheaterList[]>(`/groups/${groupId}/lists`),
-      ])
-      setGroup(groupResult)
-      setLists(listResult)
+      const payload = await fetchTheaterDetailPayload(groupId)
+      setGroup(payload.group)
+      setLists(payload.lists)
     } catch (err) {
       setError(err instanceof Error ? err.message : translateStatic('common.error'))
     } finally {
@@ -79,8 +143,17 @@ export function useTheaterDetail(groupId: string) {
       return
     }
 
+    const hasFreshCache = Boolean(
+      cachedDetail && Date.now() - cachedDetail.fetchedAt < THEATER_DETAIL_CACHE_TTL_MS
+    )
+
+    if (hasFreshCache) {
+      setIsLoading(false)
+      return
+    }
+
     void loadGroup()
-  }, [groupId, loadGroup])
+  }, [cachedDetail, groupId, loadGroup])
 
   const mutateMembership = useCallback(async (action: 'join' | 'leave') => {
     if (!isAuthenticated) {

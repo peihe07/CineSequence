@@ -50,6 +50,10 @@ export default function Header() {
     soundManager.play('flip', { volume: 0.12, playbackRate: 1.08 })
   }
 
+  function handlePrefetch(href: string) {
+    void router.prefetch(href)
+  }
+
   async function handleLogout() {
     setIsMobileMenuOpen(false)
     setIsLoggingOut(true)
@@ -74,9 +78,10 @@ export default function Header() {
         <Link
           key={href}
           href={href}
-          prefetch={false}
           className={`${linkClassName} ${isActive ? activeClassName : ''}`}
           onClick={handleNavCue}
+          onMouseEnter={() => handlePrefetch(href)}
+          onFocus={() => handlePrefetch(href)}
         >
           <span className={styles.navIndex}>{index}</span>
           <span>{t(labelKey)}</span>
@@ -87,7 +92,13 @@ export default function Header() {
 
   return (
     <header className={`${styles.header} ${isScrolled ? styles.scrolled : ''}`}>
-      <Link href="/" prefetch={false} className={styles.brand} onClick={handleNavCue}>
+      <Link
+        href="/"
+        className={styles.brand}
+        onClick={handleNavCue}
+        onMouseEnter={() => handlePrefetch('/')}
+        onFocus={() => handlePrefetch('/')}
+      >
         <span className={styles.brandMain}>Cine</span>
         <span className={styles.brandSub}>Sequence</span>
       </Link>

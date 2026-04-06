@@ -1,8 +1,9 @@
 import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-const { replaceMock, logoutMock, pathnameState, authState } = vi.hoisted(() => ({
+const { replaceMock, prefetchMock, logoutMock, pathnameState, authState } = vi.hoisted(() => ({
   replaceMock: vi.fn(),
+  prefetchMock: vi.fn(),
   logoutMock: vi.fn(),
   pathnameState: {
     value: '/dna',
@@ -15,7 +16,7 @@ const { replaceMock, logoutMock, pathnameState, authState } = vi.hoisted(() => (
 
 vi.mock('next/navigation', () => ({
   usePathname: () => pathnameState.value,
-  useRouter: () => ({ replace: replaceMock }),
+  useRouter: () => ({ replace: replaceMock, prefetch: prefetchMock }),
 }))
 
 vi.mock('next/link', () => ({
@@ -23,14 +24,18 @@ vi.mock('next/link', () => ({
     children,
     href,
     onClick,
+    onMouseEnter,
+    onFocus,
     className,
   }: {
     children: React.ReactNode
     href: string
     onClick?: () => void
+    onMouseEnter?: () => void
+    onFocus?: () => void
     className?: string
   }) => (
-    <a href={href} onClick={onClick} className={className}>
+    <a href={href} onClick={onClick} onMouseEnter={onMouseEnter} onFocus={onFocus} className={className}>
       {children}
     </a>
   ),
@@ -89,6 +94,7 @@ import Header from './Header'
 describe('Header', () => {
   beforeEach(() => {
     replaceMock.mockReset()
+    prefetchMock.mockReset()
     logoutMock.mockReset()
     pathnameState.value = '/dna'
     authState.user = null
@@ -141,5 +147,13 @@ describe('Header', () => {
     render(<Header />)
 
     expect(screen.getByRole('link', { name: '05 Admin' })).toBeTruthy()
+  })
+
+  it('prefetches a route when a nav link is hovered', () => {
+    render(<Header />)
+
+    fireEvent.mouseEnter(screen.getByRole('link', { name: '02 Matches' }))
+
+    expect(prefetchMock).toHaveBeenCalledWith('/matches')
   })
 })

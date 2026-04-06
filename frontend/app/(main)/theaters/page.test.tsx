@@ -2,6 +2,7 @@ import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/re
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 const {
+  prefetchMock,
   fetchGroupsMock,
   autoAssignMock,
   joinGroupMock,
@@ -10,6 +11,7 @@ const {
   deleteGroupMessageMock,
   groupState,
 } = vi.hoisted(() => ({
+  prefetchMock: vi.fn(),
   fetchGroupsMock: vi.fn(),
   autoAssignMock: vi.fn(),
   joinGroupMock: vi.fn(),
@@ -43,7 +45,14 @@ const {
       }>
     }>,
     isLoading: false,
+    hasHydrated: false,
   },
+}))
+
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({
+    prefetch: prefetchMock,
+  }),
 }))
 
 vi.mock('@/stores/groupStore', () => ({

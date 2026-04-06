@@ -76,14 +76,19 @@ interface DnaState {
   isBuilding: boolean
   isLoading: boolean
   error: string | null
+  hasHydrated: boolean
+  lastFetchedAt: number | null
   mirrorCharacters: CharacterMatch[] | null
   isMirrorLoading: boolean
   mirrorError: string | null
 
   buildDna: () => Promise<DnaResult | null>
-  fetchResult: () => Promise<DnaResult | null>
+  fetchResult: (options?: { force?: boolean }) => Promise<DnaResult | null>
   fetchMirror: () => Promise<void>
 }
+
+const DNA_CACHE_TTL_MS = 30_000
+let inflightDnaRequest: Promise<DnaResult | null> | null = null
 
 async function autoAssignTheaters(): Promise<void> {
   try {
@@ -98,6 +103,8 @@ export const useDnaStore = create<DnaState>((set, get) => ({
   isBuilding: false,
   isLoading: false,
   error: null,
+  hasHydrated: false,
+  lastFetchedAt: null,
   mirrorCharacters: null,
   isMirrorLoading: false,
   mirrorError: null,
@@ -125,24 +132,54 @@ export const useDnaStore = create<DnaState>((set, get) => ({
     }
   },
 
-  fetchResult: async () => {
-    set({ isLoading: true, error: null })
-    try {
-      const result = await api<DnaResult>('/dna/result')
-      set({ result, isLoading: false })
-      return result
-    } catch (err) {
-      if (err instanceof ApiError && err.status === 404) {
-        set({ result: null, isLoading: false, error: null })
-        return null
-      }
+  fetchResult: async (options) => {
+    const { hasHydrated, lastFetchedAt, isLoading } = get()
+    const shouldUseCache = !options?.force
+      && hasHydrated
+      && lastFetchedAt !== null
+      && Date.now() - lastFetchedAt < DNA_CACHE_TTL_MS
 
-      set({
-        isLoading: false,
-        error: err instanceof Error ? err.message : translateStatic('common.error'),
-      })
-      throw err
+    if (shouldUseCache) return get().result
+    if (inflightDnaRequest) return inflightDnaRequest
+
+    if (!isLoading) {
+      set({ isLoading: true, error: null })
     }
+
+    inflightDnaRequest = (async () => {
+      try {
+        const result = await api<DnaResult>('/dna/result')
+        set({
+          result,
+          isLoading: false,
+          hasHydrated: true,
+          lastFetchedAt: Date.now(),
+        })
+        return result
+      } catch (err) {
+        if (err instanceof ApiError && err.status === 404) {
+          set({
+            result: null,
+            isLoading: false,
+            error: null,
+            hasHydrated: true,
+            lastFetchedAt: Date.now(),
+          })
+          return null
+        }
+
+        set({
+          isLoading: false,
+          error: err instanceof Error ? err.message : translateStatic('common.error'),
+          hasHydrated: true,
+        })
+        throw err
+      } finally {
+        inflightDnaRequest = null
+      }
+    })()
+
+    return inflightDnaRequest
   },
 
   fetchMirror: async () => {

@@ -25,31 +25,61 @@ interface MatchState {
   isLoading: boolean
   isDiscovering: boolean
   error: string | null
+  hasHydrated: boolean
+  lastFetchedAt: number | null
 
-  fetchMatches: () => Promise<void>
+  fetchMatches: (options?: { background?: boolean; force?: boolean }) => Promise<void>
   fetchMatch: (matchId: string) => Promise<MatchItem | null>
   discoverMatches: () => Promise<void>
   sendInvite: (matchId: string) => Promise<void>
   respondToInvite: (matchId: string, accept: boolean) => Promise<void>
 }
 
+const MATCH_CACHE_TTL_MS = 30_000
+let inflightMatchesRequest: Promise<void> | null = null
+
 export const useMatchStore = create<MatchState>((set, get) => ({
   matches: [],
   isLoading: false,
   isDiscovering: false,
   error: null,
+  hasHydrated: false,
+  lastFetchedAt: null,
 
-  fetchMatches: async () => {
-    set({ isLoading: true, error: null })
-    try {
-      const matches = await api<MatchItem[]>('/matches')
-      set({ matches, isLoading: false })
-    } catch (err) {
-      set({
-        isLoading: false,
-        error: err instanceof Error ? err.message : translateStatic('common.error'),
-      })
+  fetchMatches: async (options) => {
+    const background = options?.background ?? false
+    const { hasHydrated, lastFetchedAt, isLoading } = get()
+    const shouldUseCache = !options?.force
+      && hasHydrated
+      && lastFetchedAt !== null
+      && Date.now() - lastFetchedAt < MATCH_CACHE_TTL_MS
+
+    if (shouldUseCache) return
+    if (inflightMatchesRequest) return inflightMatchesRequest
+
+    if (!background && !isLoading) {
+      set({ isLoading: true, error: null })
+    } else if (!background) {
+      set({ error: null })
     }
+
+    inflightMatchesRequest = (async () => {
+      try {
+        const matches = await api<MatchItem[]>('/matches')
+        set({ matches, isLoading: false, hasHydrated: true, lastFetchedAt: Date.now() })
+      } catch (err) {
+        set({
+          isLoading: false,
+          error: err instanceof Error ? err.message : translateStatic('common.error'),
+          hasHydrated: true,
+          lastFetchedAt: Date.now(),
+        })
+      } finally {
+        inflightMatchesRequest = null
+      }
+    })()
+
+    return inflightMatchesRequest
   },
 
   fetchMatch: async (matchId: string) => {
@@ -68,7 +98,12 @@ export const useMatchStore = create<MatchState>((set, get) => ({
       const existing = get().matches
       const existingIds = new Set(existing.map((m) => m.id))
       const merged = [...existing, ...newMatches.filter((m) => !existingIds.has(m.id))]
-      set({ matches: merged, isDiscovering: false })
+      set({
+        matches: merged,
+        isDiscovering: false,
+        hasHydrated: true,
+        lastFetchedAt: Date.now(),
+      })
     } catch (err) {
       set({
         isDiscovering: false,
@@ -85,6 +120,7 @@ export const useMatchStore = create<MatchState>((set, get) => ({
       })
       set({
         matches: get().matches.map((m) => (m.id === matchId ? updated : m)),
+        lastFetchedAt: Date.now(),
       })
     } catch (err) {
       set({ error: err instanceof Error ? err.message : translateStatic('common.error') })
@@ -100,6 +136,7 @@ export const useMatchStore = create<MatchState>((set, get) => ({
       })
       set({
         matches: get().matches.map((m) => (m.id === matchId ? updated : m)),
+        lastFetchedAt: Date.now(),
       })
     } catch (err) {
       set({ error: err instanceof Error ? err.message : translateStatic('common.error') })

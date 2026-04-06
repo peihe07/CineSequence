@@ -1,7 +1,9 @@
 'use client'
 
+import { useEffect, useRef } from 'react'
 import { usePathname } from 'next/navigation'
 import { AnimatePresence, motion } from 'framer-motion'
+import { logPerf } from '@/lib/perf'
 
 interface PageTransitionProps {
   children: React.ReactNode
@@ -13,9 +15,18 @@ interface PageTransitionProps {
  */
 export default function PageTransition({ children }: PageTransitionProps) {
   const pathname = usePathname()
+  const lastNavigationStartedAt = useRef<number | null>(null)
+
+  useEffect(() => {
+    const now = typeof performance !== 'undefined' ? performance.now() : Date.now()
+    if (lastNavigationStartedAt.current !== null) {
+      logPerf(`route ${pathname}`, now - lastNavigationStartedAt.current)
+    }
+    lastNavigationStartedAt.current = now
+  }, [pathname])
 
   return (
-    <AnimatePresence mode="wait" initial={false}>
+    <AnimatePresence initial={false}>
       <motion.div
         key={pathname}
         initial={{ opacity: 0, y: 6 }}

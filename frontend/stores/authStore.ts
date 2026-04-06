@@ -16,21 +16,28 @@ interface AuthState {
   isAuthenticated: boolean
   isLoading: boolean
   error: string | null
+  hasHydrated: boolean
+  lastFetchedAt: number | null
 
   register: (data: RegisterRequest) => Promise<RegisterResponse>
 
   login: (email: string, nextPath?: string) => Promise<LoginResponse>
   verify: (token: string) => Promise<void>
-  fetchProfile: () => Promise<void>
+  fetchProfile: (options?: { force?: boolean }) => Promise<void>
   logout: () => Promise<void>
   clearError: () => void
 }
+
+const AUTH_CACHE_TTL_MS = 30_000
+let inflightProfileRequest: Promise<void> | null = null
 
 export const useAuthStore = create<AuthState>((set, get) => ({
   user: null,
   isAuthenticated: false,
   isLoading: false,
   error: null,
+  hasHydrated: false,
+  lastFetchedAt: null,
 
   register: async (data) => {
     set({ isLoading: true, error: null })
@@ -81,24 +88,57 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     }
   },
 
-  fetchProfile: async () => {
-    set({ isLoading: true })
-    try {
-      const user = await api<User>('/profile')
-      set({ user, isAuthenticated: true, isLoading: false, error: null })
-    } catch (err) {
-      if (err instanceof ApiError && (err.status === 401 || err.status === 403)) {
-        set({ user: null, isAuthenticated: false, isLoading: false, error: null })
-        clearToken()
-        return
-      }
+  fetchProfile: async (options) => {
+    const { hasHydrated, lastFetchedAt, isLoading } = get()
+    const shouldUseCache = !options?.force
+      && hasHydrated
+      && lastFetchedAt !== null
+      && Date.now() - lastFetchedAt < AUTH_CACHE_TTL_MS
 
-      set({
-        isLoading: false,
-        error: err instanceof Error ? err.message : translateStatic('common.error'),
-      })
-      throw err
+    if (shouldUseCache) return
+    if (inflightProfileRequest) return inflightProfileRequest
+
+    if (!isLoading) {
+      set({ isLoading: true })
     }
+
+    inflightProfileRequest = (async () => {
+      try {
+        const user = await api<User>('/profile')
+        set({
+          user,
+          isAuthenticated: true,
+          isLoading: false,
+          error: null,
+          hasHydrated: true,
+          lastFetchedAt: Date.now(),
+        })
+      } catch (err) {
+        if (err instanceof ApiError && (err.status === 401 || err.status === 403)) {
+          set({
+            user: null,
+            isAuthenticated: false,
+            isLoading: false,
+            error: null,
+            hasHydrated: true,
+            lastFetchedAt: Date.now(),
+          })
+          clearToken()
+          return
+        }
+
+        set({
+          isLoading: false,
+          error: err instanceof Error ? err.message : translateStatic('common.error'),
+          hasHydrated: true,
+        })
+        throw err
+      } finally {
+        inflightProfileRequest = null
+      }
+    })()
+
+    return inflightProfileRequest
   },
 
   logout: async () => {
@@ -108,7 +148,13 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       // Best effort: local state should still reset.
     }
     clearToken()
-    set({ user: null, isAuthenticated: false, error: null })
+    set({
+      user: null,
+      isAuthenticated: false,
+      error: null,
+      hasHydrated: true,
+      lastFetchedAt: Date.now(),
+    })
   },
 
   clearError: () => set({ error: null }),

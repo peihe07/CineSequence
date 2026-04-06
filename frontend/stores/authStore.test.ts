@@ -41,6 +41,8 @@ describe('authStore', () => {
       isAuthenticated: false,
       isLoading: false,
       error: null,
+      hasHydrated: false,
+      lastFetchedAt: null,
     })
   })
 
@@ -140,6 +142,8 @@ describe('authStore', () => {
       isAuthenticated: true,
       isLoading: false,
       error: null,
+      hasHydrated: false,
+      lastFetchedAt: null,
     })
     apiMock.mockRejectedValue(new MockApiError(500, 'Server error'))
 
@@ -158,6 +162,8 @@ describe('authStore', () => {
       isAuthenticated: true,
       isLoading: false,
       error: 'old error',
+      hasHydrated: true,
+      lastFetchedAt: null,
     })
     apiMock.mockResolvedValue(undefined)
 

@@ -13,11 +13,67 @@ vi.mock('@/lib/i18n', () => ({
   translateStatic: (key: string) => (key === 'common.error' ? 'Error' : key),
 }))
 
-import { useTheaterDetail } from './useTheaterDetail'
+vi.mock('@/stores/authStore', () => ({
+  useAuthStore: (selector: (state: { isAuthenticated: boolean }) => unknown) =>
+    selector({ isAuthenticated: true }),
+}))
+
+import {
+  __resetTheaterDetailCacheForTests,
+  prefetchTheaterDetail,
+  useTheaterDetail,
+} from './useTheaterDetail'
 
 describe('useTheaterDetail', () => {
   beforeEach(() => {
     apiMock.mockReset()
+    __resetTheaterDetailCacheForTests()
+  })
+
+  it('prefetches theater detail and reuses cached data on mount', async () => {
+    apiMock
+      .mockResolvedValueOnce({
+        id: 'mobius_loop',
+        name: 'Mobius Loop',
+        subtitle: 'Mind-benders only',
+        icon: 'ri-tornado-line',
+        primary_tags: ['mindfuck'],
+        is_hidden: false,
+        member_count: 3,
+        is_active: true,
+        is_member: true,
+        shared_tags: ['mindfuck'],
+        member_preview: [],
+        recommended_movies: [],
+        shared_watchlist: [],
+        recent_messages: [],
+      })
+      .mockResolvedValueOnce([
+        {
+          id: 'l1',
+          group_id: 'mobius_loop',
+          title: 'Late-Night Brain Melt',
+          description: 'Built for spiral conversations after midnight.',
+          visibility: 'group',
+          created_at: '2026-03-27T12:00:00Z',
+          updated_at: '2026-03-27T12:00:00Z',
+          creator: { id: 'u1', name: 'Ari', avatar_url: null },
+          items: [],
+          replies: [],
+        },
+      ])
+
+    await prefetchTheaterDetail('mobius_loop')
+
+    const { result } = renderHook(() => useTheaterDetail('mobius_loop'))
+
+    await waitFor(() => {
+      expect(result.current.group?.name).toBe('Mobius Loop')
+    })
+
+    expect(result.current.group?.name).toBe('Mobius Loop')
+    expect(result.current.lists[0]?.title).toBe('Late-Night Brain Melt')
+    expect(apiMock).toHaveBeenCalledTimes(2)
   })
 
   it('does not call mutation APIs when groupId is missing', async () => {

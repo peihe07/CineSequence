@@ -7,6 +7,7 @@ import { useSequencingStore } from '@/stores/sequencingStore'
 import { useToastStore } from '@/stores/toastStore'
 import { useI18n } from '@/lib/i18n'
 import { useAuthStore } from '@/stores/authStore'
+import styles from './AuthGuard.module.css'
 
 interface FlowGuardProps {
   require: 'sequencing' | 'dna'
@@ -21,7 +22,9 @@ export default function FlowGuard({ require, children }: FlowGuardProps) {
   const [checked, setChecked] = useState(false)
 
   const fetchDnaResult = useDnaStore((s) => s.fetchResult)
+  const hasHydratedDna = useDnaStore((s) => s.hasHydrated)
   const fetchProgress = useSequencingStore((s) => s.fetchProgress)
+  const hasHydratedProgress = useSequencingStore((s) => s.hasHydratedProgress)
   const addToast = useToastStore((s) => s.addToast)
 
   useEffect(() => {
@@ -35,7 +38,7 @@ export default function FlowGuard({ require, children }: FlowGuardProps) {
     async function check() {
       if (require === 'sequencing') {
         let p = useSequencingStore.getState().progress
-        if (!p) {
+        if (!p && !hasHydratedProgress) {
           try {
             p = await fetchProgress()
           } catch {
@@ -57,7 +60,7 @@ export default function FlowGuard({ require, children }: FlowGuardProps) {
 
       if (require === 'dna') {
         let r = useDnaStore.getState().result
-        if (!r) {
+        if (!r && !hasHydratedDna) {
           try {
             r = await fetchDnaResult()
           } catch {
@@ -78,9 +81,28 @@ export default function FlowGuard({ require, children }: FlowGuardProps) {
 
     check()
     return () => { cancelled = true }
-  }, [require, fetchProgress, fetchDnaResult, isAuthenticated, router, t, addToast])
+  }, [
+    require,
+    fetchProgress,
+    fetchDnaResult,
+    hasHydratedDna,
+    hasHydratedProgress,
+    isAuthenticated,
+    router,
+    t,
+    addToast,
+  ])
 
-  if (!checked) return null
+  if (!checked) {
+    return (
+      <main className={styles.state}>
+        <div className={styles.panel}>
+          <i className={`ri-loader-4-line ri-spin ${styles.icon}`} aria-hidden="true" />
+          <p>{t('common.loading')}</p>
+        </div>
+      </main>
+    )
+  }
 
   return <>{children}</>
 }

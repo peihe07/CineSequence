@@ -8,6 +8,14 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { PreviewBanner, usePreviewAccess } from '@/components/preview/PreviewGate'
 import { useMatchStore, MatchItem } from '@/stores/matchStore'
 import { api, ApiError } from '@/lib/api'
+import {
+  getCachedInviteCredits,
+  getCachedMatchPrefs,
+  setCachedInviteCredits,
+  setCachedMatchPrefs,
+  type InviteCredits,
+  type MatchPrefs,
+} from '@/lib/match-page-cache'
 import PaymentModal from '@/components/ui/PaymentModal'
 import { useI18n } from '@/lib/i18n'
 import { PREVIEW_MATCHES } from '@/lib/previewContent'
@@ -17,13 +25,6 @@ import TicketCard from '@/components/match/TicketCard'
 import MessageBoard from '@/components/match/MessageBoard'
 import FlowGuard from '@/components/guards/FlowGuard'
 import styles from './page.module.css'
-
-interface MatchPrefs {
-  match_gender_pref: string | null
-  match_age_min: number | null
-  match_age_max: number | null
-  pure_taste_match: boolean
-}
 
 function MatchFilter({ prefs, onChange, disabled }: {
   prefs: MatchPrefs
@@ -293,7 +294,7 @@ function MatchesContent() {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated)
   const { isPreview, guardPreviewAction, previewModal } = usePreviewAccess('/matches')
   const {
-    matches, isLoading, isDiscovering, error,
+    matches, isLoading, isDiscovering, error, hasHydrated,
     fetchMatches, discoverMatches, sendInvite, respondToInvite,
   } = useMatchStore()
 
@@ -308,7 +309,7 @@ function MatchesContent() {
   const [activeIndex, setActiveIndex] = useState(0)
   const [ticketModalMatch, setTicketModalMatch] = useState<MatchItem | null>(null)
   const [showPayment, setShowPayment] = useState(false)
-  const [inviteCredits, setInviteCredits] = useState<{ remaining: number; unlocked: boolean } | null>(null)
+  const [inviteCredits, setInviteCredits] = useState<InviteCredits | null>(getCachedInviteCredits())
   const displayMatches = isPreview ? PREVIEW_MATCHES : matches
 
   const carouselRef = useRef<HTMLDivElement>(null)
@@ -326,20 +327,38 @@ function MatchesContent() {
       return
     }
 
-    void fetchMatches()
-    void api<{ remaining: number; unlocked: boolean }>('/matches/invite-credits')
-      .then(setInviteCredits)
+    void fetchMatches({ background: hasHydrated && matches.length > 0 })
+
+    const cachedInvite = getCachedInviteCredits()
+    if (cachedInvite) {
+      setInviteCredits(cachedInvite)
+    }
+
+    void api<InviteCredits>('/matches/invite-credits')
+      .then((credits) => {
+        setCachedInviteCredits(credits)
+        setInviteCredits(credits)
+      })
       .catch(() => {})
 
     async function loadPrefs() {
+      const cachedPrefs = getCachedMatchPrefs()
+      if (cachedPrefs) {
+        setPrefs(cachedPrefs)
+        setPrefsError(null)
+        setPrefsReady(true)
+      }
+
       try {
         const p = await api<MatchPrefs & Record<string, unknown>>('/profile')
-        setPrefs({
+        const nextPrefs = {
           match_gender_pref: p.match_gender_pref,
           match_age_min: p.match_age_min,
           match_age_max: p.match_age_max,
           pure_taste_match: p.pure_taste_match,
-        })
+        }
+        setCachedMatchPrefs(nextPrefs)
+        setPrefs(nextPrefs)
         setPrefsError(null)
       } catch (err) {
         setPrefsError(err instanceof Error ? err.message : t('matches.prefLoadError'))
@@ -349,7 +368,7 @@ function MatchesContent() {
     }
 
     void loadPrefs()
-  }, [fetchMatches, isAuthenticated, t])
+  }, [fetchMatches, hasHydrated, isAuthenticated, matches.length, t])
 
   const savePrefs = useCallback((updated: Partial<MatchPrefs>) => {
     if (isPreview) {
@@ -365,6 +384,7 @@ function MatchesContent() {
     const next = { ...prefs, ...updated }
     setPrefs(next)
     setPrefsError(null)
+    setCachedMatchPrefs(next)
     void (async () => {
       try {
         await api('/profile', {
@@ -372,6 +392,7 @@ function MatchesContent() {
           body: JSON.stringify(updated),
         })
       } catch (err) {
+        setCachedMatchPrefs(previous)
         setPrefs(previous)
         setPrefsError(err instanceof Error ? err.message : t('matches.prefSaveError'))
       }

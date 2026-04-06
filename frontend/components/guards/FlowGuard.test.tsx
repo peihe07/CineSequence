@@ -16,13 +16,17 @@ const {
   sequencingState,
   authState,
 } = vi.hoisted(() => {
-  const dnaState = { result: null as null | { archetype: { id: string } } }
+  const dnaState = {
+    result: null as null | { archetype: { id: string } },
+    hasHydrated: false,
+  }
   const sequencingState = {
     progress: null as null | {
       completed: boolean
       seed_movie_tmdb_id: number | null
       round_number: number
     },
+    hasHydratedProgress: false,
   }
   const authState = { isAuthenticated: true }
 
@@ -93,7 +97,9 @@ describe('FlowGuard', () => {
     fetchProgressMock.mockReset()
     // Reset state containers to safe defaults
     dnaState.result = null
+    dnaState.hasHydrated = false
     sequencingState.progress = null
+    sequencingState.hasHydratedProgress = false
     authState.isAuthenticated = true
   })
 
@@ -124,6 +130,7 @@ describe('FlowGuard', () => {
 
   it('redirects to /dna when require="dna" and no DNA result exists', async () => {
     dnaState.result = null
+    dnaState.hasHydrated = true
     fetchDnaResultMock.mockResolvedValue(undefined)
 
     render(
@@ -137,6 +144,21 @@ describe('FlowGuard', () => {
     })
 
     expect(addToastMock).toHaveBeenCalledWith('info', 'guard.needDna')
+    expect(screen.queryByText('Protected content')).toBeNull()
+  })
+
+  it('shows a loading state while the guard check is still pending', async () => {
+    fetchDnaResultMock.mockImplementation(
+      () => new Promise(() => {}),
+    )
+
+    render(
+      <FlowGuard require="dna">
+        <p>Protected content</p>
+      </FlowGuard>,
+    )
+
+    expect(screen.getByText('common.loading')).toBeTruthy()
     expect(screen.queryByText('Protected content')).toBeNull()
   })
 
@@ -171,6 +193,7 @@ describe('FlowGuard', () => {
       seed_movie_tmdb_id: 42,
       round_number: 12,
     }
+    sequencingState.hasHydratedProgress = true
     fetchProgressMock.mockResolvedValue(undefined)
 
     render(
@@ -193,6 +216,7 @@ describe('FlowGuard', () => {
       seed_movie_tmdb_id: null,
       round_number: 1,
     }
+    sequencingState.hasHydratedProgress = true
     fetchProgressMock.mockResolvedValue(undefined)
 
     render(
@@ -211,6 +235,7 @@ describe('FlowGuard', () => {
 
   it('shows toast with the guard translation key on redirect', async () => {
     dnaState.result = null
+    dnaState.hasHydrated = true
     fetchDnaResultMock.mockResolvedValue(undefined)
 
     render(
