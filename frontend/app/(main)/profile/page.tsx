@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion'
 import { useI18n } from '@/lib/i18n'
 import ProfileBasicsCard from '@/components/profile/ProfileBasicsCard'
-import ProfileCompletenessBar from '@/components/profile/ProfileCompletenessBar'
+import ProfileCompletenessBar, { computeCompleteness } from '@/components/profile/ProfileCompletenessBar'
 import ProfileDnaSnapshot from '@/components/profile/ProfileDnaSnapshot'
 import FavoriteMoviesCard from '@/components/profile/FavoriteMoviesCard'
 import ProfileHeader from '@/components/profile/ProfileHeader'
@@ -106,6 +106,12 @@ export default function ProfilePage() {
                 <p className={styles.heroArchetype}>
                   {profile.archetype_name || profile.archetype_id || getStatusLabel(profile.sequencing_status)}
                 </p>
+              </div>
+              <div className={styles.clearanceBadge}>
+                <span className={styles.clearanceLabel}>{t('profile.clearanceLabel')}</span>
+                <span className={styles.clearanceRank}>
+                  {computeCompleteness(profile).rank}
+                </span>
               </div>
             </div>
 

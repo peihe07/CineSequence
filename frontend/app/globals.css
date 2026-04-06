@@ -53,6 +53,20 @@
   --card-shadow: var(--glass-shadow);
   --card-shadow-hover: var(--glass-shadow-hover);
 
+  /* Semantic colors */
+  --color-accent-noir: #e57e31;
+  --color-accent-noir-hover: #f3924a;
+  --color-accent-noir-muted: rgba(229, 126, 49, 0.6);
+  --color-accent-noir-subtle: rgba(229, 126, 49, 0.14);
+  --color-success: #50c878;
+  --color-success-muted: rgba(80, 200, 120, 0.5);
+  --color-error: #dc3c3c;
+  --color-error-muted: rgba(220, 60, 60, 0.7);
+  --color-warning: #d4a843;
+  --color-warning-muted: rgba(212, 168, 67, 0.6);
+  --color-info: #5a9fd4;
+
+  /* Legacy aliases */
   --error: #b33a3a;
   --success: #2d8659;
   --content-max-width: 380px;

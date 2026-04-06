@@ -8,7 +8,23 @@ interface ProfileCompletenessBarProps {
   label: string
 }
 
-function computeCompleteness(profile: Profile): { percent: number; hint: string } {
+export interface ClearanceLevel {
+  percent: number
+  hint: string
+  rank: string
+  rankKey: string
+}
+
+const CLEARANCE_RANKS = [
+  { min: 0, rank: 'UNVERIFIED', key: 'profile.clearanceUnverified' },
+  { min: 30, rank: 'OPERATIVE', key: 'profile.clearanceOperative' },
+  { min: 50, rank: 'FIELD AGENT', key: 'profile.clearanceFieldAgent' },
+  { min: 70, rank: 'SPECIALIST', key: 'profile.clearanceSpecialist' },
+  { min: 85, rank: 'SENIOR AGENT', key: 'profile.clearanceSeniorAgent' },
+  { min: 100, rank: 'DIRECTOR', key: 'profile.clearanceDirector' },
+]
+
+export function computeCompleteness(profile: Profile): ClearanceLevel {
   let score = 0
   let hint = ''
 
@@ -36,7 +52,10 @@ function computeCompleteness(profile: Profile): { percent: number; hint: string 
   if (profile.sequencing_status === 'completed') score += 20
   else if (!hint) hint = 'sequencing'
 
-  return { percent: score, hint }
+  // 從高到低找到對應的 rank
+  const level = [...CLEARANCE_RANKS].reverse().find((r) => score >= r.min) ?? CLEARANCE_RANKS[0]
+
+  return { percent: score, hint, rank: level.rank, rankKey: level.key }
 }
 
 export default function ProfileCompletenessBar({ profile, label }: ProfileCompletenessBarProps) {
