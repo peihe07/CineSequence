@@ -18,8 +18,7 @@ const NAV_ITEMS = [
   { href: '/dna', labelKey: 'nav.dna', index: '01' },
   { href: '/matches', labelKey: 'nav.matches', index: '02' },
   { href: '/theaters', labelKey: 'nav.theaters', index: '03' },
-  { href: '/pricing', labelKey: 'nav.pricing', index: '04' },
-  { href: '/profile', labelKey: 'nav.profile', index: '05', authOnly: true },
+  { href: '/profile', labelKey: 'nav.profile', index: '04', authOnly: true },
 ]
 
 export default function Header() {
