@@ -1,6 +1,6 @@
 # Cine Sequence — Execution Plan
 
-> Last updated: 2026-04-02
+> Last updated: 2026-04-06
 
 目前活躍主線細節請搭配：
 
@@ -8,6 +8,7 @@
 - `docs/workstreams/theaters.md`
 - `docs/workstreams/pricing.md`
 - `docs/workstreams/ui.md`
+- `docs/workstreams/improvement-plan.md` — Phase 4.5 改善計畫（UX polish, monetization ritual, tech debt, growth infra）
 
 這份文件只保留兩類內容：
 
@@ -36,12 +37,16 @@ ECPay 金流審核中，審核通過後立即執行。
 | Item | Scope | Status |
 |------|-------|--------|
 | Relaunch reset migration | Reset all users/sessions/DNA | TODO |
-| Extension 改為 10 rounds | Backend session logic | TODO |
-| Free retest credits 歸零 | Backend entitlement logic | TODO |
-| ECPay integration | Payment endpoint + callback | Blocked (pending approval) |
-| Frontend payment wall | Retest/extend/invite blocked UI | TODO |
-| Match invite unlock (NT$99) | Backend invite credits + unlock | TODO |
-| Match message board | Async board for accepted matches (free) | TODO |
+| Extension 改為 10 rounds | Backend session logic | ✅ Done |
+| Free retest credits 歸零 | Backend entitlement logic | ✅ Done |
+| ECPay integration | Payment endpoint + callback | ✅ Done (pending ECPay approval) |
+| Frontend payment wall | Retest/extend/invite blocked UI | ✅ Done |
+| Match invite unlock (NT$99) | Backend invite credits + unlock | ✅ Done |
+| Match message board | Async board for accepted matches (free) | ✅ Done |
+| Message board enhancements | Optimistic UI, polling, status tags | ✅ Done |
+| Profile clearance badge | Security clearance rank from completeness | ✅ Done |
+| About page | Manifesto → About with peihe signature | ✅ Done |
+| Algorithm explanation | Matching logic section on matches page | ✅ Done |
 
 ### Phase 5 — Growth
 
