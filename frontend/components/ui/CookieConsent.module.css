@@ -35,7 +35,7 @@
   padding: 0.45rem 1.2rem;
   border: none;
   border-radius: var(--radius-button);
-  background: var(--accent);
+  background: var(--color-accent-noir);
   color: #ffffff;
   font-size: var(--text-xs);
   font-family: var(--font-mono);
@@ -47,8 +47,8 @@
 }
 
 .acceptBtn:hover {
-  background: var(--accent-hover);
-  box-shadow: 0 12px 24px rgba(229, 126, 49, 0.18);
+  background: var(--color-accent-noir-hover);
+  box-shadow: 0 12px 24px var(--color-accent-noir-subtle);
   transform: translateY(-1px);
 }
 

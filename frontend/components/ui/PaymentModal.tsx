@@ -1,16 +1,17 @@
 'use client'
 
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { api } from '@/lib/api'
+import { useI18n } from '@/lib/i18n'
 import styles from './PaymentModal.module.css'
 
 type ProductType = 'extension' | 'retest' | 'bundle' | 'invite_unlock' | 'share_card'
 
 interface Product {
   type: ProductType
-  name: string
-  detail: string
+  nameKey: string
+  detailKey: string
   price: number
 }
 
@@ -23,33 +24,33 @@ interface PaymentModalProps {
 
 const PRODUCT_MAP: Record<string, Product[]> = {
   extend: [
-    { type: 'extension', name: 'Extension +10', detail: '10 rounds of deeper sequencing', price: 59 },
-    { type: 'bundle', name: 'Bundle', detail: '1 retest + 2 extensions', price: 199 },
+    { type: 'extension', nameKey: 'payment.product.extension.name', detailKey: 'payment.product.extension.detail', price: 59 },
+    { type: 'bundle', nameKey: 'payment.product.bundle.name', detailKey: 'payment.product.bundle.detail', price: 199 },
   ],
   retest: [
-    { type: 'retest', name: 'Retest', detail: 'Full 30-round re-sequencing', price: 129 },
-    { type: 'bundle', name: 'Bundle', detail: '1 retest + 2 extensions', price: 199 },
+    { type: 'retest', nameKey: 'payment.product.retest.name', detailKey: 'payment.product.retest.detail', price: 129 },
+    { type: 'bundle', nameKey: 'payment.product.bundle.name', detailKey: 'payment.product.bundle.detail', price: 199 },
   ],
   invite: [
-    { type: 'invite_unlock', name: 'Unlimited Invites', detail: 'Permanent unlock, no expiration', price: 99 },
+    { type: 'invite_unlock', nameKey: 'payment.product.inviteUnlock.name', detailKey: 'payment.product.inviteUnlock.detail', price: 99 },
   ],
   share_card: [
-    { type: 'share_card', name: 'Premium Share Card', detail: 'High-res DNA card for social sharing', price: 59 },
+    { type: 'share_card', nameKey: 'payment.product.shareCard.name', detailKey: 'payment.product.shareCard.detail', price: 59 },
   ],
 }
 
-const CONTEXT_TITLES: Record<string, string> = {
-  extend: 'Extend Your Sequencing',
-  retest: 'Retest Your DNA',
-  invite: 'Unlock Invites',
-  share_card: 'Premium Share Card',
+const CONTEXT_TITLE_KEYS: Record<PaymentModalProps['context'], string> = {
+  extend: 'payment.context.extend.title',
+  retest: 'payment.context.retest.title',
+  invite: 'payment.context.invite.title',
+  share_card: 'payment.context.shareCard.title',
 }
 
-const CONTEXT_DESCRIPTIONS: Record<string, string> = {
-  extend: 'Go deeper into your cinematic taste with 10 more rounds of sequencing.',
-  retest: 'Start fresh with a complete 30-round re-sequencing to get an updated DNA profile.',
-  invite: 'You\'ve used all your invite credits. Unlock unlimited invites to connect with more matches.',
-  share_card: 'Generate a premium visual card of your DNA for sharing on social media.',
+const CONTEXT_DESCRIPTION_KEYS: Record<PaymentModalProps['context'], string> = {
+  extend: 'payment.context.extend.description',
+  retest: 'payment.context.retest.description',
+  invite: 'payment.context.invite.description',
+  share_card: 'payment.context.shareCard.description',
 }
 
 interface CheckoutResponse {
@@ -58,9 +59,14 @@ interface CheckoutResponse {
 }
 
 export default function PaymentModal({ open, onClose, context }: PaymentModalProps) {
+  const { t } = useI18n()
   const products = PRODUCT_MAP[context] ?? []
   const [selected, setSelected] = useState<ProductType>(products[0]?.type ?? 'extension')
   const [isLoading, setIsLoading] = useState(false)
+
+  useEffect(() => {
+    setSelected(products[0]?.type ?? 'extension')
+  }, [products])
 
   const handleCheckout = useCallback(async () => {
     setIsLoading(true)
@@ -96,7 +102,7 @@ export default function PaymentModal({ open, onClose, context }: PaymentModalPro
             className={styles.modal}
             role="dialog"
             aria-modal="true"
-            aria-label={CONTEXT_TITLES[context]}
+            aria-label={t(CONTEXT_TITLE_KEYS[context])}
             initial={{ opacity: 0, scale: 0.95, y: 10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 10 }}
@@ -104,13 +110,13 @@ export default function PaymentModal({ open, onClose, context }: PaymentModalPro
             onClick={(e) => e.stopPropagation()}
           >
             <div className={styles.header}>
-              <span className={styles.title}>{CONTEXT_TITLES[context]}</span>
-              <button className={styles.closeBtn} onClick={onClose} aria-label="Close">
+              <span className={styles.title}>{t(CONTEXT_TITLE_KEYS[context])}</span>
+              <button className={styles.closeBtn} onClick={onClose} aria-label={t('payment.close')}>
                 <i className="ri-close-line" aria-hidden="true" />
               </button>
             </div>
 
-            <p className={styles.description}>{CONTEXT_DESCRIPTIONS[context]}</p>
+            <p className={styles.description}>{t(CONTEXT_DESCRIPTION_KEYS[context])}</p>
 
             <div className={styles.products}>
               {products.map((product) => (
@@ -122,8 +128,8 @@ export default function PaymentModal({ open, onClose, context }: PaymentModalPro
                   aria-checked={selected === product.type}
                 >
                   <div className={styles.productInfo}>
-                    <span className={styles.productName}>{product.name}</span>
-                    <span className={styles.productDetail}>{product.detail}</span>
+                    <span className={styles.productName}>{t(product.nameKey)}</span>
+                    <span className={styles.productDetail}>{t(product.detailKey)}</span>
                   </div>
                   <span className={styles.productPrice}>NT${product.price}</span>
                 </div>
@@ -135,11 +141,11 @@ export default function PaymentModal({ open, onClose, context }: PaymentModalPro
               onClick={() => void handleCheckout()}
               disabled={isLoading}
             >
-              {isLoading ? 'Processing...' : 'Proceed to Payment'}
+              {isLoading ? t('payment.processing') : t('payment.submit')}
             </button>
 
             <p className={styles.note}>
-              Secure payment via ECPay. Used credits are non-refundable.
+              {t('payment.note')}
             </p>
           </motion.div>
         </motion.div>

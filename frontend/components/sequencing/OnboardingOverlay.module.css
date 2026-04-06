@@ -45,7 +45,7 @@
 
 .icon {
   font-size: 2.5rem;
-  color: var(--accent);
+  color: var(--color-accent-noir);
 }
 
 .title {
@@ -74,7 +74,7 @@
 }
 
 .step i {
-  color: var(--accent);
+  color: var(--color-accent-noir);
   margin-top: 0.15rem;
   flex-shrink: 0;
 }
@@ -82,7 +82,7 @@
 .startBtn {
   width: 100%;
   padding: 0.7rem;
-  background: var(--accent);
+  background: var(--color-accent-noir);
   color: #ffffff;
   border: none;
   font-family: var(--font-tech);
@@ -97,7 +97,7 @@
 .startBtn:hover {
   opacity: 1;
   transform: translateY(-1px);
-  box-shadow: 0 12px 24px rgba(229, 126, 49, 0.18);
+  box-shadow: 0 12px 24px var(--color-accent-noir-subtle);
 }
 
 .startBtn:active {

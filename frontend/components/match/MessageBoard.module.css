@@ -257,7 +257,7 @@
 }
 
 .textInput:focus {
-  border-bottom-color: var(--accent, #e57e31);
+  border-bottom-color: var(--color-accent-noir);
 }
 
 .sendBtn {
@@ -266,10 +266,10 @@
   justify-content: center;
   width: 40px;
   height: 40px;
-  background: var(--accent, #e57e31);
+  background: var(--color-accent-noir);
   border: none;
   border-radius: 50%;
-  color: #fff;
+  color: #ffffff;
   font-size: 1.1rem;
   cursor: pointer;
   flex-shrink: 0;
@@ -277,7 +277,7 @@
 }
 
 .sendBtn:hover {
-  background: var(--accent-hover, #cf6e2a);
+  background: var(--color-accent-noir-hover);
   transform: scale(1.05);
 }
 
@@ -296,7 +296,7 @@
 }
 
 .charCountWarn {
-  color: var(--accent, #e57e31);
+  color: var(--color-accent-noir);
 }
 
 /* ── LOADING ─────────────────────────────────── */

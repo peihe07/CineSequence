@@ -47,9 +47,9 @@
 }
 
 .phaseActive .phaseNum {
-  background: var(--accent);
+  background: var(--color-accent-noir);
   color: #ffffff;
-  border-color: var(--accent);
+  border-color: var(--color-accent-noir);
 }
 
 .phaseDone .phaseNum {
@@ -76,7 +76,7 @@
 
 .progressFill {
   height: 100%;
-  background: var(--accent);
+  background: var(--color-accent-noir);
   border-radius: 2px;
 }
 

@@ -198,7 +198,7 @@
   font-weight: 600;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--color-accent-noir, #e57e31);
+  color: var(--color-accent-noir);
 }
 
 .heroMetaColumn {
@@ -456,7 +456,7 @@
 .identityContact {
   font-size: 0.92rem;
   line-height: 1.5;
-  color: rgba(229, 126, 49, 0.82);
+  color: var(--color-accent-noir);
 }
 
 .quickFacts {
@@ -594,7 +594,7 @@
   background: rgba(229, 126, 49, 0.18);
   border-color: rgba(229, 126, 49, 0.32);
   color: rgba(255, 240, 226, 0.96);
-  box-shadow: 0 0 20px rgba(229, 126, 49, 0.12);
+  box-shadow: 0 0 20px var(--color-accent-noir-subtle);
 }
 
 .rangeDash {
@@ -662,7 +662,7 @@
 }
 
 .editBtn:hover {
-  color: rgba(229, 126, 49, 0.82);
+  color: var(--color-accent-noir);
 }
 
 .editRow {
@@ -727,13 +727,13 @@
 }
 
 .saveBtn {
-  background: var(--accent);
-  color: #fff;
+  background: var(--color-accent-noir);
+  color: #ffffff;
   border: none;
 }
 
 .saveBtn:hover {
-  background: var(--accent-hover);
+  background: var(--color-accent-noir-hover);
 }
 
 .saveBtn:disabled {
@@ -840,7 +840,7 @@
 }
 
 .avatarError {
-  color: var(--error);
+  color: var(--color-error);
   font-family: var(--font-tech);
   letter-spacing: 0.04em;
 }
@@ -886,7 +886,7 @@
 .completenessPercent {
   font-family: var(--font-tech);
   font-size: var(--text-xs);
-  color: rgba(229, 126, 49, 0.82);
+  color: var(--color-accent-noir);
   letter-spacing: 0.08em;
 }
 
@@ -921,12 +921,12 @@
 
 .previewToggle:hover {
   color: rgba(247, 243, 237, 0.96);
-  border-color: rgba(229, 126, 49, 0.24);
+  border-color: var(--color-accent-noir-subtle);
 }
 
 .previewActive {
-  background: rgba(229, 126, 49, 0.12);
-  border-color: rgba(229, 126, 49, 0.28);
+  background: var(--color-accent-noir-subtle);
+  border-color: var(--color-accent-noir-subtle);
   color: rgba(255, 240, 226, 0.92);
 }
 

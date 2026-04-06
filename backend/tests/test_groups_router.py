@@ -1,12 +1,17 @@
+from datetime import UTC, datetime, timedelta
+
 import pytest
 import pytest_asyncio
-from sqlalchemy import select, text
+from sqlalchemy import insert, select, text
 
 from app.models.dna_profile import DnaProfile
 from app.models.group import Group, group_members
+from app.models.group_message import GroupMessage
 from app.models.notification import Notification
+from app.models.theater_list import TheaterList, TheaterListReply
 from app.models.user import SequencingStatus, User
 from app.services.auth_utils import create_access_token
+from app.services.group_engine import _recent_activity, _recent_messages
 
 
 @pytest_asyncio.fixture
@@ -124,6 +129,116 @@ async def test_groups_list_includes_recent_messages(client, auth_user, db_sessio
     payload = response.json()
     assert payload[0]["recent_messages"][-1]["body"] == "Primer belongs on the watchlist."
     assert payload[0]["recent_messages"][-1]["can_delete"] is True
+
+
+@pytest.mark.asyncio
+async def test_recent_messages_returns_latest_window_in_chronological_order(db_session):
+    user = User(
+        email="messages@test.com",
+        name="Message User",
+        gender="other",
+        region="TW",
+        sequencing_status=SequencingStatus.completed,
+    )
+    group = Group(
+        id="mobius_loop",
+        name="Mobius Loop",
+        subtitle="Mind-benders only",
+        icon="ri-tornado-line",
+        primary_tags=["mindfuck", "twist"],
+        is_hidden=False,
+        min_members_to_activate=1,
+        member_count=1,
+        is_active=True,
+    )
+    db_session.add_all([user, group])
+    await db_session.commit()
+    await db_session.refresh(user)
+    await db_session.execute(insert(group_members).values(user_id=user.id, group_id=group.id))
+
+    base = datetime(2026, 1, 1, tzinfo=UTC)
+    for idx in range(5):
+        db_session.add(GroupMessage(
+            group_id=group.id,
+            user_id=user.id,
+            body=f"message-{idx}",
+            created_at=base + timedelta(minutes=idx),
+        ))
+    await db_session.commit()
+
+    payload = await _recent_messages(db_session, group.id, viewer_id=user.id, limit=3)
+
+    assert [item["body"] for item in payload] == ["message-2", "message-3", "message-4"]
+    assert [item["can_delete"] for item in payload] == [True, True, True]
+
+
+@pytest.mark.asyncio
+async def test_recent_activity_returns_newest_items_first_without_python_sorting(db_session):
+    user = User(
+        email="activity@test.com",
+        name="Activity User",
+        gender="other",
+        region="TW",
+        sequencing_status=SequencingStatus.completed,
+    )
+    group = Group(
+        id="cafe_screening",
+        name="Cafe Screening",
+        subtitle="Talk first, credits later",
+        icon="ri-cup-line",
+        primary_tags=["dialogue"],
+        is_hidden=False,
+        min_members_to_activate=1,
+        member_count=1,
+        is_active=True,
+    )
+    db_session.add_all([user, group])
+    await db_session.commit()
+    await db_session.refresh(user)
+
+    base = datetime(2026, 1, 2, tzinfo=UTC)
+    older_list = TheaterList(
+        group_id=group.id,
+        creator_id=user.id,
+        title="Older List",
+        description="older",
+        visibility="group",
+        created_at=base,
+    )
+    newer_list = TheaterList(
+        group_id=group.id,
+        creator_id=user.id,
+        title="Newer List",
+        description="newer",
+        visibility="group",
+        created_at=base + timedelta(minutes=2),
+    )
+    db_session.add_all([older_list, newer_list])
+    await db_session.flush()
+    db_session.add_all([
+        TheaterListReply(
+            list_id=older_list.id,
+            user_id=user.id,
+            body="reply-middle",
+            created_at=base + timedelta(minutes=1),
+        ),
+        TheaterListReply(
+            list_id=newer_list.id,
+            user_id=user.id,
+            body="reply-latest",
+            created_at=base + timedelta(minutes=3),
+        ),
+    ])
+    await db_session.commit()
+
+    payload = await _recent_activity(db_session, group.id, limit=3)
+
+    assert [item["id"].split("-")[0] for item in payload] == ["reply", "list", "reply"]
+    assert [item["created_at"] for item in payload] == [
+        (base + timedelta(minutes=3)).isoformat(),
+        (base + timedelta(minutes=2)).isoformat(),
+        (base + timedelta(minutes=1)).isoformat(),
+    ]
 
 
 @pytest.mark.asyncio

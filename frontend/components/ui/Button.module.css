@@ -39,7 +39,7 @@
 }
 
 .primary:hover:not(:disabled) {
-  background: linear-gradient(180deg, var(--accent-hover), var(--accent));
+  background: linear-gradient(180deg, var(--color-accent-noir-hover), var(--color-accent-noir));
 }
 
 .secondary {

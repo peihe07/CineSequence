@@ -138,10 +138,10 @@ async def notify_dna_ready(db: AsyncSession, user_id: uuid.UUID, archetype_id: s
         db,
         user_id=user_id,
         type=NotificationType.dna_ready,
-        title_zh="你的電影 DNA 已解碼完成",
-        title_en="Your Movie DNA is ready",
-        body_zh="你的觀影原型已揭曉。前往查看你的 DNA 分析報告。",
-        body_en="Your archetype has been revealed. View your DNA analysis report.",
+        title_zh="DNA 解密完成",
+        title_en="DNA DECLASSIFIED",
+        body_zh="你的觀影原型已歸檔。立即前往查看完整 DNA 報告。",
+        body_en="Your archetype is now on file. Open the full DNA report.",
         link="/dna",
         ref_id=archetype_id,
     )
@@ -156,10 +156,10 @@ async def notify_match_found(
         db,
         user_id=user_id,
         type=NotificationType.match_found,
-        title_zh="發現新的觀影共鳴",
-        title_en="New match discovered",
-        body_zh=f"系統偵測到你與 {partner_name} 的觀影品味高度契合。",
-        body_en=f"Your taste profile aligns with {partner_name}.",
+        title_zh="偵測到新的共鳴對象",
+        title_en="SIGNAL MATCH DETECTED",
+        body_zh=f"系統已將 {partner_name} 標記為高共鳴目標，檔案待你查閱。",
+        body_en=f"{partner_name} has been flagged as a high-resonance contact. Review the dossier.",
         link="/matches",
         ref_id=str(match_id),
     )
@@ -174,10 +174,10 @@ async def notify_invite_received(
         db,
         user_id=user_id,
         type=NotificationType.invite_received,
-        title_zh="收到觀影邀約",
-        title_en="You received an invite",
-        body_zh=f"{sender_name} 向你發出了觀影邀約。",
-        body_en=f"{sender_name} sent you an invite.",
+        title_zh="收到新的通聯請求",
+        title_en="INCOMING CLEARANCE REQUEST",
+        body_zh=f"{sender_name} 已向你發送觀影通聯請求。",
+        body_en=f"{sender_name} sent a viewing-channel request.",
         link="/matches",
         ref_id=str(match_id),
     )
@@ -192,10 +192,10 @@ async def notify_match_accepted(
         db,
         user_id=user_id,
         type=NotificationType.match_accepted,
-        title_zh="觀影邀約已被接受",
-        title_en="Your invite was accepted",
-        body_zh=f"{partner_name} 接受了你的觀影邀約。查看你們的專屬票券。",
-        body_en=f"{partner_name} accepted your invite. View your shared ticket.",
+        title_zh="通聯已建立",
+        title_en="CONTACT ESTABLISHED",
+        body_zh=f"{partner_name} 已接受邀約。共享票券與聯絡通道現已開啟。",
+        body_en=f"{partner_name} accepted your request. Shared ticket and channel now open.",
         link=f"/ticket?inviteId={match_id}",
         ref_id=str(match_id),
     )
@@ -214,13 +214,10 @@ async def notify_theater_assigned(
         db,
         user_id=user_id,
         type=NotificationType.theater_assigned,
-        title_zh="你已被分配到新的放映廳",
-        title_en="You were assigned to a new theater",
-        body_zh=f"你的 DNA 已把你導向「{theater_name}」。前往查看這個廳正在累積的片單。",
-        body_en=(
-            f'Your DNA route now includes "{theater_name}". '
-            "Step in and see what this room is curating."
-        ),
+        title_zh="收到新的放映廳指派",
+        title_en="ASSIGNMENT ORDER ISSUED",
+        body_zh=f"你的 DNA 路徑已將你導向「{theater_name}」。立即進入並查看本廳片單。",
+        body_en=f'Your DNA route now points to "{theater_name}". Enter the room and inspect the slate.',
         link=f"/theaters/detail?id={theater_id}",
         ref_id=f"assigned:{theater_id}",
     )
@@ -241,15 +238,15 @@ async def notify_theater_activity(
 ) -> None:
     """Notify room members about new list activity."""
     if activity_type == "list_created":
-        title_zh = "你的放映廳出現了新片單"
-        title_en = "A new list appeared in your theater"
-        body_zh = f"{actor_name} 在這個廳建立了「{list_title}」。"
-        body_en = f'{actor_name} started "{list_title}" in this theater.'
+        title_zh = "放映廳收到新的片單訊號"
+        title_en = "THEATER DISPATCH RECEIVED"
+        body_zh = f'{actor_name} 已在本廳建立片單「{list_title}」。'
+        body_en = f'{actor_name} opened a new slate: "{list_title}".'
     else:
-        title_zh = "你的放映廳有新的片單回應"
-        title_en = "A theater list got a new reply"
-        body_zh = f"{actor_name} 回應了「{list_title}」。"
-        body_en = f'{actor_name} replied to "{list_title}".'
+        title_zh = "放映廳收到新的回覆訊號"
+        title_en = "THEATER REPLY DETECTED"
+        body_zh = f'{actor_name} 已回覆片單「{list_title}」。'
+        body_en = f'{actor_name} replied to the slate "{list_title}".'
 
     await create_notification(
         db,

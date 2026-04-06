@@ -87,12 +87,12 @@
 }
 
 .productCard:hover {
-  border-color: rgba(229, 126, 49, 0.3);
+  border-color: var(--color-accent-noir-subtle);
   background: rgba(229, 126, 49, 0.04);
 }
 
 .productSelected {
-  border-color: var(--accent, #e57e31);
+  border-color: var(--color-accent-noir);
   background: rgba(229, 126, 49, 0.08);
 }
 
@@ -118,7 +118,7 @@
 .productPrice {
   font-size: 1rem;
   font-weight: 600;
-  color: var(--accent, #e57e31);
+  color: var(--color-accent-noir);
   white-space: nowrap;
 }
 
@@ -135,8 +135,8 @@
 .checkoutBtn {
   width: 100%;
   padding: 0.75rem 1.25rem;
-  background: var(--accent, #e57e31);
-  color: #fff;
+  background: var(--color-accent-noir);
+  color: #ffffff;
   border: none;
   border-radius: var(--radius-button, 10px);
   font-size: 0.88rem;
@@ -150,7 +150,7 @@
 }
 
 .checkoutBtn:hover {
-  background: var(--accent-hover, #cf6e2a);
+  background: var(--color-accent-noir-hover);
   transform: translateY(-1px);
 }
 

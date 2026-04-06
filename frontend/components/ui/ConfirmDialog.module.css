@@ -60,13 +60,13 @@
 }
 
 .btnConfirm {
-  background: var(--accent);
+  background: var(--color-accent-noir);
   color: #ffffff;
   border: none;
 }
 
 .btnConfirm:hover {
-  background: var(--accent-hover);
+  background: var(--color-accent-noir-hover);
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }

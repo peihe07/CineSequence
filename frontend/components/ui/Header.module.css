@@ -70,7 +70,7 @@
 }
 
 .brand:hover .brandMain {
-  color: var(--accent);
+  color: var(--color-accent-noir);
 }
 
 .brand:hover .brandSub {
@@ -149,7 +149,7 @@
 }
 
 .navLink:focus-visible {
-  outline: 1px solid var(--accent);
+  outline: 1px solid var(--color-accent-noir);
   outline-offset: 2px;
 }
 
@@ -175,7 +175,7 @@
 
 .navLinkActive:hover {
   color: #fff;
-  background: var(--accent-hover);
+  background: var(--color-accent-noir-hover);
 }
 
 /* ─── Right: utilities ────────────────────────────── */

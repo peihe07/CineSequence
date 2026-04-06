@@ -29,6 +29,6 @@
 }
 
 .active {
-  background: var(--accent);
-  color: #fff;
+  background: var(--color-accent-noir);
+  color: #ffffff;
 }

@@ -102,7 +102,7 @@
 .eyebrow {
   font-size: var(--text-xs);
   letter-spacing: 0.18em;
-  color: rgba(229, 126, 49, 0.82);
+  color: var(--color-accent-noir);
 }
 
 .heroMeta {
@@ -136,7 +136,7 @@
   align-items: center;
   gap: 0.4rem;
   padding: 0.58rem 1rem;
-  background: var(--accent);
+  background: var(--color-accent-noir);
   color: #ffffff;
   border: none;
   border-radius: var(--radius-button);
@@ -145,14 +145,14 @@
   letter-spacing: 0.15em;
   text-transform: uppercase;
   cursor: pointer;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 4px 12px rgba(229, 126, 49, 0.25);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 4px 12px var(--color-accent-noir-subtle);
   transition: background 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .assignBtn:hover {
-  background: var(--accent-hover);
+  background: var(--color-accent-noir-hover);
   transform: translateY(-1px);
-  box-shadow: 0 12px 24px rgba(229, 126, 49, 0.18);
+  box-shadow: 0 12px 24px var(--color-accent-noir-subtle);
 }
 
 .assignBtn:disabled {
@@ -410,7 +410,7 @@
 }
 
 .activeBadge {
-  color: var(--success);
+  color: var(--color-success);
   display: flex;
   align-items: center;
   gap: 0.2rem;
@@ -451,13 +451,13 @@
 
 .detailTab:hover {
   color: rgba(255, 255, 255, 0.92);
-  border-color: rgba(229, 126, 49, 0.24);
+  border-color: var(--color-accent-noir-subtle);
 }
 
 .detailTabActive {
   color: rgba(255, 245, 232, 0.96);
-  background: rgba(229, 126, 49, 0.14);
-  border-color: rgba(229, 126, 49, 0.3);
+  background: var(--color-accent-noir-subtle);
+  border-color: var(--color-accent-noir-subtle);
 }
 
 .detailPanel {
@@ -858,9 +858,9 @@
   align-items: center;
   gap: 0.3rem;
   padding: 0.42rem 0.76rem;
-  background: rgba(229, 126, 49, 0.12);
+  background: var(--color-accent-noir-subtle);
   color: rgba(255, 255, 255, 0.82);
-  border: 1px solid rgba(229, 126, 49, 0.32);
+  border: 1px solid var(--color-accent-noir-subtle);
   border-radius: var(--radius-component);
   box-shadow: none;
   font-size: var(--text-xs);
@@ -872,7 +872,7 @@
 }
 
 .joinBtn:hover {
-  background: rgba(229, 126, 49, 0.18);
+  background: var(--color-accent-noir-muted);
   color: #ffffff;
   transform: translateY(-1px);
 }
@@ -923,14 +923,14 @@
   width: 2.3rem;
   height: 2.3rem;
   border-radius: 999px;
-  background: rgba(229, 126, 49, 0.12);
+  background: var(--color-accent-noir-subtle);
   color: rgba(255, 233, 214, 0.9);
   font-size: 1rem;
 }
 
 .memberLabel {
   font-size: 0.8rem;
-  color: var(--success);
+  color: var(--color-success);
   display: flex;
   align-items: center;
   gap: 0.3rem;

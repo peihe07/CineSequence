@@ -6,7 +6,7 @@ import uuid
 from collections import defaultdict
 from pathlib import Path
 
-from sqlalchemy import delete, func, select
+from sqlalchemy import delete, func, literal, select, union_all
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.group import Group, group_members
@@ -231,15 +231,21 @@ async def _recent_messages(
     viewer_id=None,
     limit: int = 8,
 ) -> list[dict]:
-    result = await db.execute(
-        select(GroupMessage, User)
-        .join(User, User.id == GroupMessage.user_id)
+    recent_message_ids = (
+        select(GroupMessage.id.label("message_id"))
         .where(GroupMessage.group_id == group_id)
         .order_by(GroupMessage.created_at.desc())
         .limit(limit)
+        .subquery()
+    )
+    result = await db.execute(
+        select(GroupMessage, User)
+        .join(recent_message_ids, GroupMessage.id == recent_message_ids.c.message_id)
+        .join(User, User.id == GroupMessage.user_id)
+        .order_by(GroupMessage.created_at.asc())
     )
     rows = result.all()
-    messages = [
+    return [
         {
             "id": str(message.id),
             "body": message.body,
@@ -253,7 +259,6 @@ async def _recent_messages(
         }
         for message, author in rows
     ]
-    return list(reversed(messages))
 
 
 async def _recent_activity(
@@ -261,65 +266,65 @@ async def _recent_activity(
     group_id: str,
     limit: int = 6,
 ) -> list[dict]:
-    list_result = await db.execute(
-        select(TheaterList, User)
+    list_activity = (
+        select(
+            literal("list_created").label("type"),
+            TheaterList.created_at.label("created_at"),
+            User.id.label("actor_id"),
+            User.name.label("actor_name"),
+            User.avatar_url.label("actor_avatar_url"),
+            TheaterList.id.label("list_id"),
+            TheaterList.title.label("list_title"),
+            TheaterList.description.label("body"),
+            TheaterList.id.label("entity_id"),
+        )
         .join(User, User.id == TheaterList.creator_id)
         .where(
             TheaterList.group_id == group_id,
             TheaterList.visibility == "group",
         )
-        .order_by(TheaterList.created_at.desc())
-        .limit(limit)
     )
-    list_rows = list_result.all()
-    activity: list[dict] = [
-        {
-            "id": f"list-{theater_list.id}",
-            "type": "list_created",
-            "created_at": theater_list.created_at.isoformat(),
-            "actor": {
-                "id": str(author.id),
-                "name": author.name,
-                "avatar_url": normalize_public_object_url(author.avatar_url),
-            },
-            "list_id": str(theater_list.id),
-            "list_title": theater_list.title,
-            "body": theater_list.description,
-        }
-        for theater_list, author in list_rows
-    ]
-
-    reply_result = await db.execute(
-        select(TheaterListReply, User, TheaterList)
+    reply_activity = (
+        select(
+            literal("list_replied").label("type"),
+            TheaterListReply.created_at.label("created_at"),
+            User.id.label("actor_id"),
+            User.name.label("actor_name"),
+            User.avatar_url.label("actor_avatar_url"),
+            TheaterList.id.label("list_id"),
+            TheaterList.title.label("list_title"),
+            TheaterListReply.body.label("body"),
+            TheaterListReply.id.label("entity_id"),
+        )
         .join(User, User.id == TheaterListReply.user_id)
         .join(TheaterList, TheaterList.id == TheaterListReply.list_id)
         .where(
             TheaterList.group_id == group_id,
             TheaterList.visibility == "group",
         )
-        .order_by(TheaterListReply.created_at.desc())
+    )
+    activity_union = union_all(list_activity, reply_activity).subquery()
+    activity_rows = await db.execute(
+        select(activity_union)
+        .order_by(activity_union.c.created_at.desc())
         .limit(limit)
     )
-    reply_rows = reply_result.all()
-    activity.extend(
+    return [
         {
-            "id": f"reply-{reply.id}",
-            "type": "list_replied",
-            "created_at": reply.created_at.isoformat(),
+            "id": f"reply-{row.entity_id}" if row.type == "list_replied" else f"list-{row.entity_id}",
+            "type": row.type,
+            "created_at": row.created_at.isoformat(),
             "actor": {
-                "id": str(author.id),
-                "name": author.name,
-                "avatar_url": normalize_public_object_url(author.avatar_url),
+                "id": str(row.actor_id),
+                "name": row.actor_name,
+                "avatar_url": normalize_public_object_url(row.actor_avatar_url),
             },
-            "list_id": str(theater_list.id),
-            "list_title": theater_list.title,
-            "body": reply.body,
+            "list_id": str(row.list_id),
+            "list_title": row.list_title,
+            "body": row.body,
         }
-        for reply, author, theater_list in reply_rows
-    )
-
-    activity.sort(key=lambda item: item["created_at"], reverse=True)
-    return activity[:limit]
+        for row in activity_rows.all()
+    ]
 
 
 async def build_group_payload(
@@ -434,7 +439,7 @@ async def _build_group_payloads_for_groups(
         .join(messages_ranked, GroupMessage.id == messages_ranked.c.message_id)
         .join(User, User.id == GroupMessage.user_id)
         .where(messages_ranked.c.rn <= 8)
-        .order_by(GroupMessage.group_id.asc(), GroupMessage.created_at.desc())
+        .order_by(GroupMessage.group_id.asc(), GroupMessage.created_at.asc())
     )
     messages_by_group: dict[str, list[dict]] = defaultdict(list)
     viewer_id = viewer.id if viewer else None
@@ -556,7 +561,7 @@ async def _build_group_payloads_for_groups(
     for group in groups:
         recommended_movies, shared_watchlist = group_movie_payloads[group.id]
         members = members_by_group.get(group.id, [])
-        recent_messages = list(reversed(messages_by_group.get(group.id, [])))
+        recent_messages = messages_by_group.get(group.id, [])
         recent_activity = sorted(
             activity_by_group.get(group.id, []),
             key=lambda item: item["created_at"],

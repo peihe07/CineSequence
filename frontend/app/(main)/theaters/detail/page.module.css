@@ -46,9 +46,9 @@
 }
 
 .tabButtonActive {
-  background: rgba(229, 126, 49, 0.12);
+  background: var(--color-accent-noir-subtle);
   color: rgba(255, 255, 255, 0.94);
-  box-shadow: inset 0 0 0 1px rgba(229, 126, 49, 0.22);
+  box-shadow: inset 0 0 0 1px var(--color-accent-noir-subtle);
 }
 
 /* ── SECTION BASE ────────────────────────────── */
@@ -147,7 +147,7 @@
   font-size: 0.72rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: rgba(229, 126, 49, 0.82);
+  color: var(--color-accent-noir);
 }
 
 .titleRow {
@@ -216,7 +216,7 @@
   align-items: center;
   gap: 0.4rem;
   padding: 0.58rem 1rem;
-  background: linear-gradient(180deg, rgba(243, 146, 74, 0.96), rgba(229, 126, 49, 0.96));
+  background: linear-gradient(180deg, var(--color-accent-noir-hover), var(--color-accent-noir));
   color: rgba(255, 248, 242, 0.98);
   border: none;
   border-radius: var(--radius-button);
@@ -225,14 +225,14 @@
   letter-spacing: 0.12em;
   text-transform: uppercase;
   cursor: pointer;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 4px 12px rgba(229, 126, 49, 0.25);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 4px 12px var(--color-accent-noir-subtle);
   transition: background 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .primaryBtn:hover {
-  background: linear-gradient(180deg, rgba(243, 146, 74, 1), rgba(229, 126, 49, 1));
+  background: linear-gradient(180deg, var(--color-accent-noir-hover), var(--color-accent-noir));
   transform: translateY(-1px);
-  box-shadow: 0 12px 24px rgba(229, 126, 49, 0.18);
+  box-shadow: 0 12px 24px var(--color-accent-noir-subtle);
 }
 
 .primaryBtn:active {
@@ -351,13 +351,13 @@
 
 .panelTab:hover {
   color: rgba(255, 255, 255, 0.92);
-  border-color: rgba(229, 126, 49, 0.24);
+  border-color: var(--color-accent-noir-subtle);
 }
 
 .panelTabActive {
   color: rgba(255, 245, 232, 0.96);
-  background: rgba(229, 126, 49, 0.14);
-  border-color: rgba(229, 126, 49, 0.3);
+  background: var(--color-accent-noir-subtle);
+  border-color: var(--color-accent-noir-subtle);
 }
 
 .carouselSection {
@@ -387,8 +387,8 @@
 }
 
 .railButton:hover {
-  background: rgba(229, 126, 49, 0.12);
-  border-color: rgba(229, 126, 49, 0.28);
+  background: var(--color-accent-noir-subtle);
+  border-color: var(--color-accent-noir-subtle);
   color: rgba(255, 245, 232, 0.96);
   transform: translateY(-1px);
 }
@@ -473,7 +473,7 @@
   width: 2.4rem;
   height: 2.4rem;
   border-radius: 999px;
-  background: rgba(229, 126, 49, 0.12);
+  background: var(--color-accent-noir-subtle);
   color: rgba(255, 233, 214, 0.88);
   font-size: 1rem;
 }
@@ -850,8 +850,8 @@
 }
 
 .input:focus {
-  border-bottom-color: var(--accent);
-  box-shadow: 0 1px 0 var(--accent);
+  border-bottom-color: var(--color-accent-noir);
+  box-shadow: 0 1px 0 var(--color-accent-noir);
 }
 
 .input::placeholder {
@@ -875,8 +875,8 @@
 }
 
 .textarea:focus {
-  border-bottom-color: var(--accent);
-  box-shadow: 0 1px 0 var(--accent);
+  border-bottom-color: var(--color-accent-noir);
+  box-shadow: 0 1px 0 var(--color-accent-noir);
 }
 
 .textarea::placeholder {
@@ -967,8 +967,8 @@
   justify-content: space-between;
   gap: 0.75rem;
   padding: 0.5rem 0.7rem;
-  background: rgba(229, 126, 49, 0.08);
-  border: 1px solid rgba(229, 126, 49, 0.15);
+  background: var(--color-accent-noir-subtle);
+  border: 1px solid var(--color-accent-noir-subtle);
   color: rgba(255, 255, 255, 0.84);
   font-size: 0.82rem;
 }
@@ -1105,8 +1105,8 @@
   font-size: 0.8rem;
   color: var(--accent-ink);
   padding: 0.5rem 0.75rem;
-  background: rgba(229, 126, 49, 0.07);
-  border: 1px solid rgba(229, 126, 49, 0.18);
+  background: var(--color-accent-noir-subtle);
+  border: 1px solid var(--color-accent-noir-subtle);
   border-radius: var(--radius-component);
 }
 
