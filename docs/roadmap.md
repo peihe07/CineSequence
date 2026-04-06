@@ -1,6 +1,6 @@
 # Cine Sequence — Execution Plan
 
-> Last updated: 2026-03-31
+> Last updated: 2026-04-02
 
 目前活躍主線細節請搭配：
 
@@ -29,14 +29,26 @@
 - 既有 Phase 1-3 項目已完成並自本文件清除。
 - 若需查看完成歷史，請參考 `docs/progress.md` 與 `docs/archive/`。
 
-### Phase 4 — 成長與分享
+### Phase 4 — Relaunch Monetization
 
-只有在前面三階段完成後，這一層才值得投入。
+ECPay 金流審核中，審核通過後立即執行。
 
-| Item | Why now | Scope | Status |
-|------|---------|-------|--------|
-| DNA Share Card | 這是成長槓桿，但前提是 DNA 結果已較穩 | DNA result / image generation | TODO |
-| User feedback survey | 等核心體驗較穩後再收 feedback 比較有價值 | DNA result page | TODO |
+| Item | Scope | Status |
+|------|-------|--------|
+| Relaunch reset migration | Reset all users/sessions/DNA | TODO |
+| Extension 改為 10 rounds | Backend session logic | TODO |
+| Free retest credits 歸零 | Backend entitlement logic | TODO |
+| ECPay integration | Payment endpoint + callback | Blocked (pending approval) |
+| Frontend payment wall | Retest/extend/invite blocked UI | TODO |
+| Match invite unlock (NT$99) | Backend invite credits + unlock | TODO |
+| Match message board | Async board for accepted matches (free) | TODO |
+
+### Phase 5 — Growth
+
+| Item | Scope | Status |
+|------|-------|--------|
+| DNA Share Card (premium NT$39-59) | Image generation + social sharing | TODO |
+| User feedback survey | DNA result page | TODO |
 
 ## 待辦區
 
@@ -46,41 +58,36 @@
 
 - Theater real-time updates
 - Theater detail refactor
-- Seasonal retest limits
 - Limited ticket styles
-- Director monthly theme
 
-### Festival / 內容待辦
+### 變現待辦（需要更大使用者基數）
 
-- Festival lineup import
-- Festival mini sequencing
-- Festival theaters
-
-### 變現待辦
-
-- Payment integration
-- Sequencing entitlement rollout
-- Sponsor unlock 拆分策略
+- Festival sequencing pack (NT$79-149)
+- Director theme pack (NT$79)
+- Duo comparison report (NT$69)
+- Annual review report (NT$79)
+- Group sequencing (NT$199/group)
+- Match monthly subscription tier (when DAU > 5,000)
 
 ### 架構性待辦
 
 - Archetype 擴充到 16 型
 - Quadrant 從 3 軸升到 5 軸
+- Fix dead tags: artHouseBridge, moralAnxiety, urbanLoneliness
 
 ## 暫不執行
 
 以下不是「永遠不做」，而是目前不建議排進近期迭代。
 
-1. Archetype 方案 B（16 型）
-2. Archetype 方案 C（5 軸）
-3. Festival 系列功能
-4. Payment integration / sponsor unlock
+1. Archetype 方案 B（16 型）/ 方案 C（5 軸）
+2. Festival 系列功能
+3. Movie pool / tag 擴充（現有 372 部 + 35 tags 足夠）
 
 理由：
 
-- 依賴前面資料與測序品質先穩定
-- 需要較大 backfill / 前端重構 / QA 成本
-- 現階段不是主要勸退點
+- 變現優先，先驗證付費轉換率
+- Pool/tag 擴充是有付費使用者之後的事
+- 使用者回報的問題（配對重複、兩難選擇）是演算法問題，不是資料量問題
 
 ## 驗證規則
 
