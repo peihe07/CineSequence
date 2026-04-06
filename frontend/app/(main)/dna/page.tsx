@@ -1,10 +1,11 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { PreviewBanner, usePreviewAccess } from '@/components/preview/PreviewGate'
 import { ApiError } from '@/lib/api'
+import PaymentModal from '@/components/ui/PaymentModal'
 import { PREVIEW_DNA_RESULT, PREVIEW_SEQUENCING_PROGRESS } from '@/lib/previewContent'
 import { useDnaStore } from '@/stores/dnaStore'
 import { useGroupStore } from '@/stores/groupStore'
@@ -38,6 +39,7 @@ function DnaResultContent() {
   const { result, isBuilding, isLoading, error, buildDna, fetchResult } = useDnaStore()
   const { autoAssign } = useGroupStore()
   const { progress, fetchProgress, extendSequencing } = useSequencingStore()
+  const [paymentContext, setPaymentContext] = useState<'extend' | 'retest' | null>(null)
   const sectionTransition = { duration: 0.65, ease: 'easeOut' as const }
   const displayResult = isPreview ? PREVIEW_DNA_RESULT : result
   const displayProgress = isPreview ? PREVIEW_SEQUENCING_PROGRESS : progress
@@ -112,8 +114,10 @@ function DnaResultContent() {
         try {
           await extendSequencing()
           router.push('/sequencing')
-        } catch {
-          // Store error state keeps the user on the DNA page.
+        } catch (err) {
+          if (err instanceof ApiError && err.status === 403) {
+            setPaymentContext('extend')
+          }
         }
       })()
     })
@@ -298,6 +302,13 @@ function DnaResultContent() {
         </motion.section>
       </motion.div>
       {previewModal}
+      {paymentContext && (
+        <PaymentModal
+          open
+          context={paymentContext}
+          onClose={() => setPaymentContext(null)}
+        />
+      )}
     </div>
   )
 }

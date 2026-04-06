@@ -2,17 +2,19 @@
 
 /* eslint-disable @next/next/no-img-element */
 
-import { Suspense, useCallback, useEffect, useRef, useState } from 'react'
+import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { AnimatePresence, motion } from 'framer-motion'
 import { PreviewBanner, usePreviewAccess } from '@/components/preview/PreviewGate'
 import { useMatchStore, MatchItem } from '@/stores/matchStore'
-import { api } from '@/lib/api'
+import { api, ApiError } from '@/lib/api'
+import PaymentModal from '@/components/ui/PaymentModal'
 import { useI18n } from '@/lib/i18n'
 import { PREVIEW_MATCHES } from '@/lib/previewContent'
 import { useAuthStore } from '@/stores/authStore'
 import { getTagLabel } from '@/lib/tagLabels'
 import TicketCard from '@/components/match/TicketCard'
+import MessageBoard from '@/components/match/MessageBoard'
 import FlowGuard from '@/components/guards/FlowGuard'
 import styles from './page.module.css'
 
@@ -276,6 +278,10 @@ function TicketModal({ match, onClose }: { match: MatchItem; onClose: () => void
             {match.partner_email}
           </a>
         )}
+
+        {match.status === 'accepted' && (
+          <MessageBoard matchId={match.id} />
+        )}
       </motion.div>
     </motion.div>
   )
@@ -301,6 +307,8 @@ function MatchesContent() {
   const [prefsReady, setPrefsReady] = useState(false)
   const [activeIndex, setActiveIndex] = useState(0)
   const [ticketModalMatch, setTicketModalMatch] = useState<MatchItem | null>(null)
+  const [showPayment, setShowPayment] = useState(false)
+  const [inviteCredits, setInviteCredits] = useState<{ remaining: number; unlocked: boolean } | null>(null)
   const displayMatches = isPreview ? PREVIEW_MATCHES : matches
 
   const carouselRef = useRef<HTMLDivElement>(null)
@@ -319,6 +327,9 @@ function MatchesContent() {
     }
 
     void fetchMatches()
+    void api<{ remaining: number; unlocked: boolean }>('/matches/invite-credits')
+      .then(setInviteCredits)
+      .catch(() => {})
 
     async function loadPrefs() {
       try {
@@ -425,11 +436,30 @@ function MatchesContent() {
             <p className={styles.errorText} role="alert">{prefsError || error}</p>
           )}
           <MatchFilter prefs={prefs} onChange={savePrefs} disabled={isPreview || !prefsReady} />
+          {inviteCredits && !isPreview && (
+            <p className={styles.inviteCounter}>
+              {inviteCredits.unlocked
+                ? '∞ Unlimited invites'
+                : `${inviteCredits.remaining}/5 invites remaining`
+              }
+            </p>
+          )}
           <PreviewBanner nextPath="/matches" compact />
         </section>
 
-        {/* ── DISCLAIMER SECTION ──────────────────────── */}
-        <section className={styles.section}>
+        {/* ── ALGORITHM SECTION ─────────────────────────── */}
+        <section className={`${styles.section} ${styles.algorithmSection}`}>
+          <details className={styles.algorithmDetails}>
+            <summary className={styles.algorithmSummary}>
+              <i className="ri-flashlight-line" aria-hidden="true" />
+              {t('matches.algorithmTitle')}
+            </summary>
+            <div className={styles.algorithmBody}>
+              <p>{t('matches.algorithmScore')}</p>
+              <p>{t('matches.algorithmFilter')}</p>
+              <p>{t('matches.algorithmPercentile')}</p>
+            </div>
+          </details>
           <p className={styles.disclaimer}>{t('matches.disclaimer')}</p>
         </section>
 
@@ -484,7 +514,18 @@ function MatchesContent() {
                     <TicketCard
                       match={match}
                       ticketNumber={i + 1}
-                      onInvite={() => guardPreviewAction(() => void sendInvite(match.id))}
+                      onInvite={() => guardPreviewAction(() => {
+                        void sendInvite(match.id).then(() => {
+                          // Refresh invite credits after successful invite
+                          void api<{ remaining: number; unlocked: boolean }>('/matches/invite-credits')
+                            .then(setInviteCredits)
+                            .catch(() => {})
+                        }).catch((err) => {
+                          if (err instanceof ApiError && err.status === 403) {
+                            setShowPayment(true)
+                          }
+                        })
+                      })}
                       onRespond={(accept) => guardPreviewAction(() => void respondToInvite(match.id, accept))}
                       onShowFullTicket={() => setTicketModalMatch(match)}
                       highlighted={match.id === highlightId}
@@ -517,6 +558,12 @@ function MatchesContent() {
           />
         )}
       </AnimatePresence>
+
+      <PaymentModal
+        open={showPayment}
+        context="invite"
+        onClose={() => setShowPayment(false)}
+      />
     </div>
   )
 }

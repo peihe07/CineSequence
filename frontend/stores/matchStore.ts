@@ -88,6 +88,7 @@ export const useMatchStore = create<MatchState>((set, get) => ({
       })
     } catch (err) {
       set({ error: err instanceof Error ? err.message : translateStatic('common.error') })
+      throw err
     }
   },
 

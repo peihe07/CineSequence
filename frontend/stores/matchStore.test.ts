@@ -119,7 +119,7 @@ describe('matchStore', () => {
     useMatchStore.setState({ matches: [matchFixture] })
     apiMock.mockRejectedValue(new Error('Invite failed'))
 
-    await useMatchStore.getState().sendInvite('match-1')
+    await expect(useMatchStore.getState().sendInvite('match-1')).rejects.toThrow('Invite failed')
 
     expect(useMatchStore.getState().error).toBe('Invite failed')
     expect(useMatchStore.getState().matches[0].status).toBe('discovered')
