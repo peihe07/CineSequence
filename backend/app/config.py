@@ -55,6 +55,13 @@ class Settings(BaseSettings):
     # TMDB cache TTL (seconds)
     tmdb_cache_ttl: int = 86400  # 24 hours
 
+    # ECPay
+    ecpay_merchant_id: str = ""
+    ecpay_hash_key: str = ""
+    ecpay_hash_iv: str = ""
+    ecpay_callback_ips: str = ""  # comma-separated allowed IPs
+    ecpay_sandbox: bool = True
+
     # Matching
     match_threshold: float = 0.85  # 85% fallback (overridden per user)
 
