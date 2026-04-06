@@ -12,11 +12,21 @@
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 1.25rem 2rem;
   align-items: end;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: none;
   position: relative;
 }
 
 .inner::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08) 30%, rgba(255, 255, 255, 0.08) 70%, transparent);
+}
+
+.inner::after {
   content: '';
   position: absolute;
   top: -1px;
@@ -172,6 +182,20 @@
   letter-spacing: 0.05em;
   cursor: pointer;
   transition: color 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  text-decoration: none;
+}
+
+.footerLink i {
+  font-size: 0.82rem;
+}
+
+.navDivider {
+  width: 1px;
+  height: 0.7rem;
+  background: rgba(255, 255, 255, 0.12);
 }
 
 .footerYear {

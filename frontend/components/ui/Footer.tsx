@@ -65,11 +65,14 @@ export default function Footer() {
 
             <nav className={styles.footerNav} aria-label={t('footer.nav')}>
               <Link href="/about" className={styles.footerLink}>
+                <i className="ri-information-line" aria-hidden="true" />
                 {t('footer.about')}
               </Link>
               <Link href="/pricing" className={styles.footerLink}>
+                <i className="ri-ticket-line" aria-hidden="true" />
                 {t('footer.pricing')}
               </Link>
+              <span className={styles.navDivider} aria-hidden="true" />
               <button type="button" className={styles.footerLink} onClick={() => setOpenModal('privacy')}>
                 {t('footer.privacy')}
               </button>

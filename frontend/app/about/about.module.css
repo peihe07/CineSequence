@@ -61,6 +61,13 @@
   color: rgba(255, 255, 255, 0.62);
 }
 
+.paragraph:nth-child(3),
+.paragraph:nth-child(7) {
+  color: rgba(255, 255, 255, 0.48);
+  font-size: var(--text-sm);
+  line-height: 1.85;
+}
+
 .paragraph:first-child {
   color: rgba(255, 255, 255, 0.78);
   font-size: var(--text-lg);
@@ -75,13 +82,25 @@
 /* Closing paragraph */
 .paragraph:last-child {
   color: rgba(255, 248, 240, 0.82);
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  border-top: none;
   padding-top: 1.6rem;
+  position: relative;
+}
+
+.paragraph:last-child::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.06), transparent 80%);
 }
 
 .signature {
   margin-top: clamp(2.5rem, 5vw, 3.5rem);
   text-align: right;
+  padding-right: 1.5rem;
 }
 
 .signatureName {
@@ -94,6 +113,45 @@
 
 .footer {
   margin-top: clamp(3rem, 6vw, 5rem);
+}
+
+.ctaRow {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.ctaLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.2rem;
+  font-family: var(--font-tech);
+  font-size: var(--text-xs);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255, 244, 232, 0.88);
+  text-decoration: none;
+  border: 1px solid rgba(214, 165, 118, 0.28);
+  border-radius: 999px;
+  background:
+    linear-gradient(135deg, rgba(214, 165, 118, 0.14), rgba(214, 165, 118, 0.04)),
+    rgba(255, 255, 255, 0.02);
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.ctaLink:hover {
+  color: rgba(255, 248, 240, 0.96);
+  border-color: rgba(214, 165, 118, 0.46);
+  transform: translateY(-1px);
+}
+
+.ctaLink i {
+  font-size: 0.9rem;
 }
 
 .backLink {

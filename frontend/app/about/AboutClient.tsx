@@ -31,7 +31,7 @@ const PARAGRAPHS_EN = [
 ]
 
 export default function AboutClient() {
-  const { locale } = useI18n()
+  const { locale, t } = useI18n()
   const paragraphs = locale === 'zh' ? PARAGRAPHS_ZH : PARAGRAPHS_EN
 
   return (
@@ -61,9 +61,19 @@ export default function AboutClient() {
         </div>
 
         <footer className={styles.footer}>
+          <div className={styles.ctaRow}>
+            <Link href="/pricing" className={styles.ctaLink}>
+              <i className="ri-ticket-line" />
+              <span>{t('about.viewPricing')}</span>
+            </Link>
+            <Link href="/sequencing" className={styles.ctaLink}>
+              <i className="ri-play-line" />
+              <span>{t('about.startSequencing')}</span>
+            </Link>
+          </div>
           <Link href="/" className={styles.backLink}>
             <i className="ri-arrow-left-line" />
-            <span>{locale === 'zh' ? '回到首頁' : 'Back'}</span>
+            <span>{t('about.backToHome')}</span>
           </Link>
         </footer>
       </article>

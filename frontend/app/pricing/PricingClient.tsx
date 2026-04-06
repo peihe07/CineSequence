@@ -84,6 +84,7 @@ export default function PricingClient() {
                 onClick={() => handleOpenCheckout(context)}
               >
                 {isAuthenticated ? t('pricing.openCheckout') : t('pricing.signInToContinue')}
+                <i className="ri-arrow-right-s-line" aria-hidden="true" />
               </button>
             </article>
           ))}
@@ -129,9 +130,13 @@ export default function PricingClient() {
         </section>
 
         <div className={styles.footer}>
-          <Link href="/about" className={styles.backLink}>
+          <Link href="/" className={styles.backLink}>
             <i className="ri-arrow-left-line" aria-hidden="true" />
-            <span>{t('pricing.back')}</span>
+            <span>{t('pricing.backHome')}</span>
+          </Link>
+          <Link href="/about" className={styles.backLink}>
+            <i className="ri-information-line" aria-hidden="true" />
+            <span>{t('pricing.backAbout')}</span>
           </Link>
         </div>
       </main>
