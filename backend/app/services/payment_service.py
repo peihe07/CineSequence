@@ -1,11 +1,12 @@
 """Payment service: order creation, ECPay callback verification, entitlement granting."""
 
 import hashlib
+import html
 import logging
 import time
 import urllib.parse
 import uuid
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timezone, timedelta
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -89,7 +90,7 @@ def build_ecpay_form_html(order: PaymentOrder) -> str:
     params = {
         "MerchantID": settings.ecpay_merchant_id,
         "MerchantTradeNo": order.order_no,
-        "MerchantTradeDate": datetime.now(UTC).strftime("%Y/%m/%d %H:%M:%S"),
+        "MerchantTradeDate": datetime.now(timezone(timedelta(hours=8))).strftime("%Y/%m/%d %H:%M:%S"),
         "PaymentType": "aio",
         "TotalAmount": str(order.amount),
         "TradeDesc": "Cine Sequence",
@@ -102,7 +103,8 @@ def build_ecpay_form_html(order: PaymentOrder) -> str:
     params["CheckMacValue"] = _compute_check_mac_value(params)
 
     fields = "".join(
-        f'<input type="hidden" name="{k}" value="{v}" />' for k, v in params.items()
+        f'<input type="hidden" name="{html.escape(k)}" value="{html.escape(v)}" />'
+        for k, v in params.items()
     )
     return (
         f'<form id="ecpay-form" method="POST" action="{base_url}">'
@@ -209,6 +211,15 @@ async def process_refund(db: AsyncSession, order_id: uuid.UUID) -> PaymentOrder:
         # invite_unlock or share_card — full refund
         order.refund_amount = order.amount
         order.status = OrderStatus.refunded
+
+        # Revoke invite_unlock flag if applicable
+        if order.product_type == ProductType.invite_unlock:
+            user_result = await db.execute(
+                select(User).where(User.id == order.user_id)
+            )
+            user = user_result.scalar_one()
+            user.invite_unlocked = False
+
         await db.commit()
         return order
 
