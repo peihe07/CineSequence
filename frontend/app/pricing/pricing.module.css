@@ -202,6 +202,77 @@
   margin-top: 1rem;
 }
 
+.supportSection {
+  margin-top: 1rem;
+}
+
+.supportCard {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  padding: 1.4rem;
+  border-radius: 1.4rem;
+  border: 1px solid rgba(229, 126, 49, 0.2);
+  background:
+    linear-gradient(180deg, rgba(229, 126, 49, 0.11), rgba(255, 255, 255, 0.03)),
+    rgba(255, 255, 255, 0.03);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.2);
+}
+
+.supportHeader {
+  display: flex;
+  gap: 0.9rem;
+  align-items: flex-start;
+}
+
+.supportIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 999px;
+  color: var(--color-accent-noir);
+  background: rgba(229, 126, 49, 0.14);
+}
+
+.supportTitle {
+  margin: 0;
+  font-family: var(--font-cinematic);
+  font-size: 1.35rem;
+  color: rgba(255, 248, 240, 0.96);
+}
+
+.supportBody {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.72);
+  line-height: var(--leading-relaxed);
+}
+
+.supportNote {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.56);
+  font-size: var(--text-sm);
+  line-height: 1.6;
+}
+
+.supportButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  min-height: 3rem;
+  padding: 0 1.1rem;
+  border-radius: 999px;
+  background: var(--color-accent-noir);
+  color: var(--color-ink-strong);
+  text-decoration: none;
+  font-family: var(--font-tech);
+  font-size: var(--text-sm);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
 .infoCard {
   padding: 1.25rem 1.4rem;
   border-radius: 1.25rem;

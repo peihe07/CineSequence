@@ -1,6 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useRef, useState } from 'react'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { PreviewBanner, usePreviewAccess } from '@/components/preview/PreviewGate'
 import Button from '@/components/ui/Button'
@@ -30,6 +31,10 @@ export default function SequencingPage() {
     phase: number
     totalRounds: number
   }>(null)
+  const supportUrl =
+    process.env.NEXT_PUBLIC_SUPPORT_URL?.trim() ||
+    process.env.NEXT_PUBLIC_BUYMEACOFFEE_URL?.trim()
+  const supportHref = supportUrl || '/pricing#support'
   const {
     currentPair,
     progress,
@@ -236,6 +241,26 @@ export default function SequencingPage() {
 
         <section className={`${styles.section} ${styles.footerSection}`}>
           <LiveTagCloud tags={liveTags} />
+          <div className={styles.paymentRail}>
+            <div className={styles.paymentCopy}>
+              <p className={styles.paymentEyebrow}>{t('seq.paymentEyebrow')}</p>
+              <p className={styles.paymentTitle}>{t('seq.paymentTitle')}</p>
+              <p className={styles.paymentBody}>{t('seq.paymentBody')}</p>
+            </div>
+            <div className={styles.paymentActions}>
+              <Link href="/pricing" className={styles.paymentLink}>
+                {t('seq.viewPricing')}
+              </Link>
+              <a
+                href={supportHref}
+                className={styles.supportLink}
+                target={supportUrl ? '_blank' : undefined}
+                rel={supportUrl ? 'noreferrer noopener external' : undefined}
+              >
+                {t('seq.support')}
+              </a>
+            </div>
+          </div>
         </section>
       </div>
       {previewModal}

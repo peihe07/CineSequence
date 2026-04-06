@@ -84,6 +84,80 @@
   background: rgba(9, 9, 11, 0.3);
 }
 
+.paymentRail {
+  width: min(100%, 44rem);
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: flex-end;
+  padding: 1rem 1.1rem;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  background:
+    linear-gradient(180deg, rgba(229, 126, 49, 0.08), rgba(255, 255, 255, 0.02)),
+    rgba(255, 255, 255, 0.02);
+}
+
+.paymentCopy {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.paymentEyebrow {
+  margin: 0;
+  font-family: var(--font-tech);
+  font-size: 0.66rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.paymentTitle {
+  margin: 0;
+  font-family: var(--font-cinematic);
+  font-size: clamp(1rem, 2vw, 1.2rem);
+  color: rgba(255, 248, 240, 0.94);
+}
+
+.paymentBody {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.68);
+  font-size: var(--text-sm);
+  line-height: 1.7;
+}
+
+.paymentActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.paymentLink,
+.supportLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  text-decoration: none;
+  font-family: var(--font-tech);
+  font-size: var(--text-xs);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.paymentLink {
+  color: var(--color-accent-noir);
+}
+
+.supportLink {
+  padding: 0 0.9rem;
+  border-radius: 999px;
+  background: var(--color-accent-noir);
+  color: var(--color-ink-strong);
+}
+
 .heroCopy {
   width: 100%;
   display: flex;
@@ -365,6 +439,11 @@
   }
 
   .heroCopy {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .paymentRail {
     flex-direction: column;
     align-items: flex-start;
   }

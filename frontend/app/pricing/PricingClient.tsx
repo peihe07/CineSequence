@@ -32,6 +32,7 @@ export default function PricingClient() {
   const supportUrl =
     process.env.NEXT_PUBLIC_SUPPORT_URL?.trim() ||
     process.env.NEXT_PUBLIC_BUYMEACOFFEE_URL?.trim()
+  const supportHref = supportUrl || 'mailto:y450376@gmail.com?subject=Buy%20Me%20a%20Coffee'
 
   function handleOpenCheckout(context: PricingContext) {
     if (!isAuthenticated) {
@@ -88,6 +89,30 @@ export default function PricingClient() {
           ))}
         </section>
 
+        <section className={styles.supportSection} id="support">
+          <article className={styles.supportCard}>
+            <div className={styles.supportHeader}>
+              <span className={styles.supportIcon}>
+                <i className="ri-cup-line" aria-hidden="true" />
+              </span>
+              <div>
+                <p className={styles.cardLabel}>{t('pricing.supportEyebrow')}</p>
+                <h2 className={styles.supportTitle}>{t('pricing.supportTitle')}</h2>
+              </div>
+            </div>
+            <p className={styles.supportBody}>{t('pricing.supportBody')}</p>
+            <p className={styles.supportNote}>{t('pricing.supportNote')}</p>
+            <a
+              href={supportHref}
+              target={supportUrl ? '_blank' : undefined}
+              rel={supportUrl ? 'noreferrer noopener external' : undefined}
+              className={styles.supportButton}
+            >
+              {t('pricing.supportLink')}
+            </a>
+          </article>
+        </section>
+
         <section className={styles.infoGrid}>
           <article className={styles.infoCard}>
             <h2 className={styles.infoTitle}>{t('pricing.contactTitle')}</h2>
@@ -97,17 +122,9 @@ export default function PricingClient() {
             </a>
           </article>
 
-          <article className={styles.infoCard} id="support">
+          <article className={styles.infoCard}>
             <h2 className={styles.infoTitle}>{t('pricing.paymentTitle')}</h2>
             <p className={styles.infoBody}>{t('pricing.paymentBody')}</p>
-            <a
-              href={supportUrl || 'mailto:y450376@gmail.com?subject=Buy%20Me%20a%20Coffee'}
-              target={supportUrl ? '_blank' : undefined}
-              rel={supportUrl ? 'noreferrer noopener external' : undefined}
-              className={styles.supportLink}
-            >
-              {t('pricing.supportLink')}
-            </a>
           </article>
         </section>
 
