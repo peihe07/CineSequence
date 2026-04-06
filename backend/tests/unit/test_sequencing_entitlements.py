@@ -1,16 +1,12 @@
 """Unit tests for sequencing entitlement gating and consumption."""
 
 import uuid
-from unittest.mock import AsyncMock, patch
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from app.models.sequencing_entitlement import (
-    EntitlementKind,
-    EntitlementSource,
-    SequencingEntitlement,
-)
 from app.models.user import Gender, User
+from app.models.user_entitlement import EntitlementStatus, EntitlementType, UserEntitlement
 from app.services.sequencing_entitlements import (
     can_start_extension,
     can_start_retest,
@@ -19,122 +15,146 @@ from app.services.sequencing_entitlements import (
 )
 
 
-@pytest.mark.asyncio
-async def test_can_start_retest_with_free_credit():
-    db_session = AsyncMock()
-    user = User(
+def _make_user(**overrides) -> User:
+    defaults = dict(
         id=uuid.uuid4(),
-        email="entitlement-free@example.com",
-        name="Free User",
+        email="test@example.com",
+        name="Test",
         gender=Gender.other,
         region="TW",
-        free_retest_credits=1,
+        free_retest_credits=0,
         paid_sequencing_credits=0,
+        beta_entitlement_override=False,
+    )
+    defaults.update(overrides)
+    return User(**defaults)
+
+
+def _mock_count(value: int):
+    """Patch _count_available to return a fixed value."""
+    return patch(
+        "app.services.sequencing_entitlements._count_available",
+        AsyncMock(return_value=value),
     )
 
-    gate = await can_start_retest(db_session, user)
+
+def _mock_consume_one():
+    """Patch _consume_one as a no-op."""
+    return patch(
+        "app.services.sequencing_entitlements._consume_one",
+        AsyncMock(),
+    )
+
+
+@pytest.mark.asyncio
+async def test_can_start_retest_with_free_credit():
+    db = AsyncMock()
+    user = _make_user(free_retest_credits=1)
+
+    with _mock_count(0):
+        gate = await can_start_retest(db, user)
 
     assert gate.allowed is True
     assert gate.reason == "free_retest_available"
 
 
 @pytest.mark.asyncio
-async def test_can_start_extension_requires_paid_credit():
-    db_session = AsyncMock()
-    user = User(
-        id=uuid.uuid4(),
-        email="entitlement-extend@example.com",
-        name="Extend User",
-        gender=Gender.other,
-        region="TW",
-        free_retest_credits=1,
-        paid_sequencing_credits=0,
-    )
+async def test_can_start_retest_with_paid_entitlement():
+    db = AsyncMock()
+    user = _make_user()
 
-    gate = await can_start_extension(db_session, user)
+    with _mock_count(2):
+        gate = await can_start_retest(db, user)
+
+    assert gate.allowed is True
+    assert gate.reason == "paid_credit_available"
+
+
+@pytest.mark.asyncio
+async def test_can_start_retest_no_credits():
+    db = AsyncMock()
+    user = _make_user()
+
+    with _mock_count(0):
+        gate = await can_start_retest(db, user)
 
     assert gate.allowed is False
     assert gate.reason == "payment_required"
 
 
 @pytest.mark.asyncio
-async def test_consume_extension_credit_decrements_paid_credit_and_marks_ledger():
-    db_session = AsyncMock()
-    user = User(
-        id=uuid.uuid4(),
-        email="entitlement-paid@example.com",
-        name="Paid User",
-        gender=Gender.other,
-        region="TW",
-        free_retest_credits=1,
-        paid_sequencing_credits=1,
-    )
+async def test_can_start_extension_requires_paid_entitlement():
+    db = AsyncMock()
+    user = _make_user()
 
-    entitlement = SequencingEntitlement(
-        user_id=user.id,
-        kind=EntitlementKind.paid_credit,
-        quantity=1,
-        used_quantity=0,
-        source=EntitlementSource.admin,
-        notes="test grant",
-    )
+    with _mock_count(0):
+        gate = await can_start_extension(db, user)
 
-    with patch(
-        "app.services.sequencing_entitlements._find_available_entitlement",
-        AsyncMock(return_value=entitlement),
-    ) as mock_find:
-        result = await consume_extension_credit(db_session, user)
-
-    assert result.kind_used == "paid_credit"
-    assert result.credits_remaining == 0
-    mock_find.assert_awaited_once_with(db_session, user.id, EntitlementKind.paid_credit)
-    assert user.paid_sequencing_credits == 0
-    assert entitlement.used_quantity == 1
-    db_session.flush.assert_awaited_once()
+    assert gate.allowed is False
+    assert gate.reason == "payment_required"
 
 
 @pytest.mark.asyncio
-async def test_consume_retest_credit_uses_free_credit_before_paid_credit():
-    db_session = AsyncMock()
-    user = User(
-        id=uuid.uuid4(),
-        email="entitlement-retest@example.com",
-        name="Retest User",
-        gender=Gender.other,
-        region="TW",
-        free_retest_credits=1,
-        paid_sequencing_credits=2,
-    )
+async def test_can_start_extension_with_paid_entitlement():
+    db = AsyncMock()
+    user = _make_user()
 
-    free_entitlement = SequencingEntitlement(
-        user_id=user.id,
-        kind=EntitlementKind.free_retest,
-        quantity=1,
-        used_quantity=0,
-        source=EntitlementSource.launch_grant,
-        notes="launch grant",
-    )
-    paid_entitlement = SequencingEntitlement(
-        user_id=user.id,
-        kind=EntitlementKind.paid_credit,
-        quantity=2,
-        used_quantity=0,
-        source=EntitlementSource.admin,
-        notes="test grant",
-    )
+    with _mock_count(1):
+        gate = await can_start_extension(db, user)
 
-    with patch(
-        "app.services.sequencing_entitlements._find_available_entitlement",
-        AsyncMock(return_value=free_entitlement),
-    ) as mock_find:
-        result = await consume_retest_credit(db_session, user)
+    assert gate.allowed is True
+    assert gate.reason == "paid_credit_available"
+
+
+@pytest.mark.asyncio
+async def test_consume_extension_credit():
+    db = AsyncMock()
+    user = _make_user()
+
+    with _mock_consume_one() as mock_consume, _mock_count(2):
+        result = await consume_extension_credit(db, user)
+
+    mock_consume.assert_awaited_once_with(db, user.id, EntitlementType.extension)
+    assert result.kind_used == "paid_credit"
+    assert result.credits_remaining == 2
+
+
+@pytest.mark.asyncio
+async def test_consume_retest_uses_free_credit_first():
+    db = AsyncMock()
+    user = _make_user(free_retest_credits=1)
+
+    with _mock_count(3):
+        result = await consume_retest_credit(db, user)
 
     assert result.kind_used == "free_retest"
     assert result.free_retests_remaining == 0
-    assert result.credits_remaining == 2
-    mock_find.assert_awaited_once_with(db_session, user.id, EntitlementKind.free_retest)
     assert user.free_retest_credits == 0
-    assert user.paid_sequencing_credits == 2
-    assert free_entitlement.used_quantity == 1
-    assert paid_entitlement.used_quantity == 0
-    db_session.flush.assert_awaited_once()
+    db.flush.assert_awaited_once()
+
+
+@pytest.mark.asyncio
+async def test_consume_retest_uses_paid_when_no_free():
+    db = AsyncMock()
+    user = _make_user()
+
+    with _mock_consume_one() as mock_consume, _mock_count(1):
+        result = await consume_retest_credit(db, user)
+
+    mock_consume.assert_awaited_once_with(db, user.id, EntitlementType.retest)
+    assert result.kind_used == "paid_credit"
+
+
+@pytest.mark.asyncio
+async def test_beta_override_always_allows():
+    db = AsyncMock()
+    user = _make_user(beta_entitlement_override=True)
+
+    with _mock_count(0):
+        retest_gate = await can_start_retest(db, user)
+        ext_gate = await can_start_extension(db, user)
+
+    assert retest_gate.allowed is True
+    assert retest_gate.reason == "beta_override"
+    assert ext_gate.allowed is True
+    assert ext_gate.reason == "beta_override"

@@ -65,12 +65,15 @@ class User(Base):
         UUID(as_uuid=True), ForeignKey("sequencing_sessions.id", use_alter=True), nullable=True
     )
     free_retest_credits: Mapped[int] = mapped_column(
-        Integer, default=1, server_default="1", nullable=False
+        Integer, default=0, server_default="0", nullable=False
     )
     paid_sequencing_credits: Mapped[int] = mapped_column(
         Integer, default=0, server_default="0", nullable=False
     )
     beta_entitlement_override: Mapped[bool] = mapped_column(
+        Boolean, default=False, server_default="false", nullable=False
+    )
+    invite_unlocked: Mapped[bool] = mapped_column(
         Boolean, default=False, server_default="false", nullable=False
     )
 

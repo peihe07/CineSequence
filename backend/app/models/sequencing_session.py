@@ -11,7 +11,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.models import Base
 
 BASE_ROUNDS = 30
-EXTENSION_BATCH_SIZE = 3
+EXTENSION_BATCH_SIZE = 10
 MAX_EXTENSION_BATCHES = 2
 
 
