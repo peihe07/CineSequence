@@ -7,6 +7,7 @@ interface ProfileSequencingCardProps {
   profile: Profile
   title: string
   archetypeLabel: string
+  archetypeName: string
   intro: string
   getStatusLabel: (value: string) => string
 }
@@ -15,6 +16,7 @@ export default function ProfileSequencingCard({
   profile,
   title,
   archetypeLabel,
+  archetypeName,
   intro,
   getStatusLabel,
 }: ProfileSequencingCardProps) {
@@ -43,7 +45,7 @@ export default function ProfileSequencingCard({
         {profile.archetype_id && (
           <div className={styles.factCard}>
             <span className={styles.label}>{archetypeLabel}</span>
-            <span className={styles.factMetric}>{profile.archetype_name || profile.archetype_id}</span>
+            <span className={styles.factMetric}>{archetypeName}</span>
           </div>
         )}
       </div>

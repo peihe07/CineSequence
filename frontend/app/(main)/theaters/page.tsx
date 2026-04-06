@@ -34,7 +34,6 @@ function FeaturedGroup({ group }: { group: TheaterGroup }) {
           <div className={styles.groupText}>
             <p className={styles.featuredEyebrow}>{t('theaters.featured')}</p>
             <h2 className={styles.featuredTitle}>{group.name}</h2>
-            <p className={styles.groupSubtitle}>{group.subtitle}</p>
           </div>
         </div>
         <Link
@@ -224,7 +223,6 @@ function GroupCard({ group, onJoin, onLeave }: {
           <i className={`${group.icon} ${styles.groupIcon}`} />
           <div className={styles.groupText}>
             <span className={styles.groupName}>{group.name}</span>
-            <span className={styles.groupSubtitle}>{group.subtitle}</span>
           </div>
         </div>
         <span className={styles.memberBadge}>

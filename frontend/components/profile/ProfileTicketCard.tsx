@@ -4,6 +4,7 @@
 
 import { useRef } from 'react'
 import { motion, useMotionValue, useTransform } from 'framer-motion'
+import { getArchetypeLabel } from '@/lib/archetypeLabels'
 import { useI18n } from '@/lib/i18n'
 import { getTagLabel } from '@/lib/tagLabels'
 import type { Profile } from './types'
@@ -37,7 +38,7 @@ export default function ProfileTicketCard({ profile, topTags }: ProfileTicketCar
   const rx = useTransform(rotateX, (v) => `${v}deg`)
   const ry = useTransform(rotateY, (v) => `${v}deg`)
 
-  const archetypeName = profile.archetype_name ?? profile.archetype_id ?? ''
+  const archetypeName = getArchetypeLabel(profile.archetype_id, profile.archetype_name, locale)
   const favoriteMovies = profile.favorite_movies ?? []
 
   return (

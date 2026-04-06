@@ -52,5 +52,95 @@
     "primary_tags": ["darkTone", "psychoThriller", "twist", "mindfuck"],
     "is_hidden": true,
     "min_members_to_activate": 3
+  },
+  {
+    "id": "neon_noir",
+    "name": "霓虹黑色",
+    "subtitle": "雨夜與槍聲",
+    "icon": "ri-flashlight-line",
+    "primary_tags": ["darkTone", "revenge", "visualFeast", "stylized"],
+    "is_hidden": false,
+    "min_members_to_activate": 3
+  },
+  {
+    "id": "ghost_frequency",
+    "name": "鬼頻道",
+    "subtitle": "你聽見了嗎",
+    "icon": "ri-radio-line",
+    "primary_tags": ["supernatural", "psychoThriller", "atmospheric", "slowburn"],
+    "is_hidden": true,
+    "min_members_to_activate": 3
+  },
+  {
+    "id": "atlas_cinema",
+    "name": "地圖室",
+    "subtitle": "一張票去很遠",
+    "icon": "ri-compass-3-line",
+    "primary_tags": ["culturalTexture", "foreignLang", "socialCritique", "historicalEpic"],
+    "is_hidden": false,
+    "min_members_to_activate": 3
+  },
+  {
+    "id": "silence_theater",
+    "name": "靜音放映廳",
+    "subtitle": "不需要對白",
+    "icon": "ri-volume-mute-line",
+    "primary_tags": ["slowburn", "atmospheric", "visualFeast", "poeticRealism"],
+    "is_hidden": false,
+    "min_members_to_activate": 3
+  },
+  {
+    "id": "fever_dream",
+    "name": "高燒夢境",
+    "subtitle": "醒來就忘了",
+    "icon": "ri-fire-line",
+    "primary_tags": ["experimental", "absurdist", "surreal", "psychological"],
+    "is_hidden": true,
+    "min_members_to_activate": 3
+  },
+  {
+    "id": "clockwork",
+    "name": "發條機關",
+    "subtitle": "每秒都有計畫",
+    "icon": "ri-timer-line",
+    "primary_tags": ["twist", "ensemble", "heist", "procedural"],
+    "is_hidden": false,
+    "min_members_to_activate": 3
+  },
+  {
+    "id": "paper_lantern",
+    "name": "紙燈籠",
+    "subtitle": "光很近 人很遠",
+    "icon": "ri-sun-foggy-line",
+    "primary_tags": ["romanticCore", "poeticRealism", "comingOfAge", "foreignLang"],
+    "is_hidden": false,
+    "min_members_to_activate": 3
+  },
+  {
+    "id": "war_room",
+    "name": "戰情室",
+    "subtitle": "沒有英雄敘事",
+    "icon": "ri-sword-line",
+    "primary_tags": ["historicalEpic", "survival", "ensemble", "politicalIntrigue"],
+    "is_hidden": false,
+    "min_members_to_activate": 3
+  },
+  {
+    "id": "last_row",
+    "name": "最後一排",
+    "subtitle": "坐最遠看最清",
+    "icon": "ri-eye-line",
+    "primary_tags": ["socialCritique", "satirical", "dialogue", "classConflict"],
+    "is_hidden": false,
+    "min_members_to_activate": 3
+  },
+  {
+    "id": "analog_vault",
+    "name": "類比片庫",
+    "subtitle": "膠卷限定",
+    "icon": "ri-film-line",
+    "primary_tags": ["cult", "experimental", "poeticRealism", "atmospheric"],
+    "is_hidden": false,
+    "min_members_to_activate": 3
   }
 ]

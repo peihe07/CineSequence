@@ -262,7 +262,6 @@ function TheaterDetailContent() {
           <div className={styles.titleRow}>
             <div>
               <h1 className={styles.title}>{group.name}</h1>
-              <p className={styles.subtitle}>{group.subtitle}</p>
             </div>
             <span className={styles.memberBadge}>
               <i className="ri-group-line" /> {group.member_count}

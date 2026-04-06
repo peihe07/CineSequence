@@ -1,6 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
+import { getArchetypeLabel } from '@/lib/archetypeLabels'
 import { useI18n } from '@/lib/i18n'
 import ProfileBasicsCard from '@/components/profile/ProfileBasicsCard'
 import ProfileCompletenessBar, { computeCompleteness } from '@/components/profile/ProfileCompletenessBar'
@@ -15,7 +16,7 @@ import { useProfile } from './useProfile'
 import styles from './page.module.css'
 
 export default function ProfilePage() {
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
   const {
     profile,
     isLoading,
@@ -72,6 +73,8 @@ export default function ProfilePage() {
     )
   }
 
+  const archetypeLabel = getArchetypeLabel(profile.archetype_id, profile.archetype_name, locale)
+
   return (
     <div className={`${styles.container} ${isPreviewMode ? styles.previewCanvas : ''}`}>
       <motion.div
@@ -104,7 +107,7 @@ export default function ProfilePage() {
               <div className={styles.heroIdentity}>
                 <p className={styles.heroName}>{profile.name}</p>
                 <p className={styles.heroArchetype}>
-                  {profile.archetype_name || profile.archetype_id || getStatusLabel(profile.sequencing_status)}
+                  {archetypeLabel || getStatusLabel(profile.sequencing_status)}
                 </p>
               </div>
               <div className={styles.clearanceBadge}>
@@ -277,6 +280,7 @@ export default function ProfilePage() {
                   profile={profile}
                   title={t('profile.seqStatus')}
                   archetypeLabel={t('profile.archetype')}
+                  archetypeName={archetypeLabel}
                   intro={t('profile.sequencingIntro')}
                   getStatusLabel={getStatusLabel}
                 />

@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
+import { getArchetypeLabel } from '@/lib/archetypeLabels'
 import { useI18n } from '@/lib/i18n'
 import type { Profile } from './types'
 import styles from './ProfileDnaSnapshot.module.css'
@@ -59,7 +60,7 @@ function buildMetrics(profile: Profile, t: (key: string) => string): Metric[] {
 }
 
 export default function ProfileDnaSnapshot({ profile }: ProfileDnaSnapshotProps) {
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
   const [scanComplete, setScanComplete] = useState(false)
   const metrics = useMemo(() => buildMetrics(profile, t), [profile, t])
 
@@ -69,7 +70,8 @@ export default function ProfileDnaSnapshot({ profile }: ProfileDnaSnapshotProps)
     return () => window.clearTimeout(timer)
   }, [profile.archetype_id, profile.sequencing_status, profile.match_gender_pref, profile.match_age_min, profile.match_age_max, profile.pure_taste_match])
 
-  const archetypeName = profile.archetype_name || profile.archetype_id || t('profile.snapshotPending')
+  const archetypeName =
+    getArchetypeLabel(profile.archetype_id, profile.archetype_name, locale) || t('profile.snapshotPending')
   const showVerifiedStamp = Boolean(
     profile.archetype_id
     || profile.archetype_name

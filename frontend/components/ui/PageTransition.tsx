@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from 'react'
 import { usePathname } from 'next/navigation'
-import { AnimatePresence, motion } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { logPerf } from '@/lib/perf'
 
 interface PageTransitionProps {
@@ -10,8 +10,8 @@ interface PageTransitionProps {
 }
 
 /**
- * Film-slide page transition — a brief shutter flash + vertical slide
- * on route change within the (main) layout group.
+ * Lightweight page transition — instant mount with a quick fade-in.
+ * No exit animation to avoid black-screen delays between routes.
  */
 export default function PageTransition({ children }: PageTransitionProps) {
   const pathname = usePathname()
@@ -26,16 +26,13 @@ export default function PageTransition({ children }: PageTransitionProps) {
   }, [pathname])
 
   return (
-    <AnimatePresence initial={false}>
-      <motion.div
-        key={pathname}
-        initial={{ opacity: 0, y: 6 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -4 }}
-        transition={{ duration: 0.25, ease: [0.25, 0.1, 0.25, 1] }}
-      >
-        {children}
-      </motion.div>
-    </AnimatePresence>
+    <motion.div
+      key={pathname}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.15, ease: 'easeOut' }}
+    >
+      {children}
+    </motion.div>
   )
 }

@@ -11,7 +11,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.group import Group, group_members
 from app.models.group_message import GroupMessage
-from app.models.theater_list import TheaterList, TheaterListReply
+from app.models.theater_list import TheaterList, TheaterListItem, TheaterListReply
 from app.models.user import User
 from app.services.r2_storage import normalize_public_object_url
 from app.services.tmdb_client import get_movies
@@ -613,6 +613,65 @@ async def _build_group_payloads_for_groups(
     return payloads
 
 
+async def _bootstrap_theater_lists(
+    db: AsyncSession,
+    group_ids: list[str],
+    creator_id: uuid.UUID,
+) -> None:
+    """Create initial curated theater lists for groups that have none yet."""
+    if not group_ids:
+        return
+
+    # Find which groups already have a list
+    existing = await db.execute(
+        select(TheaterList.group_id)
+        .where(TheaterList.group_id.in_(group_ids))
+    )
+    groups_with_lists = {row[0] for row in existing}
+    groups_needing_lists = [gid for gid in group_ids if gid not in groups_with_lists]
+    if not groups_needing_lists:
+        return
+
+    # Load group data for tag matching
+    group_result = await db.execute(
+        select(Group).where(Group.id.in_(groups_needing_lists))
+    )
+    groups_by_id = {g.id: g for g in group_result.scalars().all()}
+
+    for group_id in groups_needing_lists:
+        group = groups_by_id.get(group_id)
+        if not group:
+            continue
+
+        movies = recommend_movies_for_group(group.primary_tags or [], limit=5)
+        if not movies:
+            continue
+
+        theater_list = TheaterList(
+            group_id=group_id,
+            creator_id=creator_id,
+            title=group.name,
+            description=None,
+            visibility="group",
+        )
+        db.add(theater_list)
+        await db.flush()
+
+        for position, movie in enumerate(movies):
+            db.add(TheaterListItem(
+                list_id=theater_list.id,
+                tmdb_id=movie["tmdb_id"],
+                title_en=movie["title_en"],
+                match_tags=movie.get("match_tags", []),
+                position=position,
+                added_by=creator_id,
+            ))
+
+    logger.info(
+        "Bootstrapped theater lists for %d groups", len(groups_needing_lists)
+    )
+
+
 async def auto_assign_groups(
     db: AsyncSession,
     user: User,
@@ -645,6 +704,11 @@ async def auto_assign_groups(
                 group_members.insert().values(user_id=user.id, group_id=group.id)
             )
             existing_group_ids.add(group.id)
+
+    # Bootstrap theater lists for newly assigned groups
+    await _bootstrap_theater_lists(
+        db, list(existing_group_ids), user.id
+    )
 
     # Update member counts in a single batched query instead of N separate COUNTs.
     counts_result = await db.execute(
