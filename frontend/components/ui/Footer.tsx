@@ -68,6 +68,9 @@ export default function Footer() {
               <Link href="/about" className={styles.footerLink}>
                 {t('footer.about')}
               </Link>
+              <Link href="/pricing" className={styles.footerLink}>
+                {t('footer.pricing')}
+              </Link>
               <button type="button" className={styles.footerLink} onClick={() => setOpenModal('privacy')}>
                 {t('footer.privacy')}
               </button>
