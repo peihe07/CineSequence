@@ -6,7 +6,7 @@ import logging
 import time
 import urllib.parse
 import uuid
-from datetime import UTC, datetime, timezone, timedelta
+from datetime import UTC, datetime, timedelta, timezone
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -14,7 +14,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.config import settings
 from app.models.payment_order import OrderStatus, PaymentOrder, ProductType
 from app.models.user import User
-from app.models.user_entitlement import EntitlementStatus, EntitlementType, UserEntitlement
+from app.models.user_entitlement import (
+    EntitlementStatus,
+    EntitlementType,
+    UserEntitlement,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -90,7 +94,9 @@ def build_ecpay_form_html(order: PaymentOrder) -> str:
     params = {
         "MerchantID": settings.ecpay_merchant_id,
         "MerchantTradeNo": order.order_no,
-        "MerchantTradeDate": datetime.now(timezone(timedelta(hours=8))).strftime("%Y/%m/%d %H:%M:%S"),
+        "MerchantTradeDate": datetime.now(
+            timezone(timedelta(hours=8))
+        ).strftime("%Y/%m/%d %H:%M:%S"),
         "PaymentType": "aio",
         "TotalAmount": str(order.amount),
         "TradeDesc": "Cine Sequence",
