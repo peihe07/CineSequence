@@ -142,18 +142,17 @@ Decision: max_extension_batches stays at 2 (so max total = 30 + 20 = 50 rounds).
 
 #### 1c. Remove Free Retest
 
-Files to change:
+Files changed:
 
-- `backend/app/models/user.py` — change `free_retest_credits` default from 1 to 0
-- `backend/app/services/sequencing_entitlements.py` — simplify `can_start_retest()` to only check `paid_sequencing_credits > 0` or `beta_entitlement_override`
-- `backend/app/services/sequencing_entitlements.py` — simplify `consume_retest_credit()` to only decrement paid credits
+- `backend/app/models/user.py` — `free_retest_credits` default set to 0
+- `backend/app/services/sequencing_entitlements.py` — legacy free retest path removed; all gating now uses `user_entitlements` table exclusively
 
 Tasks:
 
-- [ ] Change extension rounds from 3 to 10
-- [ ] Set `free_retest_credits` default to 0
-- [ ] Simplify entitlement logic (remove free retest path)
-- [ ] Update tests in `backend/tests/`
+- [x] Change extension rounds from 3 to 10
+- [x] Set `free_retest_credits` default to 0
+- [x] Remove legacy free retest path from entitlement logic
+- [x] Update tests in `backend/tests/`
 
 ---
 
@@ -277,15 +276,19 @@ GET /payments/history
 
 Tasks:
 
-- [ ] Create `PaymentOrder` model + Alembic migration（含 `refund_amount` 欄位）
-- [ ] Create `UserEntitlement` model + Alembic migration
-- [ ] 移除 `users.paid_sequencing_credits` 欄位
-- [ ] 註冊流程寫入 5 筆 invite entitlements
-- [ ] Implement `payment_service.py`（order creation, callback verification, entitlement granting, refund）
-- [ ] Implement `routers/payments.py`（checkout, callback, return, history）
-- [ ] Callback 安全性：idempotency + CheckMacValue + IP 白名單
-- [ ] Add ECPay env vars to config（含 `ECPAY_CALLBACK_IPS`）
-- [ ] Write tests with mocked ECPay responses
+- [x] Create `PaymentOrder` model + Alembic migration（含 `refund_amount` 欄位）
+- [x] Create `UserEntitlement` model + Alembic migration
+- [ ] 移除 `users.paid_sequencing_credits` 欄位（relaunch migration 時一併處理）
+- [x] 註冊流程寫入 5 筆 invite entitlements
+- [x] Implement `payment_service.py`（order creation, callback verification, entitlement granting, refund）
+- [x] Implement `routers/payments.py`（checkout, callback, history）
+- [x] Callback 安全性：idempotency + CheckMacValue + IP 白名單
+- [x] Add ECPay env vars to config（含 `ECPAY_CALLBACK_IPS`）
+- [x] Write tests with mocked ECPay responses
+- [x] `MerchantTradeDate` 使用 UTC+8（台灣時間）
+- [x] `invite_unlock` 退款時 revoke `user.invite_unlocked` flag
+- [x] `build_ecpay_form_html` 加 HTML escape 防護
+- [x] Frontend `/payments/return` 頁面（付款後重導 + 狀態輪詢）
 - [ ] Test full flow on ECPay sandbox
 
 ---
@@ -348,11 +351,11 @@ DNA Result Page → [Share] button
 
 Tasks:
 
-- [ ] Build `PaymentModal` component (glassmorphism style, product selection, ECPay redirect)
-- [ ] Add credit state to DNA result page (from existing ProgressResponse)
-- [ ] Add invite credit counter + unlock CTA on match page
+- [x] Build `PaymentModal` component (glassmorphism style, product selection, ECPay redirect)
+- [x] Add credit state to DNA result page (from existing ProgressResponse)
+- [x] Add invite credit counter + unlock CTA on match page
 - [ ] Add share card free/premium split on DNA result page
-- [ ] Handle ECPay return redirect (success/failure state)
+- [x] Handle ECPay return redirect (success/failure state)
 
 ---
 
@@ -419,11 +422,11 @@ Design:
 
 Tasks:
 
-- [ ] Create `MatchMessage` model + Alembic migration
-- [ ] Implement `routers/match_messages.py` (list + create)
-- [ ] Add rate limiting（配對後前 24h: 60 msgs/hour, 之後: 20 msgs/hour, 以 `matches.accepted_at` 判斷）
-- [ ] Build `MessageBoard` + `MessageBubble` components
-- [ ] Add message board section to match detail page
+- [x] Create `MatchMessage` model + Alembic migration
+- [x] Implement `routers/match_messages.py` (list + create)
+- [x] Add rate limiting（配對後前 24h: 60 msgs/hour, 之後: 20 msgs/hour）
+- [x] Build `MessageBoard` component (optimistic UI, polling, status tags)
+- [x] Add message board section to match detail page
 - [ ] Add notification: "New message from {name}" on new message
 
 ---
