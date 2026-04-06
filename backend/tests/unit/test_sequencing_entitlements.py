@@ -47,18 +47,6 @@ def _mock_consume_one():
 
 
 @pytest.mark.asyncio
-async def test_can_start_retest_with_free_credit():
-    db = AsyncMock()
-    user = _make_user(free_retest_credits=1)
-
-    with _mock_count(0):
-        gate = await can_start_retest(db, user)
-
-    assert gate.allowed is True
-    assert gate.reason == "free_retest_available"
-
-
-@pytest.mark.asyncio
 async def test_can_start_retest_with_paid_entitlement():
     db = AsyncMock()
     user = _make_user()
@@ -120,21 +108,7 @@ async def test_consume_extension_credit():
 
 
 @pytest.mark.asyncio
-async def test_consume_retest_uses_free_credit_first():
-    db = AsyncMock()
-    user = _make_user(free_retest_credits=1)
-
-    with _mock_count(3):
-        result = await consume_retest_credit(db, user)
-
-    assert result.kind_used == "free_retest"
-    assert result.free_retests_remaining == 0
-    assert user.free_retest_credits == 0
-    db.flush.assert_awaited_once()
-
-
-@pytest.mark.asyncio
-async def test_consume_retest_uses_paid_when_no_free():
+async def test_consume_retest_uses_paid():
     db = AsyncMock()
     user = _make_user()
 

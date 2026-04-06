@@ -1,7 +1,6 @@
 """Sequencing entitlement gating: check and consume credits for retest/extension.
 
-Uses user_entitlements table for paid credits, and users.free_retest_credits
-as a legacy fallback (will be 0 for all users after relaunch reset).
+Uses user_entitlements table for all credit tracking.
 """
 
 from dataclasses import dataclass
@@ -68,53 +67,40 @@ async def _consume_one(
 
 
 async def can_start_retest(db: AsyncSession, user: User) -> GateResult:
-    free_remaining = max(user.free_retest_credits, 0)
     paid_remaining = await _count_available(db, user.id, EntitlementType.retest)
 
     if user.beta_entitlement_override:
-        return GateResult(True, "beta_override", free_remaining, paid_remaining)
-    if free_remaining > 0:
-        return GateResult(True, "free_retest_available", free_remaining, paid_remaining)
+        return GateResult(True, "beta_override", 0, paid_remaining)
     if paid_remaining > 0:
-        return GateResult(True, "paid_credit_available", free_remaining, paid_remaining)
-    return GateResult(False, "payment_required", free_remaining, paid_remaining)
+        return GateResult(True, "paid_credit_available", 0, paid_remaining)
+    return GateResult(False, "payment_required", 0, paid_remaining)
 
 
 async def can_start_extension(db: AsyncSession, user: User) -> GateResult:
-    free_remaining = max(user.free_retest_credits, 0)
     paid_remaining = await _count_available(db, user.id, EntitlementType.extension)
 
     if user.beta_entitlement_override:
-        return GateResult(True, "beta_override", free_remaining, paid_remaining)
+        return GateResult(True, "beta_override", 0, paid_remaining)
     if paid_remaining > 0:
-        return GateResult(True, "paid_credit_available", free_remaining, paid_remaining)
-    return GateResult(False, "payment_required", free_remaining, paid_remaining)
+        return GateResult(True, "paid_credit_available", 0, paid_remaining)
+    return GateResult(False, "payment_required", 0, paid_remaining)
 
 
 async def consume_extension_credit(db: AsyncSession, user: User) -> ConsumptionResult:
     if user.beta_entitlement_override:
         paid = await _count_available(db, user.id, EntitlementType.extension)
-        return ConsumptionResult("beta_override", max(user.free_retest_credits, 0), paid)
+        return ConsumptionResult("beta_override", 0, paid)
 
     await _consume_one(db, user.id, EntitlementType.extension)
     paid = await _count_available(db, user.id, EntitlementType.extension)
-    return ConsumptionResult("paid_credit", max(user.free_retest_credits, 0), paid)
+    return ConsumptionResult("paid_credit", 0, paid)
 
 
 async def consume_retest_credit(db: AsyncSession, user: User) -> ConsumptionResult:
     if user.beta_entitlement_override:
         paid = await _count_available(db, user.id, EntitlementType.retest)
-        return ConsumptionResult("beta_override", max(user.free_retest_credits, 0), paid)
-
-    # Legacy free retest path (will be 0 after relaunch)
-    if user.free_retest_credits > 0:
-        user.free_retest_credits -= 1
-        await db.flush()
-        paid = await _count_available(db, user.id, EntitlementType.retest)
-        return ConsumptionResult(
-            "free_retest", max(user.free_retest_credits, 0), paid
-        )
+        return ConsumptionResult("beta_override", 0, paid)
 
     await _consume_one(db, user.id, EntitlementType.retest)
     paid = await _count_available(db, user.id, EntitlementType.retest)
-    return ConsumptionResult("paid_credit", max(user.free_retest_credits, 0), paid)
+    return ConsumptionResult("paid_credit", 0, paid)
