@@ -68,6 +68,11 @@ export default function PricingClient() {
                 </div>
               </div>
               <p className={styles.cardBody}>{t(`pricing.${context}.body`)}</p>
+              <ul className={styles.detailList}>
+                <li>{t(`pricing.${context}.detail1`)}</li>
+                <li>{t(`pricing.${context}.detail2`)}</li>
+                <li>{t(`pricing.${context}.detail3`)}</li>
+              </ul>
               <div className={styles.cardMeta}>
                 <span className={styles.price}>{CARD_PRICE[context]}</span>
                 <span className={styles.metaText}>{t(`pricing.${context}.meta`)}</span>
@@ -92,19 +97,17 @@ export default function PricingClient() {
             </a>
           </article>
 
-          <article className={styles.infoCard}>
+          <article className={styles.infoCard} id="support">
             <h2 className={styles.infoTitle}>{t('pricing.paymentTitle')}</h2>
             <p className={styles.infoBody}>{t('pricing.paymentBody')}</p>
-            {supportUrl ? (
-              <a
-                href={supportUrl}
-                target="_blank"
-                rel="noreferrer noopener external"
-                className={styles.supportLink}
-              >
-                {t('pricing.supportLink')}
-              </a>
-            ) : null}
+            <a
+              href={supportUrl || 'mailto:y450376@gmail.com?subject=Buy%20Me%20a%20Coffee'}
+              target={supportUrl ? '_blank' : undefined}
+              rel={supportUrl ? 'noreferrer noopener external' : undefined}
+              className={styles.supportLink}
+            >
+              {t('pricing.supportLink')}
+            </a>
           </article>
         </section>
 

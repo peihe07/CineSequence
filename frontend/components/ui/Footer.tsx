@@ -13,6 +13,7 @@ export default function Footer() {
   const supportUrl =
     process.env.NEXT_PUBLIC_SUPPORT_URL?.trim() ||
     process.env.NEXT_PUBLIC_BUYMEACOFFEE_URL?.trim()
+  const supportHref = supportUrl || '/pricing#support'
 
   useEffect(() => {
     if (!openModal) return
@@ -51,18 +52,16 @@ export default function Footer() {
               <span>y450376@gmail.com</span>
             </a>
 
-            {supportUrl ? (
-              <a
-                href={supportUrl}
-                className={styles.footerSupport}
-                target="_blank"
-                rel="noreferrer noopener external"
-                aria-label={t('footer.supportAria')}
-              >
-                <i className="ri-cup-line" />
-                <span>{t('footer.support')}</span>
-              </a>
-            ) : null}
+            <a
+              href={supportHref}
+              className={styles.footerSupport}
+              target={supportUrl ? '_blank' : undefined}
+              rel={supportUrl ? 'noreferrer noopener external' : undefined}
+              aria-label={t('footer.supportAria')}
+            >
+              <i className="ri-cup-line" />
+              <span>{t('footer.support')}</span>
+            </a>
 
             <nav className={styles.footerNav} aria-label={t('footer.nav')}>
               <Link href="/about" className={styles.footerLink}>

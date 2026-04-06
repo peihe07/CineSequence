@@ -1,8 +1,11 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
+import { ApiError } from '@/lib/api'
+import PaymentModal from '@/components/ui/PaymentModal'
 import { useSequencingStore } from '@/stores/sequencingStore'
 import { useDnaStore } from '@/stores/dnaStore'
 import { useI18n } from '@/lib/i18n'
@@ -15,6 +18,7 @@ export default function SequencingCompletePage() {
   const { progress, fetchProgress, extendSequencing } = useSequencingStore()
   const { buildDna, fetchResult } = useDnaStore()
   const [isPreparingDna, setIsPreparingDna] = useState(false)
+  const [paymentContext, setPaymentContext] = useState<'extend' | 'retest' | null>(null)
 
   useEffect(() => {
     fetchProgress()
@@ -42,8 +46,10 @@ export default function SequencingCompletePage() {
     try {
       await extendSequencing()
       router.replace('/sequencing')
-    } catch {
-      // Store error state keeps the user on the completion page.
+    } catch (err) {
+      if (err instanceof ApiError && err.status === 403) {
+        setPaymentContext('extend')
+      }
     }
   }
 
@@ -98,6 +104,16 @@ export default function SequencingCompletePage() {
                 <i className="ri-add-line" /> {t('complete.extend')}
               </button>
             )}
+            <button className={styles.secondaryBtn} onClick={() => setPaymentContext('retest')}>
+              <i className="ri-refresh-line" /> {t('profile.retest')}
+            </button>
+          </div>
+
+          <div className={styles.paymentPanel}>
+            <p className={styles.hint}>{t('complete.paymentNote')}</p>
+            <Link href="/pricing" className={styles.paymentLink}>
+              {t('complete.viewPricing')}
+            </Link>
           </div>
 
           {isPreparingDna && (
@@ -119,6 +135,13 @@ export default function SequencingCompletePage() {
           )}
         </section>
       </motion.div>
+      {paymentContext ? (
+        <PaymentModal
+          open
+          context={paymentContext}
+          onClose={() => setPaymentContext(null)}
+        />
+      ) : null}
     </div>
   )
 }

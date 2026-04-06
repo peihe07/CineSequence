@@ -260,6 +260,25 @@
   color: rgba(255, 255, 255, 0.74);
 }
 
+.actionCardMeta {
+  margin: 0;
+  font-size: var(--text-xs);
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.54);
+}
+
+.actionLink {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  color: var(--color-accent-noir);
+  text-decoration: none;
+  font-family: var(--font-tech);
+  font-size: var(--text-xs);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
 .topRow,
 .grid,
 .readingSection,

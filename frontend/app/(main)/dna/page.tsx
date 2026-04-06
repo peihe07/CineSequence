@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { PreviewBanner, usePreviewAccess } from '@/components/preview/PreviewGate'
@@ -279,6 +280,7 @@ function DnaResultContent() {
                 <div className={styles.secondaryActionCard}>
                   <p className={styles.actionCardLabel}>{t('complete.extend')}</p>
                   <p className={styles.actionCardBody}>{t('dna.extendHint')}</p>
+                  <p className={styles.actionCardMeta}>{t('dna.extendUnlocks')}</p>
                   <Button
                     variant="secondary"
                     size="lg"
@@ -286,8 +288,26 @@ function DnaResultContent() {
                   >
                     <i className="ri-add-line" /> {t('complete.extend')}
                   </Button>
+                  <Link href="/pricing" className={styles.actionLink}>
+                    {t('dna.viewPricing')}
+                  </Link>
                 </div>
               )}
+              <div className={styles.secondaryActionCard}>
+                <p className={styles.actionCardLabel}>{t('profile.retest')}</p>
+                <p className={styles.actionCardBody}>{t('dna.retestHint')}</p>
+                <p className={styles.actionCardMeta}>{t('dna.retestUnlocks')}</p>
+                <Button
+                  variant="secondary"
+                  size="lg"
+                  onClick={() => setPaymentContext('retest')}
+                >
+                  <i className="ri-refresh-line" /> {t('profile.retest')}
+                </Button>
+                <Link href="/pricing" className={styles.actionLink}>
+                  {t('dna.viewPricing')}
+                </Link>
+                </div>
             </div>
           </div>
         </motion.section>

@@ -187,6 +187,26 @@
   flex-wrap: wrap;
 }
 
+.paymentPanel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: 1rem;
+}
+
+.paymentLink {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  color: var(--color-accent-noir);
+  text-decoration: none;
+  font-family: var(--font-tech);
+  font-size: var(--text-xs);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
 .primaryBtn {
   display: flex;
   align-items: center;

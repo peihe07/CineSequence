@@ -3,6 +3,7 @@
 /* eslint-disable @next/next/no-img-element */
 
 import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { AnimatePresence, motion } from 'framer-motion'
 import { PreviewBanner, usePreviewAccess } from '@/components/preview/PreviewGate'
@@ -465,6 +466,23 @@ function MatchesContent() {
               }
             </p>
           )}
+          <div className={styles.paymentNotice}>
+            <p className={styles.paymentNoticeTitle}>{t('matches.inviteUnlock')}</p>
+            <p className={styles.paymentNoticeBody}>{t('matches.inviteUnlockBody')}</p>
+            <div className={styles.paymentNoticeActions}>
+              <button
+                type="button"
+                className={styles.discoverBtn}
+                onClick={() => setShowPayment(true)}
+              >
+                <i className="ri-mail-unread-line" aria-hidden="true" />
+                {t('matches.inviteUnlock')}
+              </button>
+              <Link href="/pricing" className={styles.noticeLink}>
+                {t('matches.viewPricing')}
+              </Link>
+            </div>
+          </div>
           <PreviewBanner nextPath="/matches" compact />
         </section>
 
