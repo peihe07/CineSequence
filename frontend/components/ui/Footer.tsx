@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import Link from 'next/link'
 import { useI18n } from '@/lib/i18n'
 import styles from './Footer.module.css'
 
@@ -64,6 +65,9 @@ export default function Footer() {
             ) : null}
 
             <nav className={styles.footerNav} aria-label={t('footer.nav')}>
+              <Link href="/about" className={styles.footerLink}>
+                {t('footer.about')}
+              </Link>
               <button type="button" className={styles.footerLink} onClick={() => setOpenModal('privacy')}>
                 {t('footer.privacy')}
               </button>

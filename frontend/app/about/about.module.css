@@ -1,0 +1,129 @@
+.page {
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(3rem, 8vw, 6rem) 1.5rem;
+  background: var(--archive-bg);
+  position: relative;
+  overflow: hidden;
+}
+
+.grain {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: var(--z-grain);
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 256px 256px;
+}
+
+.article {
+  width: min(640px, 100%);
+  position: relative;
+  z-index: 2;
+}
+
+.header {
+  margin-bottom: clamp(2.5rem, 5vw, 4rem);
+}
+
+.kicker {
+  display: block;
+  font-family: var(--font-tech);
+  font-size: var(--text-xs);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.4);
+  margin-bottom: 1rem;
+}
+
+.title {
+  font-family: var(--font-cinematic);
+  font-size: clamp(1.5rem, 3.5vw, 2.2rem);
+  font-weight: 500;
+  line-height: var(--leading-tight);
+  color: rgba(255, 248, 240, 0.92);
+  letter-spacing: -0.01em;
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: 1.6rem;
+}
+
+.paragraph {
+  font-family: var(--font-story);
+  font-size: var(--text-base);
+  line-height: var(--leading-relaxed);
+  color: rgba(255, 255, 255, 0.62);
+}
+
+.paragraph:first-child {
+  color: rgba(255, 255, 255, 0.78);
+  font-size: var(--text-lg);
+}
+
+/* The "ticket" paragraph — make it stand out */
+.paragraph:nth-child(6) {
+  color: rgba(255, 248, 240, 0.88);
+  font-weight: 500;
+}
+
+/* Closing paragraph */
+.paragraph:last-child {
+  color: rgba(255, 248, 240, 0.82);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  padding-top: 1.6rem;
+}
+
+.signature {
+  margin-top: clamp(2.5rem, 5vw, 3.5rem);
+  text-align: right;
+}
+
+.signatureName {
+  font-family: var(--font-cinematic);
+  font-size: var(--text-lg);
+  font-style: italic;
+  color: rgba(255, 248, 240, 0.72);
+  letter-spacing: 0.02em;
+}
+
+.footer {
+  margin-top: clamp(3rem, 6vw, 5rem);
+}
+
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-tech);
+  font-size: var(--text-xs);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.4);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.backLink:hover {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.backLink i {
+  font-size: 0.9rem;
+}
+
+@media (max-width: 640px) {
+  .page {
+    padding: 2.5rem 1.25rem 3rem;
+    align-items: flex-start;
+  }
+
+  .body {
+    gap: 1.4rem;
+  }
+}
