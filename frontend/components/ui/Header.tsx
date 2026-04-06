@@ -110,7 +110,9 @@ export default function Header() {
       <div className={styles.right}>
         <NotificationBell />
         <MuteToggle />
-        <LocaleToggle />
+        <div className={styles.desktopLocale}>
+          <LocaleToggle />
+        </div>
         {isAuthenticated ? (
           <Button
             type="button"
@@ -158,6 +160,10 @@ export default function Header() {
           <nav className={styles.mobileNavList} aria-label={t('header.mobileMenu')}>
             {renderNavLinks(styles.mobileNavLink, styles.mobileNavLinkActive)}
           </nav>
+          <div className={styles.mobileUtilityRow}>
+            <span className={styles.mobileUtilityLabel}>{t('header.language')}</span>
+            <LocaleToggle />
+          </div>
           {isAuthenticated ? (
             <Button
               type="button"

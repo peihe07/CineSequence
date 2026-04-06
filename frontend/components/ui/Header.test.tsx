@@ -56,6 +56,7 @@ vi.mock('@/lib/i18n', () => ({
         'header.openMenu': 'Open menu',
         'header.closeMenu': 'Close menu',
         'header.mobileMenu': 'Mobile menu',
+        'header.language': 'Language',
       }
       return dict[key] ?? key
     },
