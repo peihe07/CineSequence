@@ -634,6 +634,13 @@ const translations: Record<Locale, Record<string, string>> = {
     'profile.notSet': '未設定',
     'profile.loadError': '無法載入個人資料',
     'profile.deck': '把身份、偏好與定序狀態整理成一份清晰的觀影檔案。',
+    'profile.clearanceLabel': '安全等級',
+    'profile.clearanceUnverified': 'UNVERIFIED',
+    'profile.clearanceOperative': 'OPERATIVE',
+    'profile.clearanceFieldAgent': 'FIELD AGENT',
+    'profile.clearanceSpecialist': 'SPECIALIST',
+    'profile.clearanceSeniorAgent': 'SENIOR AGENT',
+    'profile.clearanceDirector': 'DIRECTOR',
     'profile.dossierLabel': '個人檔案',
     'profile.editionLabel': '版本 07',
     'profile.archiveChip': '檔案 / 個人',
@@ -718,6 +725,15 @@ const translations: Record<Locale, Record<string, string>> = {
     'matches.algorithmScore': '相容度由 70% 品味標籤向量餘弦相似度與 30% 象限距離加權計算，門檻為 85 分以上才進入候選。',
     'matches.algorithmFilter': '你可以透過性別、年齡偏好與「純品味配對」等篩選條件調整候選範圍，系統同時進行雙向意願檢查。',
     'matches.algorithmPercentile': '百分位排名代表該配對在你所有候選人中的相對位置，數值越高表示品味重疊越顯著。',
+
+    // Message Board
+    'messageBoard.title': '通訊頻道',
+    'messageBoard.empty': '開始一段關於你們共同品味的對話。',
+    'messageBoard.placeholder': '輸入訊息...',
+    'messageBoard.send': '送出',
+    'messageBoard.loadMore': '載入更早的訊息',
+    'messageBoard.retry': '重試',
+    'messageBoard.dismiss': '取消',
 
     // Matches disclaimer
     'matches.disclaimer': '配對結果基於觀影品味相似度分析。相容度分數僅反映電影偏好的重疊程度，不代表人際相容性。',
@@ -1361,6 +1377,13 @@ const translations: Record<Locale, Record<string, string>> = {
     'profile.notSet': 'Not set',
     'profile.loadError': 'Unable to load profile',
     'profile.deck': 'Identity, preference, and sequencing state arranged like a clean production dossier.',
+    'profile.clearanceLabel': 'CLEARANCE',
+    'profile.clearanceUnverified': 'UNVERIFIED',
+    'profile.clearanceOperative': 'OPERATIVE',
+    'profile.clearanceFieldAgent': 'FIELD AGENT',
+    'profile.clearanceSpecialist': 'SPECIALIST',
+    'profile.clearanceSeniorAgent': 'SENIOR AGENT',
+    'profile.clearanceDirector': 'DIRECTOR',
     'profile.dossierLabel': 'Profile Dossier',
     'profile.editionLabel': 'Edition 07',
     'profile.archiveChip': 'Archive / Profile',
@@ -1447,6 +1470,15 @@ const translations: Record<Locale, Record<string, string>> = {
     'matches.algorithmScore': 'Compatibility is calculated from 70% tag-vector cosine similarity and 30% quadrant proximity. Only candidates scoring above 85 enter your pool.',
     'matches.algorithmFilter': 'You can refine candidates with gender, age, and pure-taste filters. The system also performs a bidirectional preference check.',
     'matches.algorithmPercentile': 'Percentile rank shows where a match stands among all your candidates — higher means more significant taste overlap.',
+
+    // Message Board
+    'messageBoard.title': 'COMM CHANNEL',
+    'messageBoard.empty': 'Start a conversation about your shared taste.',
+    'messageBoard.placeholder': 'Write a message...',
+    'messageBoard.send': 'Send',
+    'messageBoard.loadMore': 'Load earlier messages',
+    'messageBoard.retry': 'Retry',
+    'messageBoard.dismiss': 'Dismiss',
 
     // Matches disclaimer
     'matches.disclaimer': 'Matches are based on cinematic taste similarity analysis. Compatibility scores reflect shared movie preferences only and do not guarantee interpersonal compatibility.',

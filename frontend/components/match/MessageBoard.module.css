@@ -28,29 +28,24 @@
   color: rgba(255, 255, 255, 0.45);
 }
 
-.refreshBtn {
+.pollIndicator {
   display: flex;
   align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  background: rgba(255, 255, 255, 0.04);
-  border: none;
-  border-radius: 50%;
-  color: rgba(255, 255, 255, 0.5);
-  font-size: 1rem;
-  cursor: pointer;
-  transition: color 0.15s ease, background 0.15s ease;
+  gap: 0.3rem;
+  font-size: 0.6rem;
+  font-family: var(--font-tech);
+  letter-spacing: 0.1em;
+  color: var(--color-success-muted);
 }
 
-.refreshBtn:hover {
-  color: rgba(255, 255, 255, 0.85);
-  background: rgba(255, 255, 255, 0.08);
+.pollIndicator i {
+  font-size: 0.7rem;
+  animation: pollPulse 3s ease-in-out infinite;
 }
 
-.refreshBtn:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
+@keyframes pollPulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
 }
 
 /* ── MESSAGE LIST ────────────────────────────── */
@@ -61,6 +56,7 @@
   gap: 0.5rem;
   max-height: 320px;
   overflow-y: auto;
+  scroll-behavior: smooth;
   scrollbar-width: thin;
   scrollbar-color: rgba(255, 255, 255, 0.08) transparent;
 }
@@ -93,11 +89,23 @@
   padding: 0.55rem 0.85rem;
   border-radius: 14px;
   word-break: break-word;
+  animation: bubbleIn 0.25s ease-out;
+}
+
+@keyframes bubbleIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .bubbleMine {
   align-self: flex-end;
-  background: rgba(229, 126, 49, 0.14);
+  background: var(--color-accent-noir-subtle);
   border-bottom-right-radius: 4px;
 }
 
@@ -105,6 +113,23 @@
   align-self: flex-start;
   background: rgba(255, 255, 255, 0.06);
   border-bottom-left-radius: 4px;
+}
+
+/* Optimistic: sending state */
+.bubbleOptimistic {
+  opacity: 0.6;
+  animation: bubbleIn 0.25s ease-out, transmitPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes transmitPulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 0.75; }
+}
+
+/* Optimistic: failed state */
+.bubbleFailed {
+  opacity: 0.8;
+  border: 1px solid rgba(220, 60, 60, 0.3);
 }
 
 .bubbleBody {
@@ -121,6 +146,66 @@
   color: rgba(255, 255, 255, 0.35);
   font-family: var(--font-tech);
   letter-spacing: 0.06em;
+}
+
+/* ── STATUS TAGS ─────────────────────────────── */
+
+.statusTag {
+  color: var(--color-success-muted);
+  font-size: 0.58rem;
+  letter-spacing: 0.08em;
+}
+
+.statusTagSending {
+  color: var(--color-accent-noir-muted);
+  font-size: 0.58rem;
+  letter-spacing: 0.08em;
+  animation: transmitBlink 0.8s step-end infinite;
+}
+
+@keyframes transmitBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+.statusTagFailed {
+  color: var(--color-error-muted);
+  font-size: 0.58rem;
+  letter-spacing: 0.08em;
+}
+
+.retryBtn,
+.dismissBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  background: none;
+  border: none;
+  border-radius: 50%;
+  font-size: 0.7rem;
+  cursor: pointer;
+  transition: color 0.15s ease, background 0.15s ease;
+  padding: 0;
+}
+
+.retryBtn {
+  color: var(--color-accent-noir-muted);
+}
+
+.retryBtn:hover {
+  color: var(--color-accent-noir);
+  background: rgba(229, 126, 49, 0.1);
+}
+
+.dismissBtn {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.dismissBtn:hover {
+  color: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.06);
 }
 
 /* ── EMPTY STATE ─────────────────────────────── */

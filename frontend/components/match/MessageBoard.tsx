@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { api } from '@/lib/api'
 import { useAuthStore } from '@/stores/authStore'
+import { useI18n } from '@/lib/i18n'
 import styles from './MessageBoard.module.css'
 
 interface Message {
@@ -11,6 +12,15 @@ interface Message {
   sender_name: string
   body: string
   created_at: string
+}
+
+/** Optimistic message before server confirmation */
+interface OptimisticMessage {
+  tempId: string
+  sender_id: string
+  body: string
+  created_at: string
+  status: 'sending' | 'failed'
 }
 
 interface MessageListResponse {
@@ -31,19 +41,28 @@ function formatTime(isoString: string): string {
   return `${month}/${day} ${hours}:${minutes}`
 }
 
+let optimisticCounter = 0
+
+const POLL_INTERVAL = 12_000
+
 export default function MessageBoard({ matchId }: MessageBoardProps) {
   const userId = useAuthStore((s) => s.user?.id)
+  const { t } = useI18n()
   const [messages, setMessages] = useState<Message[]>([])
+  const [optimistic, setOptimistic] = useState<OptimisticMessage[]>([])
   const [hasMore, setHasMore] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
-  const [isSending, setIsSending] = useState(false)
   const [body, setBody] = useState('')
   const listRef = useRef<HTMLDivElement>(null)
+  const bottomRef = useRef<HTMLDivElement>(null)
+
+  const scrollToBottom = useCallback(() => {
+    bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }, [])
 
   const fetchMessages = useCallback(async (cursor?: string) => {
     const params = new URLSearchParams({ limit: '20' })
     if (cursor) params.set('cursor', cursor)
-
     const data = await api<MessageListResponse>(
       `/matches/${matchId}/messages?${params}`
     )
@@ -57,6 +76,7 @@ export default function MessageBoard({ matchId }: MessageBoardProps) {
       setMessages(data?.messages ?? [])
       setHasMore(data?.has_more ?? false)
       setIsLoading(false)
+      // 初次載入用 instant scroll，不用動畫
       requestAnimationFrame(() => {
         if (listRef.current) {
           listRef.current.scrollTop = listRef.current.scrollHeight
@@ -68,20 +88,32 @@ export default function MessageBoard({ matchId }: MessageBoardProps) {
     })
   }, [fetchMessages])
 
-  const handleRefresh = useCallback(async () => {
-    try {
-      const data = await fetchMessages()
-      setMessages(data?.messages ?? [])
-      setHasMore(data?.has_more ?? false)
-      requestAnimationFrame(() => {
-        if (listRef.current) {
-          listRef.current.scrollTop = listRef.current.scrollHeight
-        }
-      })
-    } catch {
-      // Silently fail on refresh
-    }
+  // Silent polling
+  useEffect(() => {
+    const interval = setInterval(() => {
+      void fetchMessages().then((data) => {
+        if (!data?.messages) return
+        setMessages((prev) => {
+          // 只在有新訊息時更新，避免不必要的 re-render
+          if (data.messages.length !== prev.length ||
+              data.messages[data.messages.length - 1]?.id !== prev[prev.length - 1]?.id) {
+            return data.messages
+          }
+          return prev
+        })
+        setHasMore(data.has_more ?? false)
+      }).catch(() => {})
+    }, POLL_INTERVAL)
+
+    return () => clearInterval(interval)
   }, [fetchMessages])
+
+  // 新訊息時自動滾動到底部
+  useEffect(() => {
+    if (messages.length > 0 || optimistic.length > 0) {
+      scrollToBottom()
+    }
+  }, [messages.length, optimistic.length, scrollToBottom])
 
   const handleLoadMore = useCallback(async () => {
     if (!messages.length) return
@@ -97,27 +129,62 @@ export default function MessageBoard({ matchId }: MessageBoardProps) {
 
   const handleSend = useCallback(async () => {
     const trimmed = body.trim()
-    if (!trimmed || isSending) return
+    if (!trimmed || !userId) return
 
-    setIsSending(true)
+    const tempId = `opt-${++optimisticCounter}`
+    const optimisticMsg: OptimisticMessage = {
+      tempId,
+      sender_id: userId,
+      body: trimmed,
+      created_at: new Date().toISOString(),
+      status: 'sending',
+    }
+
+    // Optimistic: 立即顯示
+    setOptimistic((prev) => [...prev, optimisticMsg])
+    setBody('')
+
     try {
       const msg = await api<Message>(`/matches/${matchId}/messages`, {
         method: 'POST',
         body: JSON.stringify({ body: trimmed }),
       })
+      // 成功：移除 optimistic，加入真實訊息
+      setOptimistic((prev) => prev.filter((o) => o.tempId !== tempId))
       setMessages((prev) => [...prev, msg])
-      setBody('')
-      requestAnimationFrame(() => {
-        if (listRef.current) {
-          listRef.current.scrollTop = listRef.current.scrollHeight
-        }
-      })
     } catch {
-      // TODO: show error inline
-    } finally {
-      setIsSending(false)
+      // 失敗：標記為 failed
+      setOptimistic((prev) =>
+        prev.map((o) => o.tempId === tempId ? { ...o, status: 'failed' as const } : o)
+      )
     }
-  }, [body, isSending, matchId])
+  }, [body, matchId, userId])
+
+  const handleRetry = useCallback(async (tempId: string) => {
+    const msg = optimistic.find((o) => o.tempId === tempId)
+    if (!msg) return
+
+    setOptimistic((prev) =>
+      prev.map((o) => o.tempId === tempId ? { ...o, status: 'sending' as const } : o)
+    )
+
+    try {
+      const result = await api<Message>(`/matches/${matchId}/messages`, {
+        method: 'POST',
+        body: JSON.stringify({ body: msg.body }),
+      })
+      setOptimistic((prev) => prev.filter((o) => o.tempId !== tempId))
+      setMessages((prev) => [...prev, result])
+    } catch {
+      setOptimistic((prev) =>
+        prev.map((o) => o.tempId === tempId ? { ...o, status: 'failed' as const } : o)
+      )
+    }
+  }, [matchId, optimistic])
+
+  const handleDismiss = useCallback((tempId: string) => {
+    setOptimistic((prev) => prev.filter((o) => o.tempId !== tempId))
+  }, [])
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -142,14 +209,11 @@ export default function MessageBoard({ matchId }: MessageBoardProps) {
   return (
     <div className={styles.board}>
       <div className={styles.header}>
-        <span className={styles.headerLabel}>Message Board</span>
-        <button
-          className={styles.refreshBtn}
-          onClick={() => void handleRefresh()}
-          aria-label="Refresh messages"
-        >
-          <i className="ri-refresh-line" aria-hidden="true" />
-        </button>
+        <span className={styles.headerLabel}>{t('messageBoard.title')}</span>
+        <span className={styles.pollIndicator} aria-hidden="true">
+          <i className="ri-signal-wifi-line" />
+          <span>LIVE</span>
+        </span>
       </div>
 
       <div className={styles.messageList} ref={listRef}>
@@ -158,17 +222,18 @@ export default function MessageBoard({ matchId }: MessageBoardProps) {
             className={styles.loadMoreBtn}
             onClick={() => void handleLoadMore()}
           >
-            Load earlier messages
+            {t('messageBoard.loadMore')}
           </button>
         )}
 
-        {messages.length === 0 && (
+        {messages.length === 0 && optimistic.length === 0 && (
           <div className={styles.empty}>
             <i className="ri-chat-3-line" aria-hidden="true" />
-            <span>Start a conversation about your shared taste.</span>
+            <span>{t('messageBoard.empty')}</span>
           </div>
         )}
 
+        {/* Confirmed messages */}
         {messages.map((msg) => {
           const isMine = msg.sender_id === userId
           return (
@@ -180,28 +245,68 @@ export default function MessageBoard({ matchId }: MessageBoardProps) {
               <span className={styles.bubbleMeta}>
                 {!isMine && <span>{msg.sender_name}</span>}
                 <span>{formatTime(msg.created_at)}</span>
+                <span className={styles.statusTag}>[ACK]</span>
               </span>
             </div>
           )
         })}
+
+        {/* Optimistic messages */}
+        {optimistic.map((msg) => (
+          <div
+            key={msg.tempId}
+            className={`${styles.bubble} ${styles.bubbleMine} ${
+              msg.status === 'sending' ? styles.bubbleOptimistic : styles.bubbleFailed
+            }`}
+          >
+            <span className={styles.bubbleBody}>{msg.body}</span>
+            <span className={styles.bubbleMeta}>
+              <span>{formatTime(msg.created_at)}</span>
+              {msg.status === 'sending' && (
+                <span className={styles.statusTagSending}>[TRANSMITTING...]</span>
+              )}
+              {msg.status === 'failed' && (
+                <>
+                  <span className={styles.statusTagFailed}>[FAILED]</span>
+                  <button
+                    className={styles.retryBtn}
+                    onClick={() => void handleRetry(msg.tempId)}
+                    aria-label={t('messageBoard.retry')}
+                  >
+                    <i className="ri-refresh-line" aria-hidden="true" />
+                  </button>
+                  <button
+                    className={styles.dismissBtn}
+                    onClick={() => handleDismiss(msg.tempId)}
+                    aria-label={t('messageBoard.dismiss')}
+                  >
+                    <i className="ri-close-line" aria-hidden="true" />
+                  </button>
+                </>
+              )}
+            </span>
+          </div>
+        ))}
+
+        {/* Scroll anchor */}
+        <div ref={bottomRef} />
       </div>
 
       <div className={styles.inputArea}>
         <textarea
           className={styles.textInput}
-          placeholder="Write a message..."
+          placeholder={t('messageBoard.placeholder')}
           value={body}
           onChange={(e) => setBody(e.target.value)}
           onKeyDown={handleKeyDown}
           maxLength={500}
           rows={1}
-          disabled={isSending}
         />
         <button
           className={styles.sendBtn}
           onClick={() => void handleSend()}
-          disabled={isSending || !body.trim() || isOverLimit}
-          aria-label="Send message"
+          disabled={!body.trim() || isOverLimit}
+          aria-label={t('messageBoard.send')}
         >
           <i className="ri-send-plane-fill" aria-hidden="true" />
         </button>
