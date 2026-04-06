@@ -23,7 +23,6 @@ from app.schemas.dna import (
 )
 from app.services.ai_personality import generate_personality
 from app.services.character_mirror import find_resonant_characters, generate_mirror_readings
-from app.services.tmdb_client import get_movies
 from app.services.dna_builder import (
     ARCHETYPES,
     build_comparison_evidence,
@@ -34,7 +33,7 @@ from app.services.dna_builder import (
     get_top_tags,
 )
 from app.services.session_service import can_extend, get_or_create_session
-from app.services.tmdb_client import get_movie
+from app.services.tmdb_client import get_movie, get_movies
 
 router = APIRouter()
 
