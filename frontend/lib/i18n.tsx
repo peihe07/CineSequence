@@ -656,6 +656,15 @@ const translations: Record<Locale, Record<string, string>> = {
     'payment.note': '付款由 ECPay 安全處理。已解密權限恕不退款。',
     'payment.close': '關閉',
 
+    // Payment Return
+    'paymentReturn.checking': '正在驗證權限狀態...',
+    'paymentReturn.pending': '等待付款確認',
+    'paymentReturn.pendingHint': '通常需要幾秒鐘，請稍候。',
+    'paymentReturn.granted': '權限已開通',
+    'paymentReturn.redirecting': '正在返回檔案室...',
+    'paymentReturn.failed': '權限申請未完成',
+    'paymentReturn.backToDna': '返回 DNA 檔案',
+
     // Profile
     'profile.title': '個人檔案',
     'profile.edit': '編輯',
@@ -1448,6 +1457,15 @@ const translations: Record<Locale, Record<string, string>> = {
     'payment.processing': 'DECLASSIFYING...',
     'payment.note': 'Secure clearance processed via ECPay. Declassified credits are non-refundable.',
     'payment.close': 'Close',
+
+    // Payment Return
+    'paymentReturn.checking': 'VERIFYING CLEARANCE STATUS...',
+    'paymentReturn.pending': 'AWAITING CONFIRMATION',
+    'paymentReturn.pendingHint': 'Usually takes a few seconds. Stand by.',
+    'paymentReturn.granted': 'CLEARANCE GRANTED',
+    'paymentReturn.redirecting': 'Returning to dossier...',
+    'paymentReturn.failed': 'CLEARANCE REQUEST INCOMPLETE',
+    'paymentReturn.backToDna': 'Return to DNA Dossier',
 
     // Profile
     'profile.title': 'Profile',
