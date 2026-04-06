@@ -2,7 +2,7 @@
 
 import logging
 import uuid
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
@@ -67,7 +67,7 @@ async def _check_rate_limit(
     db: AsyncSession, match: Match, sender_id: uuid.UUID
 ) -> None:
     """Enforce per-user rate limit based on time since match acceptance."""
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     accepted_at = match.responded_at or match.created_at
 
     if now - accepted_at < timedelta(hours=24):

@@ -1,12 +1,12 @@
 """Unit tests for sequencing entitlement gating and consumption."""
 
 import uuid
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, patch
 
 import pytest
 
 from app.models.user import Gender, User
-from app.models.user_entitlement import EntitlementStatus, EntitlementType, UserEntitlement
+from app.models.user_entitlement import EntitlementType
 from app.services.sequencing_entitlements import (
     can_start_extension,
     can_start_retest,

@@ -5,7 +5,7 @@ import logging
 import time
 import urllib.parse
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -89,7 +89,7 @@ def build_ecpay_form_html(order: PaymentOrder) -> str:
     params = {
         "MerchantID": settings.ecpay_merchant_id,
         "MerchantTradeNo": order.order_no,
-        "MerchantTradeDate": datetime.now(timezone.utc).strftime("%Y/%m/%d %H:%M:%S"),
+        "MerchantTradeDate": datetime.now(UTC).strftime("%Y/%m/%d %H:%M:%S"),
         "PaymentType": "aio",
         "TotalAmount": str(order.amount),
         "TradeDesc": "Cine Sequence",
@@ -158,7 +158,7 @@ async def process_callback(
     # Payment succeeded — grant entitlements in one transaction
     order.status = OrderStatus.paid
     order.ecpay_trade_no = params.get("TradeNo")
-    order.paid_at = datetime.now(timezone.utc)
+    order.paid_at = datetime.now(UTC)
 
     await _grant_entitlements(db, order)
     await db.commit()

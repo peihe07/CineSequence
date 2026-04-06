@@ -463,7 +463,7 @@ describe('TheaterDetailPage', () => {
       expect(apiMock).toHaveBeenNthCalledWith(3, '/sequencing/search?q=Arrival')
     })
 
-    fireEvent.click(screen.getByRole('button', { name: /異星入境.*2016/ }))
+    fireEvent.click(await within(dialog).findByRole('button', { name: /異星入境.*2016/ }))
 
     await waitFor(() => {
       expect(screen.getByText('異星入境')).toBeTruthy()

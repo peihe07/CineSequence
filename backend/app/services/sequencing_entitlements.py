@@ -5,7 +5,7 @@ as a legacy fallback (will be 0 for all users after relaunch reset).
 """
 
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -63,7 +63,7 @@ async def _consume_one(
     if not ent:
         raise ValueError(f"No available {ent_type} entitlement")
     ent.status = EntitlementStatus.consumed
-    ent.consumed_at = datetime.now(timezone.utc)
+    ent.consumed_at = datetime.now(UTC)
     await db.flush()
 
 

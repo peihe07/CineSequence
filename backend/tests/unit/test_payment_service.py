@@ -1,9 +1,7 @@
 """Unit tests for payment service logic."""
 
-import pytest
-
-from app.models.payment_order import OrderStatus, PaymentOrder, ProductType
-from app.models.user_entitlement import EntitlementStatus, EntitlementType, UserEntitlement
+from app.models.payment_order import ProductType
+from app.models.user_entitlement import EntitlementType
 from app.services.payment_service import (
     PRODUCT_CATALOG,
     _compute_check_mac_value,

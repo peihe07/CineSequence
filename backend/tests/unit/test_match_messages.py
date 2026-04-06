@@ -1,7 +1,7 @@
 """Unit tests for match message rate limiting logic."""
 
-from datetime import datetime, timedelta, timezone
-from unittest.mock import AsyncMock, MagicMock, patch
+from datetime import UTC, datetime, timedelta
+from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
@@ -16,7 +16,7 @@ def _make_match(responded_hours_ago: float):
     """Create a mock match with responded_at set to N hours ago."""
     match = MagicMock()
     match.id = "match-1"
-    match.responded_at = datetime.now(timezone.utc) - timedelta(hours=responded_hours_ago)
+    match.responded_at = datetime.now(UTC) - timedelta(hours=responded_hours_ago)
     match.created_at = match.responded_at
     return match
 
