@@ -14,6 +14,7 @@ from app.models.user import User
 from app.services.matcher import (
     find_matches,
     get_archetype_name,
+    get_invite_credit_count,
     get_match_by_id,
     get_user_matches,
     respond_to_invite,
@@ -49,6 +50,11 @@ class MatchOut(BaseModel):
     is_recipient: bool
 
     model_config = {"from_attributes": True}
+
+
+class InviteCreditsOut(BaseModel):
+    remaining: int  # -1 = unlimited
+    unlocked: bool
 
 
 class InviteRequest(BaseModel):
@@ -132,6 +138,15 @@ async def list_matches(
     """List all matches for the current user."""
     matches = await get_user_matches(db, user.id)
     return [await _match_to_out(db, m, user.id) for m in matches]
+
+
+@router.get("/invite-credits", response_model=InviteCreditsOut)
+async def get_invite_credits(
+    user: Annotated[User, Depends(get_current_user)],
+    db: Annotated[AsyncSession, Depends(get_db)],
+):
+    """Get current user's invite credit status."""
+    return await get_invite_credit_count(db, user)
 
 
 @router.get("/{match_id}")

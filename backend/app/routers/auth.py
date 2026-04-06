@@ -115,6 +115,14 @@ async def register(
         agreed_to_terms_at=datetime.now(UTC),
     )
     db.add(user)
+    await db.flush()
+
+    # Grant initial invite entitlements
+    from app.models.user_entitlement import EntitlementType, UserEntitlement
+
+    for _ in range(5):
+        db.add(UserEntitlement(user_id=user.id, type=EntitlementType.invite))
+
     await db.commit()
     await db.refresh(user)
 

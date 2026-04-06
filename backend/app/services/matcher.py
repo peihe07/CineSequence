@@ -7,7 +7,7 @@ import uuid
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
-from sqlalchemy import and_, or_, select, true
+from sqlalchemy import and_, func, or_, select, true
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
@@ -203,6 +203,52 @@ async def get_match_by_id(
     return result.scalar_one_or_none()
 
 
+async def _consume_invite_credit(db: AsyncSession, user: User) -> None:
+    """Check and consume an invite credit. Raises PermissionError if none available."""
+    if user.invite_unlocked:
+        return
+
+    from app.models.user_entitlement import EntitlementStatus, EntitlementType, UserEntitlement
+
+    result = await db.execute(
+        select(UserEntitlement)
+        .where(
+            UserEntitlement.user_id == user.id,
+            UserEntitlement.type == EntitlementType.invite,
+            UserEntitlement.status == EntitlementStatus.available,
+        )
+        .order_by(UserEntitlement.created_at.asc())
+        .limit(1)
+    )
+    ent = result.scalar_one_or_none()
+    if not ent:
+        raise PermissionError("No invite credits remaining. Unlock unlimited invites to continue.")
+
+    ent.status = EntitlementStatus.consumed
+    ent.consumed_at = datetime.now(tz=UTC)
+    await db.flush()
+
+
+async def get_invite_credit_count(db: AsyncSession, user: User) -> dict:
+    """Return invite credit status for a user."""
+    if user.invite_unlocked:
+        return {"remaining": -1, "unlocked": True}
+
+    from app.models.user_entitlement import EntitlementStatus, EntitlementType, UserEntitlement
+
+    result = await db.execute(
+        select(func.count())
+        .select_from(UserEntitlement)
+        .where(
+            UserEntitlement.user_id == user.id,
+            UserEntitlement.type == EntitlementType.invite,
+            UserEntitlement.status == EntitlementStatus.available,
+        )
+    )
+    remaining = result.scalar() or 0
+    return {"remaining": remaining, "unlocked": False}
+
+
 async def send_invite(
     db: AsyncSession,
     match_id: uuid.UUID,
@@ -227,6 +273,10 @@ async def send_invite(
         raise PermissionError("Only the match initiator can send the invite")
     if match.status != MatchStatus.discovered:
         raise ValueError(f"Cannot invite: status is {match.status}")
+
+    # Consume invite credit (raises PermissionError if none available)
+    inviter = match.user_a if match.user_a_id == user_id else match.user_b
+    await _consume_invite_credit(db, inviter)
 
     # Capture email data before commit (session may expire loaded relationships)
     is_user_a = match.user_a_id == user_id
