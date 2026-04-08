@@ -1,9 +1,8 @@
 import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-const { replaceMock, prefetchMock, logoutMock, pathnameState, authState } = vi.hoisted(() => ({
+const { replaceMock, logoutMock, pathnameState, authState } = vi.hoisted(() => ({
   replaceMock: vi.fn(),
-  prefetchMock: vi.fn(),
   logoutMock: vi.fn(),
   pathnameState: {
     value: '/dna',
@@ -16,7 +15,7 @@ const { replaceMock, prefetchMock, logoutMock, pathnameState, authState } = vi.h
 
 vi.mock('next/navigation', () => ({
   usePathname: () => pathnameState.value,
-  useRouter: () => ({ replace: replaceMock, prefetch: prefetchMock }),
+  useRouter: () => ({ replace: replaceMock }),
 }))
 
 vi.mock('next/link', () => ({
@@ -95,7 +94,6 @@ import Header from './Header'
 describe('Header', () => {
   beforeEach(() => {
     replaceMock.mockReset()
-    prefetchMock.mockReset()
     logoutMock.mockReset()
     pathnameState.value = '/dna'
     authState.user = null
@@ -148,13 +146,5 @@ describe('Header', () => {
     render(<Header />)
 
     expect(screen.getByRole('link', { name: '05 Admin' })).toBeTruthy()
-  })
-
-  it('prefetches a route when a nav link is hovered', () => {
-    render(<Header />)
-
-    fireEvent.mouseEnter(screen.getByRole('link', { name: '02 Matches' }))
-
-    expect(prefetchMock).toHaveBeenCalledWith('/matches')
   })
 })

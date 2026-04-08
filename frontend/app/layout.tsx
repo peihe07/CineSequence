@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from 'next'
 import localFont from 'next/font/local'
-import { Inter, Noto_Sans_TC, Noto_Serif_TC, Outfit, Space_Grotesk } from 'next/font/google'
+import { Inter, Noto_Sans_TC } from 'next/font/google'
 import 'remixicon/fonts/remixicon.css'
 import './globals.css'
 import { I18nProvider } from '@/lib/i18n'
@@ -24,23 +24,6 @@ const properScript = localFont({
   variable: '--font-display-script',
   display: 'swap',
 })
-const outfit = Outfit({
-  subsets: ['latin'],
-  variable: '--font-outfit',
-  display: 'swap',
-})
-const spaceGrotesk = Space_Grotesk({
-  subsets: ['latin'],
-  variable: '--font-space',
-  display: 'swap',
-})
-const notoSerifTC = Noto_Serif_TC({
-  subsets: ['latin'],
-  weight: ['400', '500', '600', '700'],
-  variable: '--font-noto-serif',
-  display: 'swap',
-})
-
 export const metadata: Metadata = {
   metadataBase: new URL('https://cinesequence.xyz'),
   title: {
@@ -73,7 +56,7 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.variable} ${notoSansTC.variable} ${properScript.variable} ${outfit.variable} ${spaceGrotesk.variable} ${notoSerifTC.variable}`}>
+      <body className={`${inter.variable} ${notoSansTC.variable} ${properScript.variable}`}>
         <I18nProvider>
           <LocaleDocumentSync />
           <ToastContainer />
