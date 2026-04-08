@@ -6,7 +6,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
-from sqlalchemy import func, select, union_all
+from sqlalchemy import func, select, union_all, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.deps import get_current_user, get_db
@@ -14,7 +14,9 @@ from app.models.ai_token_log import AiTokenLog
 from app.models.dna_profile import DnaProfile
 from app.models.match import Match, MatchStatus
 from app.models.notification import NotificationType
-from app.models.user import User
+from app.models.pick import Pick
+from app.models.sequencing_session import SequencingSession, SessionStatus
+from app.models.user import SequencingStatus, User
 from app.models.waitlist_entry import WaitlistEntry
 from app.services.ai_token_tracker import estimate_cost_for_model
 from app.services.notification_service import create_notification
@@ -380,6 +382,7 @@ class AnnouncementRequest(BaseModel):
     notification_body_zh: str | None = None
     notification_body_en: str | None = None
     skip_notification: bool = False
+    include_waitlist: bool = False
     dry_run: bool = False
 
 
@@ -400,11 +403,17 @@ async def send_announcement(
             User.email.isnot(None),
         )
     )
+    waitlist_count = 0
+    if body.include_waitlist:
+        waitlist_count = await db.scalar(
+            select(func.count(WaitlistEntry.id))
+        ) or 0
 
     if body.dry_run:
         return {
             "dry_run": True,
             "recipient_count": recipient_count,
+            "waitlist_count": waitlist_count,
             "subject": body.subject_zh,
         }
 
@@ -436,7 +445,16 @@ async def send_announcement(
             User.email.isnot(None),
         )
     )
-    emails = [row[0] for row in email_result.all()]
+    emails = {row[0] for row in email_result.all()}
+
+    # 加入 waitlist email（排除已註冊的）
+    waitlist_sent = 0
+    if body.include_waitlist:
+        wl_result = await db.execute(select(WaitlistEntry.email))
+        waitlist_emails = {row[0] for row in wl_result.all()} - emails
+        emails = emails | waitlist_emails
+    else:
+        waitlist_emails = set()
 
     sent = 0
     failed = 0
@@ -451,6 +469,8 @@ async def send_announcement(
                 closing_en=body.closing_en,
             )
             sent += 1
+            if email in waitlist_emails:
+                waitlist_sent += 1
         except Exception:
             logger.exception("Failed to send announcement to %s", email)
             failed += 1
@@ -460,5 +480,86 @@ async def send_announcement(
         "email_sent": sent,
         "email_failed": failed,
         "email_recipient_count": len(emails),
+        "waitlist_sent": waitlist_sent,
         "notifications_created": notification_count,
+    }
+
+
+class ResetRequest(BaseModel):
+    confirm: str  # 必須傳入 "RESET_ALL" 作為安全確認
+    dry_run: bool = False
+
+
+@router.post("/reset-all-sequencing")
+async def reset_all_sequencing(
+    body: ResetRequest,
+    _admin: Annotated[User, Depends(require_admin)],
+    db: Annotated[AsyncSession, Depends(get_db)],
+):
+    """Bulk reset: finalize all sessions, deactivate DNA, delete matches/picks,
+    and reset every user to not_started so they can redo the 30-round test.
+    """
+    if body.confirm != "RESET_ALL":
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail='Pass confirm="RESET_ALL" to proceed.',
+        )
+
+    # 統計目前數量
+    session_count = await db.scalar(select(func.count(SequencingSession.id))) or 0
+    dna_count = await db.scalar(
+        select(func.count(DnaProfile.id)).where(DnaProfile.is_active.is_(True))
+    ) or 0
+    match_count = await db.scalar(select(func.count(Match.id))) or 0
+    pick_count = await db.scalar(select(func.count(Pick.id))) or 0
+    user_count = await db.scalar(select(func.count(User.id))) or 0
+
+    if body.dry_run:
+        return {
+            "dry_run": True,
+            "sessions_to_finalize": session_count,
+            "dna_to_deactivate": dna_count,
+            "matches_to_delete": match_count,
+            "picks_to_delete": pick_count,
+            "users_to_reset": user_count,
+        }
+
+    # 1. 刪除所有 matches
+    await db.execute(Match.__table__.delete())
+
+    # 2. 刪除所有 picks
+    await db.execute(Pick.__table__.delete())
+
+    # 3. 停用所有 DNA profiles
+    await db.execute(
+        update(DnaProfile)
+        .where(DnaProfile.is_active.is_(True))
+        .values(is_active=False)
+    )
+
+    # 4. 終結所有 sessions
+    await db.execute(
+        update(SequencingSession)
+        .where(SequencingSession.status != SessionStatus.finalized)
+        .values(status=SessionStatus.finalized)
+    )
+
+    # 5. 重設所有使用者狀態
+    await db.execute(
+        update(User).values(
+            sequencing_status=SequencingStatus.not_started,
+            active_session_id=None,
+            seed_movie_tmdb_id=None,
+        )
+    )
+
+    await db.commit()
+
+    return {
+        "status": "reset_complete",
+        "sessions_finalized": session_count,
+        "dna_deactivated": dna_count,
+        "matches_deleted": match_count,
+        "picks_deleted": pick_count,
+        "users_reset": user_count,
     }

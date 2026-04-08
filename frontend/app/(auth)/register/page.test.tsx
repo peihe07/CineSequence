@@ -17,6 +17,15 @@ vi.mock('@/lib/i18n', () => ({
   }),
 }))
 
+vi.mock('@/stores/authStore', () => ({
+  useAuthStore: () => ({
+    register: vi.fn(),
+    isLoading: false,
+    error: null,
+    clearError: vi.fn(),
+  }),
+}))
+
 import RegisterPage from './page'
 
 describe('RegisterPage', () => {
@@ -28,13 +37,13 @@ describe('RegisterPage', () => {
     cleanup()
   })
 
-  it('shows the waitlist maintenance message instead of the registration form', async () => {
+  it('renders the registration form', () => {
     render(<RegisterPage />)
 
-    expect(await screen.findByText('Registration is temporarily paused')).toBeTruthy()
-    expect(screen.getByText('We are developing new features and performing maintenance, so account creation is currently unavailable.')).toBeTruthy()
-    expect(screen.getByText('Once the system reopens, we will send another email notification.')).toBeTruthy()
-    expect(screen.getByRole('link', { name: 'Back to home' }).getAttribute('href')).toBe('/')
-    expect(screen.queryByText('register.title')).toBeNull()
+    expect(screen.getByText('register.title')).toBeTruthy()
+    expect(screen.getByText('register.subtitle')).toBeTruthy()
+    expect(screen.getByRole('button', { name: 'register.submit' })).toBeTruthy()
+    expect(screen.getByRole('link', { name: 'auth.signIn' }).getAttribute('href')).toBe('/login')
+    expect(screen.queryByText('Registration is temporarily paused')).toBeNull()
   })
 })

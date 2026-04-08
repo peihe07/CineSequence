@@ -1,7 +1,7 @@
 'use client'
 
-import WaitlistForm from '@/components/auth/WaitlistForm'
+import RegisterForm from '@/components/auth/RegisterForm'
 
 export default function RegisterPage() {
-  return <WaitlistForm variant="page" />
+  return <RegisterForm />
 }

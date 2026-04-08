@@ -16,19 +16,15 @@ from app.models import Base
 from app.routers.auth import limiter as auth_limiter
 
 base_database_url = make_url(settings.database_url)
-test_database_name = f"{base_database_url.database}_test"
-TEST_DATABASE_URL = base_database_url.set(database=test_database_name).render_as_string(
+test_schema_name = f"{base_database_url.database}_test".replace("-", "_")
+TEST_DATABASE_URL = base_database_url.render_as_string(
     hide_password=False
 )
-ADMIN_DATABASE_URL = base_database_url.set(database="postgres").render_as_string(
-    hide_password=False
-)
-
-engine = create_async_engine(TEST_DATABASE_URL, echo=True, poolclass=NullPool)
-admin_engine = create_async_engine(
-    ADMIN_DATABASE_URL,
-    isolation_level="AUTOCOMMIT",
+engine = create_async_engine(
+    TEST_DATABASE_URL,
+    echo=True,
     poolclass=NullPool,
+    connect_args={"server_settings": {"search_path": f"{test_schema_name},public"}},
 )
 test_session = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 
@@ -54,29 +50,25 @@ def pytest_collection_modifyitems(config, items) -> None:
 
 async def reset_test_schema() -> None:
     async with engine.begin() as conn:
-        await conn.execute(text("DROP SCHEMA IF EXISTS public CASCADE"))
-        await conn.execute(text("CREATE SCHEMA public"))
+        await conn.execute(text(f'DROP SCHEMA IF EXISTS "{test_schema_name}" CASCADE'))
+        await conn.execute(text(f'CREATE SCHEMA "{test_schema_name}"'))
+        await conn.execute(text(f'SET search_path TO "{test_schema_name}", public'))
         await conn.execute(text("CREATE EXTENSION IF NOT EXISTS vector"))
 
 
 @pytest_asyncio.fixture(scope="session", autouse=True)
 async def ensure_test_database():
-    """Create the integration-test database on demand."""
+    """Ensure the configured database is reachable for schema-isolated integration tests."""
     try:
-        async with admin_engine.connect() as conn:
-            exists = await conn.scalar(
-                text("SELECT 1 FROM pg_database WHERE datname = :name"),
-                {"name": test_database_name},
-            )
-            if not exists:
-                await conn.execute(text(f'CREATE DATABASE "{test_database_name}"'))
+        async with engine.connect() as conn:
+            await conn.execute(text("SELECT 1"))
     except Exception as exc:
-        await admin_engine.dispose()
+        await engine.dispose()
         _skip_integration_tests(str(exc))
 
     yield
 
-    await admin_engine.dispose()
+    await engine.dispose()
 
 
 @pytest_asyncio.fixture(autouse=True)

@@ -1,11 +1,8 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
-import { ApiError } from '@/lib/api'
-import PaymentModal from '@/components/ui/PaymentModal'
 import { useSequencingStore } from '@/stores/sequencingStore'
 import { useDnaStore } from '@/stores/dnaStore'
 import { useI18n } from '@/lib/i18n'
@@ -15,10 +12,9 @@ import styles from './page.module.css'
 export default function SequencingCompletePage() {
   const router = useRouter()
   const { t } = useI18n()
-  const { progress, fetchProgress, extendSequencing } = useSequencingStore()
+  const { progress, fetchProgress } = useSequencingStore()
   const { buildDna, fetchResult } = useDnaStore()
   const [isPreparingDna, setIsPreparingDna] = useState(false)
-  const [paymentContext, setPaymentContext] = useState<'extend' | 'retest' | null>(null)
 
   useEffect(() => {
     fetchProgress()
@@ -42,22 +38,7 @@ export default function SequencingCompletePage() {
     setIsPreparingDna(false)
   }
 
-  const handleExtend = async () => {
-    try {
-      await extendSequencing()
-      router.replace('/sequencing')
-    } catch (err) {
-      if (err instanceof ApiError && err.status === 403) {
-        setPaymentContext('extend')
-      }
-    }
-  }
-
-  const extensionBatches = progress?.extension_batches ?? 0
-  const maxBatches = progress?.max_extension_batches ?? 2
-  const canExtend = progress?.can_extend ?? false
   const totalRounds = progress?.total_rounds ?? 30
-  const remaining = maxBatches - extensionBatches
 
   return (
     <div className={styles.container}>
@@ -86,10 +67,6 @@ export default function SequencingCompletePage() {
               <span className={styles.statValue}>{totalRounds}</span>
               <span className={styles.statLabel}>{t('complete.rounds')}</span>
             </div>
-            <div className={styles.stat}>
-              <span className={styles.statValue}>{extensionBatches}/{maxBatches}</span>
-              <span className={styles.statLabel}>{t('complete.extensions')}</span>
-            </div>
           </div>
         </section>
 
@@ -99,21 +76,6 @@ export default function SequencingCompletePage() {
               <i className="ri-dna-line" /> {t('complete.viewDna')}
             </button>
 
-            {canExtend && (
-              <button className={styles.secondaryBtn} onClick={handleExtend}>
-                <i className="ri-add-line" /> {t('complete.extend')}
-              </button>
-            )}
-            <button className={styles.secondaryBtn} onClick={() => setPaymentContext('retest')}>
-              <i className="ri-refresh-line" /> {t('profile.retest')}
-            </button>
-          </div>
-
-          <div className={styles.paymentPanel}>
-            <p className={styles.hint}>{t('complete.paymentNote')}</p>
-            <Link href="/pricing" className={styles.paymentLink}>
-              {t('complete.viewPricing')}
-            </Link>
           </div>
 
           {isPreparingDna && (
@@ -121,27 +83,8 @@ export default function SequencingCompletePage() {
               {t('dna.analyzing')}
             </p>
           )}
-
-          {canExtend && (
-            <p className={styles.hint}>
-              {t('complete.extendHint', { remaining })}
-            </p>
-          )}
-
-          {!canExtend && extensionBatches > 0 && (
-            <p className={styles.hint}>
-              {t('complete.maxReached')}
-            </p>
-          )}
         </section>
       </motion.div>
-      {paymentContext ? (
-        <PaymentModal
-          open
-          context={paymentContext}
-          onClose={() => setPaymentContext(null)}
-        />
-      ) : null}
     </div>
   )
 }

@@ -1,13 +1,11 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import Link from 'next/link'
+import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { PreviewBanner, usePreviewAccess } from '@/components/preview/PreviewGate'
 import { ApiError } from '@/lib/api'
-import PaymentModal from '@/components/ui/PaymentModal'
-import { PREVIEW_DNA_RESULT, PREVIEW_SEQUENCING_PROGRESS } from '@/lib/previewContent'
+import { PREVIEW_DNA_RESULT } from '@/lib/previewContent'
 import { useDnaStore } from '@/stores/dnaStore'
 import { useGroupStore } from '@/stores/groupStore'
 import { useAuthStore } from '@/stores/authStore'
@@ -39,11 +37,10 @@ function DnaResultContent() {
   const { isPreview, guardPreviewAction, previewModal } = usePreviewAccess('/dna')
   const { result, isBuilding, isLoading, error, buildDna, fetchResult } = useDnaStore()
   const { autoAssign } = useGroupStore()
-  const { progress, fetchProgress, extendSequencing } = useSequencingStore()
-  const [paymentContext, setPaymentContext] = useState<'extend' | 'retest' | null>(null)
+  const { fetchProgress } = useSequencingStore()
   const sectionTransition = { duration: 0.65, ease: 'easeOut' as const }
   const displayResult = isPreview ? PREVIEW_DNA_RESULT : result
-  const displayProgress = isPreview ? PREVIEW_SEQUENCING_PROGRESS : progress
+
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -106,23 +103,6 @@ function DnaResultContent() {
   }
 
   if (!displayResult) return null
-
-  const canExtend = displayProgress?.can_extend ?? displayResult.can_extend
-
-  async function handleExtend() {
-    guardPreviewAction(() => {
-      void (async () => {
-        try {
-          await extendSequencing()
-          router.push('/sequencing')
-        } catch (err) {
-          if (err instanceof ApiError && err.status === 403) {
-            setPaymentContext('extend')
-          }
-        }
-      })()
-    })
-  }
 
   async function handleEnterTheaters() {
     guardPreviewAction(() => {
@@ -276,38 +256,6 @@ function DnaResultContent() {
                   <i className="ri-group-line" /> {t('dna.findMatches')}
                 </Button>
               </div>
-              {canExtend && (
-                <div className={styles.secondaryActionCard}>
-                  <p className={styles.actionCardLabel}>{t('complete.extend')}</p>
-                  <p className={styles.actionCardBody}>{t('dna.extendHint')}</p>
-                  <p className={styles.actionCardMeta}>{t('dna.extendUnlocks')}</p>
-                  <Button
-                    variant="secondary"
-                    size="lg"
-                    onClick={() => void handleExtend()}
-                  >
-                    <i className="ri-add-line" /> {t('complete.extend')}
-                  </Button>
-                  <Link href="/pricing" className={styles.actionLink}>
-                    {t('dna.viewPricing')}
-                  </Link>
-                </div>
-              )}
-              <div className={styles.secondaryActionCard}>
-                <p className={styles.actionCardLabel}>{t('profile.retest')}</p>
-                <p className={styles.actionCardBody}>{t('dna.retestHint')}</p>
-                <p className={styles.actionCardMeta}>{t('dna.retestUnlocks')}</p>
-                <Button
-                  variant="secondary"
-                  size="lg"
-                  onClick={() => setPaymentContext('retest')}
-                >
-                  <i className="ri-refresh-line" /> {t('profile.retest')}
-                </Button>
-                <Link href="/pricing" className={styles.actionLink}>
-                  {t('dna.viewPricing')}
-                </Link>
-                </div>
             </div>
           </div>
         </motion.section>
@@ -322,13 +270,6 @@ function DnaResultContent() {
         </motion.section>
       </motion.div>
       {previewModal}
-      {paymentContext && (
-        <PaymentModal
-          open
-          context={paymentContext}
-          onClose={() => setPaymentContext(null)}
-        />
-      )}
     </div>
   )
 }
