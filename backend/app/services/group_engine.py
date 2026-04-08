@@ -405,6 +405,7 @@ async def _build_group_payloads_for_groups(
     *,
     viewer: User | None = None,
     user_group_ids: set[str] | None = None,
+    include_recent_messages: bool = True,
 ) -> list[dict]:
     """Serialize many groups with shared batched queries for list endpoints."""
     if not groups:
@@ -425,45 +426,46 @@ async def _build_group_payloads_for_groups(
     for group_id, member in members_result.all():
         members_by_group[group_id].append(member)
 
-    messages_ranked = (
-        select(
-            GroupMessage.id.label("message_id"),
-            func.row_number()
-            .over(
-                partition_by=GroupMessage.group_id,
-                order_by=GroupMessage.created_at.desc(),
-            )
-            .label("rn"),
-        )
-        .where(GroupMessage.group_id.in_(group_ids))
-        .subquery()
-    )
-    messages_result = await db.execute(
-        select(GroupMessage, User)
-        .join(messages_ranked, GroupMessage.id == messages_ranked.c.message_id)
-        .join(User, User.id == GroupMessage.user_id)
-        .where(messages_ranked.c.rn <= 8)
-        .order_by(GroupMessage.group_id.asc(), GroupMessage.created_at.asc())
-    )
     messages_by_group: dict[str, list[dict]] = defaultdict(list)
-    viewer_id = viewer.id if viewer else None
-    for message, author in messages_result.all():
-        group_messages = messages_by_group[message.group_id]
-        if len(group_messages) >= 8:
-            continue
-        group_messages.append(
-            {
-                "id": str(message.id),
-                "body": message.body,
-                "created_at": message.created_at.isoformat(),
-                "user": {
-                    "id": str(author.id),
-                    "name": author.name,
-                    "avatar_url": normalize_public_object_url(author.avatar_url),
-                },
-                "can_delete": viewer_id == author.id,
-            }
+    if include_recent_messages:
+        messages_ranked = (
+            select(
+                GroupMessage.id.label("message_id"),
+                func.row_number()
+                .over(
+                    partition_by=GroupMessage.group_id,
+                    order_by=GroupMessage.created_at.desc(),
+                )
+                .label("rn"),
+            )
+            .where(GroupMessage.group_id.in_(group_ids))
+            .subquery()
         )
+        messages_result = await db.execute(
+            select(GroupMessage, User)
+            .join(messages_ranked, GroupMessage.id == messages_ranked.c.message_id)
+            .join(User, User.id == GroupMessage.user_id)
+            .where(messages_ranked.c.rn <= 8)
+            .order_by(GroupMessage.group_id.asc(), GroupMessage.created_at.asc())
+        )
+        viewer_id = viewer.id if viewer else None
+        for message, author in messages_result.all():
+            group_messages = messages_by_group[message.group_id]
+            if len(group_messages) >= 8:
+                continue
+            group_messages.append(
+                {
+                    "id": str(message.id),
+                    "body": message.body,
+                    "created_at": message.created_at.isoformat(),
+                    "user": {
+                        "id": str(author.id),
+                        "name": author.name,
+                        "avatar_url": normalize_public_object_url(author.avatar_url),
+                    },
+                    "can_delete": viewer_id == author.id,
+                }
+            )
 
     list_result = await db.execute(
         select(TheaterList, User)
@@ -772,6 +774,7 @@ async def list_visible_groups(
         visible_groups,
         viewer=user,
         user_group_ids=user_group_ids,
+        include_recent_messages=False,
     )
 
 

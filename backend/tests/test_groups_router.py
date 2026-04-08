@@ -90,7 +90,7 @@ async def test_non_member_cannot_post_group_message(client, auth_user, db_sessio
 
 
 @pytest.mark.asyncio
-async def test_groups_list_includes_recent_messages(client, auth_user, db_session):
+async def test_groups_list_returns_lightweight_overview_payload(client, auth_user, db_session):
     user, headers = auth_user
     profile = DnaProfile(
         user_id=user.id,
@@ -127,8 +127,8 @@ async def test_groups_list_includes_recent_messages(client, auth_user, db_sessio
     response = await client.get("/groups", headers=headers)
     assert response.status_code == 200
     payload = response.json()
-    assert payload[0]["recent_messages"][-1]["body"] == "Primer belongs on the watchlist."
-    assert payload[0]["recent_messages"][-1]["can_delete"] is True
+    assert payload[0]["recent_messages"] == []
+    assert payload[0]["recent_activity"] == []
 
 
 @pytest.mark.asyncio
