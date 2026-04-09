@@ -10,4 +10,6 @@
   position: relative;
   isolation: isolate;
   flex: 1;
+  background:
+    linear-gradient(180deg, rgba(13, 14, 16, 0.98) 0%, rgba(10, 11, 12, 1) 100%);
 }
