@@ -94,6 +94,83 @@ async def _check_rate_limit(
         )
 
 
+class ConversationOut(BaseModel):
+    match_id: uuid.UUID
+    partner_name: str
+    partner_avatar_url: str | None = None
+    last_message_body: str
+    last_message_at: datetime
+    last_sender_id: uuid.UUID
+    is_own: bool  # whether last message was sent by current user
+
+
+class ConversationListResponse(BaseModel):
+    conversations: list[ConversationOut]
+
+
+@router.get("/conversations", response_model=ConversationListResponse)
+async def list_conversations(
+    user: Annotated[User, Depends(get_current_user)],
+    db: Annotated[AsyncSession, Depends(get_db)],
+):
+    """List accepted matches that have messages, with last message preview."""
+    from sqlalchemy import and_, case, or_
+    from sqlalchemy.orm import selectinload
+
+    from app.services.r2_storage import normalize_public_object_url
+
+    # Subquery: latest message per match
+    latest_msg = (
+        select(
+            MatchMessage.match_id,
+            func.max(MatchMessage.created_at).label("max_created"),
+        )
+        .group_by(MatchMessage.match_id)
+        .subquery()
+    )
+
+    # Join to get the actual message row + match
+    stmt = (
+        select(Match, MatchMessage)
+        .join(latest_msg, Match.id == latest_msg.c.match_id)
+        .join(
+            MatchMessage,
+            and_(
+                MatchMessage.match_id == latest_msg.c.match_id,
+                MatchMessage.created_at == latest_msg.c.max_created,
+            ),
+        )
+        .where(
+            Match.status == MatchStatus.accepted,
+            or_(Match.user_a_id == user.id, Match.user_b_id == user.id),
+        )
+        .options(
+            selectinload(Match.user_a),
+            selectinload(Match.user_b),
+        )
+        .order_by(latest_msg.c.max_created.desc())
+        .limit(20)
+    )
+    result = await db.execute(stmt)
+    rows = result.all()
+
+    conversations: list[ConversationOut] = []
+    for match, msg in rows:
+        is_user_a = match.user_a_id == user.id
+        partner = match.user_b if is_user_a else match.user_a
+        conversations.append(ConversationOut(
+            match_id=match.id,
+            partner_name=partner.name,
+            partner_avatar_url=normalize_public_object_url(partner.avatar_url),
+            last_message_body=msg.body[:100],
+            last_message_at=msg.created_at,
+            last_sender_id=msg.sender_id,
+            is_own=msg.sender_id == user.id,
+        ))
+
+    return ConversationListResponse(conversations=conversations)
+
+
 @router.get("/{match_id}/messages", response_model=MessageListResponse)
 async def list_messages(
     match_id: uuid.UUID,

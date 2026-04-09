@@ -9,6 +9,7 @@ import { soundManager } from '@/lib/sound'
 import { useAuthStore } from '@/stores/authStore'
 import LocaleToggle from './LocaleToggle'
 import MuteToggle from './MuteToggle'
+import MessageInbox from './MessageInbox'
 import NotificationBell from './NotificationBell'
 import Button from './Button'
 import styles from './Header.module.css'
@@ -103,6 +104,7 @@ export default function Header() {
       </nav>
 
       <div className={styles.right}>
+        <MessageInbox />
         <NotificationBell />
         <MuteToggle />
         <div className={styles.desktopLocale}>

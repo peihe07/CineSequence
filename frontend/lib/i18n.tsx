@@ -844,11 +844,16 @@ const translations: Record<Locale, Record<string, string>> = {
     // Message Board
     'messageBoard.title': '通訊頻道',
     'messageBoard.empty': '開始一段關於你們共同品味的對話。',
-    'messageBoard.placeholder': '輸入訊息...',
+    'messageBoard.placeholder': '輸入訊息（Cmd+Enter 送出）',
     'messageBoard.send': '送出',
     'messageBoard.loadMore': '載入更早的訊息',
     'messageBoard.retry': '重試',
     'messageBoard.dismiss': '取消',
+
+    // Message inbox
+    'inbox.title': '對話',
+    'inbox.empty': '尚無進行中的對話。',
+    'inbox.you': '你：',
 
     // Matches disclaimer
     'matches.disclaimer': '配對結果基於觀影品味相似度分析。相容度分數僅反映電影偏好的重疊程度，不代表人際相容性。',
@@ -1719,11 +1724,16 @@ const translations: Record<Locale, Record<string, string>> = {
     // Message Board
     'messageBoard.title': 'COMM CHANNEL',
     'messageBoard.empty': 'Start a conversation about your shared taste.',
-    'messageBoard.placeholder': 'Write a message...',
+    'messageBoard.placeholder': 'Write a message (Cmd+Enter to send)',
     'messageBoard.send': 'Send',
     'messageBoard.loadMore': 'Load earlier messages',
     'messageBoard.retry': 'Retry',
     'messageBoard.dismiss': 'Dismiss',
+
+    // Message inbox
+    'inbox.title': 'MESSAGES',
+    'inbox.empty': 'No active conversations yet.',
+    'inbox.you': 'You: ',
 
     // Matches disclaimer
     'matches.disclaimer': 'Matches are based on cinematic taste similarity analysis. Compatibility scores reflect shared movie preferences only and do not guarantee interpersonal compatibility.',
