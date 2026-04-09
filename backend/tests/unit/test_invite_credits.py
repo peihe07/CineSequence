@@ -1,13 +1,12 @@
 """Unit tests for invite credit logic."""
 
 import uuid
-from unittest.mock import AsyncMock, MagicMock
+from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from app.models.user import Gender, User
-from app.models.user_entitlement import EntitlementStatus, EntitlementType, UserEntitlement
 from app.services.matcher import _consume_invite_credit, get_invite_credit_count
+from app.models.user import Gender, User
 
 
 def _make_user(**overrides) -> User:
@@ -26,21 +25,8 @@ def _make_user(**overrides) -> User:
     return User(**defaults)
 
 
-def _mock_db_with_entitlement(ent):
-    """Mock db.execute to return a single entitlement (or None)."""
-    db = AsyncMock()
-    mock_result = MagicMock()
-    mock_result.scalar_one_or_none.return_value = ent
-    db.execute = AsyncMock(return_value=mock_result)
-    return db
-
-
-def _mock_db_with_count(count: int):
-    db = AsyncMock()
-    mock_result = MagicMock()
-    mock_result.scalar.return_value = count
-    db.execute = AsyncMock(return_value=mock_result)
-    return db
+def _mock_today_invites(count: int):
+    return patch("app.services.matcher._get_today_invite_count", AsyncMock(return_value=count))
 
 
 @pytest.mark.asyncio
@@ -54,26 +40,20 @@ async def test_consume_invite_skipped_when_unlocked():
 @pytest.mark.asyncio
 async def test_consume_invite_succeeds_with_available_credit():
     user = _make_user()
-    ent = UserEntitlement(
-        user_id=user.id,
-        type=EntitlementType.invite,
-        status=EntitlementStatus.available,
-    )
-    db = _mock_db_with_entitlement(ent)
+    db = AsyncMock()
 
-    await _consume_invite_credit(db, user)
-
-    assert ent.status == EntitlementStatus.consumed
-    assert ent.consumed_at is not None
+    with _mock_today_invites(3):
+        await _consume_invite_credit(db, user)
 
 
 @pytest.mark.asyncio
 async def test_consume_invite_raises_when_no_credits():
     user = _make_user()
-    db = _mock_db_with_entitlement(None)
+    db = AsyncMock()
 
-    with pytest.raises(PermissionError, match="No invite credits"):
-        await _consume_invite_credit(db, user)
+    with _mock_today_invites(5):
+        with pytest.raises(PermissionError, match="Daily invite limit reached"):
+            await _consume_invite_credit(db, user)
 
 
 @pytest.mark.asyncio
@@ -88,7 +68,8 @@ async def test_get_invite_credit_count_unlocked():
 @pytest.mark.asyncio
 async def test_get_invite_credit_count_normal():
     user = _make_user()
-    db = _mock_db_with_count(3)
+    db = AsyncMock()
 
-    result = await get_invite_credit_count(db, user)
-    assert result == {"remaining": 3, "unlocked": False}
+    with _mock_today_invites(3):
+        result = await get_invite_credit_count(db, user)
+    assert result == {"remaining": 2, "unlocked": False, "daily_limit": 5}

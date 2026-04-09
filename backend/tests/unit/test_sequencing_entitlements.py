@@ -38,6 +38,14 @@ def _mock_count(value: int):
     )
 
 
+def _mock_legacy_count(value: int):
+    """Patch _count_legacy_available to return a fixed value."""
+    return patch(
+        "app.services.sequencing_entitlements._count_legacy_available",
+        AsyncMock(return_value=value),
+    )
+
+
 def _mock_consume_one():
     """Patch _consume_one as a no-op."""
     return patch(
@@ -51,7 +59,7 @@ async def test_can_start_retest_with_paid_entitlement():
     db = AsyncMock()
     user = _make_user()
 
-    with _mock_count(2):
+    with _mock_count(2), _mock_legacy_count(0):
         gate = await can_start_retest(db, user)
 
     assert gate.allowed is True
@@ -63,7 +71,7 @@ async def test_can_start_retest_no_credits():
     db = AsyncMock()
     user = _make_user()
 
-    with _mock_count(0):
+    with _mock_count(0), _mock_legacy_count(0):
         gate = await can_start_retest(db, user)
 
     assert gate.allowed is False
@@ -75,7 +83,7 @@ async def test_can_start_extension_requires_paid_entitlement():
     db = AsyncMock()
     user = _make_user()
 
-    with _mock_count(0):
+    with _mock_count(0), _mock_legacy_count(0):
         gate = await can_start_extension(db, user)
 
     assert gate.allowed is False
@@ -87,7 +95,7 @@ async def test_can_start_extension_with_paid_entitlement():
     db = AsyncMock()
     user = _make_user()
 
-    with _mock_count(1):
+    with _mock_count(1), _mock_legacy_count(0):
         gate = await can_start_extension(db, user)
 
     assert gate.allowed is True
@@ -99,7 +107,7 @@ async def test_consume_extension_credit():
     db = AsyncMock()
     user = _make_user()
 
-    with _mock_consume_one() as mock_consume, _mock_count(2):
+    with _mock_consume_one() as mock_consume, _mock_count(2), _mock_legacy_count(0):
         result = await consume_extension_credit(db, user)
 
     mock_consume.assert_awaited_once_with(db, user.id, EntitlementType.extension)
@@ -112,7 +120,7 @@ async def test_consume_retest_uses_paid():
     db = AsyncMock()
     user = _make_user()
 
-    with _mock_consume_one() as mock_consume, _mock_count(1):
+    with _mock_consume_one() as mock_consume, _mock_count(1), _mock_legacy_count(0):
         result = await consume_retest_credit(db, user)
 
     mock_consume.assert_awaited_once_with(db, user.id, EntitlementType.retest)
@@ -124,7 +132,7 @@ async def test_beta_override_always_allows():
     db = AsyncMock()
     user = _make_user(beta_entitlement_override=True)
 
-    with _mock_count(0):
+    with _mock_count(0), _mock_legacy_count(0):
         retest_gate = await can_start_retest(db, user)
         ext_gate = await can_start_extension(db, user)
 

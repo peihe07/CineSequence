@@ -5,10 +5,15 @@ const {
   replaceMock,
   verifyMock,
   fetchProgressMock,
+  authState,
 } = vi.hoisted(() => ({
   replaceMock: vi.fn(),
   verifyMock: vi.fn(),
   fetchProgressMock: vi.fn(),
+  authState: {
+    user: null as { is_admin?: boolean } | null,
+    error: null as string | null,
+  },
 }))
 
 vi.mock('next/navigation', () => ({
@@ -17,9 +22,11 @@ vi.mock('next/navigation', () => ({
 }))
 
 vi.mock('@/stores/authStore', () => ({
-  useAuthStore: () => ({
+  useAuthStore: Object.assign(() => ({
     verify: verifyMock,
-    error: 'Invalid token',
+    error: authState.error,
+  }), {
+    getState: () => authState,
   }),
 }))
 
@@ -63,6 +70,8 @@ describe('VerifyPage', () => {
     replaceMock.mockReset()
     verifyMock.mockReset()
     fetchProgressMock.mockReset()
+    authState.user = null
+    authState.error = 'Invalid token'
   })
 
   afterEach(() => {
