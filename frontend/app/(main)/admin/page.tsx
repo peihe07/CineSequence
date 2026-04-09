@@ -81,10 +81,13 @@ interface WaitlistData {
   entries: WaitlistEntry[]
 }
 
-function StatCard({ value, label, trend }: { value: number | string; label: string; trend?: number | null }) {
+function StatCard({ value, label, trend, icon }: { value: number | string; label: string; trend?: number | null; icon?: string }) {
   return (
     <div className={styles.statCard}>
-      <span className={styles.statValue}>{value}</span>
+      <div className={styles.statTop}>
+        {icon && <i className={`${icon} ${styles.statIcon}`} />}
+        <span className={styles.statValue}>{value}</span>
+      </div>
       <span className={styles.statLabel}>{label}</span>
       {trend !== undefined && trend !== null && (
         <span className={`${styles.trend} ${trend > 0 ? styles.trendUp : trend < 0 ? styles.trendDown : ''}`}>
@@ -102,14 +105,36 @@ function FunnelBar({ count, max, label, rate }: { count: number; max: number; la
   return (
     <div className={styles.funnelRow}>
       <span className={styles.funnelLabel}>{label}</span>
-      <div
-        className={styles.funnelBar}
-        style={{ width: `${displayWidth}%`, minWidth: count === 0 ? 0 : undefined }}
-      >
+      <div className={styles.funnelTrack}>
+        <div
+          className={styles.funnelBar}
+          style={{ width: `${displayWidth}%` }}
+        />
         <span className={styles.funnelCount}>
           {count}{rate !== undefined ? ` (${(rate * 100).toFixed(0)}%)` : ''}
         </span>
       </div>
+    </div>
+  )
+}
+
+function CollapsibleSection({ title, icon, children, defaultOpen = true }: {
+  title: string
+  icon: string
+  children: React.ReactNode
+  defaultOpen?: boolean
+}) {
+  const [open, setOpen] = useState(defaultOpen)
+  return (
+    <div className={styles.section}>
+      <button type="button" className={styles.sectionToggle} onClick={() => setOpen((v) => !v)}>
+        <div className={styles.sectionTitleRow}>
+          <i className={`${icon} ${styles.sectionIcon}`} />
+          <h2 className={styles.sectionTitle}>{title}</h2>
+        </div>
+        <i className={`ri-arrow-${open ? 'up' : 'down'}-s-line ${styles.sectionChevron}`} />
+      </button>
+      {open && <div className={styles.sectionBody}>{children}</div>}
     </div>
   )
 }
@@ -125,7 +150,6 @@ export default function AdminPage() {
   const [days, setDays] = useState(30)
   const initialLoadDone = useRef(false)
 
-  // Initial load: admin datasets
   useEffect(() => {
     async function load() {
       try {
@@ -151,7 +175,6 @@ export default function AdminPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  // Re-fetch daily stats on date range change
   const fetchDaily = useCallback(async (d: number) => {
     try {
       const result = await api<DailyStats>(`/admin/stats/daily?days=${d}`)
@@ -207,77 +230,89 @@ export default function AdminPage() {
   return (
     <div className={styles.container}>
       <div className={styles.content}>
-        <h1 className={styles.title}>{t('admin.title')}</h1>
-
-        {/* Overview */}
-        <div className={styles.grid}>
-          <StatCard value={stats.users.total} label={t('admin.totalUsers')} />
-          <StatCard value={stats.users.today} label={t('admin.today')} />
-          <StatCard value={stats.users.this_week} label={t('admin.thisWeek')} trend={stats.trends.users} />
-          <StatCard value={stats.dna.total_active} label={t('admin.dnaProfiles')} trend={stats.trends.dna} />
-          <StatCard value={stats.matches.total} label={t('admin.totalMatches')} trend={stats.trends.matches} />
-          <StatCard value={`${(stats.matches.accept_rate * 100).toFixed(0)}%`} label={t('admin.acceptRate')} />
+        <div className={styles.pageHeader}>
+          <h1 className={styles.title}>{t('admin.title')}</h1>
+          <span className={styles.headerMeta}>ADMIN_CONSOLE // LIVE</span>
         </div>
 
-        {/* Funnel */}
+        {/* ── 1. Broadcast — top priority ── */}
         <div className={styles.section}>
-          <h2 className={styles.sectionTitle}>{t('admin.userFunnel')}</h2>
+          <BroadcastManager />
+        </div>
+
+        {/* ── 2. Key metrics at a glance ── */}
+        <div className={styles.grid}>
+          <StatCard value={stats.users.total} label={t('admin.totalUsers')} icon="ri-user-line" />
+          <StatCard value={stats.users.today} label={t('admin.today')} icon="ri-calendar-event-line" />
+          <StatCard value={stats.users.this_week} label={t('admin.thisWeek')} trend={stats.trends.users} icon="ri-line-chart-line" />
+          <StatCard value={stats.dna.total_active} label={t('admin.dnaProfiles')} trend={stats.trends.dna} icon="ri-dna-line" />
+          <StatCard value={stats.matches.total} label={t('admin.totalMatches')} trend={stats.trends.matches} icon="ri-link" />
+          <StatCard value={`${(stats.matches.accept_rate * 100).toFixed(0)}%`} label={t('admin.acceptRate')} icon="ri-check-double-line" />
+        </div>
+
+        {/* ── 3. Funnel ── */}
+        <CollapsibleSection title={t('admin.userFunnel')} icon="ri-filter-3-line">
           <div className={styles.funnel}>
             <FunnelBar count={registered} max={funnelMax} label={t('admin.registered')} />
             <FunnelBar count={completed_sequencing} max={funnelMax} label={t('admin.completedSequencing')} rate={funnelRates.toSequencing} />
             <FunnelBar count={has_dna} max={funnelMax} label={t('admin.hasDna')} rate={funnelRates.toDna} />
             <FunnelBar count={has_match} max={funnelMax} label={t('admin.hasMatch')} rate={funnelRates.toMatch} />
           </div>
-        </div>
+        </CollapsibleSection>
 
-        {/* Date range selector + daily charts */}
-        <div className={styles.rangeRow}>
-          {[7, 30, 90].map((d) => (
-            <button
-              key={d}
-              className={`${styles.rangeBtn} ${days === d ? styles.rangeBtnActive : ''}`}
-              onClick={() => handleDaysChange(d)}
-            >
-              {d}{t('admin.daysSuffix')}
-            </button>
-          ))}
-        </div>
-
-        <div className={styles.section}>
-          <h2 className={styles.sectionTitle}>{t('admin.dailyRegistrations')}</h2>
-          {daily.registrations.length > 0 ? (
-            <MiniChart data={daily.registrations} color="teal" />
-          ) : (
-            <p className={styles.funnelLabel}>{t('admin.noData')}</p>
-          )}
-        </div>
-
-        <div className={styles.section}>
-          <h2 className={styles.sectionTitle}>{t('admin.dailyDnaBuilds')}</h2>
-          {daily.dna_builds.length > 0 ? (
-            <MiniChart data={daily.dna_builds} color="blue" />
-          ) : (
-            <p className={styles.funnelLabel}>{t('admin.noData')}</p>
-          )}
-        </div>
-
-        {/* Archetype distribution */}
-        {Object.keys(stats.dna.archetype_distribution).length > 0 && (
-          <div className={styles.section}>
-            <h2 className={styles.sectionTitle}>{t('admin.archetypeDistribution')}</h2>
-            <DonutChart data={stats.dna.archetype_distribution} />
+        {/* ── 4. Daily trends ── */}
+        <CollapsibleSection title={t('admin.dailyRegistrations')} icon="ri-bar-chart-2-line">
+          <div className={styles.rangeRow}>
+            {[7, 30, 90].map((d) => (
+              <button
+                key={d}
+                className={`${styles.rangeBtn} ${days === d ? styles.rangeBtnActive : ''}`}
+                onClick={() => handleDaysChange(d)}
+              >
+                {d}{t('admin.daysSuffix')}
+              </button>
+            ))}
           </div>
-        )}
 
-        {/* Match breakdown */}
-        <div className={styles.section}>
-          <h2 className={styles.sectionTitle}>{t('admin.matchStatus')}</h2>
-          <StackedBar data={stats.matches.status_breakdown} />
-        </div>
+          <div className={styles.chartGroup}>
+            <div className={styles.chartPanel}>
+              <span className={styles.chartLabel}>{t('admin.dailyRegistrations')}</span>
+              {daily.registrations.length > 0 ? (
+                <MiniChart data={daily.registrations} color="teal" />
+              ) : (
+                <p className={styles.noData}>{t('admin.noData')}</p>
+              )}
+            </div>
+            <div className={styles.chartPanel}>
+              <span className={styles.chartLabel}>{t('admin.dailyDnaBuilds')}</span>
+              {daily.dna_builds.length > 0 ? (
+                <MiniChart data={daily.dna_builds} color="blue" />
+              ) : (
+                <p className={styles.noData}>{t('admin.noData')}</p>
+              )}
+            </div>
+          </div>
+        </CollapsibleSection>
 
-        <div className={styles.section}>
+        {/* ── 5. Distribution charts ── */}
+        <CollapsibleSection title={t('admin.matchStatus')} icon="ri-pie-chart-2-line">
+          <div className={styles.distributionRow}>
+            <div className={styles.distributionPanel}>
+              <span className={styles.chartLabel}>{t('admin.matchStatus')}</span>
+              <StackedBar data={stats.matches.status_breakdown} />
+            </div>
+            {Object.keys(stats.dna.archetype_distribution).length > 0 && (
+              <div className={styles.distributionPanel}>
+                <span className={styles.chartLabel}>{t('admin.archetypeDistribution')}</span>
+                <DonutChart data={stats.dna.archetype_distribution} />
+              </div>
+            )}
+          </div>
+        </CollapsibleSection>
+
+        {/* ── 6. Waitlist ── */}
+        <CollapsibleSection title={t('admin.waitlist')} icon="ri-mail-line" defaultOpen={false}>
           <div className={styles.waitlistHeader}>
-            <h2 className={styles.sectionTitle}>{t('admin.waitlist')}</h2>
             <div className={styles.waitlistTotal}>
               <span>{t('admin.waitlistTotal')}</span>
               <strong>{waitlist.total.toLocaleString()}</strong>
@@ -299,18 +334,12 @@ export default function AdminPage() {
               ))}
             </div>
           ) : (
-            <p className={styles.funnelLabel}>{t('admin.waitlistEmpty')}</p>
+            <p className={styles.noData}>{t('admin.waitlistEmpty')}</p>
           )}
-        </div>
+        </CollapsibleSection>
 
-        {/* Broadcast notifications */}
-        <div className={styles.section}>
-          <BroadcastManager />
-        </div>
-
-        {/* API usage */}
-        <div className={styles.section}>
-          <h2 className={styles.sectionTitle}>{t('admin.estimatedApiUsage')}</h2>
+        {/* ── 7. API usage ── */}
+        <CollapsibleSection title={t('admin.estimatedApiUsage')} icon="ri-cloud-line" defaultOpen={false}>
           <div className={styles.apiGrid}>
             <div className={styles.apiCard}>
               <span className={styles.apiCardTitle}>Gemini</span>
@@ -360,11 +389,10 @@ export default function AdminPage() {
               </div>
             </div>
           </div>
-        </div>
+        </CollapsibleSection>
 
-        {/* Token usage & cost */}
-        <div className={styles.section}>
-          <h2 className={styles.sectionTitle}>{t('admin.tokenUsage')}</h2>
+        {/* ── 8. Token usage ── */}
+        <CollapsibleSection title={t('admin.tokenUsage')} icon="ri-coin-line" defaultOpen={false}>
           <div className={styles.apiGrid}>
             {Object.entries(apiUsage.gemini.token_usage).map(([type, data]) => (
               <div key={type} className={styles.apiCard}>
@@ -394,7 +422,7 @@ export default function AdminPage() {
               <span className={styles.costValue}>${apiUsage.gemini.estimated_total_cost_usd.toFixed(4)}</span>
             </div>
           )}
-        </div>
+        </CollapsibleSection>
       </div>
     </div>
   )

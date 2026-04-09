@@ -629,10 +629,10 @@ async def create_broadcast(
             "waitlist_email_count": len(waitlist_emails),
         }
 
-    # 建立 in-app notifications
+    # 建立 in-app notifications（bulk insert，一次 commit）
+    ref_id = f"broadcast:{broadcast_id}"
     for user_id in user_ids:
-        await create_notification(
-            db,
+        db.add(Notification(
             user_id=user_id,
             type=NotificationType.system,
             title_zh=body.title_zh,
@@ -640,13 +640,15 @@ async def create_broadcast(
             body_zh=body.body_zh,
             body_en=body.body_en,
             link=body.link,
-            ref_id=f"broadcast:{broadcast_id}",
-        )
+            ref_id=ref_id,
+        ))
+    if user_ids:
+        await db.commit()
 
     # 發送 email（如果啟用）
     email_sent = 0
     email_failed = 0
-    if body.send_email and body.email_sections:
+    if body.send_email:
         from app.services.email_service import send_announcement_email
 
         # 收集所有 email 地址
@@ -661,7 +663,17 @@ async def create_broadcast(
             all_emails = set()
         all_emails = all_emails | waitlist_emails
 
-        sections_data = [s.model_dump() for s in body.email_sections]
+        # 如果沒有提供 email_sections，從標題和內容自動生成
+        if body.email_sections:
+            sections_data = [s.model_dump() for s in body.email_sections]
+        else:
+            sections_data = [{
+                "title_zh": body.title_zh,
+                "title_en": body.title_en,
+                "body_zh": body.body_zh or "",
+                "body_en": body.body_en or "",
+            }]
+
         for email in all_emails:
             try:
                 await send_announcement_email(

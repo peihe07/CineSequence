@@ -51,6 +51,17 @@
   border-radius: 8px;
 }
 
+.errorBanner {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 0.8rem;
+  font-size: var(--text-sm);
+  color: #9f1239;
+  background: rgba(244, 63, 94, 0.1);
+  border-radius: 8px;
+}
+
 /* 表單 */
 .form {
   display: flex;

@@ -37,6 +37,7 @@ export default function BroadcastManager() {
   const [showForm, setShowForm] = useState(false)
   const [sending, setSending] = useState(false)
   const [lastResult, setLastResult] = useState<BroadcastResult | null>(null)
+  const [sendError, setSendError] = useState<string | null>(null)
 
   // 表單 state
   const [titleZh, setTitleZh] = useState('')
@@ -70,6 +71,7 @@ export default function BroadcastManager() {
     if (!titleZh || !titleEn) return
     setSending(true)
     setLastResult(null)
+    setSendError(null)
     try {
       const result = await api<BroadcastResult>('/admin/notifications', {
         method: 'POST',
@@ -87,8 +89,8 @@ export default function BroadcastManager() {
       setShowForm(false)
       resetForm()
       await fetchBroadcasts()
-    } catch {
-      // 錯誤由 api 層處理
+    } catch (err) {
+      setSendError(err instanceof Error ? err.message : 'Failed to send')
     } finally {
       setSending(false)
     }
@@ -143,7 +145,16 @@ export default function BroadcastManager() {
           <span>
             {t('admin.broadcastSent')} — {lastResult.notifications_created} notifications
             {lastResult.email_sent > 0 && `, ${lastResult.email_sent} emails`}
+            {lastResult.email_failed > 0 && ` (${lastResult.email_failed} failed)`}
           </span>
+        </div>
+      )}
+
+      {/* 發送錯誤 */}
+      {sendError && (
+        <div className={styles.errorBanner}>
+          <i className="ri-error-warning-line" />
+          <span>{sendError}</span>
         </div>
       )}
 
