@@ -1,6 +1,6 @@
 .pill {
   display: inline-flex;
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-button);
   overflow: hidden;
   background: rgba(255, 255, 255, 0.04);
   cursor: pointer;

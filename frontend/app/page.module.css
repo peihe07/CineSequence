@@ -397,7 +397,7 @@
   font-family: var(--font-mono);
   font-size: var(--text-sm);
   text-decoration: none;
-  border-radius: 6px;
+  border-radius: 0;
   transition: opacity 0.2s;
 }
 
@@ -412,7 +412,7 @@
   color: var(--color-text-secondary, #aaa);
   font-family: var(--font-mono);
   font-size: var(--text-sm);
-  border-radius: 6px;
+  border-radius: 0;
   cursor: pointer;
   transition: border-color 0.2s, color 0.2s;
 }

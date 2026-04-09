@@ -110,7 +110,7 @@
   text-transform: uppercase;
   color: var(--archive-text-muted);
   text-decoration: none;
-  border-radius: var(--radius-component);
+  border-radius: var(--radius-button);
   transition:
     color 0.2s ease,
     background 0.2s ease,
@@ -204,7 +204,7 @@
   width: 2.5rem;
   height: 2.5rem;
   border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: var(--radius-component);
+  border-radius: var(--radius-button);
   background: rgba(255, 255, 255, 0.05);
   color: var(--archive-text);
 }
@@ -236,7 +236,7 @@
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--archive-text-muted);
-  border-radius: var(--radius-component);
+  border-radius: var(--radius-button);
   background: rgba(255, 255, 255, 0.04);
 }
 

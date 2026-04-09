@@ -186,7 +186,7 @@
   font-family: var(--font-tech);
   color: rgba(255, 255, 255, 0.62);
   background: rgba(255, 255, 255, 0.05);
-  border-radius: var(--radius-pill);
+  border-radius: 0;
 }
 
 .memberBadge i {
@@ -507,7 +507,7 @@
   color: rgba(255, 233, 214, 0.88);
   font-size: 0.68rem;
   font-family: var(--font-tech);
-  border-radius: var(--radius-component);
+  border-radius: 0;
 }
 
 /* ── MOVIE CARDS (recommended / watchlist) ───── */

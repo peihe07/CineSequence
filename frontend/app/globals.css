@@ -48,8 +48,8 @@
   --card-radius: 0.85rem;
   --radius-structure: 2px;
   --radius-component: 8px;
-  --radius-pill: 999px;
-  --radius-button: 4px;
+  --radius-pill: 0;
+  --radius-button: 0;
   --card-shadow: var(--glass-shadow);
   --card-shadow-hover: var(--glass-shadow-hover);
 
@@ -114,6 +114,19 @@ body {
   font-size: 14px;
   line-height: var(--leading-base);
   letter-spacing: 0.02em;
+}
+
+button,
+input[type='button'],
+input[type='submit'],
+input[type='reset'] {
+  border-radius: 0 !important;
+}
+
+input,
+textarea,
+select {
+  border-radius: 0 !important;
 }
 
 body.cookieConsentVisible {
