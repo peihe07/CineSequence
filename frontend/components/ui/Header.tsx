@@ -35,7 +35,8 @@ export default function Header() {
 
   useEffect(() => {
     const syncScroll = () => {
-      setIsScrolled(window.scrollY > 16)
+      const nextIsScrolled = window.scrollY > 16
+      setIsScrolled((current) => (current === nextIsScrolled ? current : nextIsScrolled))
     }
     syncScroll()
     window.addEventListener('scroll', syncScroll, { passive: true })

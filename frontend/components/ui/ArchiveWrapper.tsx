@@ -31,11 +31,12 @@ export default function ArchiveWrapper({ children }: { children: React.ReactNode
   const pathname = usePathname()
   const { t } = useI18n()
   const { fileId, cueKey, breadcrumbKey, density } = useMemo(() => resolveArchiveMeta(pathname), [pathname])
+  const isFastScrollRoute = /^\/theaters(?:\/|$)/.test(pathname)
 
   // Minimal density: only HUD row + content, no rails / scan badge / frame decorations
   if (density === 'minimal') {
     return (
-      <div className={`${styles.archive} ${styles.archiveMinimal}`}>
+      <div className={`${styles.archive} ${styles.archiveMinimal} ${isFastScrollRoute ? styles.archiveFastScroll : ''}`}>
         <div className={styles.content}>
           <div className={styles.hudRow} aria-hidden="true">
             <span className={styles.hudCue}>[{t(cueKey)}]</span>
@@ -48,8 +49,8 @@ export default function ArchiveWrapper({ children }: { children: React.ReactNode
   }
 
   return (
-    <div className={styles.archive}>
-      <div className={styles.frame}>
+    <div className={`${styles.archive} ${isFastScrollRoute ? styles.archiveFastScroll : ''}`}>
+      <div className={`${styles.frame} ${isFastScrollRoute ? styles.frameFastScroll : ''}`}>
         <div className={styles.leftRail} aria-hidden="true">
           <span className={styles.sideLabel}>{t('archive.file', { id: fileId })}</span>
           <span className={styles.sideRule} />
