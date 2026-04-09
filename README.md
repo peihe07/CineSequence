@@ -14,7 +14,7 @@ A movie-taste-based social matching platform. Users go through a 30-round binary
 
 ## Core Flow
 
-1. **Register** — email (magic link), name, avatar, gender, region
+1. **Access** — homepage now routes new users to the dedicated registration flow, existing users sign in by magic link, and waitlist capture remains available as an operational fallback when needed
 2. **Set preferences** — who to meet (gender, age) or pure taste match
 3. **Seed movie** — user inputs a seed movie to establish initial signal
 4. **Sequencing (30 rounds, extendable to 36)** — binary movie choices across 3 phases:
@@ -120,7 +120,7 @@ cd backend
 
 ### Load Testing
 
-Basic `k6` load scripts are documented in [docs/loadtest.md](/Users/peihe/Personal_Projects/movie-dna/docs/loadtest.md).
+Basic `k6` load scripts live in [`loadtest/`](/Users/peihe/Personal_Projects/movie-dna/loadtest).
 
 Typical starting runs:
 
@@ -170,7 +170,11 @@ See `docs/production-deployment.md` for the current production deployment guide 
 
 ## Project Structure
 
-See `docs/project-structure.md` for detailed directory layout.
+- `frontend/` — Next.js app router frontend
+- `backend/` — FastAPI application, models, routers, services, tests
+- `docs/` — product, deployment, and workstream documentation
+- `loadtest/` — `k6` smoke and performance scripts
+- `scripts/` — validation and local utility scripts
 
 ## License
 
