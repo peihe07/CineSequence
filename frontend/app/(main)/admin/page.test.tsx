@@ -1,4 +1,4 @@
-import { cleanup, render, screen, waitFor } from '@testing-library/react'
+import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 const { apiMock } = vi.hoisted(() => ({
@@ -138,6 +138,8 @@ describe('AdminPage', () => {
     await waitFor(() => {
       expect(apiMock).toHaveBeenCalledWith('/admin/waitlist')
     })
+
+    fireEvent.click(screen.getByRole('button', { name: 'Waitlist' }))
 
     const waitlistTable = screen.getByRole('table', { name: 'Waitlist' })
 
