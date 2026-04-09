@@ -6,6 +6,7 @@ import { useI18n } from '@/lib/i18n'
 import MiniChart from './charts/MiniChart'
 import DonutChart from './charts/DonutChart'
 import StackedBar from './charts/StackedBar'
+import BroadcastManager from './BroadcastManager'
 import styles from './page.module.css'
 
 interface Stats {
@@ -300,6 +301,11 @@ export default function AdminPage() {
           ) : (
             <p className={styles.funnelLabel}>{t('admin.waitlistEmpty')}</p>
           )}
+        </div>
+
+        {/* Broadcast notifications */}
+        <div className={styles.section}>
+          <BroadcastManager />
         </div>
 
         {/* API usage */}

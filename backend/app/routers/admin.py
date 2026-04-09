@@ -1,19 +1,20 @@
 """Admin dashboard API — stats and metrics for project maintainers."""
 
 import logging
+import uuid
 from datetime import UTC, datetime, timedelta
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel
-from sqlalchemy import func, select, union_all, update
+from sqlalchemy import delete, func, select, union_all, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.deps import get_current_user, get_db
 from app.models.ai_token_log import AiTokenLog
 from app.models.dna_profile import DnaProfile
 from app.models.match import Match, MatchStatus
-from app.models.notification import NotificationType
+from app.models.notification import Notification, NotificationType
 from app.models.group import Group, group_members
 from app.models.match_message import MatchMessage
 from app.models.pick import Pick
@@ -577,3 +578,184 @@ async def reset_all_sequencing(
         "group_memberships_cleared": membership_count,
         "users_reset": user_count,
     }
+
+
+# ── Broadcast notification management ──
+
+
+class BroadcastRequest(BaseModel):
+    title_zh: str
+    title_en: str
+    body_zh: str | None = None
+    body_en: str | None = None
+    link: str | None = "/sequencing"
+    recipients: str = "all_users"  # "all_users" | "waitlist" | "both"
+    send_email: bool = False
+    email_subject_zh: str | None = None
+    email_subject_en: str | None = None
+    email_sections: list[AnnouncementSection] | None = None
+    email_closing_zh: str = "如有任何問題或回饋，歡迎來信至 y450376@gmail.com"
+    email_closing_en: str = "If you have any questions or feedback, please email y450376@gmail.com"
+    dry_run: bool = False
+
+
+@router.post("/notifications")
+async def create_broadcast(
+    body: BroadcastRequest,
+    _admin: Annotated[User, Depends(require_admin)],
+    db: Annotated[AsyncSession, Depends(get_db)],
+):
+    """Create a broadcast notification to selected recipients."""
+    broadcast_id = str(uuid.uuid4())
+
+    # 計算收件人
+    user_ids: list[uuid.UUID] = []
+    if body.recipients in ("all_users", "both"):
+        result = await db.execute(select(User.id))
+        user_ids = [row[0] for row in result.all()]
+
+    waitlist_emails: set[str] = set()
+    if body.recipients in ("waitlist", "both"):
+        registered_result = await db.execute(select(User.email).where(User.email.isnot(None)))
+        registered_emails = {row[0] for row in registered_result.all()}
+        wl_result = await db.execute(select(WaitlistEntry.email))
+        waitlist_emails = {row[0] for row in wl_result.all()} - registered_emails
+
+    if body.dry_run:
+        return {
+            "dry_run": True,
+            "broadcast_id": broadcast_id,
+            "notification_count": len(user_ids),
+            "waitlist_email_count": len(waitlist_emails),
+        }
+
+    # 建立 in-app notifications
+    for user_id in user_ids:
+        await create_notification(
+            db,
+            user_id=user_id,
+            type=NotificationType.system,
+            title_zh=body.title_zh,
+            title_en=body.title_en,
+            body_zh=body.body_zh,
+            body_en=body.body_en,
+            link=body.link,
+            ref_id=f"broadcast:{broadcast_id}",
+        )
+
+    # 發送 email（如果啟用）
+    email_sent = 0
+    email_failed = 0
+    if body.send_email and body.email_sections:
+        from app.services.email_service import send_announcement_email
+
+        # 收集所有 email 地址
+        email_result = await db.execute(
+            select(User.email).where(
+                User.email_notifications_enabled.is_(True),
+                User.email.isnot(None),
+            )
+        )
+        all_emails = {row[0] for row in email_result.all()}
+        if body.recipients == "waitlist":
+            all_emails = set()
+        all_emails = all_emails | waitlist_emails
+
+        sections_data = [s.model_dump() for s in body.email_sections]
+        for email in all_emails:
+            try:
+                await send_announcement_email(
+                    to_email=email,
+                    subject_zh=body.email_subject_zh or body.title_zh,
+                    subject_en=body.email_subject_en or body.title_en,
+                    body_sections=sections_data,
+                    closing_zh=body.email_closing_zh,
+                    closing_en=body.email_closing_en,
+                )
+                email_sent += 1
+            except Exception:
+                logger.exception("Failed to send broadcast email to %s", email)
+                email_failed += 1
+
+    return {
+        "broadcast_id": broadcast_id,
+        "notifications_created": len(user_ids),
+        "email_sent": email_sent,
+        "email_failed": email_failed,
+        "waitlist_emails": len(waitlist_emails),
+    }
+
+
+@router.get("/notifications")
+async def list_broadcasts(
+    _admin: Annotated[User, Depends(require_admin)],
+    db: Annotated[AsyncSession, Depends(get_db)],
+    limit: int = Query(default=20, ge=1, le=100),
+):
+    """List broadcast notifications with read/total stats."""
+    # 找出所有 broadcast ref_ids
+    broadcasts_q = (
+        select(
+            Notification.ref_id,
+            Notification.title_zh,
+            Notification.title_en,
+            Notification.body_zh,
+            Notification.body_en,
+            Notification.link,
+            func.count(Notification.id).label("total"),
+            func.count(Notification.id).filter(Notification.is_read.is_(True)).label("read_count"),
+            func.min(Notification.created_at).label("created_at"),
+        )
+        .where(Notification.ref_id.like("broadcast:%"))
+        .group_by(
+            Notification.ref_id,
+            Notification.title_zh,
+            Notification.title_en,
+            Notification.body_zh,
+            Notification.body_en,
+            Notification.link,
+        )
+        .order_by(func.min(Notification.created_at).desc())
+        .limit(limit)
+    )
+    result = await db.execute(broadcasts_q)
+    rows = result.all()
+
+    return {
+        "broadcasts": [
+            {
+                "broadcast_id": row.ref_id.replace("broadcast:", "") if row.ref_id else None,
+                "title_zh": row.title_zh,
+                "title_en": row.title_en,
+                "body_zh": row.body_zh,
+                "body_en": row.body_en,
+                "link": row.link,
+                "total": row.total,
+                "read_count": row.read_count,
+                "created_at": row.created_at.isoformat() if row.created_at else None,
+            }
+            for row in rows
+        ],
+    }
+
+
+@router.delete("/notifications/{broadcast_id}")
+async def delete_broadcast(
+    broadcast_id: str,
+    _admin: Annotated[User, Depends(require_admin)],
+    db: Annotated[AsyncSession, Depends(get_db)],
+):
+    """Delete all notifications belonging to a broadcast."""
+    ref_id = f"broadcast:{broadcast_id}"
+    result = await db.execute(
+        delete(Notification).where(Notification.ref_id == ref_id)
+    )
+    await db.commit()
+
+    if result.rowcount == 0:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Broadcast not found",
+        )
+
+    return {"deleted": result.rowcount}
