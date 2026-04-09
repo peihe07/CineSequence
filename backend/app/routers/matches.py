@@ -6,10 +6,12 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
+from sqlalchemy import func as sa_func
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.deps import get_current_user, get_db
-from app.models.match import MatchStatus
+from app.models.match import Match, MatchStatus
 from app.models.user import User
 from app.services.matcher import (
     find_matches,
@@ -293,9 +295,6 @@ async def toggle_star(
     new_value = not currently_starred
 
     if new_value:
-        from sqlalchemy import select, func as sa_func
-        from app.models.match import Match
-
         if is_user_a:
             count_q = select(sa_func.count(Match.id)).where(
                 Match.user_a_id == user.id, Match.starred_by_a.is_(True)
