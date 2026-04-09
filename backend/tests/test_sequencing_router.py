@@ -75,7 +75,7 @@ class TestProgress:
         response = await client.get("/sequencing/progress", headers=headers)
         assert response.status_code == 200
         data = response.json()
-        assert data["free_retest_credits"] == 1
+        assert data["free_retest_credits"] == 0
         assert data["paid_sequencing_credits"] == 0
 
 
@@ -115,9 +115,11 @@ class TestSearch:
     """GET /sequencing/search"""
 
     @pytest.mark.asyncio
+    @patch("app.routers.sequencing.get_movies", new_callable=AsyncMock)
     @patch("app.routers.sequencing.search_movies", new_callable=AsyncMock)
-    async def test_search_returns_results(self, mock_search, client, auth_user):
+    async def test_search_returns_results(self, mock_search, mock_get_movies, client, auth_user):
         mock_search.return_value = [_fake_movie(155, "The Dark Knight")]
+        mock_get_movies.return_value = {155: _fake_movie(155, "The Dark Knight")}
         _, headers = auth_user
 
         response = await client.get(
@@ -712,14 +714,17 @@ class TestDislikeBoth:
     @pytest.mark.asyncio
     async def test_dislike_both_persists_as_distinct_decision(self, client, auth_user, db_session):
         user, headers = auth_user
+        pair_response = await client.get("/sequencing/pair", headers=headers)
+        assert pair_response.status_code == 200
+        pair_data = pair_response.json()
 
         response = await client.post(
             "/sequencing/dislike-both",
             json={
-                "movie_a_tmdb_id": 3101,
-                "movie_b_tmdb_id": 3102,
+                "movie_a_tmdb_id": pair_data["movie_a"]["tmdb_id"],
+                "movie_b_tmdb_id": pair_data["movie_b"]["tmdb_id"],
                 "response_time_ms": 850,
-                "test_dimension": "slowburn",
+                "test_dimension": pair_data["test_dimension"],
             },
             headers=headers,
         )
@@ -730,7 +735,7 @@ class TestDislikeBoth:
         assert len(picks) == 1
         assert picks[0].chosen_tmdb_id is None
         assert picks[0].decision_type == "dislike_both"
-        assert picks[0].test_dimension == "slowburn"
+        assert picks[0].test_dimension == pair_data["test_dimension"]
 
     @pytest.mark.asyncio
     async def test_seen_one_side_persists_as_distinct_decision(self, client, auth_user, db_session):

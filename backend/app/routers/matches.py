@@ -66,7 +66,13 @@ class RespondRequest(BaseModel):
     accept: bool
 
 
-async def _resolve_partner_ticket(db: AsyncSession, match, partner: User) -> str | None:
+async def _resolve_partner_ticket(
+    db: AsyncSession,
+    match,
+    partner: User,
+    *,
+    allow_generate: bool,
+) -> str | None:
     """Return the best available ticket URL for an accepted match.
 
     Older profiles may be missing a personal ticket because async generation failed
@@ -76,6 +82,8 @@ async def _resolve_partner_ticket(db: AsyncSession, match, partner: User) -> str
     partner_ticket = normalize_public_object_url(match.ticket_image_url)
     if match.status != MatchStatus.accepted:
         return partner_ticket
+    if partner_ticket:
+        return partner_ticket
 
     partner_profile = partner.dna_profile
     if not partner_profile:
@@ -83,6 +91,9 @@ async def _resolve_partner_ticket(db: AsyncSession, match, partner: User) -> str
 
     if partner_profile.personal_ticket_url:
         return normalize_public_object_url(partner_profile.personal_ticket_url)
+
+    if not allow_generate:
+        return partner_ticket
 
     try:
         from app.routers.profile import _generate_personal_ticket_url
@@ -103,13 +114,24 @@ async def _resolve_partner_ticket(db: AsyncSession, match, partner: User) -> str
         return partner_ticket
 
 
-async def _match_to_out(db: AsyncSession, match, user_id: uuid.UUID) -> MatchOut:
+async def _match_to_out(
+    db: AsyncSession,
+    match,
+    user_id: uuid.UUID,
+    *,
+    allow_generate_ticket: bool,
+) -> MatchOut:
     """Convert Match model to MatchOut, resolving which user is the partner."""
     is_user_a = match.user_a_id == user_id
     partner = match.user_b if is_user_a else match.user_a
     is_recipient = match.user_b_id == user_id
 
-    partner_ticket = await _resolve_partner_ticket(db, match, partner)
+    partner_ticket = await _resolve_partner_ticket(
+        db,
+        match,
+        partner,
+        allow_generate=allow_generate_ticket,
+    )
 
     return MatchOut(
         id=match.id,
@@ -137,7 +159,7 @@ async def list_matches(
 ):
     """List all matches for the current user."""
     matches = await get_user_matches(db, user.id)
-    return [await _match_to_out(db, m, user.id) for m in matches]
+    return [await _match_to_out(db, m, user.id, allow_generate_ticket=False) for m in matches]
 
 
 @router.get("/invite-credits", response_model=InviteCreditsOut)
@@ -159,7 +181,7 @@ async def get_match(
     match = await get_match_by_id(db, match_id, user.id)
     if not match:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Match not found")
-    return await _match_to_out(db, match, user.id)
+    return await _match_to_out(db, match, user.id, allow_generate_ticket=True)
 
 
 @router.post("/discover")
@@ -188,7 +210,7 @@ async def discover_matches(
             context=f"match_found user={user.id} match={m.id}",
         )
 
-    return [await _match_to_out(db, m, user.id) for m in new_matches]
+    return [await _match_to_out(db, m, user.id, allow_generate_ticket=False) for m in new_matches]
 
 
 @router.post("/invite")
@@ -216,7 +238,7 @@ async def invite_match(
         context=f"invite_received recipient={recipient.id} match={match.id}",
     )
 
-    return await _match_to_out(db, match, user.id)
+    return await _match_to_out(db, match, user.id, allow_generate_ticket=False)
 
 
 @router.post("/respond")
@@ -245,4 +267,4 @@ async def respond_match(
             context=f"match_accepted inviter={inviter.id} match={match.id}",
         )
 
-    return await _match_to_out(db, match, user.id)
+    return await _match_to_out(db, match, user.id, allow_generate_ticket=True)

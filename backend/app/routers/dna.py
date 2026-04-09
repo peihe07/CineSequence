@@ -205,19 +205,20 @@ async def build_dna_profile(
 
     picks, genre_map = await _get_session_picks_and_genres(db, session.id)
     dna_data = build_dna(picks, genre_map)
+    top_tags = dna_data.get("top_tags") or get_top_tags(dna_data["tag_vector"])
 
     # Generate AI personality reading
     personality = await generate_personality(
         picks=picks,
         tag_labels=dna_data["tag_labels"],
-        top_tags=dna_data["top_tags"],
+        top_tags=top_tags,
         excluded_tags=dna_data["excluded_tags"],
         tag_confidence=dna_data["tag_confidence"],
         tag_consistency=dna_data["tag_consistency"],
         genre_vector=dna_data["genre_vector"],
         quadrant_scores=dna_data["quadrant_scores"],
         archetype_id=dna_data["archetype_id"],
-        comparison_evidence=build_comparison_evidence(picks, dna_data["top_tags"]),
+        comparison_evidence=build_comparison_evidence(picks, top_tags),
     )
 
     # Check if DNA already exists for this session (extension re-compute)

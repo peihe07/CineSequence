@@ -10,7 +10,7 @@ from sqlalchemy.orm import selectinload
 
 from app.deps import get_current_user, get_db
 from app.models.dna_profile import DnaProfile
-from app.models.group import group_members
+from app.models.group import Group, group_members
 from app.models.group_message import GroupMessage
 from app.models.theater_list import TheaterList, TheaterListItem, TheaterListReply
 from app.models.user import User
@@ -262,8 +262,6 @@ async def _ensure_group_visible_to_user(
     ))
     is_member = result.first() is not None
 
-    from app.models.group import Group
-
     group_result = await db.execute(select(Group).where(Group.id == group_id))
     group = group_result.scalar_one_or_none()
     if not group:
@@ -421,6 +419,19 @@ async def _prepare_theater_list_items(
     ]
 
 
+def _theater_list_contains_item(
+    existing_items: list[TheaterListItem],
+    item: TheaterListItemCreate,
+) -> bool:
+    fingerprint = item_fingerprint(item.tmdb_id, item.title_en, item.title_zh)
+    if not fingerprint:
+        return False
+    return any(
+        item_fingerprint(existing.tmdb_id, existing.title_en, existing.title_zh) == fingerprint
+        for existing in existing_items
+    )
+
+
 @router.get("")
 async def list_groups(
     user: Annotated[User, Depends(get_current_user)],
@@ -452,19 +463,29 @@ async def auto_assign(
 
     user.dna_profiles = [profile]
     assigned = await auto_assign_groups(db, user)
-    for group in assigned:
+    assigned_group_refs = [(group.id, group.name) for group in assigned]
+    for group_id, group_name in assigned_group_refs:
         await emit_notification_safely(
             notify_theater_assigned,
             db,
             user.id,
-            theater_name=group.name,
-            theater_id=group.id,
-            context=f"theater_assigned:{group.id}:{user.id}",
+            theater_name=group_name,
+            theater_id=group_id,
+            context=f"theater_assigned:{group_id}:{user.id}",
         )
-    user_group_ids = {g.id for g in assigned}
+    result = await db.execute(select(Group).where(Group.id.in_([group_id for group_id, _ in assigned_group_refs])))
+    assigned_groups = list(result.scalars().all())
+    user_group_ids = {group_id for group_id, _ in assigned_group_refs}
     return [
-        GroupOut(**await build_group_payload(db, g, viewer=user, is_member=g.id in user_group_ids))
-        for g in assigned
+        GroupOut(
+            **await build_group_payload(
+                db,
+                group,
+                viewer=user,
+                is_member=group.id in user_group_ids,
+            )
+        )
+        for group in assigned_groups
     ]
 
 
@@ -766,6 +787,11 @@ async def append_theater_list_item(
         )
 
     prepared = prepared_items[0]
+    if _theater_list_contains_item(theater_list.items, prepared):
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Movie already exists in this list",
+        )
 
     db.add(
         TheaterListItem(

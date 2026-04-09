@@ -8,7 +8,7 @@ from httpx import AsyncClient
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models.dna_profile import DnaProfile
+from app.models.dna_profile import TAG_VECTOR_DIMENSIONS, DnaProfile
 from app.models.group import Group, group_members
 from app.models.group_message import GroupMessage
 from app.models.match import Match, MatchStatus
@@ -64,7 +64,7 @@ class TestGetProfile:
         profile = DnaProfile(
             user_id=user.id,
             archetype_id="time-traveler",
-            tag_vector=[0.6] * 30,
+            tag_vector=[0.6] * TAG_VECTOR_DIMENSIONS,
             genre_vector={"Drama": 1.0},
             quadrant_scores={},
             ticket_style="classic",
@@ -128,7 +128,7 @@ class TestUpdateProfile:
         profile = DnaProfile(
             user_id=user_id,
             archetype_id="time-traveler",
-            tag_vector=[0.6] * 30,
+            tag_vector=[0.6] * TAG_VECTOR_DIMENSIONS,
             genre_vector={"Drama": 1.0},
             quadrant_scores={},
             ticket_style="classic",
@@ -365,7 +365,7 @@ class TestDeleteAccount:
             user_id=user.id,
             session_id=session.id,
             archetype_id="time-traveler",
-            tag_vector=[0.8] * 30,
+            tag_vector=[0.8] * TAG_VECTOR_DIMENSIONS,
             genre_vector={},
             quadrant_scores={},
             ticket_style="classic",

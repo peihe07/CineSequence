@@ -25,6 +25,7 @@ engine = create_async_engine(
     echo=True,
     poolclass=NullPool,
     connect_args={"server_settings": {"search_path": f"{test_schema_name},public"}},
+    execution_options={"schema_translate_map": {None: test_schema_name}},
 )
 test_session = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 

@@ -11,6 +11,7 @@ from sqlalchemy.orm import selectinload
 
 from app.models.dna_profile import TAG_VECTOR_DIMENSIONS, DnaProfile
 from app.models.match import Match, MatchStatus
+from app.models.user_entitlement import EntitlementType, UserEntitlement
 from app.models.user import Gender, GenderPref, SequencingStatus, User
 from app.services.auth_utils import create_access_token
 from app.services.matcher import find_matches
@@ -56,6 +57,8 @@ async def create_user_with_dna(
         is_active=True,
     )
     db.add_all([user, profile])
+    await db.commit()
+    db.add(UserEntitlement(user_id=user.id, type=EntitlementType.invite))
     await db.commit()
 
     result = await db.execute(

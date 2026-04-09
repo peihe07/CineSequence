@@ -652,11 +652,6 @@ async def extend_sequencing(
 ):
     """Unlock more rounds after base sequencing is completed."""
     session = await get_or_create_session(db, user.id)
-    try:
-        session = await start_extension(db, session)
-    except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
-
     gate = await can_start_extension_by_credit(db, user)
     if not gate.allowed:
         raise HTTPException(
@@ -669,7 +664,11 @@ async def extend_sequencing(
                 "paid_credits_remaining": gate.paid_credits_remaining,
             },
         )
-    consumption = await consume_extension_credit(db, user)
+    try:
+        session = await start_extension(db, session)
+        consumption = await consume_extension_credit(db, user)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
     _clear_pending_pair(session)
     # Flush session changes first to avoid circular FK dependency with User

@@ -1,10 +1,9 @@
 from datetime import UTC, datetime, timedelta
-
 import pytest
 import pytest_asyncio
 from sqlalchemy import insert, select, text
 
-from app.models.dna_profile import DnaProfile
+from app.models.dna_profile import TAG_VECTOR_DIMENSIONS, DnaProfile
 from app.models.group import Group, group_members
 from app.models.group_message import GroupMessage
 from app.models.notification import Notification
@@ -12,6 +11,36 @@ from app.models.theater_list import TheaterList, TheaterListReply
 from app.models.user import SequencingStatus, User
 from app.services.auth_utils import create_access_token
 from app.services.group_engine import _recent_activity, _recent_messages
+
+
+@pytest_asyncio.fixture(autouse=True)
+async def stub_tmdb_item_enrichment(monkeypatch):
+    async def fake_get_movie(tmdb_id: int):
+        return type(
+            "FakeMovie",
+            (),
+            {
+                "tmdb_id": tmdb_id,
+                "title_en": "Arrival" if tmdb_id == 11 else f"Movie {tmdb_id}",
+                "title_zh": "異星入境" if tmdb_id == 11 else None,
+                "poster_url": "https://image.tmdb.org/t/p/w500/arrival.jpg",
+                "genres": ["Science Fiction"],
+                "runtime_minutes": 116,
+            },
+        )()
+
+    async def fake_search_movies(query: str, limit: int = 5):
+        return [await fake_get_movie(11)]
+
+    async def fake_get_movies(tmdb_ids: list[int]):
+        return {
+            tmdb_id: await fake_get_movie(tmdb_id)
+            for tmdb_id in tmdb_ids
+        }
+
+    monkeypatch.setattr("app.services.theater_list_items.get_movie", fake_get_movie)
+    monkeypatch.setattr("app.services.theater_list_items.search_movies", fake_search_movies)
+    monkeypatch.setattr("app.services.group_engine.get_movies", fake_get_movies)
 
 
 @pytest_asyncio.fixture
@@ -95,7 +124,7 @@ async def test_groups_list_returns_lightweight_overview_payload(client, auth_use
     profile = DnaProfile(
         user_id=user.id,
         archetype_id="time_traveler",
-        tag_vector=[0.8] * 30,
+        tag_vector=[0.8] * TAG_VECTOR_DIMENSIONS,
         genre_vector={},
         quadrant_scores={},
         ticket_style="classic",
@@ -1115,7 +1144,7 @@ async def test_auto_assign_creates_theater_assignment_notification(client, auth_
     profile = DnaProfile(
         user_id=user.id,
         archetype_id="time_traveler",
-        tag_vector=[0.8] * 30,
+        tag_vector=[0.8] * TAG_VECTOR_DIMENSIONS,
         genre_vector={},
         quadrant_scores={},
         ticket_style="classic",
@@ -1154,7 +1183,7 @@ async def test_auto_assign_preserves_existing_memberships(client, auth_user, db_
     profile = DnaProfile(
         user_id=user.id,
         archetype_id="time_traveler",
-        tag_vector=[0.8] * 30,
+        tag_vector=[0.8] * TAG_VECTOR_DIMENSIONS,
         genre_vector={},
         quadrant_scores={},
         ticket_style="classic",
@@ -1209,7 +1238,7 @@ async def test_auto_assign_recovers_from_notification_db_failure(
     profile = DnaProfile(
         user_id=user.id,
         archetype_id="time_traveler",
-        tag_vector=[0.8] * 30,
+        tag_vector=[0.8] * TAG_VECTOR_DIMENSIONS,
         genre_vector={},
         quadrant_scores={},
         ticket_style="classic",

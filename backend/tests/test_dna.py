@@ -161,6 +161,7 @@ class TestDnaBuildEndpoint:
         dna_data = {
             "archetype_id": "dark_poet",
             "tag_vector": [0.2] * TAG_VECTOR_DIMENSIONS,
+            "top_tags": ["mindfuck"],
             "tag_labels": {"mindfuck": 1.0},
             "excluded_tags": [],
             "tag_confidence": {"mindfuck": 1.0},
