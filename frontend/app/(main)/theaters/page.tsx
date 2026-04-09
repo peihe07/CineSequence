@@ -2,7 +2,7 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { startTransition, useEffect, useState } from 'react'
+import { startTransition, useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { PreviewBanner, usePreviewAccess } from '@/components/preview/PreviewGate'
 import { useGroupStore } from '@/stores/groupStore'
@@ -452,12 +452,20 @@ function TheatersContent() {
   const { isPreview, guardPreviewAction, previewModal } = usePreviewAccess('/theaters')
   const { groups, isLoading, hasHydrated, fetchGroups, autoAssign, joinGroup, leaveGroup } = useGroupStore()
   const [leaveTarget, setLeaveTarget] = useState<string | null>(null)
-  const displayGroups = isPreview ? PREVIEW_THEATER_GROUPS : groups
-  const featuredGroup = displayGroups.find((group) => group.is_member) ?? displayGroups[0] ?? null
-  const remainingGroups = featuredGroup
-    ? displayGroups.filter((group) => group.id !== featuredGroup.id)
-    : []
+  const displayGroups = useMemo(
+    () => (isPreview ? PREVIEW_THEATER_GROUPS : groups),
+    [groups, isPreview],
+  )
+  const featuredGroup = useMemo(
+    () => displayGroups.find((group) => group.is_member) ?? displayGroups[0] ?? null,
+    [displayGroups],
+  )
+  const remainingGroups = useMemo(
+    () => (featuredGroup ? displayGroups.filter((group) => group.id !== featuredGroup.id) : []),
+    [displayGroups, featuredGroup],
+  )
   const [visibleLibraryCount, setVisibleLibraryCount] = useState(INITIAL_LIBRARY_RENDER_COUNT)
+  const previousLibraryIdsRef = useRef<string>('')
   const visibleGroups = remainingGroups.slice(0, visibleLibraryCount)
 
   useEffect(() => {
@@ -469,8 +477,21 @@ function TheatersContent() {
   }, [fetchGroups, hasHydrated, isAuthenticated])
 
   useEffect(() => {
-    setVisibleLibraryCount(INITIAL_LIBRARY_RENDER_COUNT)
-  }, [featuredGroup?.id, remainingGroups.length])
+    const libraryIds = remainingGroups.map((group) => group.id).join(',')
+    const previousLibraryIds = previousLibraryIdsRef.current
+    previousLibraryIdsRef.current = libraryIds
+
+    if (!libraryIds || libraryIds === previousLibraryIds) {
+      return
+    }
+
+    setVisibleLibraryCount((current) => {
+      if (!previousLibraryIds) {
+        return Math.max(current, INITIAL_LIBRARY_RENDER_COUNT)
+      }
+      return Math.max(current, remainingGroups.length)
+    })
+  }, [remainingGroups])
 
   useEffect(() => {
     if (remainingGroups.length <= INITIAL_LIBRARY_RENDER_COUNT) {
