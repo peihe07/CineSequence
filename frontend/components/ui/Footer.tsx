@@ -10,6 +10,7 @@ type FooterModalKind = 'privacy' | 'terms' | null
 export default function Footer() {
   const { t } = useI18n()
   const [openModal, setOpenModal] = useState<FooterModalKind>(null)
+  const qaFormHref = 'https://forms.gle/LUSV77Zs1FU1PBaN6'
   const supportUrl =
     process.env.NEXT_PUBLIC_SUPPORT_URL?.trim() ||
     process.env.NEXT_PUBLIC_BUYMEACOFFEE_URL?.trim()
@@ -72,6 +73,16 @@ export default function Footer() {
                 <i className="ri-ticket-line" aria-hidden="true" />
                 {t('footer.pricing')}
               </Link>
+              <a
+                href={qaFormHref}
+                className={styles.footerLink}
+                target="_blank"
+                rel="noreferrer noopener external"
+                aria-label={t('footer.qaAria')}
+              >
+                <i className="ri-clipboard-line" aria-hidden="true" />
+                {t('footer.qa')}
+              </a>
               <span className={styles.navDivider} aria-hidden="true" />
               <button type="button" className={styles.footerLink} onClick={() => setOpenModal('privacy')}>
                 {t('footer.privacy')}

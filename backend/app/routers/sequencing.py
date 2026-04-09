@@ -74,11 +74,12 @@ async def _enqueue_dna_build(user_id) -> None:
         try:
             find_matches_task.delay(str(user_id))
         except Exception:
-            logger.exception(
-                "Failed to enqueue match build after inline DNA build "
-                "for user %s",
+            logger.warning(
+                "Celery unavailable for match task; running inline for user %s",
                 user_id,
             )
+            from app.tasks.match_tasks import _find_matches_for_user
+            await _find_matches_for_user(str(user_id))
 
 
 def _get_phase(round_number: int, base_rounds: int = 30) -> int:

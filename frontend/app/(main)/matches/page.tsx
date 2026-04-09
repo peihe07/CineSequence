@@ -370,6 +370,17 @@ function MatchesContent() {
     void loadPrefs()
   }, [fetchMatches, hasHydrated, isAuthenticated, matches.length, t])
 
+  // 載入完成後如果沒有 matches，自動掃描一次
+  const autoDiscoverDone = useRef(false)
+  useEffect(() => {
+    if (!isAuthenticated || !hasHydrated || isLoading || isDiscovering) return
+    if (autoDiscoverDone.current) return
+    if (matches.length === 0) {
+      autoDiscoverDone.current = true
+      void discoverMatches()
+    }
+  }, [isAuthenticated, hasHydrated, isLoading, isDiscovering, matches.length, discoverMatches])
+
   const savePrefs = useCallback((updated: Partial<MatchPrefs>) => {
     if (isPreview) {
       guardPreviewAction()
