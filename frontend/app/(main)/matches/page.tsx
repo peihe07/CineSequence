@@ -3,7 +3,6 @@
 /* eslint-disable @next/next/no-img-element */
 
 import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { AnimatePresence, motion } from 'framer-motion'
 import { PreviewBanner, usePreviewAccess } from '@/components/preview/PreviewGate'
@@ -17,8 +16,8 @@ import {
   type InviteCredits,
   type MatchPrefs,
 } from '@/lib/match-page-cache'
-import PaymentModal from '@/components/ui/PaymentModal'
 import { useI18n } from '@/lib/i18n'
+import { useToastStore } from '@/stores/toastStore'
 import { PREVIEW_MATCHES } from '@/lib/previewContent'
 import { useAuthStore } from '@/stores/authStore'
 import { getTagLabel } from '@/lib/tagLabels'
@@ -309,7 +308,7 @@ function MatchesContent() {
   const [prefsReady, setPrefsReady] = useState(false)
   const [activeIndex, setActiveIndex] = useState(0)
   const [ticketModalMatch, setTicketModalMatch] = useState<MatchItem | null>(null)
-  const [showPayment, setShowPayment] = useState(false)
+  const addToast = useToastStore((s) => s.addToast)
   const [inviteCredits, setInviteCredits] = useState<InviteCredits | null>(getCachedInviteCredits())
   const displayMatches = isPreview ? PREVIEW_MATCHES : matches
 
@@ -461,28 +460,14 @@ function MatchesContent() {
           {inviteCredits && !isPreview && (
             <p className={styles.inviteCounter}>
               {inviteCredits.unlocked
-                ? '∞ Unlimited invites'
-                : `${inviteCredits.remaining}/5 invites remaining`
+                ? t('matches.unlimitedInvites')
+                : t('matches.dailyInvites', {
+                    remaining: inviteCredits.remaining,
+                    limit: inviteCredits.daily_limit ?? 5,
+                  })
               }
             </p>
           )}
-          <div className={styles.paymentNotice}>
-            <p className={styles.paymentNoticeTitle}>{t('matches.inviteUnlock')}</p>
-            <p className={styles.paymentNoticeBody}>{t('matches.inviteUnlockBody')}</p>
-            <div className={styles.paymentNoticeActions}>
-              <button
-                type="button"
-                className={styles.discoverBtn}
-                onClick={() => setShowPayment(true)}
-              >
-                <i className="ri-mail-unread-line" aria-hidden="true" />
-                {t('matches.inviteUnlock')}
-              </button>
-              <Link href="/pricing" className={styles.noticeLink}>
-                {t('matches.viewPricing')}
-              </Link>
-            </div>
-          </div>
           <PreviewBanner nextPath="/matches" compact />
         </section>
 
@@ -561,7 +546,7 @@ function MatchesContent() {
                             .catch(() => {})
                         }).catch((err) => {
                           if (err instanceof ApiError && err.status === 403) {
-                            setShowPayment(true)
+                            addToast('info', t('matches.dailyLimitReached'))
                           }
                         })
                       })}
@@ -598,11 +583,6 @@ function MatchesContent() {
         )}
       </AnimatePresence>
 
-      <PaymentModal
-        open={showPayment}
-        context="invite"
-        onClose={() => setShowPayment(false)}
-      />
     </div>
   )
 }

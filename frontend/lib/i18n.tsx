@@ -105,7 +105,7 @@ const translations: Record<Locale, Record<string, string>> = {
     'confirm.deleteAccount': '確定要永久刪除帳號嗎？此操作無法復原，所有資料（包括品味基因、配對紀錄）將被永久刪除。',
 
     // Landing
-    'landing.start': '加入候補名單',
+    'landing.start': '立即註冊',
     'landing.login': '登入',
     'landing.termLine1': '正在初始化 CINE SEQUENCE...',
     'landing.termLine2': '載入觀影品味鑑定模組...',
@@ -229,6 +229,9 @@ const translations: Record<Locale, Record<string, string>> = {
     'dna.retestHint': '若你想重新校準口味，而不是只延長目前結果，可直接開啟完整重測。',
     'dna.retestUnlocks': '開放新的 30 輪定序任務，保留歷史版本並刷新目前主檔。',
     'dna.viewPricing': '查看收費說明',
+    'matches.unlimitedInvites': '∞ 無限邀請',
+    'matches.dailyInvites': '今日剩餘 {remaining}/{limit} 次邀請',
+    'matches.dailyLimitReached': '今日邀請次數已用完，明天再來吧。',
     'matches.inviteUnlock': '恢復邀請權限',
     'matches.inviteUnlockBody': '這會重新開放受限的邀請通道，付款成功後立即生效。若只想先看完整內容與價格，可以進入收費說明頁。',
     'matches.viewPricing': '查看收費說明',
@@ -951,7 +954,7 @@ const translations: Record<Locale, Record<string, string>> = {
     'confirm.deleteAccount': 'Are you sure you want to permanently delete your account? This action cannot be undone. All data including your taste DNA and match history will be permanently deleted.',
 
     // Landing
-    'landing.start': 'Join Waitlist',
+    'landing.start': 'Register',
     'landing.login': 'Sign in',
     'landing.termLine1': 'INITIALIZING CINE SEQUENCE...',
     'landing.termLine2': 'LOADING CINEMATIC PREFERENCE ANALYSIS MODULE...',
@@ -1063,6 +1066,9 @@ const translations: Record<Locale, Record<string, string>> = {
     'dna.retestHint': 'If you want a fresh calibration instead of just extending the current result, open a full retest.',
     'dna.retestUnlocks': 'Unlock a new 30-round mission, preserve history, and refresh the active file.',
     'dna.viewPricing': 'View Pricing Notes',
+    'matches.unlimitedInvites': '∞ Unlimited invites',
+    'matches.dailyInvites': '{remaining}/{limit} invites remaining today',
+    'matches.dailyLimitReached': 'Daily invite limit reached. Try again tomorrow.',
     'matches.inviteUnlock': 'Restore Invite Access',
     'matches.inviteUnlockBody': 'This reopens the restricted invite channel and takes effect immediately after payment. Use the pricing notes page if you want the full breakdown first.',
     'matches.viewPricing': 'View Pricing Notes',

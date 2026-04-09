@@ -203,50 +203,46 @@ async def get_match_by_id(
     return result.scalar_one_or_none()
 
 
+DAILY_INVITE_LIMIT = 5
+
+
+async def _get_today_invite_count(db: AsyncSession, user_id: uuid.UUID) -> int:
+    """Count invites sent by this user today (UTC).
+
+    Only user_a can send invites, so we only check user_a_id.
+    """
+    today_start = datetime.now(tz=UTC).replace(hour=0, minute=0, second=0, microsecond=0)
+    result = await db.execute(
+        select(func.count())
+        .select_from(Match)
+        .where(
+            Match.user_a_id == user_id,
+            Match.invited_at >= today_start,
+        )
+    )
+    return result.scalar() or 0
+
+
 async def _consume_invite_credit(db: AsyncSession, user: User) -> None:
-    """Check and consume an invite credit. Raises PermissionError if none available."""
+    """Check daily invite limit. Raises PermissionError if exceeded."""
     if user.invite_unlocked:
         return
 
-    from app.models.user_entitlement import EntitlementStatus, EntitlementType, UserEntitlement
-
-    result = await db.execute(
-        select(UserEntitlement)
-        .where(
-            UserEntitlement.user_id == user.id,
-            UserEntitlement.type == EntitlementType.invite,
-            UserEntitlement.status == EntitlementStatus.available,
+    used_today = await _get_today_invite_count(db, user.id)
+    if used_today >= DAILY_INVITE_LIMIT:
+        raise PermissionError(
+            f"Daily invite limit reached ({DAILY_INVITE_LIMIT}/day). Try again tomorrow."
         )
-        .order_by(UserEntitlement.created_at.asc())
-        .limit(1)
-    )
-    ent = result.scalar_one_or_none()
-    if not ent:
-        raise PermissionError("No invite credits remaining. Unlock unlimited invites to continue.")
-
-    ent.status = EntitlementStatus.consumed
-    ent.consumed_at = datetime.now(tz=UTC)
-    await db.flush()
 
 
 async def get_invite_credit_count(db: AsyncSession, user: User) -> dict:
-    """Return invite credit status for a user."""
+    """Return daily invite credit status for a user."""
     if user.invite_unlocked:
         return {"remaining": -1, "unlocked": True}
 
-    from app.models.user_entitlement import EntitlementStatus, EntitlementType, UserEntitlement
-
-    result = await db.execute(
-        select(func.count())
-        .select_from(UserEntitlement)
-        .where(
-            UserEntitlement.user_id == user.id,
-            UserEntitlement.type == EntitlementType.invite,
-            UserEntitlement.status == EntitlementStatus.available,
-        )
-    )
-    remaining = result.scalar() or 0
-    return {"remaining": remaining, "unlocked": False}
+    used_today = await _get_today_invite_count(db, user.id)
+    remaining = max(0, DAILY_INVITE_LIMIT - used_today)
+    return {"remaining": remaining, "unlocked": False, "daily_limit": DAILY_INVITE_LIMIT}
 
 
 async def send_invite(

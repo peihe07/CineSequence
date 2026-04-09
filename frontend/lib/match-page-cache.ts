@@ -8,6 +8,7 @@ export interface MatchPrefs {
 export interface InviteCredits {
   remaining: number
   unlocked: boolean
+  daily_limit?: number
 }
 
 const MATCH_PAGE_CACHE_TTL_MS = 30_000

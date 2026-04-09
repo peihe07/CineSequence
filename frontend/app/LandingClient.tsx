@@ -4,7 +4,6 @@ import { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import LoginModal from '@/components/auth/LoginModal'
-import WaitlistForm from '@/components/auth/WaitlistForm'
 import { useI18n } from '@/lib/i18n'
 import { useAuthStore } from '@/stores/authStore'
 import FloatingLocaleToggle from '@/components/ui/FloatingLocaleToggle'
@@ -235,10 +234,17 @@ export default function LandingClient() {
               ))}
             </div>
             <div className={`${styles.heroCta} ${done ? styles.heroCtaVisible : ''}`}>
-              <WaitlistForm
-                onSecondaryClick={() => void openAuthFlow('login')}
-                previewHref="/sequencing"
-              />
+              <div className={styles.ctaActions}>
+                <Link href="/register" prefetch={false} className={styles.ctaPrimary}>
+                  {t('landing.start')}
+                </Link>
+                <button type="button" className={styles.ctaSecondary} onClick={() => void openAuthFlow('login')}>
+                  {t('landing.login')}
+                </button>
+                <Link href="/sequencing" prefetch={false} className={styles.ctaPreview}>
+                  {t('landing.preview')}
+                </Link>
+              </div>
             </div>
           </div>
         </div>
