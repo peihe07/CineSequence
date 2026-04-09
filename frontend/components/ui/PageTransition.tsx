@@ -2,7 +2,6 @@
 
 import { useEffect, useRef } from 'react'
 import { usePathname } from 'next/navigation'
-import { motion } from 'framer-motion'
 import { logPerf } from '@/lib/perf'
 
 interface PageTransitionProps {
@@ -25,14 +24,5 @@ export default function PageTransition({ children }: PageTransitionProps) {
     lastNavigationStartedAt.current = now
   }, [pathname])
 
-  return (
-    <motion.div
-      key={pathname}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.15, ease: 'easeOut' }}
-    >
-      {children}
-    </motion.div>
-  )
+  return <div key={pathname}>{children}</div>
 }
