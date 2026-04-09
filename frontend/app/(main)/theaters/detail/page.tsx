@@ -396,6 +396,8 @@ function TheaterDetailContent() {
                             className={styles.movieRailPoster}
                             src={movie.poster_url}
                             alt={movie.title_en}
+                            loading="lazy"
+                            decoding="async"
                           />
                         ) : (
                           <div className={styles.movieRailPosterFallback} aria-hidden="true">
@@ -460,6 +462,8 @@ function TheaterDetailContent() {
                             className={styles.movieRailPoster}
                             src={movie.poster_url}
                             alt={movie.title_en}
+                            loading="lazy"
+                            decoding="async"
                           />
                         ) : (
                           <div className={styles.movieRailPosterFallback} aria-hidden="true">
@@ -561,6 +565,8 @@ function TheaterDetailContent() {
                         className={styles.posterStackCard}
                         src={item.poster_url}
                         alt=""
+                        loading="lazy"
+                        decoding="async"
                         style={{ ['--stack-index' as string]: index } as CSSProperties}
                       />
                     ) : (
@@ -650,6 +656,8 @@ function TheaterDetailContent() {
                               className={styles.itemPoster}
                               src={item.poster_url}
                               alt={item.title_zh || item.title_en}
+                              loading="lazy"
+                              decoding="async"
                             />
                           ) : (
                             <div className={styles.itemPosterFallback} aria-hidden="true">
@@ -773,6 +781,8 @@ function TheaterDetailContent() {
                                     src={movie.poster_url}
                                     alt={movie.title_zh || movie.title_en}
                                     className={styles.searchResultPoster}
+                                    loading="lazy"
+                                    decoding="async"
                                   />
                                 ) : (
                                   <div className={styles.searchResultPosterFallback}>
@@ -998,6 +1008,8 @@ function TheaterDetailContent() {
                             src={movie.poster_url}
                             alt={movie.title_zh || movie.title_en}
                             className={styles.searchResultPoster}
+                            loading="lazy"
+                            decoding="async"
                           />
                         ) : (
                           <div className={styles.searchResultPosterFallback}>

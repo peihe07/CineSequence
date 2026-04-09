@@ -2,8 +2,7 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { useEffect, useState } from 'react'
-import { motion } from 'framer-motion'
+import { startTransition, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { PreviewBanner, usePreviewAccess } from '@/components/preview/PreviewGate'
 import { useGroupStore } from '@/stores/groupStore'
@@ -17,17 +16,15 @@ import ConfirmDialog from '@/components/ui/ConfirmDialog'
 import { prefetchTheaterDetail } from '../theaters/detail/useTheaterDetail'
 import styles from './page.module.css'
 
+const INITIAL_LIBRARY_RENDER_COUNT = 4
+const LIBRARY_RENDER_CHUNK_SIZE = 4
+
 function FeaturedGroup({ group }: { group: TheaterGroup }) {
   const { t, locale } = useI18n()
   const router = useRouter()
 
   return (
-    <motion.section
-      className={styles.featuredGroup}
-      initial={{ opacity: 0, y: 18 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.45 }}
-    >
+    <section className={styles.featuredGroup}>
       <div className={styles.featuredHeader}>
         <div className={styles.groupInfo}>
           <i className={`${group.icon} ${styles.groupIcon}`} />
@@ -198,7 +195,7 @@ function FeaturedGroup({ group }: { group: TheaterGroup }) {
           )}
         </section>
       </div>
-    </motion.section>
+    </section>
   )
 }
 
@@ -212,12 +209,7 @@ function GroupCard({ group, onJoin, onLeave }: {
   const [activeDetailTab, setActiveDetailTab] = useState<'fit' | 'recommended' | 'watchlist' | 'members'>('fit')
 
   return (
-    <motion.div
-      className={styles.card}
-      initial={{ opacity: 0, y: 16 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4 }}
-    >
+    <div className={styles.card}>
       <div className={styles.cardHeader}>
         <div className={styles.groupInfo}>
           <i className={`${group.icon} ${styles.groupIcon}`} />
@@ -442,7 +434,7 @@ function GroupCard({ group, onJoin, onLeave }: {
           )}
         </div>
       </div>
-    </motion.div>
+    </div>
   )
 }
 
@@ -465,6 +457,8 @@ function TheatersContent() {
   const remainingGroups = featuredGroup
     ? displayGroups.filter((group) => group.id !== featuredGroup.id)
     : []
+  const [visibleLibraryCount, setVisibleLibraryCount] = useState(INITIAL_LIBRARY_RENDER_COUNT)
+  const visibleGroups = remainingGroups.slice(0, visibleLibraryCount)
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -473,6 +467,47 @@ function TheatersContent() {
 
     void fetchGroups({ background: hasHydrated })
   }, [fetchGroups, hasHydrated, isAuthenticated])
+
+  useEffect(() => {
+    setVisibleLibraryCount(INITIAL_LIBRARY_RENDER_COUNT)
+  }, [featuredGroup?.id, remainingGroups.length])
+
+  useEffect(() => {
+    if (remainingGroups.length <= INITIAL_LIBRARY_RENDER_COUNT) {
+      return
+    }
+
+    let cancelled = false
+
+    const schedule = () => {
+      const run = () => {
+        if (cancelled) return
+
+        startTransition(() => {
+          setVisibleLibraryCount((current) => {
+            if (current >= remainingGroups.length) {
+              return current
+            }
+            return Math.min(current + LIBRARY_RENDER_CHUNK_SIZE, remainingGroups.length)
+          })
+        })
+      }
+
+      if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
+        const idleId = window.requestIdleCallback(run, { timeout: 250 })
+        return () => window.cancelIdleCallback(idleId)
+      }
+
+      const timeoutId = globalThis.setTimeout(run, 80)
+      return () => globalThis.clearTimeout(timeoutId)
+    }
+
+    const cleanup = schedule()
+    return () => {
+      cancelled = true
+      cleanup()
+    }
+  }, [remainingGroups.length, visibleLibraryCount])
 
   return (
     <div className={styles.container}>
@@ -535,7 +570,7 @@ function TheatersContent() {
                     <p className={styles.sectionIntro}>{t('theaters.libraryHint')}</p>
                   </div>
                   <div className={styles.grid}>
-                    {remainingGroups.map((group) => (
+                    {visibleGroups.map((group) => (
                       <GroupCard
                         key={group.id}
                         group={group}
