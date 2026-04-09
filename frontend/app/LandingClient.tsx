@@ -235,9 +235,9 @@ export default function LandingClient() {
             </div>
             <div className={`${styles.heroCta} ${done ? styles.heroCtaVisible : ''}`}>
               <div className={styles.ctaActions}>
-                <Link href="/register" prefetch={false} className={styles.ctaPrimary}>
+                <button type="button" className={styles.ctaPrimary} onClick={() => void openAuthFlow('register')}>
                   {t('landing.start')}
-                </Link>
+                </button>
                 <button type="button" className={styles.ctaSecondary} onClick={() => void openAuthFlow('login')}>
                   {t('landing.login')}
                 </button>

@@ -38,10 +38,10 @@ export default function LoginForm({
   const [showRegisterPrompt, setShowRegisterPrompt] = useState(false)
   const [showAdminQuickLogin, setShowAdminQuickLogin] = useState(false)
   const [devLoading, setDevLoading] = useState(false)
-  const waitlistLabel = locale === 'zh' ? '加入候補名單' : 'Join waitlist'
-  const waitlistHint = locale === 'zh'
-    ? '新帳號目前改為 waitlist 登記。留下 email，等重新開放後我們會再通知你。'
-    : 'New accounts are currently routed to the waitlist. Leave your email and we will notify you when access reopens.'
+  const registerLabel = t('register.title')
+  const registerHint = locale === 'zh'
+    ? '這個 email 尚未建檔。你可以直接註冊一個新帳號。'
+    : 'This email is not on file. You can create a new account.'
   const adminPasscodeLabel = locale === 'zh' ? 'Admin Passcode' : 'Admin Passcode'
   const adminPasscodePlaceholder = locale === 'zh' ? '輸入 admin passcode' : 'Enter admin passcode'
   const adminContinueLabel = locale === 'zh' ? '下一步' : 'Continue'
@@ -192,10 +192,10 @@ export default function LoginForm({
       {error && <p className={styles.error}>{error}</p>}
       {showRegisterPrompt && (
         <div className={styles.registerPrompt}>
-          <p className={styles.registerPromptText}>{waitlistHint}</p>
+          <p className={styles.registerPromptText}>{registerHint}</p>
           {onRegisterClick ? (
             <Button type="button" variant="secondary" onClick={onRegisterClick}>
-              {waitlistLabel}
+              {registerLabel}
             </Button>
           ) : (
             <Link
@@ -203,7 +203,7 @@ export default function LoginForm({
               prefetch={false}
               className={styles.registerPromptLink}
             >
-              {waitlistLabel}
+              {registerLabel}
             </Link>
           )}
         </div>
@@ -233,7 +233,7 @@ export default function LoginForm({
         {t('auth.noAccount')}{' '}
         {onRegisterClick ? (
           <button type="button" className={styles.textButton} onClick={onRegisterClick}>
-            {waitlistLabel}
+            {registerLabel}
           </button>
         ) : (
           <Link
@@ -241,7 +241,7 @@ export default function LoginForm({
             prefetch={false}
             className={styles.link}
           >
-            {waitlistLabel}
+            {registerLabel}
           </Link>
         )}
       </p>
