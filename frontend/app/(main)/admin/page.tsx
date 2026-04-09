@@ -82,6 +82,42 @@ interface WaitlistData {
   entries: WaitlistEntry[]
 }
 
+function normalizeStats(stats: Stats): Stats {
+  return {
+    ...stats,
+    users: {
+      ...stats.users,
+      sequencing_breakdown: stats.users.sequencing_breakdown ?? {},
+      region_distribution: stats.users.region_distribution ?? {},
+    },
+    dna: {
+      ...stats.dna,
+      archetype_distribution: stats.dna.archetype_distribution ?? {},
+    },
+    matches: {
+      ...stats.matches,
+      status_breakdown: stats.matches.status_breakdown ?? {},
+    },
+  }
+}
+
+function normalizeApiUsage(apiUsage: ApiUsage): ApiUsage {
+  return {
+    ...apiUsage,
+    gemini: {
+      ...apiUsage.gemini,
+      token_usage: apiUsage.gemini.token_usage ?? {},
+    },
+  }
+}
+
+function normalizeWaitlist(waitlist: WaitlistData): WaitlistData {
+  return {
+    total: waitlist.total,
+    entries: waitlist.entries ?? [],
+  }
+}
+
 function StatCard({ value, label, trend, icon }: { value: number | string; label: string; trend?: number | null; icon?: string }) {
   return (
     <div className={styles.statCard}>
@@ -160,10 +196,10 @@ export default function AdminPage() {
           api<ApiUsage>('/admin/api-usage'),
           api<WaitlistData>('/admin/waitlist'),
         ])
-        setStats(s)
+        setStats(normalizeStats(s))
         setDaily(d)
-        setApiUsage(a)
-        setWaitlist(w)
+        setApiUsage(normalizeApiUsage(a))
+        setWaitlist(normalizeWaitlist(w))
         initialLoadDone.current = true
       } catch (e: unknown) {
         const msg = e instanceof Error ? e.message : 'Failed to load'
