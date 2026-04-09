@@ -15,7 +15,7 @@ from app.models.sequencing_entitlement import (
 from app.models.sequencing_session import SequencingSession
 from app.models.user import SequencingStatus, User
 from app.services.auth_utils import create_access_token
-from app.services.pair_engine import PHASE1_COUNT
+from app.services.pair_engine import PHASE1_COUNT, get_pair_for_round
 from app.services.tmdb_client import MovieInfo
 
 
@@ -714,17 +714,22 @@ class TestDislikeBoth:
     @pytest.mark.asyncio
     async def test_dislike_both_persists_as_distinct_decision(self, client, auth_user, db_session):
         user, headers = auth_user
-        pair_response = await client.get("/sequencing/pair", headers=headers)
-        assert pair_response.status_code == 200
-        pair_data = pair_response.json()
+        progress_response = await client.get("/sequencing/progress", headers=headers)
+        assert progress_response.status_code == 200
+
+        session_result = await db_session.execute(
+            select(SequencingSession).where(SequencingSession.user_id == user.id)
+        )
+        session = session_result.scalar_one()
+        pair = get_pair_for_round(1, session_seed=str(session.id))
 
         response = await client.post(
             "/sequencing/dislike-both",
             json={
-                "movie_a_tmdb_id": pair_data["movie_a"]["tmdb_id"],
-                "movie_b_tmdb_id": pair_data["movie_b"]["tmdb_id"],
+                "movie_a_tmdb_id": pair["movie_a"]["tmdb_id"],
+                "movie_b_tmdb_id": pair["movie_b"]["tmdb_id"],
                 "response_time_ms": 850,
-                "test_dimension": pair_data["test_dimension"],
+                "test_dimension": pair.get("dimension"),
             },
             headers=headers,
         )
@@ -735,7 +740,7 @@ class TestDislikeBoth:
         assert len(picks) == 1
         assert picks[0].chosen_tmdb_id is None
         assert picks[0].decision_type == "dislike_both"
-        assert picks[0].test_dimension == pair_data["test_dimension"]
+        assert picks[0].test_dimension == pair.get("dimension")
 
     @pytest.mark.asyncio
     async def test_seen_one_side_persists_as_distinct_decision(self, client, auth_user, db_session):
