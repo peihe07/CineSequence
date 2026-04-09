@@ -114,7 +114,7 @@ async def list_conversations(
     db: Annotated[AsyncSession, Depends(get_db)],
 ):
     """List accepted matches that have messages, with last message preview."""
-    from sqlalchemy import and_, case, or_
+    from sqlalchemy import and_, or_
     from sqlalchemy.orm import selectinload
 
     from app.services.r2_storage import normalize_public_object_url
