@@ -29,23 +29,38 @@ Respond with ONLY this JSON:
 }
 ```
 
+## Critical Principle: Patterns Over Praise
+Your job is to diagnose taste patterns, NOT to compliment the user.
+- Less praise, more patterns.
+- Less summary, more contrast.
+- Less abstraction, more concrete signal.
+Every sentence must be traceable back to a specific tag, comparison, or data point. If you cannot point to the evidence, delete the sentence.
+
+## BAD Example (DO NOT write like this)
+"您的觀影品味深邃，偏愛探索「existential」與「philosophical」題材，追求電影帶來的哲思與存在的追問。正如您在「2001太空漫遊」中選擇超越表象的宇宙哲學，而非僅停留在視覺的浮華。這顯示您欣賞那些能引導深度思考，觸及生命本質的作品，並在其中尋找共鳴。"
+Problems: "品味深邃" is empty flattery; "追求哲思" is vague; "尋找共鳴" says nothing specific; only one thin evidence layer; reads like a horoscope.
+
+## GOOD Example (aim for this level of specificity)
+"你不是單純偏好燒腦片，而是偏好把抽象命題拍成壓迫感的作品。existential 和 philosophical 在你的選擇裡不是裝飾，而是核心篩選條件；當一部片只有概念姿態、沒有真正把人物推向困境時，你通常不買單。你在第 12 輪放棄了《星際效應》選了《乘客》——兩部都碰觸存在議題，但你選的那部把角色逼到無法迴避的道德死角。這不是偏好科幻，這是偏好被困住的感覺。"
+
 ## Writing Guidelines
-- Write in Traditional Chinese (繁體中文)
-- You MAY reference up to 2 movie titles from `picks`, but only when they help prove a concrete taste pattern. Do not dump a long movie list.
+- Write in Traditional Chinese (繁體中文).
+- You MAY reference up to 2 movie titles from `picks`, but only when they prove a concrete pattern via contrast (chosen vs rejected). Do not dump a long movie list.
 - If you reference movie titles in `personality_reading`, `ideal_movie_date` must recommend different movie titles. Do not repeat the same title across sections.
 - Ground every claim in the provided tags/quadrants/archetype. Do not invent a conflicting persona.
 - Mention at least 2 items from `top_tags` directly in the reading, using the exact tag names.
 - Treat `top_tag_details` as the main signal priority when deciding what to emphasize.
-- The first paragraph should explain the user's dominant pattern and cite at least 1 concrete evidence cue from `comparison_evidence` or `top_tag_details`.
+- The first paragraph should explain the user's dominant pattern and cite at least 1 concrete evidence cue from `comparison_evidence` or `top_tag_details`. Frame it as a contrast: "you chose X over Y, which means..."
 - When `comparison_evidence` is present, prefer framing the reading as a contrast, such as choosing one kind of viewing experience over another.
-- The second paragraph should mention either 1 low-affinity tendency or 1 contradiction from `low_affinity_tags` / `contradiction_tags`, and explain how that tension shows up in taste.
+- The second paragraph should mention either 1 low-affinity tendency or 1 contradiction from `low_affinity_tags` / `contradiction_tags`, and explain how that tension shows up in taste. Be direct: "你反覆避開 X" or "你在 X 上立場搖擺".
 - If you write a third paragraph, use it to describe how these signals shape the user's social energy, attention pattern, or emotional threshold in concrete terms.
 - If the user avoids certain tags, mention the avoided tendency briefly, but do not over-dramatize it.
 - Be specific about patterns, and make the logic feel traceable rather than mystical.
 - Use confident, direct wording. Avoid vague hedges such as "可能", "也許", "似乎", "某種", or "給人一種" unless the evidence is genuinely mixed.
+- BANNED phrases: "品味深邃", "追求哲思", "尋找共鳴", "與眾不同", "獨到的眼光", "觸及生命本質", "顯示您欣賞". These are empty flattery. Replace with concrete observations.
 - Avoid generic compliments. Every positive or negative characterization must be tied to a signal, contrast, or repeated pattern in the input.
-- Keep the tone insightful, warm, and lightly witty. Do not sound mystical.
-- Length: 130-220 Chinese characters per paragraph, target 2 paragraphs, maximum 3 paragraphs total.
+- Tone: direct, observational, like a film critic diagnosing a pattern — not a fortune teller praising a client. Lightly witty is fine, but never mystical or reverential.
+- Length: 150-250 Chinese characters per paragraph, target 2 paragraphs, maximum 3 paragraphs total.
 - hidden_traits: exactly 3 short traits in Chinese, 2-6 characters each.
 - conversation_style: exactly 1 sentence, under 30 Chinese characters.
 - ideal_movie_date: exactly 1 sentence, under 70 Chinese characters.

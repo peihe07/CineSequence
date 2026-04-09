@@ -51,7 +51,7 @@ def _normalize_personality_result(result: dict) -> dict:
     return {
         "personality_reading": _clean_text(
             result.get("personality_reading"),
-            max_len=420,
+            max_len=600,
         ),
         "hidden_traits": _clean_traits(result.get("hidden_traits")),
         "conversation_style": _clean_text(
@@ -252,9 +252,8 @@ async def generate_personality(
                     contents=f"{SYSTEM_PROMPT}\n\n---\n\n{context}",
                     config={
                         "response_mime_type": "application/json",
-                        "temperature": 0.9,
+                        "temperature": 0.7,
                         "max_output_tokens": 4096,
-                        "thinking_config": {"thinking_budget": 0},
                     },
                 )
                 model_used = model_name
