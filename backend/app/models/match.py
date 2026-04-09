@@ -2,7 +2,7 @@ import enum
 import uuid
 from datetime import datetime
 
-from sqlalchemy import DateTime, Enum, Float, ForeignKey, Integer, String, UniqueConstraint, func
+from sqlalchemy import Boolean, DateTime, Enum, Float, ForeignKey, Integer, String, UniqueConstraint, func
 from sqlalchemy.dialects.postgresql import JSON, UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -45,6 +45,10 @@ class Match(Base):
         Enum(MatchStatus), default=MatchStatus.discovered
     )
     ticket_image_url: Mapped[str | None] = mapped_column(String(500))
+
+    # 使用者各自的星標（最愛釘選）
+    starred_by_a: Mapped[bool] = mapped_column(Boolean, default=False, server_default="false")
+    starred_by_b: Mapped[bool] = mapped_column(Boolean, default=False, server_default="false")
 
     # Timestamps
     invited_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))

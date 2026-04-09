@@ -26,6 +26,7 @@ const matchFixture: MatchItem = {
   status: 'discovered',
   ticket_image_url: null,
   is_recipient: false,
+  is_starred: false,
 }
 
 describe('matchStore', () => {

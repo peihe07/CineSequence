@@ -41,14 +41,7 @@ export function translateStatic(key: string, vars?: Record<string, string | numb
 }
 
 export function I18nProvider({ children }: { children: React.ReactNode }) {
-  const [locale, setLocaleState] = useState<Locale>('en')
-
-  useEffect(() => {
-    const saved = localStorage.getItem(STORAGE_KEY) as Locale | null
-    if (saved === 'zh' || saved === 'en') {
-      setLocaleState(saved)
-    }
-  }, [])
+  const [locale, setLocaleState] = useState<Locale>(() => getStoredLocale())
 
   const setLocale = useCallback((next: Locale) => {
     setLocaleState(next)
@@ -234,6 +227,9 @@ const translations: Record<Locale, Record<string, string>> = {
     'matches.unlimitedInvites': '∞ 無限邀請',
     'matches.dailyInvites': '今日剩餘 {remaining}/{limit} 次邀請',
     'matches.dailyLimitReached': '今日邀請次數已用完，明天再來吧。',
+    'matches.star': '釘選為最愛',
+    'matches.unstar': '取消釘選',
+    'matches.starLimit': '最多只能釘選 10 個配對',
     'matches.inviteUnlock': '恢復邀請權限',
     'matches.inviteUnlockBody': '這會重新開放受限的邀請通道，付款成功後立即生效。若只想先看完整內容與價格，可以進入收費說明頁。',
     'matches.viewPricing': '查看收費說明',
@@ -1102,6 +1098,9 @@ const translations: Record<Locale, Record<string, string>> = {
     'matches.unlimitedInvites': '∞ Unlimited invites',
     'matches.dailyInvites': '{remaining}/{limit} invites remaining today',
     'matches.dailyLimitReached': 'Daily invite limit reached. Try again tomorrow.',
+    'matches.star': 'Star as favourite',
+    'matches.unstar': 'Remove star',
+    'matches.starLimit': 'Maximum 10 starred matches',
     'matches.inviteUnlock': 'Restore Invite Access',
     'matches.inviteUnlockBody': 'This reopens the restricted invite channel and takes effect immediately after payment. Use the pricing notes page if you want the full breakdown first.',
     'matches.viewPricing': 'View Pricing Notes',

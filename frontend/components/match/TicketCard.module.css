@@ -194,6 +194,37 @@
   gap: 0.75rem;
 }
 
+.starBtn {
+  margin-left: auto;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: rgba(255, 255, 255, 0.04);
+  border: none;
+  border-radius: 50%;
+  color: rgba(255, 255, 255, 0.38);
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: color 0.2s ease, background 0.2s ease, transform 0.15s ease;
+}
+
+.starBtn:hover {
+  color: rgba(255, 255, 255, 0.72);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.starActive {
+  color: var(--color-accent-noir);
+}
+
+.starActive:hover {
+  color: var(--color-accent-noir);
+  transform: scale(1.1);
+}
+
 .partnerAvatar {
   width: 40px;
   height: 40px;

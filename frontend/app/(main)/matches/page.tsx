@@ -295,7 +295,7 @@ function MatchesContent() {
   const { isPreview, guardPreviewAction, previewModal } = usePreviewAccess('/matches')
   const {
     matches, isLoading, isDiscovering, error, hasHydrated,
-    fetchMatches, discoverMatches, sendInvite, respondToInvite,
+    fetchMatches, discoverMatches, sendInvite, respondToInvite, toggleStar,
   } = useMatchStore()
 
   const [prefs, setPrefs] = useState<MatchPrefs>({
@@ -310,7 +310,14 @@ function MatchesContent() {
   const [ticketModalMatch, setTicketModalMatch] = useState<MatchItem | null>(null)
   const addToast = useToastStore((s) => s.addToast)
   const [inviteCredits, setInviteCredits] = useState<InviteCredits | null>(getCachedInviteCredits())
-  const displayMatches = isPreview ? PREVIEW_MATCHES : matches
+  const sortedMatches = useMemo(() => {
+    const sorted = [...matches].sort((a, b) => {
+      if (a.is_starred !== b.is_starred) return a.is_starred ? -1 : 1
+      return b.similarity_score - a.similarity_score
+    })
+    return sorted
+  }, [matches])
+  const displayMatches = isPreview ? PREVIEW_MATCHES : sortedMatches
 
   const carouselRef = useRef<HTMLDivElement>(null)
 
@@ -549,6 +556,13 @@ function MatchesContent() {
                     <TicketCard
                       match={match}
                       ticketNumber={i + 1}
+                      onToggleStar={() => guardPreviewAction(() => {
+                        void toggleStar(match.id).catch((err) => {
+                          if (err instanceof ApiError && err.status === 400) {
+                            addToast('info', t('matches.starLimit'))
+                          }
+                        })
+                      })}
                       onInvite={() => guardPreviewAction(() => {
                         void sendInvite(match.id).then(() => {
                           // Refresh invite credits after successful invite

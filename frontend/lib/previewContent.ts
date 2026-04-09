@@ -133,6 +133,7 @@ export const PREVIEW_MATCHES: MatchItem[] = [
     status: 'accepted',
     ticket_image_url: '/og-image.png',
     is_recipient: false,
+    is_starred: false,
   },
   {
     id: 'preview-match-2',
@@ -150,6 +151,7 @@ export const PREVIEW_MATCHES: MatchItem[] = [
     status: 'discovered',
     ticket_image_url: null,
     is_recipient: false,
+    is_starred: false,
   },
 ]
 

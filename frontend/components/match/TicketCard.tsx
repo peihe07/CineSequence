@@ -29,6 +29,7 @@ type FullTicketProps = {
   onInvite: () => void
   onRespond: (accept: boolean) => void
   onShowFullTicket?: () => void
+  onToggleStar?: () => void
   highlighted?: boolean
   // Legacy props must NOT be present
   ticketImageUrl?: never
@@ -66,6 +67,7 @@ function FullCinemaTicket({
   onInvite,
   onRespond,
   onShowFullTicket,
+  onToggleStar,
   highlighted,
 }: FullTicketProps) {
   const { t, locale } = useI18n()
@@ -165,6 +167,17 @@ function FullCinemaTicket({
               <div className={styles.partnerArchetype}>{match.partner_archetype}</div>
             )}
           </div>
+          {onToggleStar && (
+            <button
+              type="button"
+              className={`${styles.starBtn} ${match.is_starred ? styles.starActive : ''}`}
+              onClick={(e) => { e.stopPropagation(); onToggleStar() }}
+              aria-label={match.is_starred ? t('matches.unstar') : t('matches.star')}
+              aria-pressed={match.is_starred}
+            >
+              <i className={match.is_starred ? 'ri-star-fill' : 'ri-star-line'} aria-hidden="true" />
+            </button>
+          )}
         </div>
 
         {match.partner_bio && (

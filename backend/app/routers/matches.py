@@ -48,6 +48,7 @@ class MatchOut(BaseModel):
     status: str
     ticket_image_url: str | None = None
     is_recipient: bool
+    is_starred: bool = False
 
     model_config = {"from_attributes": True}
 
@@ -133,6 +134,8 @@ async def _match_to_out(
         allow_generate=allow_generate_ticket,
     )
 
+    is_starred = match.starred_by_a if is_user_a else match.starred_by_b
+
     return MatchOut(
         id=match.id,
         partner_id=partner.id,
@@ -149,6 +152,7 @@ async def _match_to_out(
         status=match.status.value,
         ticket_image_url=partner_ticket,
         is_recipient=is_recipient,
+        is_starred=is_starred,
     )
 
 
@@ -268,3 +272,49 @@ async def respond_match(
         )
 
     return await _match_to_out(db, match, user.id, allow_generate_ticket=True)
+
+
+MAX_STARRED = 10
+
+
+@router.patch("/{match_id}/star")
+async def toggle_star(
+    match_id: uuid.UUID,
+    user: Annotated[User, Depends(get_current_user)],
+    db: Annotated[AsyncSession, Depends(get_db)],
+):
+    """釘選或取消釘選配對為最愛，最多 10 個。"""
+    match = await get_match_by_id(db, match_id, user.id)
+    if not match:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Match not found")
+
+    is_user_a = match.user_a_id == user.id
+    currently_starred = match.starred_by_a if is_user_a else match.starred_by_b
+    new_value = not currently_starred
+
+    if new_value:
+        from sqlalchemy import select, func as sa_func
+        from app.models.match import Match
+
+        if is_user_a:
+            count_q = select(sa_func.count(Match.id)).where(
+                Match.user_a_id == user.id, Match.starred_by_a.is_(True)
+            )
+        else:
+            count_q = select(sa_func.count(Match.id)).where(
+                Match.user_b_id == user.id, Match.starred_by_b.is_(True)
+            )
+        starred_count = await db.scalar(count_q) or 0
+        if starred_count >= MAX_STARRED:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Maximum {MAX_STARRED} starred matches",
+            )
+
+    if is_user_a:
+        match.starred_by_a = new_value
+    else:
+        match.starred_by_b = new_value
+
+    await db.commit()
+    return await _match_to_out(db, match, user.id, allow_generate_ticket=False)

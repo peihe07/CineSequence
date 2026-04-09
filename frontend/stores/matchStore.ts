@@ -18,6 +18,7 @@ export interface MatchItem {
   status: 'discovered' | 'invited' | 'accepted' | 'declined'
   ticket_image_url: string | null
   is_recipient: boolean
+  is_starred: boolean
 }
 
 interface MatchState {
@@ -33,6 +34,7 @@ interface MatchState {
   discoverMatches: () => Promise<void>
   sendInvite: (matchId: string) => Promise<void>
   respondToInvite: (matchId: string, accept: boolean) => Promise<void>
+  toggleStar: (matchId: string) => Promise<void>
 }
 
 const MATCH_CACHE_TTL_MS = 30_000
@@ -140,6 +142,26 @@ export const useMatchStore = create<MatchState>((set, get) => ({
       })
     } catch (err) {
       set({ error: err instanceof Error ? err.message : translateStatic('common.error') })
+    }
+  },
+
+  toggleStar: async (matchId: string) => {
+    // Optimistic update
+    const prev = get().matches
+    set({
+      matches: prev.map((m) =>
+        m.id === matchId ? { ...m, is_starred: !m.is_starred } : m
+      ),
+    })
+    try {
+      const updated = await api<MatchItem>(`/matches/${matchId}/star`, { method: 'PATCH' })
+      set({
+        matches: get().matches.map((m) => (m.id === matchId ? updated : m)),
+      })
+    } catch (err) {
+      // Rollback
+      set({ matches: prev })
+      throw err
     }
   },
 }))
