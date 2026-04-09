@@ -2,6 +2,8 @@
   position: relative;
   min-height: calc(100vh - 68px);
   padding: clamp(1rem, 2vw, 1.75rem);
+  /* Solid fallback so body's light bg never bleeds through on long pages */
+  background: #0d0e10;
 }
 
 /* Minimal density: no frame chrome, no scan lines, just subtle texture */
