@@ -15,6 +15,7 @@ interface Stats {
     today: number
     this_week: number
     sequencing_breakdown: Record<string, number>
+    region_distribution: Record<string, number>
   }
   dna: {
     total_active: number
@@ -310,7 +311,19 @@ export default function AdminPage() {
           </div>
         </CollapsibleSection>
 
-        {/* ── 6. Waitlist ── */}
+        {/* ── 6. Region distribution ── */}
+        {Object.keys(stats.users.region_distribution).length > 0 && (
+          <CollapsibleSection title={t('admin.regionDistribution')} icon="ri-map-pin-line">
+            <div className={styles.distributionRow}>
+              <div className={styles.distributionPanel}>
+                <span className={styles.chartLabel}>{t('admin.regionDistribution')}</span>
+                <DonutChart data={stats.users.region_distribution} />
+              </div>
+            </div>
+          </CollapsibleSection>
+        )}
+
+        {/* ── 7. Waitlist ── */}
         <CollapsibleSection title={t('admin.waitlist')} icon="ri-mail-line" defaultOpen={false}>
           <div className={styles.waitlistHeader}>
             <div className={styles.waitlistTotal}>

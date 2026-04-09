@@ -23,6 +23,9 @@ export function useProfile() {
   const [editBio, setEditBio] = useState('')
   const [saving, setSaving] = useState(false)
   const [savingBio, setSavingBio] = useState(false)
+  const [isEditingRegion, setIsEditingRegion] = useState(false)
+  const [editRegion, setEditRegion] = useState('')
+  const [savingRegion, setSavingRegion] = useState(false)
   const [isLoggingOut, setIsLoggingOut] = useState(false)
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
@@ -130,6 +133,25 @@ export function useProfile() {
     }
   }, [editBio, profile?.bio])
 
+  const handleRegionSave = useCallback(async () => {
+    if (editRegion === profile?.region) {
+      setIsEditingRegion(false)
+      return
+    }
+
+    setSavingRegion(true)
+    try {
+      const updated = await api<Profile>('/profile', {
+        method: 'PATCH',
+        body: JSON.stringify({ region: editRegion }),
+      })
+      setProfile(updated)
+      setIsEditingRegion(false)
+    } finally {
+      setSavingRegion(false)
+    }
+  }, [editRegion, profile?.region])
+
   const handleLogout = useCallback(async () => {
     setShowLogoutConfirm(false)
     setIsLoggingOut(true)
@@ -167,6 +189,7 @@ export function useProfile() {
         setProfile(data)
         setEditName(data.name)
         setEditBio(data.bio ?? '')
+        setEditRegion(data.region)
         if (data.sequencing_status === 'completed') {
           fetchDna().catch(() => {})
         }
@@ -199,6 +222,12 @@ export function useProfile() {
     setEditBio,
     saving,
     savingBio,
+    isEditingRegion,
+    setIsEditingRegion,
+    editRegion,
+    setEditRegion,
+    savingRegion,
+    handleRegionSave,
     isLoggingOut,
     showLogoutConfirm,
     setShowLogoutConfirm,

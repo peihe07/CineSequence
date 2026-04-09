@@ -16,6 +16,13 @@ interface ProfileBasicsCardProps {
   genderLabel: string
   birthYearLabel: string
   regionLabel: string
+  isEditingRegion: boolean
+  editRegion: string
+  savingRegion: boolean
+  onEditRegionChange: (value: string) => void
+  onRegionEditStart: () => void
+  onRegionEditCancel: () => void
+  onRegionSave: () => Promise<void>
   saveLabel: string
   cancelLabel: string
   changeAvatarLabel: string
@@ -56,6 +63,13 @@ export default function ProfileBasicsCard({
   genderLabel,
   birthYearLabel,
   regionLabel,
+  isEditingRegion,
+  editRegion,
+  savingRegion,
+  onEditRegionChange,
+  onRegionEditStart,
+  onRegionEditCancel,
+  onRegionSave,
   saveLabel,
   cancelLabel,
   changeAvatarLabel,
@@ -183,7 +197,32 @@ export default function ProfileBasicsCard({
         )}
         <div className={styles.factCard}>
           <span className={styles.label}>{regionLabel}</span>
-          <span className={styles.factMetric}>{profile.region}</span>
+          {isEditingRegion ? (
+            <div className={styles.editRow}>
+              <input
+                className={styles.editInput}
+                value={editRegion}
+                onChange={(e) => onEditRegionChange(e.target.value)}
+                maxLength={50}
+                placeholder="TW"
+              />
+              <button className={styles.saveBtn} onClick={onRegionSave} disabled={savingRegion}>
+                {savingRegion ? '...' : saveLabel}
+              </button>
+              <button className={styles.cancelBtn} onClick={onRegionEditCancel}>
+                {cancelLabel}
+              </button>
+            </div>
+          ) : (
+            <div className={styles.valueRow}>
+              <span className={styles.factMetric}>{profile.region}</span>
+              {!isPreview && (
+                <button className={styles.editBtn} onClick={onRegionEditStart} aria-label={regionLabel}>
+                  <i className="ri-pencil-line" />
+                </button>
+              )}
+            </div>
+          )}
         </div>
       </div>
 

@@ -69,6 +69,12 @@ async def get_stats(
     )
     sequencing_breakdown = {row[0].value: row[1] for row in seq_result.all()}
 
+    # Region distribution
+    region_result = await db.execute(
+        select(User.region, func.count(User.id)).group_by(User.region)
+    )
+    region_distribution = {row[0]: row[1] for row in region_result.all()}
+
     # DNA counts
     total_dna = await db.scalar(
         select(func.count(DnaProfile.id)).where(DnaProfile.is_active == True)  # noqa: E712
@@ -154,6 +160,7 @@ async def get_stats(
             "today": users_today,
             "this_week": users_this_week,
             "sequencing_breakdown": sequencing_breakdown,
+            "region_distribution": region_distribution,
         },
         "dna": {
             "total_active": total_dna,

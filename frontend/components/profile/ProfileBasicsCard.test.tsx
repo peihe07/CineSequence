@@ -53,6 +53,13 @@ describe('ProfileBasicsCard', () => {
         genderLabel="Gender"
         birthYearLabel="Birth Year"
         regionLabel="Region"
+        isEditingRegion={false}
+        editRegion="TW"
+        savingRegion={false}
+        onEditRegionChange={vi.fn()}
+        onRegionEditStart={vi.fn()}
+        onRegionEditCancel={vi.fn()}
+        onRegionSave={vi.fn(async () => {})}
         saveLabel="Save"
         cancelLabel="Cancel"
         changeAvatarLabel="Change avatar"
@@ -104,6 +111,13 @@ describe('ProfileBasicsCard', () => {
         genderLabel="Gender"
         birthYearLabel="Birth Year"
         regionLabel="Region"
+        isEditingRegion={false}
+        editRegion="TW"
+        savingRegion={false}
+        onEditRegionChange={vi.fn()}
+        onRegionEditStart={vi.fn()}
+        onRegionEditCancel={vi.fn()}
+        onRegionSave={vi.fn(async () => {})}
         saveLabel="Save"
         cancelLabel="Cancel"
         changeAvatarLabel="Change avatar"

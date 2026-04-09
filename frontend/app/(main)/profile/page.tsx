@@ -31,6 +31,12 @@ export default function ProfilePage() {
     setEditBio,
     saving,
     savingBio,
+    isEditingRegion,
+    setIsEditingRegion,
+    editRegion,
+    setEditRegion,
+    savingRegion,
+    handleRegionSave,
     isLoggingOut,
     showLogoutConfirm,
     setShowLogoutConfirm,
@@ -192,6 +198,16 @@ export default function ProfilePage() {
                 genderLabel={t('profile.gender')}
                 birthYearLabel={t('profile.birthYear')}
                 regionLabel={t('profile.region')}
+                isEditingRegion={isEditingRegion}
+                editRegion={editRegion}
+                savingRegion={savingRegion}
+                onEditRegionChange={setEditRegion}
+                onRegionEditStart={() => setIsEditingRegion(true)}
+                onRegionEditCancel={() => {
+                  setEditRegion(profile.region)
+                  setIsEditingRegion(false)
+                }}
+                onRegionSave={handleRegionSave}
                 saveLabel={t('profile.save')}
                 cancelLabel={t('profile.cancel')}
                 changeAvatarLabel={t('profile.changeAvatar')}

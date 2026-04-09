@@ -160,7 +160,7 @@ async def notify_match_found(
         title_en="SIGNAL MATCH DETECTED",
         body_zh=f"系統已將 {partner_name} 標記為高共鳴目標，檔案待你查閱。",
         body_en=f"{partner_name} has been flagged as a high-resonance contact. Review the dossier.",
-        link="/matches",
+        link=f"/matches?match={match_id}",
         ref_id=str(match_id),
     )
     logger.info("Notification created: match_found for user %s", user_id)
@@ -178,7 +178,7 @@ async def notify_invite_received(
         title_en="INCOMING CLEARANCE REQUEST",
         body_zh=f"{sender_name} 已向你發送觀影通聯請求。",
         body_en=f"{sender_name} sent a viewing-channel request.",
-        link="/matches",
+        link=f"/matches?respond={match_id}",
         ref_id=str(match_id),
     )
     logger.info("Notification created: invite_received for user %s", user_id)
