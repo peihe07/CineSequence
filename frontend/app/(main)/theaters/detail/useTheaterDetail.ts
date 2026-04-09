@@ -100,16 +100,6 @@ export function useTheaterDetail(groupId: string) {
     return false
   }, [groupId])
 
-  useEffect(() => {
-    if (!cachedDetail) {
-      return
-    }
-
-    setGroup(cachedDetail.group)
-    setLists(cachedDetail.lists)
-    setIsLoading(false)
-  }, [cachedDetail])
-
   const loadGroup = useCallback(async (options?: { background?: boolean }) => {
     if (!isAuthenticated) {
       const previewGroup = PREVIEW_THEATER_GROUPS.find((entry) => entry.id === groupId) ?? PREVIEW_THEATER_GROUPS[0] ?? null
@@ -143,17 +133,18 @@ export function useTheaterDetail(groupId: string) {
       return
     }
 
-    const hasFreshCache = Boolean(
-      cachedDetail && Date.now() - cachedDetail.fetchedAt < THEATER_DETAIL_CACHE_TTL_MS
-    )
-
-    if (hasFreshCache) {
+    // 初始化時若有 fresh cache 就跳過 fetch
+    const cached = theaterDetailCache.get(groupId)
+    if (cached && Date.now() - cached.fetchedAt < THEATER_DETAIL_CACHE_TTL_MS) {
+      setGroup(cached.group)
+      setLists(cached.lists)
       setIsLoading(false)
       return
     }
 
     void loadGroup()
-  }, [cachedDetail, groupId, loadGroup])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [groupId])
 
   const mutateMembership = useCallback(async (action: 'join' | 'leave') => {
     if (!isAuthenticated) {

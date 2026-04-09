@@ -471,8 +471,8 @@ function TheatersContent() {
       return
     }
 
-    void fetchGroups({ background: hasHydrated && groups.length > 0 })
-  }, [fetchGroups, groups.length, hasHydrated, isAuthenticated])
+    void fetchGroups({ background: hasHydrated })
+  }, [fetchGroups, hasHydrated, isAuthenticated])
 
   return (
     <div className={styles.container}>
