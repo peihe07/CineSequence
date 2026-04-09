@@ -1,12 +1,22 @@
 import { cleanup, render, screen, waitFor } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-const { fetchProfileMock, authState } = vi.hoisted(() => ({
+const { fetchProfileMock, replaceMock, authState } = vi.hoisted(() => ({
   fetchProfileMock: vi.fn(),
+  replaceMock: vi.fn(),
   authState: {
+    isAuthenticated: false,
     isLoading: false,
     hasHydrated: false,
   },
+}))
+
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({
+    replace: replaceMock,
+  }),
+  usePathname: () => '/sequencing',
+  useSearchParams: () => new URLSearchParams('mode=mobile'),
 }))
 
 vi.mock('@/lib/i18n', () => ({
@@ -21,6 +31,7 @@ vi.mock('@/lib/i18n', () => ({
 
 vi.mock('@/stores/authStore', () => ({
   useAuthStore: () => ({
+    isAuthenticated: authState.isAuthenticated,
     isLoading: authState.isLoading,
     hasHydrated: authState.hasHydrated,
     fetchProfile: fetchProfileMock,
@@ -38,6 +49,8 @@ import AuthGuard from './AuthGuard'
 describe('AuthGuard', () => {
   beforeEach(() => {
     fetchProfileMock.mockReset()
+    replaceMock.mockReset()
+    authState.isAuthenticated = false
     authState.isLoading = false
     authState.hasHydrated = false
   })
@@ -62,6 +75,7 @@ describe('AuthGuard', () => {
 
   it('renders immediately without refetching when auth state is already hydrated', () => {
     authState.hasHydrated = true
+    authState.isAuthenticated = true
 
     render(
       <AuthGuard>
@@ -71,5 +85,21 @@ describe('AuthGuard', () => {
 
     expect(fetchProfileMock).not.toHaveBeenCalled()
     expect(screen.getByText('Protected app')).toBeTruthy()
+  })
+
+  it('redirects unauthenticated users to login with the current path', async () => {
+    authState.hasHydrated = true
+    authState.isAuthenticated = false
+
+    render(
+      <AuthGuard>
+        <p>Protected app</p>
+      </AuthGuard>,
+    )
+
+    await waitFor(() => {
+      expect(replaceMock).toHaveBeenCalledWith('/login?next=%2Fsequencing%3Fmode%3Dmobile')
+    })
+    expect(screen.queryByText('Protected app')).toBeNull()
   })
 })

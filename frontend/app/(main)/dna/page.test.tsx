@@ -200,7 +200,7 @@ describe('DnaResultPage', () => {
     expect(buildDnaMock).not.toHaveBeenCalled()
   })
 
-  it('shows extend action on dna results when sequencing can be extended', async () => {
+  it('shows the primary post-result CTAs', async () => {
     dnaState.result = {
       archetype: { id: 'archivist' },
       genre_vector: {},
@@ -220,37 +220,9 @@ describe('DnaResultPage', () => {
 
     render(<DnaResultPage />)
 
-    expect(await screen.findByRole('button', { name: 'Extend analysis (+3 rounds)' })).toBeTruthy()
+    expect(await screen.findByRole('button', { name: 'Open theaters' })).toBeTruthy()
+    expect(screen.getByRole('button', { name: 'Find matches' })).toBeTruthy()
     expect(fetchProgressMock).toHaveBeenCalledTimes(1)
-  })
-
-  it('extends sequencing from the dna results page and routes back into sequencing', async () => {
-    dnaState.result = {
-      archetype: { id: 'archivist' },
-      genre_vector: {},
-      quadrant_scores: {},
-      tag_labels: {},
-      top_tags: [],
-      supporting_signals: [],
-      avoided_signals: [],
-      mixed_signals: [],
-      interaction_diagnostics: { explicit_pick_count: 24, skip_count: 2, dislike_both_count: 1 },
-      personality_reading: null,
-      hidden_traits: [],
-      conversation_style: null,
-      ideal_movie_date: null,
-      can_extend: true,
-    }
-    extendSequencingMock.mockResolvedValue(undefined)
-
-    render(<DnaResultPage />)
-
-    fireEvent.click(screen.getByRole('button', { name: 'Extend analysis (+3 rounds)' }))
-
-    await waitFor(() => {
-      expect(extendSequencingMock).toHaveBeenCalledTimes(1)
-      expect(pushMock).toHaveBeenCalledWith('/sequencing')
-    })
   })
 
   it('routes to theaters from the dna results page CTA', async () => {
@@ -278,6 +250,33 @@ describe('DnaResultPage', () => {
     await waitFor(() => {
       expect(autoAssignMock).toHaveBeenCalledTimes(1)
       expect(pushMock).toHaveBeenCalledWith('/theaters')
+    })
+  })
+
+  it('routes to matches from the dna results page CTA', async () => {
+    dnaState.result = {
+      archetype: { id: 'archivist' },
+      genre_vector: {},
+      quadrant_scores: {},
+      tag_labels: {},
+      top_tags: [],
+      supporting_signals: [],
+      avoided_signals: [],
+      mixed_signals: [],
+      interaction_diagnostics: { explicit_pick_count: 24, skip_count: 2, dislike_both_count: 1 },
+      personality_reading: null,
+      hidden_traits: [],
+      conversation_style: null,
+      ideal_movie_date: null,
+      can_extend: false,
+    }
+
+    render(<DnaResultPage />)
+
+    fireEvent.click(screen.getByRole('button', { name: 'Find matches' }))
+
+    await waitFor(() => {
+      expect(pushMock).toHaveBeenCalledWith('/matches')
     })
   })
 

@@ -37,6 +37,14 @@ export function VerifyContent({
 
         setStatus('success')
         const requestedPath = sanitizeNextPath(nextPath)
+
+        // Admin 登入後直接進入 admin 頁面
+        const user = useAuthStore.getState().user
+        if (user?.is_admin && !requestedPath) {
+          setTimeout(() => router.replace('/admin'), 1500)
+          return
+        }
+
         let destination = requestedPath || '/sequencing'
 
         if (!requestedPath) {

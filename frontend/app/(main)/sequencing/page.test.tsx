@@ -251,7 +251,7 @@ describe('SequencingPage', () => {
     expect(skipMock).toHaveBeenCalledWith(expect.any(Number))
   })
 
-  it('shows a resume checkpoint before loading the next pair for in-progress sessions', async () => {
+  it('does not eagerly fetch a new pair for in-progress sessions', async () => {
     fetchProgressMock.mockImplementation(async () => {
       sequencingState.progress = {
         completed: false,
@@ -265,14 +265,10 @@ describe('SequencingPage', () => {
 
     render(<SequencingPage />)
 
-    expect(await screen.findByText('Resume session')).toBeTruthy()
-    expect(screen.getByText('Continue from round 5')).toBeTruthy()
-    expect(fetchPairMock).not.toHaveBeenCalled()
-
-    fireEvent.click(screen.getByRole('button', { name: 'Continue sequencing' }))
-
     await waitFor(() => {
-      expect(fetchPairMock).toHaveBeenCalledTimes(1)
+      expect(fetchProgressMock).toHaveBeenCalledTimes(1)
     })
+
+    expect(fetchPairMock).not.toHaveBeenCalled()
   })
 })
