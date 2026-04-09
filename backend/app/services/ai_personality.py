@@ -51,7 +51,7 @@ def _normalize_personality_result(result: dict) -> dict:
     return {
         "personality_reading": _clean_text(
             result.get("personality_reading"),
-            max_len=220,
+            max_len=420,
         ),
         "hidden_traits": _clean_traits(result.get("hidden_traits")),
         "conversation_style": _clean_text(

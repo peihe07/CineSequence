@@ -1,4 +1,4 @@
-import { cleanup, render, screen } from '@testing-library/react'
+import { act, cleanup, render, screen } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 const { localeState } = vi.hoisted(() => ({
@@ -29,6 +29,8 @@ vi.mock('@/lib/i18n', () => ({
         'profile.snapshotReadiness': 'Sequence readiness',
         'profile.snapshotMatchScope': 'Match scope',
         'profile.snapshotCurationStrictness': 'Curation strictness',
+        'profile.snapshotShowMore': 'Read more',
+        'profile.snapshotShowLess': 'Show less',
       }
       const zh: Record<string, string> = {
         'profile.snapshotAriaLabel': 'DNA 快照',
@@ -42,6 +44,8 @@ vi.mock('@/lib/i18n', () => ({
         'profile.snapshotReadiness': '定序完成度',
         'profile.snapshotMatchScope': '配對範圍',
         'profile.snapshotCurationStrictness': '篩選嚴格度',
+        'profile.snapshotShowMore': '展開全文',
+        'profile.snapshotShowLess': '收合',
       }
       return (localeState.locale === 'zh' ? zh : en)[key] ?? key
     },
@@ -104,5 +108,28 @@ describe('ProfileDnaSnapshot', () => {
     expect(screen.getByText('已驗證')).toBeTruthy()
     expect(screen.getByText('原型')).toBeTruthy()
     expect(screen.getByText('定序完成度')).toBeTruthy()
+  })
+
+  it('shows a preview first and expands the full personality reading on demand', () => {
+    const longReading = '這是一段很長的文字'.repeat(24)
+
+    render(
+      <ProfileDnaSnapshot
+        profile={{
+          ...profile,
+          personality_reading: longReading,
+        }}
+      />,
+    )
+
+    expect(screen.queryByText(longReading)).toBeNull()
+    expect(screen.getByRole('button', { name: 'Read more' })).toBeTruthy()
+
+    act(() => {
+      screen.getByRole('button', { name: 'Read more' }).click()
+    })
+
+    expect(screen.getByText(longReading)).toBeTruthy()
+    expect(screen.getByRole('button', { name: 'Show less' })).toBeTruthy()
   })
 })

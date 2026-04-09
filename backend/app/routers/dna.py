@@ -181,6 +181,7 @@ def _build_interaction_diagnostics(picks: list[dict]) -> InteractionDiagnostics:
 async def build_dna_profile(
     user: Annotated[User, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
+    force: Annotated[bool, Query()] = False,
 ):
     """Build DNA profile from completed sequencing picks."""
     if user.sequencing_status != SequencingStatus.completed:
@@ -197,7 +198,8 @@ async def build_dna_profile(
     )
 
     if (
-        existing_profile
+        not force
+        and existing_profile
         and existing_profile.updated_at is not None
         and (latest_pick_at is None or latest_pick_at <= existing_profile.updated_at)
     ):

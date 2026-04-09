@@ -817,6 +817,8 @@ const translations: Record<Locale, Record<string, string>> = {
     'profile.snapshotReadiness': '定序完成度',
     'profile.snapshotMatchScope': '配對範圍',
     'profile.snapshotCurationStrictness': '篩選嚴格度',
+    'profile.snapshotShowMore': '展開全文',
+    'profile.snapshotShowLess': '收合',
 
     // Cookie consent
     'cookie.message': '本網站使用必要 Cookie 以維持登入狀態。繼續使用即表示你同意我們的 Cookie 使用方式。',
@@ -1688,6 +1690,8 @@ const translations: Record<Locale, Record<string, string>> = {
     'profile.snapshotReadiness': 'Sequence readiness',
     'profile.snapshotMatchScope': 'Match scope',
     'profile.snapshotCurationStrictness': 'Curation strictness',
+    'profile.snapshotShowMore': 'Read more',
+    'profile.snapshotShowLess': 'Show less',
     'locale.switchZh': 'Switch to Chinese',
     'locale.switchEn': 'Switch to English',
 

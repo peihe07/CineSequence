@@ -159,7 +159,7 @@ async def test_generate_personality_reuses_cached_result_for_identical_context()
 
 def test_normalize_personality_result_trims_and_limits_fields():
     result = _normalize_personality_result({
-        "personality_reading": "  這是一段很長的文字 " * 30,
+        "personality_reading": "  這是一段很長的文字 " * 60,
         "hidden_traits": ["敏銳觀察者", "敏銳觀察者", "冷面幽默派", "節奏潔癖型"],
         "conversation_style": "  先冷靜觀察，再精準補一句有意思的話。這句之後不該留下。  ",
         "ideal_movie_date": (
@@ -168,7 +168,8 @@ def test_normalize_personality_result_trims_and_limits_fields():
         ),
     })
 
-    assert len(result["personality_reading"]) <= 221
+    assert len(result["personality_reading"]) <= 421
+    assert len(result["personality_reading"]) > 220
     assert result["hidden_traits"] == ["敏銳觀察者", "冷面幽默派", "節奏潔癖型"]
     assert len(result["conversation_style"]) <= 31
     assert len(result["ideal_movie_date"]) <= 71

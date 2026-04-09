@@ -62,13 +62,22 @@ function buildMetrics(profile: Profile, t: (key: string) => string): Metric[] {
 export default function ProfileDnaSnapshot({ profile }: ProfileDnaSnapshotProps) {
   const { t, locale } = useI18n()
   const [scanComplete, setScanComplete] = useState(false)
+  const [expanded, setExpanded] = useState(false)
   const metrics = useMemo(() => buildMetrics(profile, t), [profile, t])
+  const readingPreview =
+    profile.personality_reading && profile.personality_reading.length > 180
+      ? `${profile.personality_reading.slice(0, 180)}...`
+      : profile.personality_reading
 
   useEffect(() => {
     setScanComplete(false)
     const timer = window.setTimeout(() => setScanComplete(true), 1100)
     return () => window.clearTimeout(timer)
   }, [profile.archetype_id, profile.sequencing_status, profile.match_gender_pref, profile.match_age_min, profile.match_age_max, profile.pure_taste_match])
+
+  useEffect(() => {
+    setExpanded(false)
+  }, [profile.personality_reading])
 
   const archetypeName =
     getArchetypeLabel(profile.archetype_id, profile.archetype_name, locale) || t('profile.snapshotPending')
@@ -124,10 +133,20 @@ export default function ProfileDnaSnapshot({ profile }: ProfileDnaSnapshotProps)
       </div>
 
       {profile.personality_reading && (
-        <p className={styles.note}>
-          {profile.personality_reading.slice(0, 120)}
-          {profile.personality_reading.length > 120 ? '...' : ''}
-        </p>
+        <div className={styles.noteBlock}>
+          <p className={styles.note}>
+            {expanded ? profile.personality_reading : readingPreview}
+          </p>
+          {profile.personality_reading.length > (readingPreview?.length ?? 0) && (
+            <button
+              type="button"
+              className={styles.toggle}
+              onClick={() => setExpanded((value) => !value)}
+            >
+              {expanded ? t('profile.snapshotShowLess') : t('profile.snapshotShowMore')}
+            </button>
+          )}
+        </div>
       )}
     </section>
   )

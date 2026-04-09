@@ -225,3 +225,90 @@ class TestDnaBuildEndpoint:
         profile = result.scalar_one()
         assert profile.personality_reading == "fresh reading"
         assert profile.hidden_traits == ["precise"]
+
+    async def test_build_force_recomputes_even_when_profile_is_up_to_date(
+        self,
+        client: AsyncClient,
+        db_session: AsyncSession,
+    ):
+        now = datetime.now(UTC)
+        user = await create_completed_user(db_session, email="force-dna@test.com")
+        session, _pick = await create_session_with_pick(
+            db_session,
+            user,
+            pick_created_at=now - timedelta(minutes=5),
+        )
+        await create_profile(
+            db_session,
+            user,
+            session,
+            updated_at=now,
+        )
+
+        dna_data = {
+            "archetype_id": "dark_poet",
+            "tag_vector": [0.3] * TAG_VECTOR_DIMENSIONS,
+            "top_tags": ["mindfuck"],
+            "tag_labels": {"mindfuck": 1.0},
+            "excluded_tags": [],
+            "tag_confidence": {"mindfuck": 1.0},
+            "tag_consistency": {"mindfuck": 1.0},
+            "genre_vector": {"Drama": 1.0},
+            "quadrant_scores": {
+                "mainstream_independent": 3.0,
+                "rational_emotional": 3.0,
+                "light_dark": 4.5,
+            },
+            "ticket_style": "classic",
+        }
+        personality = {
+            "personality_reading": "forced refresh reading",
+            "hidden_traits": ["incisive"],
+            "conversation_style": "sharp",
+            "ideal_movie_date": "midnight screening",
+        }
+
+        with (
+            patch(
+                "app.routers.dna._get_session_picks_and_genres",
+                new_callable=AsyncMock,
+                return_value=(
+                    [
+                        {
+                            "round_number": 1,
+                            "phase": 1,
+                            "pair_id": "p1",
+                            "movie_a_tmdb_id": 10,
+                            "movie_b_tmdb_id": 20,
+                            "chosen_tmdb_id": 10,
+                            "pick_mode": "watched",
+                            "test_dimension": "mindfuck",
+                        }
+                    ],
+                    {10: ["Drama"]},
+                ),
+            ) as mock_get_picks,
+            patch("app.routers.dna.build_dna", return_value=dna_data) as mock_build_dna,
+            patch(
+                "app.routers.dna.generate_personality",
+                new_callable=AsyncMock,
+                return_value=personality,
+            ) as mock_ai,
+        ):
+            response = await client.post("/dna/build?force=true", headers=auth_headers(user))
+
+        assert response.status_code == 200
+        assert response.json() == {
+            "status": "ready",
+            "message": "DNA profile built successfully",
+        }
+        mock_get_picks.assert_awaited_once()
+        mock_build_dna.assert_called_once()
+        mock_ai.assert_awaited_once()
+
+        result = await db_session.execute(
+            select(DnaProfile).where(DnaProfile.session_id == session.id)
+        )
+        profile = result.scalar_one()
+        assert profile.personality_reading == "forced refresh reading"
+        assert profile.hidden_traits == ["incisive"]

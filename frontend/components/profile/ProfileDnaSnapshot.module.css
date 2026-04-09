@@ -163,6 +163,28 @@
   color: rgba(255, 255, 255, 0.72);
 }
 
+.noteBlock {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.6rem;
+}
+
+.toggle {
+  border: 0;
+  padding: 0;
+  background: none;
+  color: rgba(255, 210, 168, 0.94);
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.toggle:hover {
+  color: rgba(255, 232, 205, 0.98);
+}
+
 @media (max-width: 768px) {
   .header,
   .scanMeta,

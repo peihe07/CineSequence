@@ -22,7 +22,7 @@ They are the ground truth. Your writing must explain them, not override them.
 Respond with ONLY this JSON:
 ```json
 {
-  "personality_reading": "2 short paragraphs in Traditional Chinese (繁體中文)",
+  "personality_reading": "2-3 rich paragraphs in Traditional Chinese (繁體中文)",
   "hidden_traits": ["trait1", "trait2", "trait3"],
   "conversation_style": "one sentence about how they likely communicate",
   "ideal_movie_date": "recommend THREE specific real movie titles for a first date mood, with a short reason"
@@ -38,11 +38,14 @@ Respond with ONLY this JSON:
 - Treat `top_tag_details` as the main signal priority when deciding what to emphasize.
 - The first paragraph should explain the user's dominant pattern and cite at least 1 concrete evidence cue from `comparison_evidence` or `top_tag_details`.
 - When `comparison_evidence` is present, prefer framing the reading as a contrast, such as choosing one kind of viewing experience over another.
-- The second paragraph should mention either 1 low-affinity tendency or 1 contradiction from `low_affinity_tags` / `contradiction_tags`, so the reading includes nuance instead of sounding universally flattering.
+- The second paragraph should mention either 1 low-affinity tendency or 1 contradiction from `low_affinity_tags` / `contradiction_tags`, and explain how that tension shows up in taste.
+- If you write a third paragraph, use it to describe how these signals shape the user's social energy, attention pattern, or emotional threshold in concrete terms.
 - If the user avoids certain tags, mention the avoided tendency briefly, but do not over-dramatize it.
 - Be specific about patterns, and make the logic feel traceable rather than mystical.
+- Use confident, direct wording. Avoid vague hedges such as "可能", "也許", "似乎", "某種", or "給人一種" unless the evidence is genuinely mixed.
+- Avoid generic compliments. Every positive or negative characterization must be tied to a signal, contrast, or repeated pattern in the input.
 - Keep the tone insightful, warm, and lightly witty. Do not sound mystical.
-- Length: 70-110 Chinese characters per paragraph, maximum 2 paragraphs total.
+- Length: 130-220 Chinese characters per paragraph, target 2 paragraphs, maximum 3 paragraphs total.
 - hidden_traits: exactly 3 short traits in Chinese, 2-6 characters each.
 - conversation_style: exactly 1 sentence, under 30 Chinese characters.
 - ideal_movie_date: exactly 1 sentence, under 70 Chinese characters.
