@@ -94,7 +94,11 @@ async def main() -> None:
             try:
                 picks, genre_map = await _get_session_picks_and_genres(db, profile.session_id)
                 if not picks:
-                    logger.warning("Skipping user %s: no picks found for session %s", user.id, profile.session_id)
+                    logger.warning(
+                        "Skipping user %s: no picks found for session %s",
+                        user.id,
+                        profile.session_id,
+                    )
                     failed += 1
                     continue
 
@@ -113,7 +117,10 @@ async def main() -> None:
                     comparison_evidence=build_comparison_evidence(picks, top_tags),
                 )
                 if personality is None:
-                    logger.warning("Skipping user %s: personality generation returned no result", user.id)
+                    logger.warning(
+                        "Skipping user %s: personality generation returned no result",
+                        user.id,
+                    )
                     failed += 1
                     continue
 
@@ -146,7 +153,11 @@ async def main() -> None:
                 profile.ideal_movie_date = personality["ideal_movie_date"]
 
                 if not args.skip_ticket:
-                    profile.personal_ticket_url = await _generate_personal_ticket_url(db, user, profile)
+                    profile.personal_ticket_url = await _generate_personal_ticket_url(
+                        db,
+                        user,
+                        profile,
+                    )
 
                 await db.commit()
             except Exception:
