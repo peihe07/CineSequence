@@ -473,7 +473,11 @@ async def auto_assign(
             theater_id=group_id,
             context=f"theater_assigned:{group_id}:{user.id}",
         )
-    result = await db.execute(select(Group).where(Group.id.in_([group_id for group_id, _ in assigned_group_refs])))
+    result = await db.execute(
+        select(Group).where(
+            Group.id.in_([group_id for group_id, _ in assigned_group_refs])
+        )
+    )
     assigned_groups = list(result.scalars().all())
     user_group_ids = {group_id for group_id, _ in assigned_group_refs}
     return [

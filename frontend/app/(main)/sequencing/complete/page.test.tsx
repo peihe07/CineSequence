@@ -4,7 +4,6 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 const {
   replaceMock,
   fetchProgressMock,
-  extendSequencingMock,
   buildDnaMock,
   fetchResultMock,
   progressState,
@@ -12,15 +11,11 @@ const {
 } = vi.hoisted(() => ({
   replaceMock: vi.fn(),
   fetchProgressMock: vi.fn(),
-  extendSequencingMock: vi.fn(),
   buildDnaMock: vi.fn(),
   fetchResultMock: vi.fn(),
   playSoundMock: vi.fn(),
   progressState: {
     progress: {
-      extension_batches: 1,
-      max_extension_batches: 3,
-      can_extend: true,
       total_rounds: 25,
     },
   },
@@ -34,7 +29,6 @@ vi.mock('@/stores/sequencingStore', () => ({
   useSequencingStore: () => ({
     ...progressState,
     fetchProgress: fetchProgressMock,
-    extendSequencing: extendSequencingMock,
   }),
 }))
 
@@ -60,10 +54,7 @@ vi.mock('@/lib/i18n', () => ({
         'complete.eyebrow': '[ SEQUENCE_COMPLETE ]',
         'complete.heroMeta': 'RUN CLOSED // ANALYSIS READY',
         'complete.rounds': 'Rounds',
-        'complete.extensions': 'Extensions',
         'complete.viewDna': 'View DNA',
-        'complete.extend': 'Extend',
-        'complete.maxReached': 'Max reached',
         'dna.analyzing': 'Analyzing DNA...',
       }
       return dict[key] ?? key
@@ -83,14 +74,10 @@ describe('SequencingCompletePage', () => {
   beforeEach(() => {
     replaceMock.mockReset()
     fetchProgressMock.mockReset()
-    extendSequencingMock.mockReset()
     buildDnaMock.mockReset()
     fetchResultMock.mockReset()
     playSoundMock.mockReset()
     progressState.progress = {
-      extension_batches: 1,
-      max_extension_batches: 3,
-      can_extend: true,
       total_rounds: 25,
     }
   })
@@ -108,7 +95,6 @@ describe('SequencingCompletePage', () => {
     expect(screen.getByText('Complete 25')).toBeTruthy()
     expect(screen.getByText('RUN CLOSED // ANALYSIS READY')).toBeTruthy()
     expect(screen.getByText('25')).toBeTruthy()
-    expect(screen.getByText('1/3')).toBeTruthy()
     expect(fetchProgressMock).toHaveBeenCalled()
     expect(playSoundMock).toHaveBeenCalledWith('complete')
     expect(buildDnaMock).not.toHaveBeenCalled()
@@ -183,33 +169,10 @@ describe('SequencingCompletePage', () => {
     })
   })
 
-  it('extends sequencing and routes back into the sequencing flow', async () => {
-    extendSequencingMock.mockResolvedValue(undefined)
-
+  it('shows only the dna action on the completion page', () => {
     render(<SequencingCompletePage />)
 
-    fireEvent.click(screen.getByRole('button', { name: /Extend/i }))
-
-    await waitFor(() => {
-      expect(extendSequencingMock).toHaveBeenCalled()
-      expect(replaceMock).toHaveBeenCalledWith('/sequencing')
-    })
-  })
-
-  it('does not route back into sequencing when the extension request fails', async () => {
-    fetchResultMock.mockResolvedValue(null)
-    buildDnaMock.mockResolvedValue(null)
-    extendSequencingMock.mockRejectedValue(new Error('Extend failed'))
-
-    render(<SequencingCompletePage />)
-
-    expect(await screen.findByRole('button', { name: /Extend/i })).toBeTruthy()
-
-    fireEvent.click(screen.getByRole('button', { name: /Extend/i }))
-
-    await waitFor(() => {
-      expect(extendSequencingMock).toHaveBeenCalled()
-    })
-    expect(replaceMock).not.toHaveBeenCalledWith('/sequencing')
+    expect(screen.getByRole('button', { name: 'View DNA' })).toBeTruthy()
+    expect(screen.queryByRole('button', { name: /Extend/i })).toBeNull()
   })
 })

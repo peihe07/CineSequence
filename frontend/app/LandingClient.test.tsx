@@ -1,10 +1,9 @@
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-const { pushMock, fetchProfileMock, authState, waitlistMock } = vi.hoisted(() => ({
+const { pushMock, fetchProfileMock, authState } = vi.hoisted(() => ({
   pushMock: vi.fn(),
   fetchProfileMock: vi.fn(() => new Promise<void>(() => {})),
-  waitlistMock: vi.fn(),
   authState: {
     isAuthenticated: false,
   },
@@ -61,10 +60,6 @@ vi.mock('@/lib/i18n', () => ({
   }),
 }))
 
-vi.mock('@/lib/api', () => ({
-  api: (...args: unknown[]) => waitlistMock(...args),
-}))
-
 vi.mock('@/stores/authStore', () => ({
   useAuthStore: () => ({
     isAuthenticated: authState.isAuthenticated,
@@ -92,7 +87,6 @@ describe('LandingClient', () => {
     cleanup()
     pushMock.mockReset()
     fetchProfileMock.mockClear()
-    waitlistMock.mockReset()
     authState.isAuthenticated = false
   })
 
@@ -108,26 +102,12 @@ describe('LandingClient', () => {
     expect(screen.getByTestId('login-modal').textContent).toBe('login')
   })
 
-  it('submits the waitlist form from the hero', async () => {
-    waitlistMock.mockResolvedValue({
-      message:
-        "You're on the waitlist. We're developing new features and performing maintenance. We'll email you again when access reopens.",
-    })
-
+  it('renders direct register and preview entries in the hero', () => {
     render(<LandingClient />)
 
-    fireEvent.change(screen.getByLabelText('Email'), {
-      target: { value: 'user@example.com' },
-    })
-    fireEvent.click(screen.getByRole('button', { name: 'Notify me' }))
-
-    await waitFor(() => {
-      expect(waitlistMock).toHaveBeenCalledWith('/auth/waitlist', {
-        method: 'POST',
-        body: JSON.stringify({ email: 'user@example.com' }),
-      })
-    })
-    expect(screen.getByText('We have saved user@example.com. We will email you again when access reopens.')).toBeTruthy()
+    expect(screen.getByRole('link', { name: 'landing.start' }).getAttribute('href')).toBe('/register')
+    expect(screen.getByRole('link', { name: 'Preview Now' }).getAttribute('href')).toBe('/sequencing')
+    expect(screen.getByRole('button', { name: 'Login' })).toBeTruthy()
   })
 
   it('renders a direct preview entry to the sequencing page', () => {

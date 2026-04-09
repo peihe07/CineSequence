@@ -5,8 +5,8 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from app.services.matcher import _consume_invite_credit, get_invite_credit_count
 from app.models.user import Gender, User
+from app.services.matcher import _consume_invite_credit, get_invite_credit_count
 
 
 def _make_user(**overrides) -> User:

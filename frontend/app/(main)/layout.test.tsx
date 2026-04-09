@@ -11,12 +11,14 @@ const {
   authState: {
     isAuthenticated: false,
     isLoading: false,
+    hasHydrated: false,
   },
 }))
 
 vi.mock('next/navigation', () => ({
   useRouter: () => ({ replace: replaceMock }),
   usePathname: () => '/dna',
+  useSearchParams: () => new URLSearchParams(),
 }))
 
 vi.mock('@/stores/authStore', () => ({
@@ -62,6 +64,7 @@ describe('MainLayout', () => {
     fetchProfileMock.mockReset()
     authState.isAuthenticated = false
     authState.isLoading = false
+    authState.hasHydrated = false
   })
 
   afterEach(() => {
@@ -136,6 +139,7 @@ describe('MainLayout', () => {
 
   it('keeps the layout rendered when a global unauthorized event is emitted', async () => {
     authState.isAuthenticated = true
+    authState.hasHydrated = true
     fetchProfileMock.mockImplementation(async () => {})
 
     render(
