@@ -82,8 +82,8 @@ vi.mock('./LoginForm', () => ({
   default: () => <div>Login form</div>,
 }))
 
-vi.mock('./WaitlistForm', () => ({
-  default: () => <div>Waitlist form</div>,
+vi.mock('./RegisterForm', () => ({
+  default: () => <div>Register form</div>,
 }))
 
 vi.mock('./LoginModal.module.css', () => ({
@@ -121,11 +121,11 @@ describe('LoginModal', () => {
     expect(replaceMock).toHaveBeenCalledWith('/dna')
   })
 
-  it('switches the popup signup tab to waitlist content', () => {
+  it('switches the popup signup tab to register content', () => {
     render(<LoginModal open={true} onClose={onCloseMock} />)
 
-    fireEvent.click(screen.getByRole('button', { name: 'Waitlist' }))
+    fireEvent.click(screen.getAllByRole('button', { name: 'Register' })[0])
 
-    expect(screen.getByText('Waitlist form')).toBeTruthy()
+    expect(screen.getByText('Register form')).toBeTruthy()
   })
 })

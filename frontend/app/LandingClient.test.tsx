@@ -102,10 +102,12 @@ describe('LandingClient', () => {
     expect(screen.getByTestId('login-modal').textContent).toBe('login')
   })
 
-  it('renders direct register and preview entries in the hero', () => {
+  it('opens the register modal from the hero and keeps the preview entry', () => {
     render(<LandingClient />)
 
-    expect(screen.getByRole('link', { name: 'landing.start' }).getAttribute('href')).toBe('/register')
+    fireEvent.click(screen.getByRole('button', { name: 'landing.start' }))
+
+    expect(screen.getByTestId('login-modal').textContent).toBe('register')
     expect(screen.getByRole('link', { name: 'Preview Now' }).getAttribute('href')).toBe('/sequencing')
     expect(screen.getByRole('button', { name: 'Login' })).toBeTruthy()
   })
