@@ -14,6 +14,8 @@ from app.models.ai_token_log import AiTokenLog
 from app.models.dna_profile import DnaProfile
 from app.models.match import Match, MatchStatus
 from app.models.notification import NotificationType
+from app.models.group import Group, group_members
+from app.models.match_message import MatchMessage
 from app.models.pick import Pick
 from app.models.sequencing_session import SequencingSession, SessionStatus
 from app.models.user import SequencingStatus, User
@@ -512,6 +514,9 @@ async def reset_all_sequencing(
     ) or 0
     match_count = await db.scalar(select(func.count(Match.id))) or 0
     pick_count = await db.scalar(select(func.count(Pick.id))) or 0
+    membership_count = await db.scalar(
+        select(func.count()).select_from(group_members)
+    ) or 0
     user_count = await db.scalar(select(func.count(User.id))) or 0
 
     if body.dry_run:
@@ -521,30 +526,38 @@ async def reset_all_sequencing(
             "dna_to_deactivate": dna_count,
             "matches_to_delete": match_count,
             "picks_to_delete": pick_count,
+            "group_memberships_to_clear": membership_count,
             "users_to_reset": user_count,
         }
 
-    # 1. 刪除所有 matches
+    # 1. 刪除所有 match messages 和 matches
+    await db.execute(MatchMessage.__table__.delete())
     await db.execute(Match.__table__.delete())
 
     # 2. 刪除所有 picks
     await db.execute(Pick.__table__.delete())
 
-    # 3. 停用所有 DNA profiles
+    # 3. 清除所有 group 成員並重設 member_count
+    await db.execute(group_members.delete())
+    await db.execute(
+        update(Group).values(member_count=0, is_active=False)
+    )
+
+    # 4. 停用所有 DNA profiles
     await db.execute(
         update(DnaProfile)
         .where(DnaProfile.is_active.is_(True))
         .values(is_active=False)
     )
 
-    # 4. 終結所有 sessions
+    # 5. 終結所有 sessions
     await db.execute(
         update(SequencingSession)
         .where(SequencingSession.status != SessionStatus.finalized)
         .values(status=SessionStatus.finalized)
     )
 
-    # 5. 重設所有使用者狀態
+    # 6. 重設所有使用者狀態
     await db.execute(
         update(User).values(
             sequencing_status=SequencingStatus.not_started,
@@ -561,5 +574,6 @@ async def reset_all_sequencing(
         "dna_deactivated": dna_count,
         "matches_deleted": match_count,
         "picks_deleted": pick_count,
+        "group_memberships_cleared": membership_count,
         "users_reset": user_count,
     }
