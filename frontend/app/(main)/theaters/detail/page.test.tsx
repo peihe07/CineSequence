@@ -391,7 +391,9 @@ describe('TheaterDetailPage', () => {
       })
     })
 
-    expect(screen.getByText('Midnight Rotation')).toBeTruthy()
+    await waitFor(() => {
+      expect(screen.getByText('Midnight Rotation')).toBeTruthy()
+    })
     await expandList('Midnight Rotation')
     expect(screen.getByText('Arrival')).toBeTruthy()
     expect(screen.getByText('Burning')).toBeTruthy()
@@ -572,7 +574,9 @@ describe('TheaterDetailPage', () => {
       })
     })
 
-    expect(screen.getByText('Midnight Rotation')).toBeTruthy()
+    await waitFor(() => {
+      expect(screen.getByText('Midnight Rotation')).toBeTruthy()
+    })
     expect(screen.getAllByText('For after the room goes quiet.').length).toBeGreaterThan(0)
   })
 
