@@ -664,6 +664,34 @@ class TestPick:
         assert response.status_code == 400
 
     @pytest.mark.asyncio
+    async def test_submit_pick_clears_reroll_exclusions_for_next_round(
+        self, client, auth_user, db_session
+    ):
+        user, headers = auth_user
+        await client.get("/sequencing/progress", headers=headers)
+        session_result = await db_session.execute(
+            select(SequencingSession).where(SequencingSession.user_id == user.id)
+        )
+        session = session_result.scalar_one()
+        session.reroll_excluded_tmdb_ids = [4101, 4102, 4103]
+        await db_session.commit()
+
+        pair = get_pair_for_round(1, session_seed=str(session.id))
+        response = await client.post(
+            "/sequencing/pick",
+            json={
+                "chosen_tmdb_id": pair["movie_a"]["tmdb_id"],
+                "pick_mode": "watched",
+                "response_time_ms": 1000,
+            },
+            headers=headers,
+        )
+        assert response.status_code == 200
+
+        await db_session.refresh(session)
+        assert session.reroll_excluded_tmdb_ids == []
+
+    @pytest.mark.asyncio
     @patch("app.routers.sequencing._enqueue_dna_build", new_callable=AsyncMock)
     @patch("app.routers.sequencing.get_movie", new_callable=AsyncMock)
     async def test_submit_pick_final_round_enqueues_dna_build(
@@ -774,6 +802,29 @@ class TestSkip:
         assert phase2_skip.movie_b_tmdb_id == 3102
         assert phase2_skip.chosen_tmdb_id is None
         assert phase2_skip.test_dimension == "slowburn"
+
+    @pytest.mark.asyncio
+    async def test_skip_clears_reroll_exclusions_for_next_round(
+        self, client, auth_user, db_session
+    ):
+        user, headers = auth_user
+        await client.get("/sequencing/progress", headers=headers)
+        session_result = await db_session.execute(
+            select(SequencingSession).where(SequencingSession.user_id == user.id)
+        )
+        session = session_result.scalar_one()
+        session.reroll_excluded_tmdb_ids = [5101, 5102]
+        await db_session.commit()
+
+        response = await client.post(
+            "/sequencing/skip",
+            json={"response_time_ms": 900},
+            headers=headers,
+        )
+        assert response.status_code == 200
+
+        await db_session.refresh(session)
+        assert session.reroll_excluded_tmdb_ids == []
 
     @pytest.mark.asyncio
     @patch("app.routers.sequencing._enqueue_dna_build", new_callable=AsyncMock)

@@ -55,6 +55,7 @@ jobs:
       ENVIRONMENT: test
       JWT_SECRET: test-jwt-secret
       MAGIC_LINK_SECRET: test-magic-link-secret
+      TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
     steps:
       - uses: actions/checkout@v6
 
@@ -95,6 +96,10 @@ jobs:
 
       - name: Lint
         run: ruff check .
+
+      - name: Validate curated TMDB ids
+        if: env.TMDB_API_KEY != ''
+        run: python scripts/validate_tmdb_ids.py
 
       - name: DB migration
         run: alembic upgrade head

@@ -9,6 +9,7 @@
     "loadtest:sequencing": "k6 run loadtest/sequencing-progress.js",
     "validate:phase1-pairs": "node scripts/validate_phase1_pairs.js",
     "validate:movie-pool": "node scripts/validate_movie_pool.js",
+    "validate:tmdb-ids": "cd backend && ./.venv/bin/python scripts/validate_tmdb_ids.py",
     "lint:design-tokens": "bash scripts/lint-design-tokens.sh",
     "typecheck:frontend": "cd frontend && npx tsc --noEmit",
     "test:frontend": "cd frontend && npx vitest run stores/authStore.test.ts 'app/(auth)/register/page.test.tsx' 'app/(auth)/verify/page.test.tsx'",

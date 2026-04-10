@@ -223,6 +223,11 @@ def _clear_pending_pair(session) -> None:
     session.pending_pair_payload = None
 
 
+def _reset_reroll_exclusions(session) -> None:
+    """Keep reroll exclusions scoped to the current round only."""
+    session.reroll_excluded_tmdb_ids = []
+
+
 async def _store_pending_pair_response(
     db: AsyncSession,
     session,
@@ -517,6 +522,7 @@ async def submit_pick(
     )
     db.add(pick)
     _clear_pending_pair(session)
+    _reset_reroll_exclusions(session)
 
     # Update session status based on completion
     if round_number >= session.total_rounds:
@@ -591,6 +597,7 @@ async def _record_empty_decision(
     )
     db.add(pick)
     _clear_pending_pair(session)
+    _reset_reroll_exclusions(session)
 
     if round_number >= session.total_rounds:
         if session.status == SessionStatus.extending:
