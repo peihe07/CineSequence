@@ -421,11 +421,12 @@ async def test_manual_theater_list_items_are_enriched_and_deduped(
     await db_session.execute(group_members.insert().values(user_id=user.id, group_id=group.id))
     await db_session.commit()
 
-    from app.routers import groups as groups_router
+    from app.routers import group_theaters as group_theaters_router
+    from app.schemas.groups import TheaterListItemCreate
 
     async def fake_prepare_items(_db, items, _existing_items=None):
         return [
-            groups_router.TheaterListItemCreate(
+            TheaterListItemCreate(
                 tmdb_id=11,
                 title_en="Arrival",
                 title_zh="異星入境",
@@ -437,7 +438,7 @@ async def test_manual_theater_list_items_are_enriched_and_deduped(
             )
         ]
 
-    monkeypatch.setattr(groups_router, "_prepare_theater_list_items", fake_prepare_items)
+    monkeypatch.setattr(group_theaters_router, "prepare_items", fake_prepare_items)
 
     response = await client.post(
         f"/groups/{group.id}/lists",
@@ -797,11 +798,12 @@ async def test_member_cannot_append_duplicate_theater_list_item(
     )
     list_id = create_response.json()["id"]
 
-    from app.routers import groups as groups_router
+    from app.routers import group_theaters as group_theaters_router
+    from app.schemas.groups import TheaterListItemCreate
 
     async def fake_prepare_items(_db, items, _existing_items=None):
         return [
-            groups_router.TheaterListItemCreate(
+            TheaterListItemCreate(
                 tmdb_id=11,
                 title_en="Arrival",
                 title_zh="異星入境",
@@ -813,7 +815,7 @@ async def test_member_cannot_append_duplicate_theater_list_item(
             )
         ]
 
-    monkeypatch.setattr(groups_router, "_prepare_theater_list_items", fake_prepare_items)
+    monkeypatch.setattr(group_theaters_router, "prepare_items", fake_prepare_items)
 
     response = await client.post(
         f"/groups/{group.id}/lists/{list_id}/items",

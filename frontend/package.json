@@ -17,27 +17,28 @@
     "test:watch": "vitest"
   },
   "dependencies": {
+    "framer-motion": "^11.15.0",
     "next": "^15.1.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "framer-motion": "^11.15.0",
-    "zustand": "^5.0.0",
     "remixicon": "^4.6.0",
-    "zod": "^3.24.0"
+    "zod": "^3.24.0",
+    "zustand": "^5.0.0"
   },
   "devDependencies": {
     "@opennextjs/cloudflare": "^1.8.0",
-    "typescript": "^5.7.0",
-    "@types/react": "^19.0.0",
+    "@testing-library/jest-dom": "^6.6.0",
+    "@testing-library/react": "^16.1.0",
     "@types/node": "^22.0.0",
+    "@types/react": "^19.0.0",
+    "@vitejs/plugin-react": "^4.3.0",
+    "@vitest/coverage-v8": "^2.1.9",
     "eslint": "^9.0.0",
     "eslint-config-next": "^15.1.0",
-    "prettier": "^3.4.0",
-    "vitest": "^2.1.0",
-    "@vitejs/plugin-react": "^4.3.0",
-    "@testing-library/react": "^16.1.0",
-    "@testing-library/jest-dom": "^6.6.0",
     "jsdom": "^25.0.0",
+    "prettier": "^3.4.0",
+    "typescript": "^5.7.0",
+    "vitest": "^2.1.0",
     "wrangler": "^4.38.0"
   }
 }

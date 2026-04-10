@@ -22,6 +22,8 @@ from app.routers import (
     auth,
     dev_auth,
     dna,
+    group_messages,
+    group_theaters,
     groups,
     match_messages,
     matches,
@@ -103,6 +105,8 @@ app.include_router(dna.router, prefix="/dna", tags=["dna"])
 app.include_router(match_messages.router, prefix="/matches", tags=["match-messages"])
 app.include_router(matches.router, prefix="/matches", tags=["matches"])
 app.include_router(groups.router, prefix="/groups", tags=["groups"])
+app.include_router(group_messages.router, prefix="/groups", tags=["group-messages"])
+app.include_router(group_theaters.router, prefix="/groups", tags=["group-theaters"])
 app.include_router(profile.router, prefix="/profile", tags=["profile"])
 app.include_router(notifications.router, prefix="/notifications", tags=["notifications"])
 app.include_router(payments.router, prefix="/payments", tags=["payments"])
