@@ -16,9 +16,16 @@ from app.schemas.groups import (
     TheaterListReplyAuthorOut,
     TheaterListReplyOut,
 )
-from app.services.notification_service import emit_notification_safely, notify_theater_activity
+from app.services.notification_service import (
+    emit_notification_safely,
+    notify_theater_activity,
+)
 from app.services.r2_storage import normalize_public_object_url
-from app.services.theater_list_items import TheaterListItemData, item_fingerprint, prepare_theater_list_items
+from app.services.theater_list_items import (
+    TheaterListItemData,
+    item_fingerprint,
+    prepare_theater_list_items,
+)
 
 
 async def require_group_membership(
