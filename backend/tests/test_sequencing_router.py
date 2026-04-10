@@ -438,6 +438,103 @@ class TestPair:
         assert session.reroll_excluded_tmdb_ids == [6101, 6102]
         assert set(mock_get_ai_pair.await_args.kwargs["extra_excluded_tmdb_ids"]) == {6101, 6102}
 
+    @pytest.mark.asyncio
+    @patch("app.routers.sequencing.get_pair_for_round")
+    @patch("app.routers.sequencing.get_movie", new_callable=AsyncMock)
+    async def test_invalid_pending_pair_is_cleared_and_regenerated(
+        self, mock_get_movie, mock_get_pair_for_round, client, auth_user, db_session
+    ):
+        user, headers = auth_user
+        await client.get("/sequencing/progress", headers=headers)
+        session_result = await db_session.execute(
+            select(SequencingSession).where(SequencingSession.user_id == user.id)
+        )
+        session = session_result.scalar_one()
+        session.pending_pair_round_number = 1
+        session.pending_pair_payload = {
+            "round_number": 1,
+            "phase": 1,
+            "movie_a_tmdb_id": 680901,
+            "movie_b_tmdb_id": 19726,
+            "test_dimension": "slowburn",
+            "pair_id": "bad_pair",
+        }
+        await db_session.commit()
+
+        async def fake_get_movie(tmdb_id: int):
+            if tmdb_id in {680901, 19726}:
+                return None
+            return _fake_movie(tmdb_id, f"Movie {tmdb_id}")
+
+        mock_get_movie.side_effect = fake_get_movie
+        mock_get_pair_for_round.return_value = {
+            "id": "p1_recovered",
+            "dimension": "slowburn",
+            "movie_a": {"tmdb_id": 101, "title_en": "Movie 101"},
+            "movie_b": {"tmdb_id": 202, "title_en": "Movie 202"},
+        }
+
+        response = await client.get("/sequencing/pair", headers=headers)
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["movie_a"]["tmdb_id"] == 101
+        assert data["movie_b"]["tmdb_id"] == 202
+
+        await db_session.refresh(session)
+        assert session.pending_pair_payload["pair_id"] == "p1_recovered"
+        assert session.pending_pair_payload["movie_a_tmdb_id"] == 101
+        assert session.pending_pair_payload["movie_b_tmdb_id"] == 202
+
+    @pytest.mark.asyncio
+    @patch("app.routers.sequencing.get_reroll_pair_for_round")
+    @patch("app.routers.sequencing.get_movie", new_callable=AsyncMock)
+    async def test_invalid_reroll_does_not_poison_pending_pair(
+        self, mock_get_movie, mock_get_reroll_pair_for_round, client, auth_user, db_session
+    ):
+        user, headers = auth_user
+        await client.get("/sequencing/progress", headers=headers)
+        session_result = await db_session.execute(
+            select(SequencingSession).where(SequencingSession.user_id == user.id)
+        )
+        session = session_result.scalar_one()
+        session.pending_pair_round_number = 1
+        session.pending_pair_payload = {
+            "round_number": 1,
+            "phase": 1,
+            "movie_a_tmdb_id": 101,
+            "movie_b_tmdb_id": 202,
+            "test_dimension": "slowburn",
+            "pair_id": "safe_pair",
+        }
+        await db_session.commit()
+
+        async def fake_get_movie(tmdb_id: int):
+            if tmdb_id in {680901, 19726}:
+                return None
+            return _fake_movie(tmdb_id, f"Movie {tmdb_id}")
+
+        mock_get_movie.side_effect = fake_get_movie
+        mock_get_reroll_pair_for_round.return_value = {
+            "id": "bad_reroll",
+            "dimension": "slowburn",
+            "movie_a": {"tmdb_id": 680901, "title_en": "Broken A"},
+            "movie_b": {"tmdb_id": 19726, "title_en": "Broken B"},
+        }
+
+        response = await client.post(
+            "/sequencing/reroll",
+            json={"exclude_tmdb_ids": [101, 202]},
+            headers=headers,
+        )
+
+        assert response.status_code == 502
+
+        await db_session.refresh(session)
+        assert session.pending_pair_payload["pair_id"] == "safe_pair"
+        assert session.pending_pair_payload["movie_a_tmdb_id"] == 101
+        assert session.pending_pair_payload["movie_b_tmdb_id"] == 202
+
 
 class TestPick:
     """POST /sequencing/pick"""

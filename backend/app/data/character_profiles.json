@@ -433,7 +433,7 @@
       "id": "hirayama_perfect_days",
       "name": "Hirayama",
       "movie": "Perfect Days",
-      "tmdb_id": 680901,
+      "tmdb_id": 976893,
       "tag_vector": [0.0, 0.0, 0.9, 0.0, 0.9, 0.3, 0.0, 0.0, 0.0, 0.5, 0.3, 0.0, 0.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.5, 0.7, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.9, 0.5, 0.9, 0.0, 0.0],
       "quadrant_profile": { "mainstream_independent": 4.8, "rational_emotional": 3.5, "light_dark": 1.8 },
       "psych_labels": ["authentic", "avoidant", "transcendent"],

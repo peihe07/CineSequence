@@ -1527,7 +1527,7 @@
     "replacement_needed": false,
     "notes": ""
   },
-  "15899": {
+  "49982": {
     "title_en": "A City of Sadness",
     "confidence": "medium",
     "coverage_reason": "region_balance",
@@ -1630,7 +1630,7 @@
     "replacement_needed": false,
     "notes": ""
   },
-  "19726": {
+  "19939": {
     "title_en": "Cape No. 7",
     "confidence": "medium",
     "coverage_reason": "region_balance",
@@ -3079,7 +3079,7 @@
     "replacement_needed": false,
     "notes": ""
   },
-  "680901": {
+  "976893": {
     "title_en": "Perfect Days",
     "confidence": "high",
     "coverage_reason": "phase1_anchor",

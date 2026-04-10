@@ -223,6 +223,19 @@ def _clear_pending_pair(session) -> None:
     session.pending_pair_payload = None
 
 
+async def _store_pending_pair_response(
+    db: AsyncSession,
+    session,
+    payload: dict,
+) -> PairResponse:
+    """Persist a pending pair only after TMDB lookups succeed."""
+    response = await _pair_response_from_payload(payload)
+    session.pending_pair_round_number = payload["round_number"]
+    session.pending_pair_payload = payload
+    await db.commit()
+    return response
+
+
 @router.post("/seed-movie")
 async def set_seed_movie(
     body: SeedMovieRequest,
@@ -298,7 +311,18 @@ async def get_pair(
 
     pending_payload = _get_pending_pair_payload(session, round_number)
     if pending_payload:
-        return await _pair_response_from_payload(pending_payload)
+        try:
+            return await _pair_response_from_payload(pending_payload)
+        except HTTPException as exc:
+            if exc.status_code != 502:
+                raise
+            logger.warning(
+                "Clearing invalid pending pair for session %s round %s",
+                session.id,
+                round_number,
+            )
+            _clear_pending_pair(session)
+            await db.commit()
 
     if phase == 1:
         seed_genres: list[str] = []
@@ -308,8 +332,7 @@ async def get_pair(
                 seed_genres = seed_movie.genres
 
         pair = get_pair_for_round(round_number, seed_genres, session_seed=str(session.id))
-        session.pending_pair_round_number = round_number
-        session.pending_pair_payload = _serialize_pair_payload(
+        payload = _serialize_pair_payload(
             round_number=round_number,
             phase=phase,
             movie_a_tmdb_id=pair["movie_a"]["tmdb_id"],
@@ -317,8 +340,7 @@ async def get_pair(
             test_dimension=pair.get("dimension"),
             pair_id=pair["id"],
         )
-        await db.commit()
-        return await _pair_response_from_payload(session.pending_pair_payload)
+        return await _store_pending_pair_response(db, session, payload)
 
     else:
         quadrant = compute_quadrant_from_picks(picks)
@@ -334,16 +356,14 @@ async def get_pair(
         if not result:
             raise HTTPException(status_code=502, detail="Failed to generate movie pair")
 
-        session.pending_pair_round_number = round_number
-        session.pending_pair_payload = _serialize_pair_payload(
+        payload = _serialize_pair_payload(
             round_number=round_number,
             phase=phase,
             movie_a_tmdb_id=result["movie_a"].tmdb_id,
             movie_b_tmdb_id=result["movie_b"].tmdb_id,
             test_dimension=result.get("test_dimension"),
         )
-        await db.commit()
-        return await _pair_response_from_payload(session.pending_pair_payload)
+        return await _store_pending_pair_response(db, session, payload)
 
 
 @router.post("/reroll", response_model=PairResponse)
@@ -396,8 +416,7 @@ async def reroll_pair(
         )
         if not pair:
             raise HTTPException(status_code=409, detail="No alternate pair available")
-        session.pending_pair_round_number = round_number
-        session.pending_pair_payload = _serialize_pair_payload(
+        payload = _serialize_pair_payload(
             round_number=round_number,
             phase=phase,
             movie_a_tmdb_id=pair["movie_a"]["tmdb_id"],
@@ -405,8 +424,7 @@ async def reroll_pair(
             test_dimension=pair.get("dimension"),
             pair_id=pair["id"],
         )
-        await db.commit()
-        return await _pair_response_from_payload(session.pending_pair_payload)
+        return await _store_pending_pair_response(db, session, payload)
 
     session.reroll_excluded_tmdb_ids = _merge_tmdb_ids(
         session.reroll_excluded_tmdb_ids,
@@ -428,17 +446,14 @@ async def reroll_pair(
     if not result:
         raise HTTPException(status_code=502, detail="Failed to generate alternate movie pair")
 
-    session.pending_pair_round_number = round_number
-    session.pending_pair_payload = _serialize_pair_payload(
+    payload = _serialize_pair_payload(
         round_number=round_number,
         phase=phase,
         movie_a_tmdb_id=result["movie_a"].tmdb_id,
         movie_b_tmdb_id=result["movie_b"].tmdb_id,
         test_dimension=result.get("test_dimension"),
     )
-    await db.commit()
-
-    return await _pair_response_from_payload(session.pending_pair_payload)
+    return await _store_pending_pair_response(db, session, payload)
 
 
 @router.post("/pick", response_model=ProgressResponse)
